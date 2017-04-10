@@ -1,110 +1,39 @@
+<!DOCTYPE html>
 <html>
-	<head></head>
-	<meta charset="utf-8"/>
+	<head>
+		<meta charset="utf-8"/>
+	</head>
 	<body>
 		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
-		<link rel="stylesheet" href="osmways.css" />
+		<link rel="stylesheet" href="OSM_AccessMap.css" />
 		<script
 			  src="https://code.jquery.com/jquery-3.1.1.min.js"
 			  integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
 			  crossorigin="anonymous"></script>
+		<script src="https://www.promisejs.org/polyfills/promise-7.0.4.min.js"></script>
 		<script src="osmtogeojson.js"></script>
+		<script src="OSM_AccessMap.js"></script>
 		<script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
 
+		<header>
+			<h1>OSM AccessMap</h1>
+			<input id="bytes" readonly="true"/>bytes
+		</header>
 		<div id="container">
-			<header>OSM AccessMap
-				<a href="" id="out" download="map.svg">Download</a> <input id="bytes" readonly="true"/>bytes
-			</header>
-			<nav>
-				<button id="btn" onclick="makeGeoLayer()">案内地図を作る</button>
-				<button id="btn" onclick="claerGeoLayer()">やり直す</button>
-				<button id="btn" onclick="svgexport()">保存</button>
+			<nav id="navi">
+				<button id="btn" onclick="makeAccessMap()">案内地図を作る</button>
+				<button id="btn" onclick="svgexport()">保存</button> <a href="" id="out" download="map.svg">Download</a><br>
+				<input type="checkbox" name="highway" value="motorway" checked="checked">高速道路<br>
+				<input type="checkbox" name="highway" value="trunks" checked="checked">国道/主要道路<br>
+				<input type="checkbox" name="highway" value="secondary" checked="checked">一般(地方)道路<br>
+				<input type="checkbox" name="highway" value="residential" checked="checked">住宅道路<br>
+				<input type="checkbox" name="highway" value="service" checked="checked">敷地内道路<br>
+				<input type="checkbox" name="highway" value="footway" checked="checked">歩道・小道<br>
 			</nav>
 			<article id="article">
 				<div id="mapid"></div>
 			</article>
 		</div>
-
-		<script>
-		var map;
-		var svglayer;
-		var isFF;
-		$(function(){
-			var data;
-			var isFF = /firefox/i.test(navigator.userAgent);
-			map = L.map('mapid').setView([34.687367　, 135.525854], 15);
-			map.locate({setView: true, maxZoom: 14});
-
-			L.tileLayer(
-				'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-					attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a>',
-					maxZoom: 19
-				}
-			).addTo(map);
-			L.control.scale().addTo(map);
-
-		});
-
-		function claerGeoLayer(){
-			svglayer.remove();
-			
-		}
-		
-		function makeGeoLayer(){
-			let NorthWest = map.getBounds().getNorthWest();
-			let SouthEast = map.getBounds().getSouthEast();
-			let maparea = SouthEast.lat + ',' + NorthWest.lng + ',' + NorthWest.lat + ',' + SouthEast.lng;
-			$.ajax({
-				url : 'https://overpass-api.de/api/interpreter?data=[out:json][timeout:25];(way["highway"](' + maparea + '););out body;>;out skel qt;',
-				type : "get",
-				async: false,    
-				success : function(data){ 
-					let geojson = osmtogeojson(data);
-
-					svglayer = L.geoJSON(geojson, {
-						style: function(feature){
-							return {color: '#AA0000'}
-						},
-						filter: function (feature, layer) {
-							if (feature.properties) {
-								return feature.properties.underConstruction !== undefined ? !feature.properties.underConstruction : true;
-							}
-							return false;
-						},onEachFeature: onEachFeature
-					}).addTo(map);
-				}
-			});
-
-		};
-
-		function onEachFeature(feature, layer) {
-			var popupContent = "<p>I started out as a GeoJSON " +
-				feature.geometry.type + ", but now I'm a Leaflet vector!</p>";
-			if (feature.properties && feature.properties.popupContent) {
-				popupContent += feature.properties.popupContent;
-			}
-			layer.bindPopup(popupContent);
-		}
-
-    $.fn.extend({
-			svgToData : function(){
-				var svg = this.filter('svg') || this.find('svg');
-				alert(svg.parent().html());
-        svg.attr({"xmlns" : "http://www.w3.org/2000/svg" });
-        return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg.parent().html());
-      }
-    });
-
-
-		function svgexport(){
-			$.map($('svg'), function(value){
-				$('#out').attr("href", $(value).svgToData());
-      });
-		}
-
-		</script>
-
-
 	</body>
 	</html>
  
