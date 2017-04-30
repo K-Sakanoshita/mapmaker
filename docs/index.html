@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+	</head>
+	<body>
+		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
+		<link rel="stylesheet" href="OSM_AccessMap.css" />
+		<link rel="stylesheet" href="jquery.simple-color-picker.css" />
+		<script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+		<script src="https://www.promisejs.org/polyfills/promise-7.0.4.min.js"></script>
+		<script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+		<script src="./osmtogeojson.js"></script>
+		<script src="./rgbcolor.js"></script>
+		<script src="./OSM_AccessMap.js"></script>
+		<script src="./jquery.simple-color-picker.js"></script>
+		<script>
+			$(document).ready(function() {
+				$('button#color1').simpleColorPicker({onChangeColor:
+					function(color) {
+						let rgbcolor = new RGBColor(color);
+						$('#highway1').css('background-color',color);
+						if(rgbcolor.ok){
+							rgbcolor.r = (255 - rgbcolor.r);
+							rgbcolor.g = (255 - rgbcolor.g);
+							rgbcolor.b = (255 - rgbcolor.b);
+							console.log(rgbcolor.toHex());
+							$('#highway1').text(color);
+							$('#highway1').css("color",rgbcolor.toHex());
+						}
+					}
+				});
+				$('button#color2').simpleColorPicker({onChangeColor: function(color) {$('#highway2').css('background-color',color);}});
+				$('button#color3').simpleColorPicker({onChangeColor: function(color) {$('#highway3').css('background-color',color);}});
+				$('button#color4').simpleColorPicker({onChangeColor: function(color) {$('#highway4').css('background-color',color);}});
+			});
+		</script>
+
+		<div id="container">
+			<nav id="navi">
+				<div style="text-align:center;">
+					<img src="./image/osmlogo.png" width="180px" height="180px"><br>
+					<h1>OSM Access Map</h1>
+					<button id="btn" style="font-size: 1.4rem; width: calc(100% - 18px);" onclick="makeAccessMap()">案内地図を作る</button>
+				</div><br>
+				<button id="color1" class="way_button">主要道路</button><select name="weight"><option value="1">細</option><option value="2">中</option><option value="3">太</option></select><div id="highway1" class="way_sample">&nbsp;</div><br>
+				<button id="color2" class="way_button">一般道路</button><div id="highway2" class="way_sample">&nbsp;</div><br>
+				<button id="color3" class="way_button">生活道路</button><div id="highway3" class="way_sample">&nbsp;</div><br>
+				<button id="color4" class="way_button">路地・広場</button><div id="highway4" class="way_sample">&nbsp;</div><br>
+
+				<br>
+				<button id="save_png" style="font-size: 1.2rem; width: calc(50% - 18px);" onclick="svg2png()">PNG保存</button>
+				<button id="save_svg" style="font-size: 1.2rem; width: calc(50% - 18px);" onclick="svgexport()">SVG保存</button>
+			</nav>
+			<article id="article">
+				<div id="mapid"></div>
+			</article>
+		</div>
+	</body>
+	</html>
+ 

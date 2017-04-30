@@ -1,0 +1,102 @@
+html{
+    height: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+body {
+	height: 100%;
+	background-color: #DDFFDD;
+	padding: 0;
+	margin: 0;
+}
+
+/* unuse header */
+/*
+header {
+    width: calc(100% - 16px);
+    height: 1.5em;
+    margin: 4px;
+    padding: 4px;
+}
+*/
+
+#container {
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+	height: 100%;
+	margin: 0px;
+	padding: 0px;
+}
+
+#navi {
+	width: 250px;
+	height: calc(100% - 10px);
+	padding: 10px 6px 0px 6px;
+}
+
+#article {
+    width: calc(100% - 250px);
+    height: 100%;
+    flex: 1;
+    overflow: auto;
+    position: relative;
+    background-color: #ccf;
+    margin: 0px 0px 0px 0px;
+
+}
+
+/* OSM Map area */
+#mapid {
+    height: 100%;
+}
+
+h1 {
+	width: 200px;
+	height: 24px;
+	text-align:center;
+	font-weight: bold;
+	margin: 2px 2px 16px 2px;
+}
+
+/* color sample for way */
+.way_sample {
+	width: 60px;
+	height: 18px;
+	margin: 4px 10px;
+	padding: 2px 4px;
+	float:	left;
+}
+
+/* button for select way color */
+.way_button {
+	width: 80px;
+	float: left;
+	clear: left;
+}
+
+/* button style(without Leaflet) */
+button {
+	display: inline-block;
+	margin: 4px 1px;
+	padding: 2px 8px;
+	cursor: pointer;
+	color: #000000;
+	text-align: center;
+	text-decoration: none;
+	background-color: #FFFFFF;
+	outline: none;
+	border: none;
+	border-radius: 2px;
+	box-shadow: 0px 1px 5px #999;
+}
+
+button:hover {background-color: #DDDDDD}
+
+button:active {
+	color: #000000;
+	background-color: #DDDDDD;
+	box-shadow: 0 2px #666;
+	transform: translateY(2px);
+}
