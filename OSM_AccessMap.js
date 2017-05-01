@@ -164,7 +164,7 @@ $(function(){
 			ctx.drawImage(image, 0, 0);
 			// Optional: 自動でダウンロードさせる場合
 			$("body").append("<a id='image-file' class='hidden' type='application/octet-stream' href='"
-                       + canvas.toDataURL("image/png") + "' download='graph.png'>Donload Image</a>");
+                       + canvas.toDataURL("image/png") + "' download='OSM_AccessMap.png'>Donload Image</a>");
 			$("#image-file")[0].click();
 
 			// 後処理

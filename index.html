@@ -37,21 +37,20 @@
 		</script>
 
 		<div id="container">
-			<nav id="navi">
-				<div style="text-align:center;">
-					<img src="./image/osmlogo.png" width="180px" height="180px"><br>
-					<h1>OSM Access Map</h1>
-					<button id="btn" style="font-size: 1.4rem; width: calc(100% - 18px);" onclick="makeAccessMap()">案内地図を作る</button>
-				</div><br>
-				<button id="color1" class="way_button">主要道路</button><select name="weight"><option value="1">細</option><option value="2">中</option><option value="3">太</option></select><div id="highway1" class="way_sample">&nbsp;</div><br>
+			<header>
+				<img src="./image/osmlogo.png" width="180px" height="180px">
+				<h1>OSM Access Map</h1>
+				<button id="btn" style="font-size: 1.4rem; width: calc(100% - 186px);" onclick="makeAccessMap()">案内地図を作る</button>
+				<br>
+				<!-- button id="color1" class="way_button">主要道路</button><select name="weight"><option value="1">細</option><option value="2">中</option><option value="3">太</option></select><div id="highway1" class="way_sample">&nbsp;</div><br>
 				<button id="color2" class="way_button">一般道路</button><div id="highway2" class="way_sample">&nbsp;</div><br>
 				<button id="color3" class="way_button">生活道路</button><div id="highway3" class="way_sample">&nbsp;</div><br>
 				<button id="color4" class="way_button">路地・広場</button><div id="highway4" class="way_sample">&nbsp;</div><br>
 
 				<br>
 				<button id="save_png" style="font-size: 1.2rem; width: calc(50% - 18px);" onclick="svg2png()">PNG保存</button>
-				<button id="save_svg" style="font-size: 1.2rem; width: calc(50% - 18px);" onclick="svgexport()">SVG保存</button>
-			</nav>
+				<button id="save_svg" style="font-size: 1.2rem; width: calc(50% - 18px);" onclick="svgexport()">SVG保存</button -->
+			</header>
 			<article id="article">
 				<div id="mapid"></div>
 			</article>
