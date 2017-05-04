@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8"/>
-	</head>
+	<head><meta charset="utf-8"/></head>
 	<body>
 		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
 		<link rel="stylesheet" href="OSM_AccessMap.css" />
@@ -12,44 +10,54 @@
 		<script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
 		<script src="./osmtogeojson.js"></script>
 		<script src="./rgbcolor.js"></script>
-		<script src="./OSM_AccessMap.js"></script>
 		<script src="./jquery.simple-color-picker.js"></script>
-		<script>
-			$(document).ready(function() {
-				$('button#color1').simpleColorPicker({onChangeColor:
-					function(color) {
-						let rgbcolor = new RGBColor(color);
-						$('#highway1').css('background-color',color);
-						if(rgbcolor.ok){
-							rgbcolor.r = (255 - rgbcolor.r);
-							rgbcolor.g = (255 - rgbcolor.g);
-							rgbcolor.b = (255 - rgbcolor.b);
-							console.log(rgbcolor.toHex());
-							$('#highway1').text(color);
-							$('#highway1').css("color",rgbcolor.toHex());
-						}
-					}
-				});
-				$('button#color2').simpleColorPicker({onChangeColor: function(color) {$('#highway2').css('background-color',color);}});
-				$('button#color3').simpleColorPicker({onChangeColor: function(color) {$('#highway3').css('background-color',color);}});
-				$('button#color4').simpleColorPicker({onChangeColor: function(color) {$('#highway4').css('background-color',color);}});
-			});
-		</script>
+		<script src="./OSM_AccessMap.js"></script>
 
 		<div id="container">
+			<div id="fadeLayer">
+				<img src="./image/gif-load.gif" style="position: absolute; top: 50%; right: calc(50% - 50px);z-index: 20001">
+			</div>
 			<header>
-				<img src="./image/osmlogo.png" width="180px" height="180px">
 				<h1>OSM Access Map</h1>
-				<button id="btn" style="font-size: 1.4rem; width: calc(100% - 186px);" onclick="makeAccessMap()">案内地図を作る</button>
-				<br>
-				<!-- button id="color1" class="way_button">主要道路</button><select name="weight"><option value="1">細</option><option value="2">中</option><option value="3">太</option></select><div id="highway1" class="way_sample">&nbsp;</div><br>
-				<button id="color2" class="way_button">一般道路</button><div id="highway2" class="way_sample">&nbsp;</div><br>
-				<button id="color3" class="way_button">生活道路</button><div id="highway3" class="way_sample">&nbsp;</div><br>
-				<button id="color4" class="way_button">路地・広場</button><div id="highway4" class="way_sample">&nbsp;</div><br>
+				<div style="clear:left;">
+					<button id="btn" class="make_button" onclick="makeAccessMap()">
+						<img src="./image/osmlogo.png" width="80px" height="80px">
+						表示している範囲で<br>アクセス地図を作る
+					</button>
 
-				<br>
-				<button id="save_png" style="font-size: 1.2rem; width: calc(50% - 18px);" onclick="svg2png()">PNG保存</button>
-				<button id="save_svg" style="font-size: 1.2rem; width: calc(50% - 18px);" onclick="svgexport()">SVG保存</button -->
+					<div style="float: left; width: calc(100% - 376px)">
+						<div style="float: left">
+							<button id="color1" class="way_button">主要道路</button>
+							<select name="weight" class="way_line"><option value="1">細</option><option value="2">中</option><option value="3">太</option></select>
+						</div>
+
+						<div style="float: left">
+							<button id="color2" class="way_button">一般道路</button>
+							<select name="weight" class="way_line"><option value="1">細</option><option value="2">中</option><option value="3">太</option></select>
+						</div>
+
+						<div style="float: left">
+							<button id="color3" class="way_button">生活道路</button>
+							<select name="weight" class="way_line"><option value="1">細</option><option value="2">中</option><option value="3">太</option></select>
+						</div>
+
+						<div style="float: left">
+							<button id="color4" class="way_button">路地・広場</button>
+							<select name="weight" class="way_line"><option value="1">細</option><option value="2">中</option><option value="3">太</option></select>
+						</div>
+
+						<div style="float: left">
+							<button id="color5" class="way_button">水路・川</button>
+							<select name="weight" class="way_line"><option value="1">細</option><option value="2">中</option><option value="3">太</option></select>
+						</div>
+					</div>
+
+					<div style="float: left; width: 160px;position: absolute; top: 36px; right:0px">
+						<button id="save_png" class="export_button" onclick="savePNG()">PNG保存</button>
+						<button id="save_svg" class="export_button" onclick="saveSVG()">SVG保存</button>
+					</div>
+				</div>
+
 			</header>
 			<article id="article">
 				<div id="mapid"></div>

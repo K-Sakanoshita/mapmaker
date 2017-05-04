@@ -2,76 +2,151 @@
 	OSM AccessMap
 	* copyright by K.Sakanoshita
 */
+"use strict";
 
 // Global Variable
 var map;
-var osm;
+var osm;			// OMS地図
+var ort;			// オルソ化航空写真
 var svglayer;
 var L_Sel;
-var contMap = {};
+var Layers;
 var contLayer = {};
+var ways = {};
 
-// initialize
+const allWays = ["主要道路","一般道路","生活道路","路地小道","水路・川"];
+
+const defColor = {
+	"主要道路":	"#00AA00",
+	"一般道路":	"#0000AA",
+	"生活道路":	"#886666",
+	"路地小道":	"#886666",
+	"水路・川":	"#6666AA"
+};
+
+const defWidth = {
+	"主要道路":	"3",
+	"一般道路":	"2",
+	"生活道路":	"1",
+	"路地小道":	"1",
+	"水路・川":	"2"
+};
+
+const OverPass ={
+	"主要道路":	['way["highway"~"motorway"]'	,'way["highway"~"trunk"]'		,'way["highway"~"primary"]'		,'way["highway"~"secondary"]','way["highway"~"tertiary"]'],
+	"一般道路":	['way["highway"~"unclassified"]','way["highway"~"residential"]'],
+	"生活道路":	['way["highway"~"pedestrian"]'	,'way["highway"="service"]'],
+	"路地小道":	['way["highway"="footway"]'		,'way["highway"="path"]'		,'way["highway"="track"]'],
+	"水路・川":	['relation["waterway"]'			,'way["waterway"]'],
+}
+
+// initialize leaflet
 $(function(){
-	map = L.map('mapid').setView([34.687367　, 135.525854], 15);
-	map.locate({setView: true, maxZoom: 14});
-		osm = L.tileLayer(
+	osm = L.tileLayer(
 		'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a>',
-			maxZoom: 19
-		});
-	osm.addTo(map);
+		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a>',
+		maxZoom: 19
+	});
+
+	ort = L.tileLayer('http://cyberjapandata.gsi.go.jp/xyz/ort/{z}/{x}/{y}.jpg', {
+		minZoom: 5, maxZoom: 18, 
+		attribution: "<a href='http://maps.gsi.go.jp/development/ichiran.html' target='_blank'>地理院タイル</a>"
+    });
+	Layers = { 'OpenStreetMap': osm,'地理院タイル（写真）': ort };
+               
+	map = L.map('mapid', {center: [34.687367　, 135.525854], zoom: 12,layers: [osm]});
+	map.locate({setView: true, maxZoom: 14});
+	L_Sel = L.control.layers(Layers, null, {collapsed: false}).addTo(map);
 	L.control.scale({imperial: false}).addTo(map);
+
 });
 
-
-	// アクセスマップを作る
-	function makeAccessMap(){
-		// マップ範囲を探す
-		let NorthWest = map.getBounds().getNorthWest();
-		let SouthEast = map.getBounds().getSouthEast();
-		let maparea = SouthEast.lat + ',' + NorthWest.lng + ',' + NorthWest.lat + ',' + SouthEast.lng;
-
-		getOSMdata(	'way["highway"~"motorway"](' + maparea + ');'
-		+		'way["highway"~"trunk"]('     + maparea + ');'
-		+		'way["highway"~"primary"]('   + maparea + ');'
-		+		'way["highway"~"secondary"](' + maparea + ');'
-		+		'way["highway"~"tertiary"]('  + maparea + ')',"主要道路","#00AA00",3)
-		.then(function(){
-			return getOSMdata('way["highway"~"unclassified"](' + maparea + ')',"一般道路","#0000AA",2);
-		}).then(function(){
-			return getOSMdata('way["highway"~"residential"](' + maparea + ');way["highway"="service"](' + maparea + ')',"生活道路","#AAAAAA",1);
-		}).then(function(){
-			return getOSMdata('way["highway"~"pedestrian"](' + maparea + ');way["highway"="footway"](' + maparea + ');way["highway"="path"](' + maparea + ');way["highway"="track"](' + maparea + ')',"路地・広場","#886666",1);
-		}).then(function(){
-			var $checked = $(":checked");
-			for(var i=0;i<$checked.length;i++){
-				$checked[i].checked = true
-			}
-			
-		});
-
-	};
-
-	// OverPass APIでOSMデータを取得
-	// 引数: クエリ
-	function getOSMdata(query,title,color,weight){
-		return new Promise(function(resolve,reject){
-			$.ajax({
-				url : 'https://overpass-api.de/api/interpreter?data=[out:json][timeout:25];(' + query + ';);out body;>;out skel qt;',
-				type : "get",
-				async: true,
-				error: function(error){
-					alert("データ取得エラーです。時間を置いてやり直してください。");
-					reject(error);
-				},
-				success : function(osmdata){
-					makeSVGlayer(osmdata,title,color,weight);
-					resolve();
-				}
-			});
-		});
+// initialize frontend
+$(document).ready(function() {
+	// initialize color change button
+	for(let i = 1; i < 6;i++){
+		$('button#color' + i).simpleColorPicker({onChangeColor:	function(color){color_set(color,i)}})
+		ways[i] = {
+			name: allWays[i-1],
+			color: defColor[allWays[i - 1]],
+			width: defWidth[allWays[i - 1]],
+			overpass: OverPass[allWays[i - 1]]
+		}
 	}
+});
+
+// frontend: color set/change
+// from: way_buttons
+function color_set(color,btnno){
+	let rgbcolor = new RGBColor(color);
+	$("button#color" + btnno).css('background-color',color);
+	if(rgbcolor.ok){
+		rgbcolor.r = (255 - rgbcolor.r);
+		rgbcolor.g = (255 - rgbcolor.g);
+		rgbcolor.b = (255 - rgbcolor.b);
+		$("button#color" + btnno).css("color",rgbcolor.toHex());
+	}
+}
+
+// アクセスマップを作る
+function makeAccessMap(){
+	// マップ範囲を探す
+	let NorthWest = map.getBounds().getNorthWest();
+	let SouthEast = map.getBounds().getSouthEast();
+	let maparea = '(' + SouthEast.lat + ',' + NorthWest.lng + ',' + NorthWest.lat + ',' + SouthEast.lng + ');';
+	let passQuery;
+	let promises = [
+		function(){
+			return new Promise(function(resolve,reject){
+				$("div#fadeLayer").show();
+				resolve();
+			})
+		}];
+
+	for (let way in ways) {
+		promises.push(function(){
+			passQuery = "";
+			for (let ovpass in ways[way].overpass){
+				passQuery += ways[way].overpass[ovpass] + maparea;
+			}
+			console.log(passQuery,ways[way].name,ways[way].color,ways[way].width);
+			return getOSMdata(passQuery,ways[way].name,ways[way].color,ways[way].width).then();
+		});
+	};
+	promises.push(
+		function(){
+			return new Promise(function(resolve,reject){
+				$("div#fadeLayer").hide();
+				resolve();
+			})
+		}
+	);
+
+	promises.reduce(function(promise,curr,index,array){
+		return promise.then(curr);
+	},Promise.resolve());
+
+};
+
+// OverPass APIでOSMデータを取得
+// 引数: クエリ
+function getOSMdata(query,title,color,weight){
+	return new Promise(function(resolve,reject){
+		$.ajax({
+			url : 'https://overpass-api.de/api/interpreter?data=[out:json][timeout:25];(' + query + ');out body;>;out skel qt;',
+			type : "get",
+			async: true,
+			error: function(error){
+				alert("データ取得エラーです。時間を置いてやり直してください。");
+				reject(error);
+			},
+			success : function(osmdata){
+				makeSVGlayer(osmdata,title,color,weight);
+				resolve();
+			}
+		});
+	});
+}
 
 	function makeSVGlayer(osmdata,title,color,weight){ 
 		let geojson = osmtogeojson(osmdata);					// OverPass APIで取得したデータをgeojsonへ
@@ -84,51 +159,36 @@ $(function(){
 					return feature.properties.underConstruction !== undefined ? !feature.properties.underConstruction : true;
 				}
 				return false;
-			},onEachFeature: onEachFeature
+			}
 		});
 
-		contMap["OSM"] = osm;
 		contLayer[title] = svglayer;
-		if (L_Sel == null){
-			L_Sel = L.control.layers(contMap,contLayer, {collapsed: false});
-			L_Sel.addTo(map);
-			svglayer.addTo(map);
-		}else{
+		if (L_Sel !== null){
 			L_Sel.remove(map);
-			L_Sel = L.control.layers(contMap,contLayer, {collapsed: false});
-			let LC = L_Sel.addTo(map);
-			svglayer.addTo(map);
 		}
+		L_Sel = L.control.layers(Layers,contLayer, {collapsed: false});
+		L_Sel.addTo(map);
+		svglayer.addTo(map);
 	}
 
-	function onEachFeature(feature, layer) {
-		var popupContent = "<p>I started out as a GeoJSON " +
-			feature.geometry.type + ", but now I'm a Leaflet vector!</p>";
-		if (feature.properties && feature.properties.popupContent) {
-			popupContent += feature.properties.popupContent;
-		}
-		layer.bindPopup(popupContent);
-	}
+function saveSVG(){
+	$.map($('svg'), function(value){
+	var svg = $("svg");
+	var width = svg.width();
+	var height = svg.height();
+	var stb = svg.attr("style");
+	var vbx = svg.attr("viewBox").split(" ");
 
-	function svgexport(){
-		$.map($('svg'), function(value){
-		var svg = $("svg");
-		var width = svg.width();
-		var height = svg.height();
-		var stb = svg.attr("style");
-		var vbx = svg.attr("viewBox").split(" ");
-
-		svg.attr("style","");
-		svg.height(height - parseInt(vbx[1]) + 100);
-		svg.width(width - parseInt(vbx[0]));
-		$("body").append("<a id='image-file' class='hidden' type='application/octet-stream' href='"
-                     + $(value).svgToData() + "' download='OSM_AccessMap.svg'>Donload Image</a>");
-		$("#image-file")[0].click();
-		$("#image-file").remove();
-		svg.attr("style",stb);
-
-		});
-	}
+	svg.attr("style","");
+	svg.height(height - parseInt(vbx[1]) + 100);
+	svg.width(width - parseInt(vbx[0]));
+	$("body").append("<a id='image-file' class='hidden' type='application/octet-stream' href='"
+		+ $(value).svgToData() + "' download='OSM_AccessMap.svg'>Donload Image</a>");
+	$("#image-file")[0].click();
+	$("#image-file").remove();
+	svg.attr("style",stb);
+	});
+}
 
 	$.fn.extend({
 		svgToData : function(){
@@ -139,39 +199,36 @@ $(function(){
 	});
 
 
-	function svg2png(){
-		var svg = $("svg");
-		var width = svg.width();
-		var height = svg.height();
-		var stb = svg.attr("style");
-		var vbx = svg.attr("viewBox").split(" ");
+function savePNG(){
+	var svg = $("svg");
+	var width = svg.width();
+	var height = svg.height();
+	var stb = svg.attr("style");
+	var vbx = svg.attr("viewBox").split(" ");
 
-		svg.attr("style","");
-		svg.height(height - parseInt(vbx[1]) + 100);
-		svg.width(width - parseInt(vbx[0]));
+	svg.attr("style","");
+	svg.height(height - parseInt(vbx[1]) + 100);
+	svg.width(width - parseInt(vbx[0]));
 
-		$("body").append("<canvas id='canvas1' class='hidden' width=" + width + " height=" + height +"></canvas>");
-		var canvas = $("#canvas1")[0];
-		var ctx = canvas.getContext("2d");
+	$("body").append("<canvas id='canvas1' class='hidden' width=" + width + " height=" + height +"></canvas>");
+	var canvas = $("#canvas1")[0];
+	var ctx = canvas.getContext("2d");
 
-		var data = new XMLSerializer().serializeToString(svg[0]);
-		svg.attr("style",stb);
+	var data = new XMLSerializer().serializeToString(svg[0]);
+	svg.attr("style",stb);
 
-		var imgsrc = "data:image/svg+xml;charset=utf-8;base64," + btoa(unescape(encodeURIComponent(data)));
-		var image = new Image();
+	var imgsrc = "data:image/svg+xml;charset=utf-8;base64," + btoa(unescape(encodeURIComponent(data)));
+	var image = new Image();
 
-		image.onload = function(){
-			ctx.drawImage(image, 0, 0);
-			// Optional: 自動でダウンロードさせる場合
-			$("body").append("<a id='image-file' class='hidden' type='application/octet-stream' href='"
-                       + canvas.toDataURL("image/png") + "' download='OSM_AccessMap.png'>Donload Image</a>");
-			$("#image-file")[0].click();
+	image.onload = function(){
+		ctx.drawImage(image, 0, 0);
+		$("body").append("<a id='image-file' class='hidden' type='application/octet-stream' href='"
+			+ canvas.toDataURL("image/png") + "' download='OSM_AccessMap.png'>Donload Image</a>");
+		$("#image-file")[0].click();
+		$("#canvas1").remove();
+		$("#image-file").remove();
 
-			// 後処理
-			$("#canvas1").remove();
-			$("#image-file").remove();
-
-		}
-		image.src = imgsrc;
-	}		
+	}
+	image.src = imgsrc;
+}		
         
