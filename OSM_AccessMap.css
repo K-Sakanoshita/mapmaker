@@ -103,10 +103,15 @@ h1 {
 /* button for select way color */
 
 .make_button {
+	background-image: url("./image/osmlogo.png");
+	background-repeat: no-repeat;
+	background-size: 80px 80px;
+	background-position: 8px center;
+	font-size: 1rem;
 	display: flex;
-	font-weight: bold;
 	float: left;
 	margin: 4px 8px 4px 8px;
+	padding: 0px 0px 0px 96px;
 	height: 88px;
 	width:220px;
 	align-items: center;
