@@ -1,18 +1,22 @@
 /*
 	OSM AccessMap
 	* copyright by K.Sakanoshita
+	* Licence: MIT
 */
 "use strict";
 
 // Global Variable
 var map;
-var osm;			// OMS地図
-var ort;			// オルソ化航空写真
-var svglayer;
+var osm;					// OMS地図
+var ort;					// オルソ化航空写真
 var L_Sel;
 var Layers;
 var contLayer = {};
-var ways = {};
+var ways = {};				// 道路情報の保管庫
+
+const MinZoomLevel = 15;	// これ以下のズームレベルでは地図は作らない
+const ZoomErrMsg	= "地図を作るには、もう少しズームしてください。";
+const LineWeight 	= 2;		// n倍
 
 const allWays = ["主要道路","一般道路","生活道路","路地小道","水路・川","レール類"];
 
@@ -71,16 +75,20 @@ $(document).ready(function() {
 	for(let i = 1; i < (allWays.length + 1);i++){
 		$('select#line' + i).change(function(){
 			ways[i]['width'] = $('select#line' + i).val();
+			UpdateAccessMap();
 		});
 		$('select#line' + i).val(defWidth[allWays[i - 1]]);
-		$('button#color' + i).simpleColorPicker({onChangeColor:	function(color){set_btncolor(color,i,true)}});
+		$('button#color' + i).simpleColorPicker({onChangeColor:	function(color){
+			set_btncolor(color,i,true);
+			UpdateAccessMap();
+		}});
 		ways[i] = {
-			name: allWays[i-1],
-			color: defColor[allWays[i - 1]],
-			width: defWidth[allWays[i - 1]],
-			overpass: OverPass[allWays[i - 1]]
+			name:		allWays[i-1],
+			color:		defColor[allWays[i - 1]],
+			width:		defWidth[allWays[i - 1]],
+			overpass:	OverPass[allWays[i - 1]],
+			geojson:	[]
 		}
-		
 		set_btncolor(defColor[allWays[i - 1]],i,false);
 	}
 });
@@ -101,54 +109,47 @@ function set_btncolor(color,btnno,chgWay){
 
 // アクセスマップを作る
 function makeAccessMap(){
-	// マップ範囲を探す
-	let ZoomLevel = map.getZoom();
+	let ZoomLevel = map.getZoom();					// マップ範囲を探す
 	let NorthWest = map.getBounds().getNorthWest();
 	let SouthEast = map.getBounds().getSouthEast();
 	let maparea = '(' + SouthEast.lat + ',' + NorthWest.lng + ',' + NorthWest.lat + ',' + SouthEast.lng + ');';
 	let passQuery;
-	let promises = [
-		function(){
-			return new Promise(function(resolve,reject){
-				$("div#fadeLayer").show();
-				resolve();
-			})
-		}];
+	let promises = [function(){
+		return new Promise(function(resolve,reject){$("div#fadeLayer").show();resolve();});
+	}];
 
-	if( ZoomLevel < 15 ){
-		alert("すみません。もう少しズームしてください。");
-		return false;
-	}
+	if( ZoomLevel < MinZoomLevel ){	alert(ZoomErrMsg);return false;}
 
-	for (let way in ways) {
+	for (let wno in ways) {
 		promises.push(function(){
 			passQuery = "";
-			for (let ovpass in ways[way].overpass){
-				passQuery += ways[way].overpass[ovpass] + maparea;
-			}
-			console.log(passQuery,ways[way].name,ways[way].color,ways[way].width);
-			return getOSMdata(passQuery,ways[way].name,ways[way].color,ways[way].width).then();
+			for (let ovpass in ways[wno].overpass){ passQuery += ways[wno].overpass[ovpass] + maparea; }
+			return getOSMdata(wno,passQuery,ways[wno].name,ways[wno].color,ways[wno].width).then();
 		});
 	};
 	promises.push(
-		function(){
-			return new Promise(function(resolve,reject){
-				$(".leaflet-control-layers-overlays label input:checkbox:not(:checked)").trigger('click');
-				$("div#fadeLayer").hide();
-				resolve();
-			})
-		}
+		function(){ return new Promise(function(resolve,reject){
+			makeContLayer();
+			$(".leaflet-control-layers-overlays label input:checkbox:not(:checked)").trigger('click');
+			$("div#fadeLayer").hide();
+			resolve();
+		})}
 	);
-
-	promises.reduce(function(promise,curr,index,array){
-		return promise.then(curr);
-	},Promise.resolve());
+	promises.reduce(function(promise,curr,index,array){ return promise.then(curr); },Promise.resolve());
 
 };
 
+// Update Access Map(color/lime weight change)
+function UpdateAccessMap(){
+	for (let wno in ways) {
+		makeSVGlayer(ways[wno].geojson,ways[wno].name,ways[wno].color,ways[wno].width * LineWeight);
+	}
+	makeContLayer();
+}
+
 // OverPass APIでOSMデータを取得
 // 引数: クエリ
-function getOSMdata(query,title,color,weight){
+function getOSMdata(wno,query,name,color,weight){
 	return new Promise(function(resolve,reject){
 		$.ajax({
 			url : 'https://overpass-api.de/api/interpreter?data=[out:json][timeout:25];(' + query + ');out body;>;out skel qt;',
@@ -159,34 +160,38 @@ function getOSMdata(query,title,color,weight){
 				reject(error);
 			},
 			success : function(osmdata){
-				makeSVGlayer(osmdata,title,color,weight);
+				let geojson = osmtogeojson(osmdata);
+				ways[wno].geojson = geojson;
+				makeSVGlayer(geojson,name,color,weight * LineWeight);
 				resolve();
 			}
 		});
 	});
 }
 
-function makeSVGlayer(osmdata,title,color,weight){ 
-	let geojson = osmtogeojson(osmdata);					// OverPass APIで取得したデータをgeojsonへ
-	if (svglayer !== undefined){ svglayer.remove();	}		// SVGレイヤーがあれば削除
-	svglayer = L.geoJSON(geojson, {							// geojsonからSVGレイヤーを作成
-		style: function(feature){ return {color: color,weight: weight } },
-		filter:
-		function (feature, layer) {
+// make Leaflet Controll Panel
+function makeContLayer(){
+	if (L_Sel !== null){ L_Sel.remove(map) }
+	L_Sel = L.control.layers(Layers,contLayer, {collapsed: false});
+	L_Sel.addTo(map);
+}
+
+// make leaflet SVG Layer
+function makeSVGlayer(geojson,name,color,weight){
+	if (contLayer[name] !== undefined){ contLayer[name].remove(map) }
+	let svglayer;
+	let param = {
+		style: function(feature){ return {color: color,weight: weight} },
+		filter: function (feature, layer) {
 			if (feature.properties) {
 				return feature.properties.underConstruction !== undefined ? !feature.properties.underConstruction : true;
 			}
 			return false;
 		}
-	});
-
-	contLayer[title] = svglayer;
-	if (L_Sel !== null){
-		L_Sel.remove(map);
-	}
+	};
+	svglayer = L.geoJSON(geojson,param);					// geojsonからSVGレイヤーを作成
 	svglayer.addTo(map);
-	L_Sel = L.control.layers(Layers,contLayer, {collapsed: false});
-	L_Sel.addTo(map);
+	contLayer[name] = svglayer;
 }
 
 function saveSVG(){

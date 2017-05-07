@@ -20,6 +20,15 @@ header {
     padding: 2px;
 }
 
+footer {
+    width: calc(100% - 4px);
+    height: 26px;
+    margin: 0px;
+    padding: 2px;
+    font-size: 12px;
+    text-align: center;
+}
+
 #container {
 	flex-direction: column;
 	width: 100%;
@@ -32,7 +41,7 @@ header {
 	float: none;
 	clear: both;
 	width: 100%;
-	height: calc(100% - 130px);
+	height: calc(100% - 154px);
 /*	overflow: auto;
 	position: relative; */
 	background-color: #ccf;
@@ -91,9 +100,9 @@ h1 {
 	float: left;
 	font-family:Helvetica,Arial, Roboto, “Droid Sans”, “游ゴシック”, YuGothic,“ヒラギノ角ゴ ProN W3″,“Hiragino Kaku Gothic ProN”, “メイリオ”,Meiryo, sans-serif;
 	font-size: 22px;
-	margin: 2px 2px 0px 8px;
+	margin: 2px 4px 0px 4px;
 	padding: 2px 6px;
-	width: calc(100% - 30px);
+	width: calc(100% - 20px);
 	height: 24px;
 	color: #fff;
 	background-color: #668866;
@@ -110,10 +119,10 @@ h1 {
 	font-size: 1rem;
 	display: flex;
 	float: left;
-	margin: 4px 8px 4px 8px;
-	padding: 0px 0px 0px 96px;
+	margin: 4px 4px 4px 4px;
+	padding: 0px 0px 0px 92px;
 	height: 88px;
-	width:220px;
+	width:210px;
 	align-items: center;
 }
 
