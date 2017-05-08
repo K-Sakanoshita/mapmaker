@@ -18,33 +18,22 @@ const MinZoomLevel = 15;	// これ以下のズームレベルでは地図は作�
 const ZoomErrMsg	= "地図を作るには、もう少しズームしてください。";
 const LineWeight 	= 2;		// n倍
 
-const allWays = ["主要道路","一般道路","生活道路","路地小道","水路・川","レール類"];
-
-const defColor = {
-	"主要道路":	"#E06666",
-	"一般道路":	"#FF9900",
-	"生活道路":	"#CCCCCC",
-	"路地小道":	"#AAAAAA",
-	"水路・川":	"#66AAFF",
-	"レール類":	"#444444"
-};
-
-const defWidth = {
-	"主要道路":	"3",
-	"一般道路":	"2",
-	"生活道路":	"2",
-	"路地小道":	"1",
-	"水路・川":	"2",
-	"レール類":	"3"
+const allWays = {
+	RIV: {name: "水路・川",color:"#66AAFF",width: 2},
+	ALY: {name: "路地小道",color:"#AAAAAA",width: 1},
+	COM: {name: "生活道路",color:"#CCCCCC",width: 2},
+	STD: {name: "一般道路",color:"#FF9900",width: 2},
+	PRI: {name: "主要道路",color:"#E06666",width: 3},
+	RIL: {name: "レール類",color:"#444444",width: 3}
 };
 
 const OverPass ={
-	"主要道路":	['way["highway"~"motorway"]'	,'way["highway"~"trunk"]'		,'way["highway"~"primary"]'		,'way["highway"~"secondary"]','way["highway"~"tertiary"]'],
-	"一般道路":	['way["highway"~"unclassified"]','way["highway"~"residential"]'	,'way["highway"="living_street"]'],
-	"生活道路":	['way["highway"~"pedestrian"]'	,'way["highway"="service"]'],
-	"路地小道":	['way["highway"="footway"]'		,'way["highway"="path"]'		,'way["highway"="track"]'],
-	"水路・川":	['relation["waterway"]'			,'way["waterway"]'],
-	"レール類":	['relation["railway"]'			,'way["railway"]','way["building"="train_station"]']
+	RIV: ['relation["waterway"]'			,'way["waterway"]'],
+	ALY: ['way["highway"="footway"]'		,'way["highway"="path"]'		,'way["highway"="track"]'],
+	COM: ['way["highway"~"pedestrian"]'		,'way["highway"="service"]'],
+	STD: ['way["highway"~"unclassified"]'	,'way["highway"~"residential"]'	,'way["highway"="living_street"]'],
+	PRI: ['way["highway"~"motorway"]'		,'way["highway"~"trunk"]'		,'way["highway"~"primary"]'			,'way["highway"~"secondary"]','way["highway"~"tertiary"]'],
+	RIL: ['relation["railway"]'				,'way["railway"]'				,'way["building"="train_station"]']
 }
 
 // initialize leaflet
@@ -60,50 +49,56 @@ $(function(){
 		attribution: "<a href='http://maps.gsi.go.jp/development/ichiran.html' target='_blank'>地理院タイル</a>"
     });
 	Layers = { 'OpenStreetMap': osm,'地理院タイル（写真）': ort };
-               
+
 	map = L.map('mapid', {center: [34.687367　, 135.525854], zoom: 12,layers: [osm]});
 	map.locate({setView: true, maxZoom: 14});
 	L_Sel = L.control.layers(Layers, null, {collapsed: false}).addTo(map);
 	L.control.scale({imperial: false}).addTo(map);
-
 });
 
 // initialize frontend
 $(document).ready(function() {
-	// initialize color change button
-	let color;
-	for(let i = 1; i < (allWays.length + 1);i++){
-		$('select#line' + i).change(function(){
-			ways[i]['width'] = $('select#line' + i).val();
+	for(let key in allWays){
+		// change line
+		$('#' + key + '_line').change(function(){
+			console.log("Line Change:" + key);
+			ways[key]['width'] = $('#' + key + 'line').val();
 			UpdateAccessMap();
+			return;
 		});
-		$('select#line' + i).val(defWidth[allWays[i - 1]]);
-		$('button#color' + i).simpleColorPicker({onChangeColor:	function(color){
-			set_btncolor(color,i,true);
+
+		// change color
+		$('#'+ key + '_color').simpleColorPicker({onChangeColor: function(color){
+			set_btncolor(color,key,true);
 			UpdateAccessMap();
+			return;
 		}});
-		ways[i] = {
-			name:		allWays[i-1],
-			color:		defColor[allWays[i - 1]],
-			width:		defWidth[allWays[i - 1]],
-			overpass:	OverPass[allWays[i - 1]],
+
+		$('#'+ key + '_line').val(allWays[key].width);
+		set_btncolor(allWays[key].color,key,false);
+
+		ways[key] = {
+			name:		allWays[key].name,
+			color:		allWays[key].color,
+			width:		allWays[key].width,
+			overpass:	OverPass[key],
 			geojson:	[]
 		}
-		set_btncolor(defColor[allWays[i - 1]],i,false);
 	}
 });
 
+
 // frontend: color set/change
 // from: way_buttons
-function set_btncolor(color,btnno,chgWay){
+function set_btncolor(color,key,chgWay){
 	let rgbcolor = new RGBColor(color);
-	$("button#color" + btnno).css('background-color',color);
+	$("#" + key + "_color").css('background-color',color);
 	if(rgbcolor.ok){
-		if(chgWay){	ways[btnno]['color'] = color; }	// set Way color
+		if(chgWay){	ways[key]['color'] = color; }	// set Way color
 		rgbcolor.r = (255 - rgbcolor.r);				// set button color
 		rgbcolor.g = (255 - rgbcolor.g);
 		rgbcolor.b = (255 - rgbcolor.b);
-		$("button#color" + btnno).css("color",rgbcolor.toHex());
+		$("#" + key + "color").css("color",rgbcolor.toHex());
 	}
 }
 
@@ -120,11 +115,11 @@ function makeAccessMap(){
 
 	if( ZoomLevel < MinZoomLevel ){	alert(ZoomErrMsg);return false;}
 
-	for (let wno in ways) {
+	for (let key in ways) {
 		promises.push(function(){
 			passQuery = "";
-			for (let ovpass in ways[wno].overpass){ passQuery += ways[wno].overpass[ovpass] + maparea; }
-			return getOSMdata(wno,passQuery,ways[wno].name,ways[wno].color,ways[wno].width).then();
+			for (let ovpass in ways[key].overpass){ passQuery += ways[key].overpass[ovpass] + maparea; }
+			return getOSMdata(key,passQuery,ways[key].name,ways[key].color,ways[key].width).then();
 		});
 	};
 	promises.push(
@@ -141,15 +136,15 @@ function makeAccessMap(){
 
 // Update Access Map(color/lime weight change)
 function UpdateAccessMap(){
-	for (let wno in ways) {
-		makeSVGlayer(ways[wno].geojson,ways[wno].name,ways[wno].color,ways[wno].width * LineWeight);
+	for (let key in ways) {
+		makeSVGlayer(ways[key].geojson,ways[key].name,ways[key].color,ways[key].width * LineWeight);
 	}
 	makeContLayer();
 }
 
 // OverPass APIでOSMデータを取得
 // 引数: クエリ
-function getOSMdata(wno,query,name,color,weight){
+function getOSMdata(key,query,name,color,weight){
 	return new Promise(function(resolve,reject){
 		$.ajax({
 			url : 'https://overpass-api.de/api/interpreter?data=[out:json][timeout:25];(' + query + ');out body;>;out skel qt;',
@@ -161,7 +156,7 @@ function getOSMdata(wno,query,name,color,weight){
 			},
 			success : function(osmdata){
 				let geojson = osmtogeojson(osmdata);
-				ways[wno].geojson = geojson;
+				ways[key].geojson = geojson;
 				makeSVGlayer(geojson,name,color,weight * LineWeight);
 				resolve();
 			}
