@@ -62,7 +62,7 @@ $(document).ready(function() {
 		// change line
 		$('#' + key + '_line').change(function(){
 			console.log("Line Change:" + key);
-			ways[key]['width'] = $('#' + key + 'line').val();
+			ways[key]['width'] = $('#' + key + '_line').val();
 			UpdateAccessMap();
 			return;
 		});
