@@ -13,6 +13,7 @@ var L_Sel;
 var Layers;
 var contLayer = {};
 var ways = {};				// 道路情報の保管庫
+var nodes = {};				// ノード情報の保管庫
 
 const MinZoomLevel = 15;	// これ以下のズームレベルでは地図は作らない
 const ZoomErrMsg	= "地図を作るには、もう少しズームしてください。";
@@ -24,8 +25,12 @@ const allWays = {
 	COM: {name: "生活道路",color:"#CCCCCC",width: 2},
 	STD: {name: "一般道路",color:"#FF9900",width: 2},
 	PRI: {name: "主要道路",color:"#E06666",width: 3},
-	RIL: {name: "レール類",color:"#444444",width: 3}
+	RIL: {name: "レール類",color:"#444444",width: 3},
 };
+
+const allNodes = {
+	SIG: {name: "信号関連",icon: "./image/signal.svg",size: [25,41]}
+}
 
 const OverPass ={
 	RIV: ['relation["waterway"]'			,'way["waterway"]'],
@@ -33,7 +38,8 @@ const OverPass ={
 	COM: ['way["highway"~"pedestrian"]'		,'way["highway"="service"]'],
 	STD: ['way["highway"~"unclassified"]'	,'way["highway"~"residential"]'	,'way["highway"="living_street"]'],
 	PRI: ['way["highway"~"motorway"]'		,'way["highway"~"trunk"]'		,'way["highway"~"primary"]'			,'way["highway"~"secondary"]','way["highway"~"tertiary"]'],
-	RIL: ['relation["railway"]'				,'way["railway"]'				,'way["building"="train_station"]']
+	RIL: ['relation["railway"]'				,'way["railway"]'				,'way["building"="train_station"]'],
+	SIG: ['node["highway"="traffic_signals"]']
 }
 
 // initialize leaflet
@@ -78,6 +84,7 @@ $(document).ready(function() {
 		set_btncolor(allWays[key].color,key,false);
 
 		ways[key] = {
+			category:	"way",
 			name:		allWays[key].name,
 			color:		allWays[key].color,
 			width:		allWays[key].width,
@@ -85,6 +92,18 @@ $(document).ready(function() {
 			geojson:	[]
 		}
 	}
+
+	for(let key in allNodes){
+		nodes[key] = {
+			category:	"node",
+			name:		allNodes[key].name,
+			icon:		allNodes[key].icon,
+			size:		allNodes[key].size,
+			overpass:	OverPass[key],
+			geojson:	[]
+		}
+	}
+
 });
 
 
@@ -108,6 +127,7 @@ function makeAccessMap(){
 	let NorthWest = map.getBounds().getNorthWest();
 	let SouthEast = map.getBounds().getSouthEast();
 	let maparea = '(' + SouthEast.lat + ',' + NorthWest.lng + ',' + NorthWest.lat + ',' + SouthEast.lng + ');';
+	let ovpass;
 	let passQuery;
 	let promises = [function(){
 		return new Promise(function(resolve,reject){$("div#fadeLayer").show();resolve();});
@@ -119,9 +139,18 @@ function makeAccessMap(){
 		promises.push(function(){
 			passQuery = "";
 			for (let ovpass in ways[key].overpass){ passQuery += ways[key].overpass[ovpass] + maparea; }
-			return getOSMdata(key,passQuery,ways[key].name,ways[key].color,ways[key].width).then();
+			return getOSMdata(ways[key].category,key,passQuery,ways[key].name,ways[key].color,ways[key].width).then();
 		});
 	};
+
+	for (let key in nodes) {
+		promises.push(function(){
+			passQuery = "";
+			for (let ovpass in nodes[key].overpass){ passQuery += nodes[key].overpass[ovpass] + maparea; }
+			return getOSMdata(nodes[key].category,key,passQuery,nodes[key].name,nodes[key].icon,nodes[key].size).then();
+		});
+	};
+	
 	promises.push(
 		function(){ return new Promise(function(resolve,reject){
 			makeContLayer();
@@ -144,7 +173,7 @@ function UpdateAccessMap(){
 
 // OverPass APIでOSMデータを取得
 // 引数: クエリ
-function getOSMdata(key,query,name,color,weight){
+function getOSMdata(category,key,query,name,opt1,opt2){
 	return new Promise(function(resolve,reject){
 		$.ajax({
 			url : 'https://overpass-api.de/api/interpreter?data=[out:json][timeout:25];(' + query + ');out body;>;out skel qt;',
@@ -156,8 +185,18 @@ function getOSMdata(key,query,name,color,weight){
 			},
 			success : function(osmdata){
 				let geojson = osmtogeojson(osmdata);
-				ways[key].geojson = geojson;
-				makeSVGlayer(geojson,name,color,weight * LineWeight);
+				console.log("success:" + category + " / " + name);
+				if(category == "way"){
+					let color = opt1;
+					let width = opt2;
+					ways[key].geojson = geojson;
+					makeSVGlayer(geojson,name,color,width * LineWeight);
+				}else{
+					let icon = opt1;
+					let size = opt2;
+					nodes[key].geojson = geojson;
+					makeSignalIcon(geojson,name,icon,size);
+				}
 				resolve();
 			}
 		});
@@ -172,11 +211,12 @@ function makeContLayer(){
 }
 
 // make leaflet SVG Layer
-function makeSVGlayer(geojson,name,color,weight){
+function makeSVGlayer(geojson,name,color,width){
+	console.log("makeSVGlayer");
 	if (contLayer[name] !== undefined){ contLayer[name].remove(map) }
 	let svglayer;
 	let param = {
-		style: function(feature){ return {color: color,weight: weight} },
+		style: function(feature){ return {color: color,weight: width} },
 		filter: function (feature, layer) {
 			if (feature.properties) {
 				return feature.properties.underConstruction !== undefined ? !feature.properties.underConstruction : true;
@@ -188,6 +228,31 @@ function makeSVGlayer(geojson,name,color,weight){
 	svglayer.addTo(map);
 	contLayer[name] = svglayer;
 }
+
+// getJSONを元にアイコン追加
+function makeSignalIcon(geojson,name,icon,size){
+	/*
+	let smallIcon = new L.Icon({
+		iconUrl:	icon,
+		iconSize:	size
+	});
+	*/
+	
+	let smallIcon = new L.DivIcon({
+		html: '<svg><use xlink:href="./image/signal.svg#signal"/></svg>'
+	});
+
+	let param =	{
+		pointToLayer: function(feature, latlng) {
+			console.log(latlng, feature);
+			return L.marker(latlng, { icon: smallIcon });
+		}
+	}
+	let svglayer = L.geoJson(geojson,param);
+    svglayer.addTo(map);
+	contLayer[name] = svglayer;
+};
+
 
 function saveSVG(){
 	$.map($('svg'), function(value){
