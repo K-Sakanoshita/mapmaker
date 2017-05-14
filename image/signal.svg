@@ -6,7 +6,7 @@
 	.st0{fill:#666666;}
 	.st1{fill:#EEEEEF;}
 </style>
-<g ="signal">
+<g id="signal">
 	<path class="st0" d="M8.2,3.6H1.8C0.8,3.6,0,2.8,0,1.8v0C0,0.8,0.8,0,1.8,0h6.4c1,0,1.8,0.8,1.8,1.8v0C10,2.8,9.2,3.6,8.2,3.6z"/>
 	<g>
 		<circle class="st1" cx="1.9" cy="1.8" r="1"/>
