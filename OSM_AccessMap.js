@@ -239,7 +239,7 @@ function makeSignalIcon(geojson,name,icon,size){
 	*/
 	
 	let smallIcon = new L.DivIcon({
-		html: '<svg><use xlink:href="./image/signal.svg#signal"/></svg>'
+		html: '<svg xmlns="http://www.w3.org/2000/svg"><use xlink:href="./image/signal.svg#signal"/></svg>'
 	});
 
 	let param =	{
