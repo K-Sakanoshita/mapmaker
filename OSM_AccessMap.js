@@ -65,19 +65,19 @@ const Signal_ofY = -8
 // initialize leaflet
 $(function(){
 	osm = L.tileLayer(
-		'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+		'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
 		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a>',
 		maxZoom: 19
 	});
 
 	pale = L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png', {
 		minZoom: 2, maxZoom: 18, 
-		attribution: "<a href='http://maps.gsi.go.jp/development/ichiran.html' target='_blank'>地理院タイル</a>"
+		attribution: "<a href='https://maps.gsi.go.jp/development/ichiran.html' target='_blank'>地理院タイル</a>"
     });
 
 	ort = L.tileLayer('http://cyberjapandata.gsi.go.jp/xyz/ort/{z}/{x}/{y}.jpg', {
 		minZoom: 5, maxZoom: 18, 
-		attribution: "<a href='http://maps.gsi.go.jp/development/ichiran.html' target='_blank'>地理院タイル</a>"
+		attribution: "<a href='https://maps.gsi.go.jp/development/ichiran.html' target='_blank'>地理院タイル</a>"
     });
 
 	Layers = { 'OpenStreetMap': osm,'地理院タイル（基本）': pale,'地理院タイル（写真）': ort };
@@ -201,7 +201,7 @@ function UpdateAccessMap(){
 function getOSMdata(category,key,query,name,opt1,opt2){
 	return new Promise(function(resolve,reject){
 		$.ajax({
-			url : 'https://overpass-api.de/api/interpreter?data=[out:json][timeout:25];(' + query + ');out body;>;out skel qt;',
+			url : 'https://overpass-api.de/api/interpreter?data=[out:json][timeout:30];(' + query + ');out body;>;out skel qt;',
 			type : "get",
 			async: true,
 			error: function(error){
