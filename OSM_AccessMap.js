@@ -19,16 +19,16 @@ var nodes = {};				// ノード情報の保管庫
 const MinZoomLevel = 14;	// これ以下のズームレベルでは地図は作らない
 const ZoomErrMsg	= "地図を作るには、もう少しズームしてください。";
 const NoSvgMsg		= "保存するマップがありません。\nまず、左側の「以下の範囲でマップを作る」ボタンを押してください。"
-const LineWeight 	= 2;		// n倍
+const LineWeight 	= 1.5;		// n倍
 
 const allWays = {
 	RIV: {name: "水路・川",color:"#66AAFF",width: 2},
-	ALY: {name: "路地小道",color:"#808090",width: 0.5},
+	ALY: {name: "路地小道",color:"#808090",width: 1},
 	COM: {name: "生活道路",color:"#707070",width: 1},
 	STD: {name: "一般道路",color:"#606060",width: 1},
 	PRI: {name: "主要道路",color:"#FF7777",width: 2},
-	RIL: {name: "レール類",color:"#404040",width: 2},
-	BLD: {name: "建物・家",color:"#B0B0B0",width: 2}
+	BLD: {name: "建物・家",color:"#B0B0B0",width: 1},
+	RIL: {name: "レール類",color:"#404040",width: 2}
 };
 
 const allNodes = {
@@ -41,9 +41,9 @@ const OverPass ={
 	COM: ['way["highway"~"pedestrian"]'		,'way["highway"="service"]'],
 	STD: ['way["highway"~"unclassified"]'	,'way["highway"~"residential"]'	,'way["highway"="living_street"]'],
 	PRI: ['way["highway"~"motorway"]'		,'way["highway"~"trunk"]'		,'way["highway"~"primary"]'			,'way["highway"~"secondary"]','way["highway"~"tertiary"]'],
+	BLD: ['way["building"]'],
 	RIL: ['relation["railway"]'				,'way["railway"]'				,'way["building"="train_station"]'],
-	SIG: ['node["highway"="traffic_signals"]'],
-	BLD: ['way["building"]']
+	SIG: ['node["highway"="traffic_signals"]']
 }
 
 const Signal_Icon = ''
@@ -85,6 +85,7 @@ $(function(){
 	map.locate({setView: true, maxZoom: 14});
 	L_Sel = L.control.layers(Layers, null, {collapsed: false}).addTo(map);
 	L.control.scale({imperial: false}).addTo(map);
+	var hash = new L.Hash(map);
 });
 
 // initialize frontend
