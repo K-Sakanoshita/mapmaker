@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="utf-8"/>
-		<title>OSM Access Map(ver 20170507)</title>
+		<title>OSM Access Map(ver 2017.1118)</title>
 		<meta name="author" content="K.Sakanoshita">
 		<meta name="keywords" content="OpenStreetMap,OSM,地図">
 	</head>
@@ -23,9 +23,11 @@
 				<img src="./image/gif-load.gif" style="position: absolute; top: 50%; right: calc(50% - 110px);z-index: 20001">
 			</div>
 			<header>
-				<h1>OSM Access Map. <small><small>〜自由に使えるアクセスマップや白地図を作ろう〜</small></small></h1>
+				<h1>OSM Access Map. <small><small>// 自由に使える案内地図を作るサイト //</small></small></h1>
 				<div style="clear:left;">
-					<div style="float: left; width: calc(100% - 380px); margin: 0px 2px 0px 2px;">
+					<button id="btn" class="make_button" onclick="makeAccessMap()">以下の範囲で<br>マップを作る</button>
+					<div style="float: left; width: 45px; margin: 0px 0px 0px 0px;"><img  src="./image/Arrow_Right.png"></div>
+					<div style="float: left; width: calc(100% - 470px); margin: 0px 2px 0px 2px;">
 						<div style="float: left">
 							<button id="PRI_color" class="way_button">主要道路</button>
 							<select id="PRI_line"  class="way_line"><option value="1">細</option><option value="2">中</option><option value="3">太</option></select>
@@ -55,12 +57,15 @@
 							<button id="RIL_color" class="way_button">レール類</button>
 							<select id="RIL_line"  class="way_line"><option value="1">細</option><option value="2">中</option><option value="3">太</option></select>
 						</div>
+						
+						<div style="float: left">
+							<button id="BLD_color" class="way_button">建物・家</button>
+							<select id="BLD_line"  class="way_line"><option value="1">細</option><option value="2">中</option><option value="3">太</option></select>
+						</div>
 
 					</div>
-
-					<button id="btn" class="make_button" onclick="makeAccessMap()">以下の範囲で<br>マップを作る</button>
-
-					<div style="float: left; width: 150px;position: absolute; top: 36px; right: 6px">
+					<div style="float: left; width: 45px; margin: 0px 0px 0px 0px;"><img  src="./image/Arrow_Right.png"></div>
+					<div id="export_area" style="float: left; width: 150px;position: absolute; top: 36px; right: 6px;">
 						<button id="save_png" class="export_button" onclick="savePNG()">PNG保存</button>
 						<button id="save_svg" class="export_button" onclick="saveSVG()">SVG保存</button>
 					</div>

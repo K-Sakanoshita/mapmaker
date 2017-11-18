@@ -9,23 +9,26 @@
 var map;
 var osm;					// OMS地図
 var ort;					// オルソ化航空写真
+var pale;					// 電子国土基本図
 var L_Sel;
 var Layers;
 var contLayer = {};
 var ways = {};				// 道路情報の保管庫
 var nodes = {};				// ノード情報の保管庫
 
-const MinZoomLevel = 15;	// これ以下のズームレベルでは地図は作らない
+const MinZoomLevel = 14;	// これ以下のズームレベルでは地図は作らない
 const ZoomErrMsg	= "地図を作るには、もう少しズームしてください。";
+const NoSvgMsg		= "保存するマップがありません。\nまず、左側の「以下の範囲でマップを作る」ボタンを押してください。"
 const LineWeight 	= 2;		// n倍
 
 const allWays = {
 	RIV: {name: "水路・川",color:"#66AAFF",width: 2},
-	ALY: {name: "路地小道",color:"#AAAAAA",width: 1},
-	COM: {name: "生活道路",color:"#CCCCCC",width: 2},
-	STD: {name: "一般道路",color:"#FF9900",width: 2},
-	PRI: {name: "主要道路",color:"#E06666",width: 3},
-	RIL: {name: "レール類",color:"#444444",width: 3},
+	ALY: {name: "路地小道",color:"#808090",width: 0.5},
+	COM: {name: "生活道路",color:"#707070",width: 1},
+	STD: {name: "一般道路",color:"#606060",width: 1},
+	PRI: {name: "主要道路",color:"#FF7777",width: 2},
+	RIL: {name: "レール類",color:"#404040",width: 2},
+	BLD: {name: "建物・家",color:"#B0B0B0",width: 2}
 };
 
 const allNodes = {
@@ -33,14 +36,31 @@ const allNodes = {
 }
 
 const OverPass ={
-	RIV: ['relation["waterway"]'			,'way["waterway"]'],
+	RIV: ['relation["waterway"]'			,'way["waterway"]'				,'way["landuse"="reservoir"]'	,'way["natural"="water"]'	,'way["natural"="coastline"]'],
 	ALY: ['way["highway"="footway"]'		,'way["highway"="path"]'		,'way["highway"="track"]'],
 	COM: ['way["highway"~"pedestrian"]'		,'way["highway"="service"]'],
 	STD: ['way["highway"~"unclassified"]'	,'way["highway"~"residential"]'	,'way["highway"="living_street"]'],
 	PRI: ['way["highway"~"motorway"]'		,'way["highway"~"trunk"]'		,'way["highway"~"primary"]'			,'way["highway"~"secondary"]','way["highway"~"tertiary"]'],
 	RIL: ['relation["railway"]'				,'way["railway"]'				,'way["building"="train_station"]'],
-	SIG: ['node["highway"="traffic_signals"]']
+	SIG: ['node["highway"="traffic_signals"]'],
+	BLD: ['way["building"]']
 }
+
+const Signal_Icon = ''
+	+ '<svg xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%;enable-background:new 0 0 10 3.6;">'
+	+ '	<g name="signal">'
+	+ '		<path style="fill:#666666;" d="M8.2,3.6H1.8C0.8,3.6,0,2.8,0,1.8v0C0,0.8,0.8,0,1.8,0h6.4c1,0,1.8,0.8,1.8,1.8v0C10,2.8,9.2,3.6,8.2,3.6z"/>'
+	+ '		<g>'
+	+ '			<circle style="fill:#EEEEEE;" cx="1.9" cy="1.8" r="1"/>'
+	+ '			<circle style="fill:#EEEEEE;" cx="5" cy="1.8" r="1"/>'
+	+ '			<circle style="fill:#EEEEEE;" cx="8.1" cy="1.8" r="1"/>'
+	+ '		</g>'
+	+ '</g>'
+	+ '</svg>';
+
+const Signal_Scale = 3
+const Signal_ofX = -16
+const Signal_ofY = -8
 
 // initialize leaflet
 $(function(){
@@ -50,12 +70,17 @@ $(function(){
 		maxZoom: 19
 	});
 
+	pale = L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png', {
+		minZoom: 2, maxZoom: 18, 
+		attribution: "<a href='http://maps.gsi.go.jp/development/ichiran.html' target='_blank'>地理院タイル</a>"
+    });
+
 	ort = L.tileLayer('http://cyberjapandata.gsi.go.jp/xyz/ort/{z}/{x}/{y}.jpg', {
 		minZoom: 5, maxZoom: 18, 
 		attribution: "<a href='http://maps.gsi.go.jp/development/ichiran.html' target='_blank'>地理院タイル</a>"
     });
-	Layers = { 'OpenStreetMap': osm,'地理院タイル（写真）': ort };
 
+	Layers = { 'OpenStreetMap': osm,'地理院タイル（基本）': pale,'地理院タイル（写真）': ort };
 	map = L.map('mapid', {center: [34.687367　, 135.525854], zoom: 12,layers: [osm]});
 	map.locate({setView: true, maxZoom: 14});
 	L_Sel = L.control.layers(Layers, null, {collapsed: false}).addTo(map);
@@ -117,7 +142,7 @@ function set_btncolor(color,key,chgWay){
 		rgbcolor.r = (255 - rgbcolor.r);				// set button color
 		rgbcolor.g = (255 - rgbcolor.g);
 		rgbcolor.b = (255 - rgbcolor.b);
-		$("#" + key + "color").css("color",rgbcolor.toHex());
+		$("#" + key + "_color").css("color",rgbcolor.toHex());
 	}
 }
 
@@ -129,12 +154,11 @@ function makeAccessMap(){
 	let maparea = '(' + SouthEast.lat + ',' + NorthWest.lng + ',' + NorthWest.lat + ',' + SouthEast.lng + ');';
 	let ovpass;
 	let passQuery;
-	let promises = [function(){
-		return new Promise(function(resolve,reject){$("div#fadeLayer").show();resolve();});
-	}];
+	let promises = [function(){return new Promise(function(resolve,reject){$("div#fadeLayer").show();resolve();});}];	// 終了時に暗転解除
 
 	if( ZoomLevel < MinZoomLevel ){	alert(ZoomErrMsg);return false;}
 
+	// get way information(road,footway,river...)
 	for (let key in ways) {
 		promises.push(function(){
 			passQuery = "";
@@ -143,6 +167,7 @@ function makeAccessMap(){
 		});
 	};
 
+	// node information(signal)
 	for (let key in nodes) {
 		promises.push(function(){
 			passQuery = "";
@@ -185,7 +210,6 @@ function getOSMdata(category,key,query,name,opt1,opt2){
 			},
 			success : function(osmdata){
 				let geojson = osmtogeojson(osmdata);
-				console.log("success:" + category + " / " + name);
 				if(category == "way"){
 					let color = opt1;
 					let width = opt2;
@@ -212,11 +236,10 @@ function makeContLayer(){
 
 // make leaflet SVG Layer
 function makeSVGlayer(geojson,name,color,width){
-	console.log("makeSVGlayer");
 	if (contLayer[name] !== undefined){ contLayer[name].remove(map) }
 	let svglayer;
 	let param = {
-		style: function(feature){ return {color: color,weight: width} },
+		style: function(feature){ return {color: color,weight: width,fillOpacity: 1.0,} },
 		filter: function (feature, layer) {
 			if (feature.properties) {
 				return feature.properties.underConstruction !== undefined ? !feature.properties.underConstruction : true;
@@ -231,15 +254,9 @@ function makeSVGlayer(geojson,name,color,width){
 
 // getJSONを元にアイコン追加
 function makeSignalIcon(geojson,name,icon,size){
-	/*
 	let smallIcon = new L.Icon({
 		iconUrl:	icon,
 		iconSize:	size
-	});
-	*/
-	
-	let smallIcon = new L.DivIcon({
-		html: '<svg xmlns="http://www.w3.org/2000/svg"><use xlink:href="./image/signal.svg#signal"/></svg>'
 	});
 
 	let param =	{
@@ -253,41 +270,41 @@ function makeSignalIcon(geojson,name,icon,size){
 	contLayer[name] = svglayer;
 };
 
-
 function saveSVG(){
-	$.map($('svg'), function(value){
 	var svg = $("svg");
+	if (svg.length == 0){ alert(NoSvgMsg);return; }
+
 	var width = svg.width();
 	var height = svg.height();
 	var stb = svg.attr("style");
 	var vbx = svg.attr("viewBox").split(" ");
-
+	let marker = $("div.leaflet-marker-pane").children();
+	svg.AddIcons(marker);
+	
 	svg.attr("style","");
 	svg.height(height - parseInt(vbx[1]) + 100);
 	svg.width(width - parseInt(vbx[0]));
+
 	$("body").append("<a id='image-file' class='hidden' type='application/octet-stream' href='"
-		+ $(value).svgToData() + "' download='OSM_AccessMap.svg'>Donload Image</a>");
+		+ svg.ToData() + "' download='OSM_AccessMap.svg'>Donload Image</a>");
 	$("#image-file")[0].click();
 	$("#image-file").remove();
+	let signals = svg.find("[name=signal]")
+	signals.remove();
 	svg.attr("style",stb);
-	});
+
 }
-
-$.fn.extend({
-	svgToData : function(){
-		var svg = this.filter('svg') || this.find('svg');
-		svg.attr({"xmlns" : "http://www.w3.org/2000/svg" });
-		return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg.parent().html());
-	}
-});
-
 
 function savePNG(){
 	var svg = $("svg");
+	if (svg.length == 0){ alert(NoSvgMsg);return; }
+	
 	var width = svg.width();
 	var height = svg.height();
 	var stb = svg.attr("style");
 	var vbx = svg.attr("viewBox").split(" ");
+	let marker = $("div.leaflet-marker-pane").children();
+	svg.AddIcons(marker);
 
 	svg.attr("style","");
 	svg.height(height - parseInt(vbx[1]) + 100);
@@ -299,6 +316,8 @@ function savePNG(){
 
 	var data = new XMLSerializer().serializeToString(svg[0]);
 	svg.attr("style",stb);
+	let signals = svg.find("[name=signal]")
+	signals.remove();
 
 	var imgsrc = "data:image/svg+xml;charset=utf-8;base64," + btoa(unescape(encodeURIComponent(data)));
 	var image = new Image();
@@ -310,8 +329,35 @@ function savePNG(){
 		$("#image-file")[0].click();
 		$("#canvas1").remove();
 		$("#image-file").remove();
-
 	}
 	image.src = imgsrc;
 }		
-        
+
+$.fn.extend({
+	// SVG convert Text Data
+	ToData : function(){
+		var svg = this.filter('svg') || this.find('svg');
+		svg.attr({"xmlns" : "http://www.w3.org/2000/svg" });
+		return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg.parent().html());
+	}
+});
+
+$.fn.extend({
+	// MakerをSVGに追加
+	// 理由：leafletがアイコンをIMG扱いするため
+	AddIcons : function(marker){
+		var svg = this.filter('svg') || this.find('svg');
+		let parser = new DOMParser();
+		for(let i = 0; i < marker.length; i++) {
+			let svgDoc = parser.parseFromString(Signal_Icon, "text/xml");
+			let signal = $(svgDoc.getElementsByTagName("g")[0]);
+			let sigstl = marker.eq(i).css("transform").slice(7,-1).split(",")	// transformのstyleから配列でXとY座標を取得(4と5)
+			signal.attr("transform",
+				"matrix(1,0,0,1," + (Number(sigstl[4]) + Signal_ofX) + "," + (Number(sigstl[5]) + Signal_ofY) + ") scale(" + Signal_Scale + ")"
+			);
+			svg.append(signal);
+		}
+		return;
+	}
+});
+
