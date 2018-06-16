@@ -11,18 +11,17 @@
 		</script -->
 
 		<meta charset="utf-8"/>
-		<title>OSM Access Map(ver 2018.0616)</title>
+		<title>まち歩きマップメーカー(ver 2018.06.17)</title>
 		<meta name="author" content="K.Sakanoshita">
-		<meta name="keywords" content="OpenStreetMap,OSM,地図">
 	</head>
 	<body>
 		<link rel="shortcut icon" href="favicon.ico">
-		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
+		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" />
 		<link rel="stylesheet" href="OSM_AccessMap.css" />
 		<link rel="stylesheet" href="jquery.simple-color-picker.css" />
 		<script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
 		<script src="https://www.promisejs.org/polyfills/promise-7.0.4.min.js"></script>
-		<script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+		<script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
 		<script src="./osmtogeojson.js"></script>
 		<script src="./rgbcolor.js"></script>
 		<script src="./jquery.simple-color-picker.js"></script>
@@ -34,7 +33,7 @@
 				<img src="./image/gif-load.gif" style="position: absolute; top: 50%; right: calc(50% - 110px);z-index: 20001">
 			</div>
 			<header>
-				<h1>OSM Access Map. <small><small>// 自由に使える案内地図を作るサイト //</small></small></h1>
+				<h1>まち歩きマップメーカー<small> // 自由に印刷して配れる地図を作るサイト // <small>(旧:OSM Access Map)</small></small></h1>
 				<div style="clear:left;">
 					<button id="btn" class="make_button" onclick="makeAccessMap()">以下の範囲で<br>マップを作る</button>
 					<div style="float: left; width: 45px; margin: 0px 0px 0px 0px;"><img  src="./image/Arrow_Right.png"></div>
@@ -45,7 +44,7 @@
 						</div>
 
 						<div style="float: left">
-							<button id="FRT_color" class="way_button">森林・木</button>
+							<button id="FRT_color" class="way_button">森・田畑</button>
 							<select id="FRT_line"  class="way_line"><option value="0">細</option><option value="1">中</option><option value="2">太</option></select>
 						</div>
 
@@ -66,12 +65,12 @@
 
 						<div style="float: left">
 							<button id="COM_color" class="way_button">生活道路</button>
-							<select id="COM_line"  class="way_line"><option value="0.6">細</option><option value="0.8">中</option><option value="1">太</option></select>
+							<select id="COM_line"  class="way_line"><option value="0.5">細</option><option value="1">中</option><option value="1.5">太</option></select>
 						</div>
 
 						<div style="float: left">
 							<button id="ALY_color" class="way_button">路地小道</button>
-							<select id="ALY_line"  class="way_line"><option value="0.6">細</option><option value="0.8">中</option><option value="1">太</option></select>
+							<select id="ALY_line"  class="way_line"><option value="0.4">細</option><option value="0.8">中</option><option value="1.2">太</option></select>
 						</div>
 						
 						<div style="float: left">
