@@ -11,10 +11,11 @@ var osm;					// OMS地図
 var ort;					// オルソ化航空写真
 var pale;					// 電子国土基本図
 var L_Sel;
-var Layers;
-var contLayer = {};
+var Layers;					// レイヤーの一覧(地理院地図、OSMなど)
+var contLayer = {};			// 
 var ways = {};				// 道路情報の保管庫
 var nodes = {};				// ノード情報の保管庫
+var checkd = {};			// レイヤーのチェックボックス状態の保管
 
 const MinZoomLevel = 14;	// これ以下のズームレベルでは地図は作らない
 const ZoomErrMsg	= "地図を作るには、もう少しズームしてください。";
@@ -22,13 +23,15 @@ const NoSvgMsg		= "保存するマップがありません。\nまず、左側�
 const LineWeight 	= 1.5;		// n倍
 
 const allWays = {
-	RIV: {name: "水路・川",color:"#66AAFF",width: 2},
-	ALY: {name: "路地小道",color:"#808090",width: 1},
-	COM: {name: "生活道路",color:"#707070",width: 1},
-	STD: {name: "一般道路",color:"#606060",width: 1},
+	GDN: {name: "公園・庭",color:"#C8FACC",width: 0},
+	FRT: {name: "森林・木",color:"#ADD19E",width: 0},
+	RIV: {name: "水路・川",color:"#66AAFF",width: 1},
 	PRI: {name: "主要道路",color:"#FF7777",width: 2},
-	BLD: {name: "建物・家",color:"#B0B0B0",width: 1},
-	RIL: {name: "レール類",color:"#404040",width: 2}
+	STD: {name: "一般道路",color:"#A0A0A0",width: 1},
+	COM: {name: "生活道路",color:"#C0C0C0",width: 0.8},
+	ALY: {name: "路地小道",color:"#C0C0C0",width: 0.6},
+	BLD: {name: "建物・家",color:"#D0D0D0",width: 0},
+	RIL: {name: "レール類",color:"#404040",width: 1}
 };
 
 const allNodes = {
@@ -36,11 +39,14 @@ const allNodes = {
 }
 
 const OverPass ={
+	GDN: ['way["leisure"="garden"]'			,'relation["leisure"="park"]'	,'way["leisure"="park"]'		,'way["leisure"="playground"]',
+		  'way["leisure"="pitch"]'			,'way["landuse"="grass"]'],
+	FRT: ['relation["landuse"="forest"]'	,'relation["natural"="wood"]'	,'way["landuse"="forest"]'		,'way["natural"="wood"]'],
 	RIV: ['relation["waterway"]'			,'way["waterway"]'				,'way["landuse"="reservoir"]'	,'way["natural"="water"]'	,'way["natural"="coastline"]'],
-	ALY: ['way["highway"="footway"]'		,'way["highway"="path"]'		,'way["highway"="track"]'],
-	COM: ['way["highway"~"pedestrian"]'		,'way["highway"="service"]'],
+	PRI: ['way["highway"~"motorway"]'		,'way["highway"~"trunk"]'		,'way["highway"~"primary"]'		,'way["highway"~"secondary"]','way["highway"~"tertiary"]'],
 	STD: ['way["highway"~"unclassified"]'	,'way["highway"~"residential"]'	,'way["highway"="living_street"]'],
-	PRI: ['way["highway"~"motorway"]'		,'way["highway"~"trunk"]'		,'way["highway"~"primary"]'			,'way["highway"~"secondary"]','way["highway"~"tertiary"]'],
+	COM: ['way["highway"~"pedestrian"]'		,'way["highway"="service"]'],
+	ALY: ['way["highway"="footway"]'		,'way["highway"="path"]'		,'way["highway"="track"]'],
 	BLD: ['way["building"]'],
 	RIL: ['relation["railway"]'				,'way["railway"]'				,'way["building"="train_station"]'],
 	SIG: ['node["highway"="traffic_signals"]']
@@ -81,8 +87,8 @@ $(function(){
     });
 
 	Layers = { 'OpenStreetMap': osm,'地理院タイル（基本）': pale,'地理院タイル（写真）': ort };
-	map = L.map('mapid', {center: [34.687367　, 135.525854], zoom: 12,layers: [osm]});
-	map.locate({setView: true, maxZoom: 14});
+	map = L.map('mapid', {center: [38.290, 138.988], zoom: 6,layers: [osm]});
+	// map.locate({setView: true, maxZoom: 14});
 	L_Sel = L.control.layers(Layers, null, {collapsed: false}).addTo(map);
 	L.control.scale({imperial: false}).addTo(map);
 	var hash = new L.Hash(map);
@@ -101,6 +107,7 @@ $(document).ready(function() {
 
 		// change color
 		$('#'+ key + '_color').simpleColorPicker({onChangeColor: function(color){
+			console.log("Color Change:" + key);
 			set_btncolor(color,key,true);
 			UpdateAccessMap();
 			return;
@@ -130,6 +137,15 @@ $(document).ready(function() {
 		}
 	}
 
+	// add event(overlay add/remove) learn checkbox
+	checkd["STOP"] = false;
+	map.on('overlayadd overlayremove', function(e){
+		if(checkd["STOP"] === false){
+			checkd[e.name] = e.type
+			console.log(e.name + ":" + e.type);
+		}
+	});
+
 });
 
 
@@ -156,6 +172,8 @@ function makeAccessMap(){
 	let ovpass;
 	let passQuery;
 	let promises = [function(){return new Promise(function(resolve,reject){$("div#fadeLayer").show();resolve();});}];	// 終了時に暗転解除
+	let nowDT = new Date();
+	console.log("[makeAccessMap:Start]" + nowDT.getHours() + ":" + nowDT.getMinutes() + ":" + nowDT.getSeconds());
 
 	if( ZoomLevel < MinZoomLevel ){	alert(ZoomErrMsg);return false;}
 
@@ -199,10 +217,13 @@ function UpdateAccessMap(){
 
 // OverPass APIでOSMデータを取得
 // 引数: クエリ
+// url : 'https://overpass-api.de/api/interpreter?data=[out:json][timeout:30];(' + query + ');out body;>;out skel qt;',
+// url : 'https://overpass.kumi.systems/api/interpreter?data=[out:json][timeout:30];(' + query + ');out body;>;out skel qt;',
+
 function getOSMdata(category,key,query,name,opt1,opt2){
 	return new Promise(function(resolve,reject){
 		$.ajax({
-			url : 'https://overpass-api.de/api/interpreter?data=[out:json][timeout:30];(' + query + ');out body;>;out skel qt;',
+			url : 'https://overpass.kumi.systems/api/interpreter?data=[out:json][timeout:30];(' + query + ');out body;>;out skel qt;',
 			type : "get",
 			async: true,
 			error: function(error){
@@ -210,6 +231,8 @@ function getOSMdata(category,key,query,name,opt1,opt2){
 				reject(error);
 			},
 			success : function(osmdata){
+				let nowDT = new Date();
+				console.log("[getOSMdata End]" + nowDT.getHours() + ":" + nowDT.getMinutes() + ":" + nowDT.getSeconds());
 				let geojson = osmtogeojson(osmdata);
 				if(category == "way"){
 					let color = opt1;
@@ -233,11 +256,23 @@ function makeContLayer(){
 	if (L_Sel !== null){ L_Sel.remove(map) }
 	L_Sel = L.control.layers(Layers,contLayer, {collapsed: false});
 	L_Sel.addTo(map);
+	let checks = $(".leaflet-control-layers-overlays label input:checkbox");
+	for(let i = 0; i < checks.length;i++){
+		let key2 = $("+span",$(checks[i]))[0].innerText.trim();
+		console.log(key2 + ":" + checkd[key2]);
+		if(checkd[key2] === "overlayremove"){
+			console.log(key2 + "をけさんとね");
+		}
+	}
 }
 
 // make leaflet SVG Layer
 function makeSVGlayer(geojson,name,color,width){
-	if (contLayer[name] !== undefined){ contLayer[name].remove(map) }
+	if (contLayer[name] !== undefined){		// 既に存在するレイヤーは一旦削除する
+		checkd["STOP"] = true;
+		contLayer[name].remove(map)
+		checkd["STOP"] = false;
+	}
 	let svglayer;
 	let param = {
 		style: function(feature){ return {color: color,weight: width,fillOpacity: 1.0,} },

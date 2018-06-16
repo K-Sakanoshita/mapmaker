@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<!-- Global site tag (gtag.js) - Google Analytics -->
+		<!-- Global site tag (gtag.js) - Google Analytics>
 		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-98610409-2"></script>
 		<script>
 			window.dataLayer = window.dataLayer || [];
 			function gtag(){dataLayer.push(arguments);}
 			gtag('js', new Date());
 			gtag('config', 'UA-98610409-2');
-		</script>
+		</script -->
 
 		<meta charset="utf-8"/>
 		<title>OSM Access Map(ver 2017.1118)</title>
@@ -40,6 +40,21 @@
 					<div style="float: left; width: 45px; margin: 0px 0px 0px 0px;"><img  src="./image/Arrow_Right.png"></div>
 					<div style="float: left; width: calc(100% - 470px); margin: 0px 2px 0px 2px;">
 						<div style="float: left">
+							<button id="GDN_color" class="way_button">公園・庭</button>
+							<select id="GDN_line"  class="way_line"><option value="0">細</option><option value="1">中</option><option value="2">太</option></select>
+						</div>
+
+						<div style="float: left">
+							<button id="FRT_color" class="way_button">森林・木</button>
+							<select id="FRT_line"  class="way_line"><option value="0">細</option><option value="1">中</option><option value="2">太</option></select>
+						</div>
+
+						<div style="float: left">
+							<button id="RIV_color" class="way_button">水路・川</button>
+							<select id="RIV_line"  class="way_line"><option value="0.5">細</option><option value="1">中</option><option value="2">太</option></select>
+						</div>
+
+						<div style="float: left">
 							<button id="PRI_color" class="way_button">主要道路</button>
 							<select id="PRI_line"  class="way_line"><option value="1">細</option><option value="2">中</option><option value="3">太</option></select>
 						</div>
@@ -51,27 +66,22 @@
 
 						<div style="float: left">
 							<button id="COM_color" class="way_button">生活道路</button>
-							<select id="COM_line"  class="way_line"><option value="1">細</option><option value="2">中</option><option value="3">太</option></select>
+							<select id="COM_line"  class="way_line"><option value="0.6">細</option><option value="0.8">中</option><option value="1">太</option></select>
 						</div>
 
 						<div style="float: left">
 							<button id="ALY_color" class="way_button">路地小道</button>
-							<select id="ALY_line"  class="way_line"><option value="1">細</option><option value="2">中</option><option value="3">太</option></select>
-						</div>
-
-						<div style="float: left">
-							<button id="RIV_color" class="way_button">水路・川</button>
-							<select id="RIV_line"  class="way_line"><option value="1">細</option><option value="2">中</option><option value="3">太</option></select>
+							<select id="ALY_line"  class="way_line"><option value="0.6">細</option><option value="0.8">中</option><option value="1">太</option></select>
 						</div>
 						
 						<div style="float: left">
 							<button id="BLD_color" class="way_button">建物・家</button>
-							<select id="BLD_line"  class="way_line"><option value="1">細</option><option value="2">中</option><option value="3">太</option></select>
+							<select id="BLD_line"  class="way_line"><option value="0">細</option><option value="0.5">中</option><option value="1">太</option></select>
 						</div>
 
 						<div style="float: left">
 							<button id="RIL_color" class="way_button">レール類</button>
-							<select id="RIL_line"  class="way_line"><option value="1">細</option><option value="2">中</option><option value="3">太</option></select>
+							<select id="RIL_line"  class="way_line"><option value="0.5">細</option><option value="1">中</option><option value="1.5">太</option></select>
 						</div>
 					</div>
 					<div style="float: left; width: 45px; margin: 0px 0px 0px 0px;"><img  src="./image/Arrow_Right.png"></div>
