@@ -70,6 +70,12 @@ const Signal_Scale = 3
 const Signal_ofX = -16
 const Signal_ofY = -8
 
+const credit = {
+	text : "Map data © OpenStreetMap",
+	size : 35,
+	font : "Helvetica,Arial, Roboto, “Droid Sans”, “游ゴシック”, YuGothic,“ヒラギノ角ゴ ProN W3″,“Hiragino Kaku Gothic ProN”, “メイリオ”,Meiryo",
+}
+
 // initialize leaflet
 $(function(){
 	mierune = L.tileLayer(
@@ -317,52 +323,75 @@ function makeSignalIcon(geojson,name,icon,size){
 	contLayer[name] = svglayer;
 };
 
-function saveSVG(){
-	var svg = $("svg");
+function saveImage(type) {
+	let svg = $("svg");
 	if (svg.length == 0){ alert(NoSvgMsg);return; }
-
-	var width = svg.width();
-	var height = svg.height();
-	var stb = svg.attr("style");
-	var vbx = svg.attr("viewBox").split(" ");
+	
+	const width = svg.width();
+	const height = svg.height();
+	const vbx = svg.attr("viewBox").split(" ");
 	let marker = $("div.leaflet-marker-pane").children();
 	svg.AddIcons(marker);
-	
-	svg.attr("style","");
-	svg.height(height - parseInt(vbx[1]) + 100);
-	svg.width(width - parseInt(vbx[0]));
 
-	$("body").append("<a id='image-file' class='hidden' type='application/octet-stream' href='"
-		+ svg.ToData() + "' download='OSM_AccessMap.svg'>Donload Image</a>");
+	let options = {};
+	options.vbx = svg.attr("viewBox").split(" ");
+	options.width = svg.width();
+	options.height = svg.height();
+	options.stb = svg.attr("style");
+
+	svg.attr("style","");
+
+	if (type === 'png') {
+		svg.height(height - parseInt(vbx[1]) + 100);
+		svg.width(width - parseInt(vbx[0]));
+		savePNG(svg, options);
+	}
+	else if(type === 'svg') {
+		saveSVG(svg, options);
+	}
+}
+
+function saveSVG(svg, options){
+	let downloadSVG = svg.clone().attr('id', 'download-SVG').appendTo('body');
+	let viewBoxAttr = svg[0].attributes.viewBox.value;
+	let viewBoxArray =  viewBoxAttr.split(' ');
+	viewBoxArray[viewBoxArray.length - 1] = Number(viewBoxArray[viewBoxArray.length - 1]) + credit.size + 5;
+	downloadSVG[0].attributes.viewBox.value = viewBoxArray.join(' ');
+	const viewBox = downloadSVG[0].viewBox;
+	const text_x = viewBox.baseVal.x + viewBox.baseVal.width;
+	const text_y = viewBox.baseVal.height - Math.abs(viewBox.baseVal.y) - 5;
+	
+	const textElement = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+	textElement.setAttributeNS(null, 'x', text_x);
+	textElement.setAttributeNS(null, 'y', text_y);
+	textElement.setAttributeNS(null, 'text-anchor', 'end');
+	textElement.setAttributeNS(null, 'font-size', credit.size);
+	textElement.setAttributeNS(null, 'font-family', credit.font);
+	textElement.textContent = credit.text;
+
+	downloadSVG.height(options.height - Number(options.vbx[1]));
+	downloadSVG.width(options.width - Number(options.vbx[0]));
+	downloadSVG[0].appendChild(textElement);
+	// SVG convert Text Data
+	const encodedSVG = encodeURIComponent(new XMLSerializer().serializeToString(downloadSVG[0]));
+
+	$("body").append("<a id='image-file' class='hidden' type='application/octet-stream' href='data:image/svg+xml;utf8,"
+		+ encodedSVG + "' download='OSM_AccessMap.svg'>Download Image</a>");
 	$("#image-file")[0].click();
 	$("#image-file").remove();
 	let signals = svg.find("[name=signal]")
 	signals.remove();
-	svg.attr("style",stb);
-
+	svg.attr("style", options.stb);
+	downloadSVG.remove();
 }
 
-function savePNG(){
-	var svg = $("svg");
-	if (svg.length == 0){ alert(NoSvgMsg);return; }
-	
-	var width = svg.width();
-	var height = svg.height();
-	var stb = svg.attr("style");
-	var vbx = svg.attr("viewBox").split(" ");
-	let marker = $("div.leaflet-marker-pane").children();
-	svg.AddIcons(marker);
-
-	svg.attr("style","");
-	svg.height(height - parseInt(vbx[1]) + 100);
-	svg.width(width - parseInt(vbx[0]));
-
-	$("body").append("<canvas id='canvas1' class='hidden' width=" + width + " height=" + height +"></canvas>");
+function savePNG(svg, options){
+	$("body").append("<canvas id='canvas1' class='hidden' width=" + options.width + " height=" + (options.height + 45) +"></canvas>");
 	var canvas = $("#canvas1")[0];
 	var ctx = canvas.getContext("2d");
 
 	var data = new XMLSerializer().serializeToString(svg[0]);
-	svg.attr("style",stb);
+	svg.attr("style", options.stb);
 	let signals = svg.find("[name=signal]")
 	signals.remove();
 
@@ -371,23 +400,18 @@ function savePNG(){
 
 	image.onload = function(){
 		ctx.drawImage(image, 0, 0);
+		ctx.font = credit.size + "px " + credit.font;
+		ctx.fillStyle = "black";
+		ctx.textAlign = "right";
+		ctx.fillText(credit.text, options.width, options.height + credit.size, options.width);
 		$("body").append("<a id='image-file' class='hidden' type='application/octet-stream' href='"
-			+ canvas.toDataURL("image/png") + "' download='OSM_AccessMap.png'>Donload Image</a>");
+			+ canvas.toDataURL("image/png") + "' download='OSM_AccessMap.png'>Download Image</a>");
 		$("#image-file")[0].click();
 		$("#canvas1").remove();
 		$("#image-file").remove();
 	}
 	image.src = imgsrc;
-}		
-
-$.fn.extend({
-	// SVG convert Text Data
-	ToData : function(){
-		var svg = this.filter('svg') || this.find('svg');
-		svg.attr({"xmlns" : "http://www.w3.org/2000/svg" });
-		return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg.parent().html());
-	}
-});
+}
 
 $.fn.extend({
 	// MakerをSVGに追加
