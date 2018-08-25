@@ -334,9 +334,9 @@ function saveImage(type) {
 	svg.AddIcons(marker);
 
 	let options = {};
-	options.vbx = svg.attr("viewBox").split(" ");
-	options.width = svg.width();
-	options.height = svg.height();
+	options.vbx = vbx;
+	options.width = width;
+	options.height = height;
 	options.stb = svg.attr("style");
 
 	svg.attr("style","");
