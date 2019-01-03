@@ -1,57 +1,65 @@
-<h1>まち歩きマップメーカー<small> // 自由に印刷して配れる地図を作るサイト // <small>(旧:OSM Access Map)</small></small></h1>
-<div style="clear:left;">
-	<button id="btn" class="make_button" onclick="makeAccessMap()">以下の範囲で<br>マップを作る</button>
-	<div style="float: left; width: 45px; margin: 0px 0px 0px 0px;"><img  src="./image/Arrow_Right.png"></div>
-	<div style="float: left; width: calc(100% - 470px); margin: 0px 2px 0px 2px;">
-		<div style="float: left">
-			<button id="GDN_color" class="way_button">公園・庭</button>
+	<button class="make_button" id="make_map" onclick="makeWalkingTownMap()">この範囲内で<br>マップを作る</button>
+
+	<div class="custom_map" id="custom_map">
+		<div class="custom_group">
+			<label class="custom_label">公園・庭</label>
+			<button id="GDN_color" class="way_button"></button>
 			<select id="GDN_line"  class="way_line"><option value="0">細</option><option value="1">中</option><option value="2">太</option></select>
 		</div>
 
-		<div style="float: left">
-			<button id="FRT_color" class="way_button">森・田畑</button>
-			<select id="FRT_line"  class="way_line"><option value="0">細</option><option value="1">中</option><option value="2">太</option></select>
-		</div>
-
-		<div style="float: left">
-			<button id="RIV_color" class="way_button">水路・川</button>
+		<div class="custom_group">
+			<label class="custom_label">水路・川</label>
+			<button id="RIV_color" class="way_button"></button>
 			<select id="RIV_line"  class="way_line"><option value="0.5">細</option><option value="1">中</option><option value="2">太</option></select>
 		</div>
 
-		<div style="float: left">
-			<button id="PRI_color" class="way_button">主要道路</button>
-			<select id="PRI_line"  class="way_line"><option value="2">細</option><option value="3">中</option><option value="4">太</option></select>
+		<div class="custom_group">
+			<label class="custom_label">森・田畑</label>
+			<button id="FRT_color" class="way_button"></button>
+			<select id="FRT_line"  class="way_line"><option value="0">細</option><option value="1">中</option><option value="2">太</option></select>
 		</div>
 
-		<div style="float: left">
-			<button id="STD_color" class="way_button">一般道路</button>
-			<select id="STD_line"  class="way_line"><option value="1">細</option><option value="2">中</option><option value="3">太</option></select>
-		</div>
-
-		<div style="float: left">
-			<button id="COM_color" class="way_button">生活道路</button>
-			<select id="COM_line"  class="way_line"><option value="0.5">細</option><option value="1">中</option><option value="1.5">太</option></select>
-		</div>
-
-		<div style="float: left">
-			<button id="ALY_color" class="way_button">路地小道</button>
-			<select id="ALY_line"  class="way_line"><option value="0.5">細</option><option value="1">中</option><option value="1.5">太</option></select>
-		</div>
-
-		<div style="float: left">
-			<button id="BLD_color" class="way_button">建物・家</button>
+		<div class="custom_group">
+			<label class="custom_label">建物・家</label>
+			<button id="BLD_color" class="way_button"></button>
 			<select id="BLD_line"  class="way_line"><option value="0">細</option><option value="0.5">中</option><option value="1">太</option></select>
 		</div>
 
-		<div style="float: left">
-			<button id="RIL_color" class="way_button">レール類</button>
+		<div class="custom_group">
+			<label class="custom_label">レール類</label>
+			<button id="RIL_color" class="way_button"></button>
 			<select id="RIL_line"  class="way_line"><option value="0.5">細</option><option value="1">中</option><option value="1.5">太</option></select>
+		</div>
+
+		<div class="custom_group">
+			<label class="custom_label">主要道路</label>
+			<button id="PRI_color" class="way_button"></button>
+			<select id="PRI_line"  class="way_line"><option value="2">細</option><option value="4">中</option><option value="6">太</option></select>
+		</div>
+
+		<div class="custom_group">
+			<label class="custom_label">一般道路</label>
+			<button id="STD_color" class="way_button"></button>
+			<select id="STD_line"  class="way_line"><option value="1">細</option><option value="2">中</option><option value="3">太</option></select>
+		</div>
+
+		<div class="custom_group">
+			<label class="custom_label">生活道路</label>
+			<button id="COM_color" class="way_button"></button>
+			<select id="COM_line"  class="way_line"><option value="0.5">細</option><option value="1">中</option><option value="1.5">太</option></select>
+		</div>
+
+		<div class="custom_group">
+			<label class="custom_label">路地小道</label>
+			<button id="ALY_color" class="way_button"></button>
+			<select id="ALY_line"  class="way_line"><option value="0.5">細</option><option value="1">中</option><option value="1.5">太</option></select>
 		</div>
 	</div>
 
-	<div style="float: left; width: 45px; margin: 0px 0px 0px 0px;"><img  src="./image/Arrow_Right.png"></div>
-	<div id="export_area" style="float: left; width: 150px;position: absolute; top: 36px; right: 6px;">
-		<button id="save_png" class="export_button" onclick="saveImage('png')">PNG保存</button>
-		<button id="save_svg" class="export_button" onclick="saveImage('svg')">SVG保存</button>
+	<div class="save_map" id="save_map">
+		<button class="export_button" onclick="saveImage('png')">ダウンロード<br>PNG形式</button><br>
+		<button class="export_button" onclick="saveImage('svg')">ダウンロード<br>SVG形式</button><br>
 	</div>
-</div>
+
+	<button class="clear_button" id="clear_map" onclick="clearWalkingTownMap()">最初からやり直す</button>
+

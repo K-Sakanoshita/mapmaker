@@ -1,32 +1,22 @@
 html{
 	font-size: 100%;
-    padding: 0px;
-    margin: 0px;
+	padding: 0px;
+	margin: 0px;
 }
 
 body {
 	height: 100%;
-	background-color: #DDFFDD;
+	background-color: #000000;
 	padding: 0px;
 	margin: 0px;
 	overflow: hidden;
 }
 
-/* unuse header */
 header {
-    width: calc(100% - 4px);
-    height: 130px;
-    margin: 0px;
-    padding: 2px;
-}
-
-footer {
-    width: calc(100% - 4px);
-    height: 26px;
-    margin: 0px;
-    padding: 2px;
-    font-size: 12px;
-    text-align: center;
+	width: 100%;
+	height: 24px;
+	margin: 0px;
+	padding: 0px;
 }
 
 #container {
@@ -41,8 +31,8 @@ footer {
 	float: none;
 	clear: both;
 	width: 100%;
-	height: calc(100% - 154px);
-/*	overflow: auto;
+	height: calc(100% - 34px);
+	overflow: auto;
 	position: relative; */
 	background-color: #ccf;
 	margin: 0px 0px 0px 0px;
@@ -69,11 +59,8 @@ footer {
 /* default parts set */
 button, select {
 	display: inline-block;
-	margin: 4px 2px 2px 2px;
-	padding: 2px 2px;
 	cursor: pointer;
 	color: #000000;
-	text-align: center;
 	text-decoration: none;
 	background-color: #FFFFFF;
 	outline: none;
@@ -81,8 +68,6 @@ button, select {
 	border-radius: 2px;
 	box-shadow: 0px 1px 5px #999;
 }
-
-button:hover {background-color: #DDDDDD}
 
 button:active {
 	color: #000000;
@@ -99,60 +84,100 @@ img {
 h1 {
 	float: left;
 	font-family:Helvetica,Arial, Roboto, “Droid Sans”, “游ゴシック”, YuGothic,“ヒラギノ角ゴ ProN W3″,“Hiragino Kaku Gothic ProN”, “メイリオ”,Meiryo, sans-serif;
-	font-size: 22px;
-	margin: 2px 4px 0px 4px;
+	font-weight: 700 !important;
+	font-size: 20px !important;
+	margin: 0px !important;
 	padding: 2px 6px;
-	width: calc(100% - 20px);
-	height: 24px;
-	color: #fff;
-	background-color: #668866;
-	border-bottom: 4px solid #446644;
+	width: 100%;
+	color: #ffffff !important;
+	background-color: #666666;
+	border-bottom: 4px solid #444444;
+}
+
+.basemenu, .savemenu {
 }
 
 /* button for select way color */
+.custom_map {
+	padding: 8px;
+	margin: 8px 0px 8px 0px;
+	background-color: #ffffff;
+	overflow: hidden;
+	display: none;
+}
+
+.custom_group {
+	display: table;
+}
+
+.custom_label {
+  display: table-cell;
+  vertical-align: middle;
+	height: 1.5rem;
+	width: 3.8rem;
+}
+
+.save_map {
+	display: none;
+}
 
 .make_button {
 	background-image: url("./image/osmlogo.png");
 	background-repeat: no-repeat;
-	background-size: 80px 80px;
+	background-size: 48px 48px;
 	background-position: 8px center;
-	font-size: 1rem;
-	display: flex;
-	float: left;
-	margin: 4px 4px 4px 4px;
-	padding: 0px 0px 0px 92px;
-	height: 88px;
-	width:210px;
+	padding: 0px 0px 0px 50px;
+	height: 60px;
+	width: 164px;
 	align-items: center;
 }
 
+.clear_button {
+	background-image: url("./image/Arrow_Left.png");
+	background-repeat: no-repeat;
+	background-size: 48px 48px;
+	background-position: 8px center;
+	padding: 0px 0px 0px 50px;
+	height: 60px;
+	width: 164px;
+	align-items: center;
+	display: none;
+}
+
 .way_button {
-	font-size: 1rem;
-	width: 6rem;
+	margin: 4px 0px 4px 0px;
+	width: 2rem;
 	height: 1.5rem;
-	float: left;
+  display: table-cell;
+  vertical-align: middle;
 }
 
 .way_line {
-	font-size: 1rem;
-	width: 48px;
+	margin: 4px 0px 4px 4px;
+	width: 3rem;
 	height: 1.5rem;
-	float: left;
-	margin: 4px 16px 4px 2px;
-
+  display: table-cell;
+  vertical-align: middle;
 }
 
 .export_button {
 	background-image: url("./image/Arrow_Down.png");
 	background-repeat: no-repeat;
-	background-size: 32px 32px;
+	background-size: 48px 48px;
 	background-position: 8px center;
-	clear: left;
-	font-size: 1rem;
-	margin: 4px 8px;
-	padding: 0px 0px 0px 16px;
-	width: 140px;
-	height: 40px;
-	float: left;
+	padding: 0px 0px 0px 40px;
+	margin: 0px 0px 8px 0px;
+	width: 164px;
+	height: 60px;
 }
 
+.leaflet-control-container::after {
+	content: url("./image/cross.png");
+	z-index: 1000;
+	display: block;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+    
