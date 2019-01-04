@@ -22,7 +22,7 @@ const OverPass ={
 	GDN: ['way["leisure"="garden"]',				'relation["leisure"="park"]',		'way["leisure"="playground"]',			'way["leisure"="park"]'	,			'way["leisure"="pitch"]',			'way["landuse"="grass"]'],
 	RIV: ['relation["waterway"]',						'way["waterway"]',							'way["landuse"="reservoir"]',				'way["natural"="water"]',			'way["natural"="coastline"]'],
 	FRT: ['relation["landuse"="forest"]',		'relation["natural"="wood"]',		'way["landuse"="forest"]',					'way["natural"="wood"]'	,			'way["landuse"="farmland"]'	,	'way["landuse"="allotments"]'],
-	BLD: ['way["building"]',								'way["man_made"="bridge"]'],
+	BLD: ['way["building"]',								'way["man_made"="bridge"]',			'relation["building"]'],
 	RIL: ['way["railway"]',									'way["building"="train_station"]'],
 	PRI: ['way["highway"~"motorway"]',			'way["highway"~"trunk"]',				'way["highway"~"primary"]',					'way["highway"~"secondary"]',	'way["highway"~"tertiary"]'],
 	STD: ['way["highway"~"unclassified"]',	'way["highway"~"residential"]',	'way["highway"="living_street"]'],
