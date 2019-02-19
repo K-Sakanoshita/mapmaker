@@ -171,6 +171,18 @@ h1 {
 	height: 60px;
 }
 
+.cafe_button {
+	background-image: url("./image/CoffeeCup.svg");
+	background-repeat: no-repeat;
+	background-size: 24px 24px;
+	background-position: 8px center;
+	padding: 0px 0px 0px 20px;
+	margin: 6px 0px 6px 0px;
+	width: 148px;
+	height: 40px;
+}
+
+
 .leaflet-control-container::after {
 	content: url("./image/cross.png");
 	z-index: 1000;
