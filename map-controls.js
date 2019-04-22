@@ -1,7 +1,6 @@
 /*	まち歩きマップメーカー Licence: MIT */
 "use strict";
 
-
 // make leaflet SVG Layer
 // MakeData内 -> name:コントロール名 / color:SVG色 / width:SVG Line Weight / dashArray:破線
 function makeSVGlayer(data){
@@ -17,7 +16,15 @@ function makeSVGlayer(data){
 	case "way":
 		param = {
 			style: function(feature){
-				 return {color: data.color,weight: data.width * (map.getZoom() / 12),fillOpacity: 1.0,dashArray: data.dashArray} },
+				 return {
+					 stroke: true,
+					 color: data.color,
+					 weight: data.width * ((map.getZoom() - MinZoomLevel) * 0.5),
+					 fillOpacity: 1.0,
+					 dashArray: data.dashArray,
+					 bubblingMouseEvents: false,
+					}
+			 },
 			filter: function (feature, layer) {
 				if (feature.properties) {	return feature.properties.underConstruction !== undefined ? !feature.properties.underConstruction : true;	}
 				return false;
@@ -180,21 +187,20 @@ $.fn.extend({
 		let parser = new DOMParser();
 		let svgDoc;
 		for(let i = 0; i < marker.length; i++) {
-			switch (marker.eq(i).attr('src')){
-			case Loads[2]:
-				svgDoc = parser.parseFromString(CoffeeCup, "text/xml");
-				break;
-			default:
-				svgDoc = parser.parseFromString(Signal_Icon, "text/xml");
-				break;
+			let marker_src = marker.eq(i).attr('src');
+			let matched = MMK_Loads.filter(function(obj) {
+				 return obj.file.match(marker_src);
+				 });
+			if (matched != ""){
+				svgDoc = parser.parseFromString(Icons[matched[0].icon], "text/xml");
+				let svgicon = $(svgDoc).children()[0] //.children[0];
+				let svgstl = marker.eq(i).css("transform").slice(7,-1).split(",")	// transformのstyleから配列でXとY座標を取得(4と5)
+				$(svgicon).attr("transform",
+					"matrix(1,0,0,1," + (Number(svgstl[4]) + Signal_ofX) + "," + (Number(svgstl[5]) + Signal_ofY) + ") scale(" + Signal_Scale + ")"
+				);
+				$(svgicon).attr("name","svgicons");
+				svg.append(svgicon);
 			}
-			let svgicon = $(svgDoc).children()[0].children[0];
-			let svgstl = marker.eq(i).css("transform").slice(7,-1).split(",")	// transformのstyleから配列でXとY座標を取得(4と5)
-			$(svgicon).attr("transform",
-				"matrix(1,0,0,1," + (Number(svgstl[4]) + Signal_ofX) + "," + (Number(svgstl[5]) + Signal_ofY) + ") scale(" + Signal_Scale + ")"
-			);
-			$(svgicon).attr("name","svgicons");
-			svg.append(svgicon);
 		}
 		return;
 	}

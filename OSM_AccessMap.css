@@ -102,7 +102,6 @@ h1 {
 	padding: 8px;
 	margin: 8px 0px 8px 0px;
 	background-color: #ffffff;
-	overflow: hidden;
 	display: none;
 }
 
@@ -171,17 +170,14 @@ h1 {
 	height: 60px;
 }
 
-.cafe_button {
-	background-image: url("./image/CoffeeCup.svg");
+.drop_button {
 	background-repeat: no-repeat;
-	background-size: 24px 24px;
 	background-position: 8px center;
-	padding: 0px 0px 0px 20px;
-	margin: 6px 0px 6px 0px;
-	width: 148px;
-	height: 40px;
+	padding: 0px 0px 0px 34px !important;
+	margin: 1px 0px 1px 0px;
+	background-repeat: no-repeat;
+	background-size: 24px;
 }
-
 
 .leaflet-control-container::after {
 	content: url("./image/cross.png");
@@ -192,4 +188,7 @@ h1 {
 	left: 50%;
 	transform: translate(-50%, -50%);
 }
-    
+
+.btn {
+	font-size: 14px !important;
+}
