@@ -10,7 +10,7 @@
 		</script>
 
 		<meta charset="utf-8"/>
-		<title>まち歩きマップメーカー(ver 2019.02.21)</title>
+		<title>コンパスパンダ</title>
 		<meta property="og:url"           content="https://www.netfort.gr.jp/~saka/accessmap/" />
 		<meta property="og:type"          content="website" />
 		<meta property="og:title"         content="まち歩きマップメーカー" />
@@ -32,55 +32,18 @@
 		<script src="./lib/jquery.simple-color-picker.js"></script>
 		<script src="./lib/osmtogeojson.js"></script>
 		<script src="./lib/rgbcolor.js"></script>
-		<script src="./lib/leaflet-hash.js"></script>
 		<script src="./OSM_AccessMap.js"></script>
-		<script src="./map-controls.js"></script>
 	</head>
 
 	<body>
 		<div id="container">
 			<header>
-				<h1>まち歩きマップメーカー<small> // カスタム地図が作れます<small>（<a href="https://www.openstreetmap.org/copyright" style="color: white">Copyright表記だけで利用可能</a>）</small>//</small></h1>
+				<h1>コンパスパンダ</h1>
 			</header>
 			<article id="article">
 				<div id="mapid"></div>
 			</article>
 		</div>
-
-		<!-- モーダル用HTML -->
-		<div id="Progress_Modal" class="modal fade" tabindex="-1" role="dialog">
-			<div class="modal-dialog modal-lg" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h4 class="modal-title">マップデータのロード中</h4>
-					</div>
-					<div class="modal-body">
-						<p>サーバーからロード中です。しばらくお待ちください。</p>
-						<div class="progress">
-							<div id="Progress_Bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"></div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-
-		<div id="Clear_Modal" class="modal fade" tabindex="-1" role="dialog">
-			<div class="modal-dialog modal-lg" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h4 class="modal-title">最初からやり直す</h4>
-					</div>
-					<div class="modal-body">
-						<p>今のマップデータを削除して、最初からやり直ししますか？</p>
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-primary" id="Clear_Modal_Submit">最初からやり直す</button>
-						<button type="button" class="btn btn-secondary" data-dismiss="modal">やり直さない</button>
-					</div>
-				</div>
-			</div>
-		</div>
-
 	</body>
 	</html>
  
