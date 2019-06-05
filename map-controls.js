@@ -4,8 +4,7 @@
 // make leaflet SVG Layer
 // MakeData内 -> name:コントロール名 / color:SVG色 / width:SVG Line Weight / dashArray:破線
 function makeSVGlayer(data){
-	let param = {};
-	let svglayer;
+	let param = {},svglayer,icon;
 	if (MakeLayer[data.name] !== undefined){		// 既に存在するレイヤーは一旦削除する
 		checkd["STOP"] = true;
 		MakeLayer[data.name].remove(map);
@@ -32,26 +31,35 @@ function makeSVGlayer(data){
 		};
 		svglayer = L.geoJSON(data.geojson,param);					// geojsonからSVGレイヤーを作成
 		svglayer.addTo(map);
+		MakeLayer[data.name] = svglayer;
 		break;
 
 	case "node":
 		let smallIcon = new L.Icon({	iconUrl:	data.icon,	iconSize:	data.size	});
-		let nodeName;
-		param =	{	pointToLayer: function(feature, latlng) {	return L.marker(latlng, { icon: smallIcon });}	}
-		svglayer = L.geoJSON(data.geojson,param);					// geojsonからSVGレイヤーを作成
-		svglayer.addTo(map);
-		for (let key in svglayer["_layers"]){
-			nodeName = map["_layers"][key].feature.properties.tags.name;
-			nodeName = nodeName == undefined ? '(名前不明)' : nodeName;
-			svglayer["_layers"][key].bindPopup(nodeName + "<br><input type='button' value='アイコンを削除' onclick='DeleteMarker("+ key + ");'/>");
-		};
+//		param =	{	pointToLayer: function(feature, latlng) {	return L.marker(latlng, { icon: smallIcon });}	}
+		data.geojson.features.forEach(function(node){
+			icon = L.divIcon({html: '<img class="icon" src="' + data.icon + '" icon-name="' + node.properties.tags.name + '"><span style="color: black; opacity: 1">' + node.properties.tags.name + '</span>'});
+			var marker = L.marker(new L.LatLng(node.geometry.coordinates[1],node.geometry.coordinates[0]), {icon: icon})
+			marker.addTo(map);
+		});
+		MakeLayer[data.name] = data.geojson.features;
+
+//		svglayer = L.geoJSON(data.geojson.features[0],param);					// geojsonからSVGレイヤーを作成
+//		svglayer.addTo(map);
+//		for (let key in svglayer["_layers"]){
+//			let svgstl = [map["_layers"][key]["_icon"]][0].style["transform"].slice(12,-1).split(",")	// transformのstyleから配列でXとY座標を取得(4と5)
+//			let nodeName = map["_layers"][key].feature.properties.tags.name;
+//			nodeName = nodeName == undefined ? '' : nodeName;
+//			nodeNames[svglayer["_layers"][key]["_icon"]["_leaflet_id"]] = {"key": key,"name":nodeName	};
+//			svglayer["_layers"][key].bindPopup((nodeName == '' ? '（名称不明）' : nodeName) +
+//				"<br><input type='button' value='アイコンを削除' onclick='DeleteMarker("+ key + ");'/>");
+//		};
 		break;
 
 	default:
 		console.log("makeSVGlayer: mode error -> " + mode);
 		break;
 	}
-	MakeLayer[data.name] = svglayer;
 }
 
 function DeleteMarker(key){
@@ -62,7 +70,7 @@ function saveImage(type) {
 	let ZoomLevel = map.getZoom();					// マップ範囲を探す
 	if( ZoomLevel < MinZoomLevel ){	alert(ZoomErrMsg);return false;}
 
-	let svg = $("svg");
+ 	let svg = $("svg") //.clone();
 	let width = svg.width();
 	let height = svg.height();
 	let vbx = svg.attr("viewBox").split(" ");
@@ -71,6 +79,29 @@ function saveImage(type) {
 
 	let options = {	vbx: vbx,	width: width,	height: height,	stb: svg.attr("style")};
 	svg.attr("style","");
+
+	// add Copyrigt
+	let viewBoxArray =  svg[0].attributes.viewBox.value.split(' ');
+	viewBoxArray[viewBoxArray.length - 1] = Number(viewBoxArray[viewBoxArray.length - 1]) + credit.size + 5;
+	svg[0].attributes.viewBox.value = viewBoxArray.join(' ');
+	let viewBox = svg[0].viewBox;
+	SVG_WriteText({
+		"svg": svg,"text": credit.text,	"size":credit.size,"color":"black",anchor: 'end',
+		"x": viewBox.baseVal.x + viewBox.baseVal.width,
+		"y": viewBox.baseVal.height - Math.abs(viewBox.baseVal.y)
+	});
+
+	// add Icon Name
+	let parser = new DOMParser();
+	for(let i = 0; i < marker.length; i++) {
+		let svgstl = marker.eq(i).css("transform").slice(7,-1).split(",")	// transformのstyleから配列でXとY座標を取得(4と5)
+		SVG_WriteText({
+//			"svg": svg,	"text": nodeNames[marker.eq(i)[0]["_leaflet_id"]]["name"],anchor: 'start',
+			"svg": svg,	"text": $(marker.eq(i)[0].children).attr('icon-name'),"anchor": 'start',
+			"x": Number(svgstl[4]) + 4,			"y": Number(svgstl[5]) + 4,
+			"size": MarkerParams.text_size,"color": MarkerParams.text_color,
+		});
+	}
 
 	switch (type){
 		case 'png':
@@ -85,32 +116,9 @@ function saveImage(type) {
 }
 
 function saveSVG(svg, options){
-	let downloadSVG = svg.clone().attr('id', 'download').appendTo('body');
-	let viewBoxAttr = svg[0].attributes.viewBox.value;
-	let viewBoxArray =  viewBoxAttr.split(' ');
-	viewBoxArray[viewBoxArray.length - 1] = Number(viewBoxArray[viewBoxArray.length - 1]) + credit.size + 5;
-	downloadSVG[0].attributes.viewBox.value = viewBoxArray.join(' ');
-	const viewBox = downloadSVG[0].viewBox;
-	const text_x = viewBox.baseVal.x + viewBox.baseVal.width;
-	const text_y = viewBox.baseVal.height - Math.abs(viewBox.baseVal.y) - 5;
-	
-	const textElement = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-	textElement.setAttributeNS(null, 'x', text_x);
-	textElement.setAttributeNS(null, 'y', text_y);
-	textElement.setAttributeNS(null, 'text-anchor', 'end');
-	textElement.setAttributeNS(null, 'font-size', credit.size);
-	textElement.setAttributeNS(null, 'font-family', credit.font);
-	textElement.textContent = credit.text;
-
-	downloadSVG.height(options.height - Number(options.vbx[1]));
-	downloadSVG.width(options.width - Number(options.vbx[0]));
-	downloadSVG[0].appendChild(textElement);
-
 	// SVG convert Text Data
-	let data = new XMLSerializer().serializeToString(downloadSVG[0])
+	let data = new XMLSerializer().serializeToString(svg[0])
 	svg.attr("style", options.stb);
-	svg.find("[name=svgicons]").remove();
-
 	let dataURI = "data:image/svg+xml;charset=utf-8;base64," + btoa(unescape(encodeURIComponent(data)));
 	let blob = dataURItoBlob(dataURI)
 	let url = URL.createObjectURL(blob)
@@ -124,7 +132,7 @@ function saveSVG(svg, options){
 	setTimeout(function(){
 		URL.revokeObjectURL(url);
 		$("#download").remove();
-		downloadSVG.remove();
+		svg.find("[name=tempsvg]").remove();
 	}, Math.max(3000, dataURI.length / 512));
 }
 
@@ -134,17 +142,11 @@ function savePNG(svg, options){
 	var ctx = canvas.getContext("2d");
 	var data = new XMLSerializer().serializeToString(svg[0]);
 	svg.attr("style", options.stb);
-	svg.find("[name=svgicons]").remove();
 	var imgsrc = "data:image/svg+xml;charset=utf-8;base64," + btoa(unescape(encodeURIComponent(data)));
 	var image = new Image();
 
 	image.onload = function(){
 		ctx.drawImage(image, 0, 0);
-		ctx.font = credit.size + "px " + credit.font;
-		ctx.fillStyle = "black";
-		ctx.textAlign = "right";
-		ctx.fillText(credit.text, options.width, options.height + credit.size, options.width);
-
 		let dataURI = canvas.toDataURL("image/png");
 		let blob = dataURItoBlob(dataURI)
 		let url = URL.createObjectURL(blob)
@@ -159,12 +161,30 @@ function savePNG(svg, options){
 			URL.revokeObjectURL(url);
 			$("#download").remove();
 			$("#download-link").remove();
+			svg.find("[name=tempsvg]").remove();
 		}, Math.max(3000, dataURI.length / 512 ));
 	}
 	image.src = imgsrc;
 }
 
 /* Library & Subroutine */
+
+// WriteText
+//params .svg:svg .text:text .size:font size  .color:color .background:background color
+function SVG_WriteText(params){
+	let svgtext = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+	svgtext.setAttributeNS(null, 'x', params.x);
+	svgtext.setAttributeNS(null, 'y', params.y);
+	svgtext.setAttributeNS(null, 'text-anchor', params.anchor);
+	svgtext.setAttributeNS(null, 'font-size', params.size);
+	svgtext.setAttributeNS(null, 'font-family', params.font);
+	svgtext.setAttributeNS(null, 'fill', params.color);
+	svgtext.setAttributeNS(null, 'name', 'tempsvg');
+	svgtext.setAttributeNS(null, 'dominant-baseline', 'text-after-edge');
+	svgtext.textContent = params.text;
+	params.svg[0].appendChild(svgtext);
+}
+
 
 // frontend: color set/change
 function set_btncolor(color,key,chgWay){
@@ -187,19 +207,26 @@ $.fn.extend({
 		let parser = new DOMParser();
 		let svgDoc;
 		for(let i = 0; i < marker.length; i++) {
-			let marker_src = marker.eq(i).attr('src');
+			let marker_src = $(marker.eq(i)[0].children).attr('src');
 			let matched = MMK_Loads.filter(function(obj) {
 				 return obj.file.match(marker_src);
-				 });
+			});
 			if (matched != ""){
 				svgDoc = parser.parseFromString(Icons[matched[0].icon], "text/xml");
-				let svgicon = $(svgDoc).children()[0] //.children[0];
+				let svgicon = $(svgDoc).children();
+				let svgvbox = $(svgicon).attr('viewBox').split(' ');
+				let scale = Math.ceil((MarkerParams.icon_x / (svgvbox[2] - svgvbox[0])) * 1000)/1000;
+				let group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+				for(let key in svgicon[0].childNodes){
+					let nodeName = svgicon[0].childNodes[key].nodeName;
+					if (nodeName == "path" | nodeName == "g"){
+						group.append(svgicon[0].childNodes[key].cloneNode(true));
+					}
+				}
 				let svgstl = marker.eq(i).css("transform").slice(7,-1).split(",")	// transformのstyleから配列でXとY座標を取得(4と5)
-				$(svgicon).attr("transform",
-					"matrix(1,0,0,1," + (Number(svgstl[4]) + Signal_ofX) + "," + (Number(svgstl[5]) + Signal_ofY) + ") scale(" + Signal_Scale + ")"
-				);
-				$(svgicon).attr("name","svgicons");
-				svg.append(svgicon);
+				$(group).attr("transform","matrix(1,0,0,1," + (Number(svgstl[4]) - MarkerParams.icon_x) + "," + (Number(svgstl[5]) - MarkerParams.icon_y) + ") scale(" + scale + ")");
+				$(group).attr("name","tempsvg");
+				svg.append(group);
 			}
 		}
 		return;
@@ -213,4 +240,3 @@ function dataURItoBlob(dataURI) {
 	const u8 = Uint8Array.from(b64.split(""), function(e){ return e.charCodeAt()});
 	return new Blob([u8], {type: "image/png"})
 }
-	

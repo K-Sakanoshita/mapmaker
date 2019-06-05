@@ -1,8 +1,15 @@
 	<button class="make_button" id="make_map" onclick="makeWalkingTownMap()">この範囲内で<br>マップを作る</button>
 
 	<div class="custom_map" id="custom_map">
+		<div class="custom_group" id="PRK">
+			<input type="checkbox" value="PRK">
+			<label class="custom_label">各種公園</label>
+			<button id="PRK_color" class="way_button"></button>
+			<select id="PRK_line"  class="way_line"><option value="0">細</option><option value="1">中</option><option value="2">太</option></select>
+		</div>
+
 		<div class="custom_group" id="GDN">
-			<label class="custom_label">公園・庭</label>
+			<label class="custom_label">庭・草原</label>
 			<button id="GDN_color" class="way_button"></button>
 			<select id="GDN_line"  class="way_line"><option value="0">細</option><option value="1">中</option><option value="2">太</option></select>
 		</div>
@@ -69,7 +76,9 @@
 			<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
 				<a class="dropdown-item drop_button" style="background-image: url('./image/signal.svg')"  		href="#" onclick="AddWalkingTownMap('SIG')">交差点を追加</a>
 				<a class="dropdown-item drop_button" style="background-image: url('./image/cafe.svg')"    		href="#" onclick="AddWalkingTownMap('CFE')">カフェを追加</a>
-				<a class="dropdown-item drop_button"  style="background-image: url('./image/resutrant.svg')"	href="#" onclick="AddWalkingTownMap('RST')">飲食店を追加</a>
+				<a class="dropdown-item drop_button" style="background-image: url('./image/restaurant.svg')"	href="#" onclick="AddWalkingTownMap('RST')">レストランを追加</a>
+				<a class="dropdown-item drop_button" style="background-image: url('./image/fastfood.svg')"		href="#" onclick="AddWalkingTownMap('FST')">ファストフードを追加</a>
+				<a class="dropdown-item drop_button" style="background-image: url('./image/fire_extinguisher.svg')"	href="#" onclick="AddWalkingTownMap('EXT')">消火器を追加</a>
 			</div>
 		</div>
 	</div>
@@ -81,4 +90,3 @@
 	</div>
 
 	<button class="clear_button" id="clear_map" onclick="clearWalkingTownMap()">最初からやり直す</button>
-

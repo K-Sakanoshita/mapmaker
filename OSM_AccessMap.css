@@ -1,5 +1,5 @@
 html{
-	font-size: 100%;
+	font-size: 12px;
 	padding: 0px;
 	margin: 0px;
 }
@@ -94,13 +94,25 @@ h1 {
 	border-bottom: 4px solid #444444;
 }
 
+img.icon {
+	width: 16px;
+	height: 16px;
+}
+
+div.icon{
+	font-size: 14px;
+	white-space: nowrap;
+	background-color: white;
+	opacity: 0.5;
+}
+
 .basemenu, .savemenu {
 }
 
 /* button for select way color */
 .custom_map {
 	padding: 8px;
-	margin: 8px 0px 8px 0px;
+	margin: 0px 0px 8px 0px;
 	background-color: #ffffff;
 	display: none;
 }
@@ -112,8 +124,8 @@ h1 {
 .custom_label {
   display: table-cell;
   vertical-align: middle;
-	height: 1.5rem;
-	width: 3.8rem;
+	height: 1.3rem;
+	width: 4.6rem;
 }
 
 .save_map {
@@ -144,9 +156,8 @@ h1 {
 }
 
 .way_button {
-	margin: 4px 0px 4px 0px;
-	width: 2rem;
-	height: 1.5rem;
+	width: 1.8rem;
+	height: 1.3rem;
   display: table-cell;
   vertical-align: middle;
 }
@@ -154,7 +165,7 @@ h1 {
 .way_line {
 	margin: 4px 0px 4px 4px;
 	width: 3rem;
-	height: 1.5rem;
+	height: 1.3rem;
   display: table-cell;
   vertical-align: middle;
 }
@@ -173,8 +184,8 @@ h1 {
 .drop_button {
 	background-repeat: no-repeat;
 	background-position: 8px center;
-	padding: 0px 0px 0px 34px !important;
-	margin: 1px 0px 1px 0px;
+	padding: 0px 4px 4px 34px !important;
+	margin: 2px 0px 2px 0px;
 	background-repeat: no-repeat;
 	background-size: 24px;
 }
@@ -190,5 +201,4 @@ h1 {
 }
 
 .btn {
-	font-size: 14px !important;
 }

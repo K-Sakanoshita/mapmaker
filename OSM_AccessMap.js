@@ -8,19 +8,21 @@ var BaseLayer;							// 背景地図一覧(地理院地図、OSMなど)
 var MakeLayer = {};					// 作成した地図レイヤー
 var checkd = {};						// レイヤーのチェックボックス状態の保管
 var Icons = {};							// アイコンSVG配列
+var nodeNames = {};					// 名前とleaflet_idと
 
-const MinZoomLevel = 12;		// これ未満のズームレベルでは地図は作らない
+const MinZoomLevel = 13;		// これ未満のズームレベルでは地図は作らない
 const ZoomErrMsg		= "地図を作るには、もう少しズームしてください。";
 const NoSvgMsg			= "保存するマップがありません。\nまず、左側の「以下の範囲でマップを作る」ボタンを押してください。";
 const OvGetError		=	"サーバーからのデータ取得に失敗しました。やり直してください。";
-const Mono_Filter = ['grayscale:90%','bright:85%','contrast:130%','sepia:15%']; ; 
+const Mono_Filter = ['grayscale:90%','bright:85%','contrast:130%','sepia:15%']; ;
 const Download_Filename = 'Walking_Town_Map'
 const OvServer = 'https://overpass.kumi.systems/api/interpreter'	// or 'https://overpass-api.de/api/interpreter'
 const OvServer_Org = 'https://overpass-api.de/api/interpreter'	// 本家(更新が早い)
-const LeafContOpt = {collapsed: false};
+const LeafContOpt = {collapsed: true};
 
 const OverPass ={
-	GDN: ['way["leisure"="garden"]',					'relation["leisure"="park"]',		'way["leisure"="playground"]',		'way["leisure"="park"]'	,				'way["leisure"="pitch"]',			'way["landuse"="grass"]'],
+	PRK: ['relation["leisure"="park"]',				'way["leisure"="playground"]',	'way["leisure"="park"]'	,					'way["leisure"="pitch"]'],
+	GDN: ['way["leisure"="garden"]',					'way["landuse"="grass"]'],
 	RIV: ['relation["waterway"]',							'way["waterway"]',							'way["landuse"="reservoir"]',			'way["natural"="water"]',				'way["natural"="coastline"]'],
 	FRT: ['relation["landuse"="forest"]',			'relation["natural"="wood"]',		'way["landuse"="forest"]',				'way["natural"="wood"]'	,				'way["landuse"="farmland"]'	,	'way["landuse"="allotments"]'],
 	RIL: ['way["railway"]'],
@@ -32,36 +34,40 @@ const OverPass ={
 	STN: ['way["building"="train_station"]',	'relation["building"="train_station"]'],
 	SIG: ['node["highway"="traffic_signals"]'],
 	CFE: ['node["amenity"="cafe"]'],
-	RST: ['node["amenity"="restaurant"]','node["amenity"="fast_food"]']
+	RST: ['node["amenity"="restaurant"]'],
+	FST: ['node["amenity"="fast_food"]'],
+	EXT: ['node["emergency"="fire_extinguisher"]']
 };
 
 var MakeDatas = {						// 制御情報の保管場所
-	GDN: {init: "yes"	,zoom: 14, type: "way",		name: "公園・庭",color:"#b6d7a8",width: 0,	dashArray:null},
+	PRK: {init: "yes"	,zoom: 14, type: "way",		name: "公園・運動場",color:"#ffffdd",width: 0,	dashArray:null},
+	GDN: {init: "yes"	,zoom: 14, type: "way",		name: "庭・草原",color:"#b6d7a8",width: 0,	dashArray:null},
 	RIV: {init: "yes"	,zoom: 14, type: "way",		name: "水路・川",color:"#6fa8dc",width: 1,	dashArray:null},
 	FRT: {init: "yes"	,zoom: 14, type: "way",		name: "森・田畑",color:"#93c47d",width: 0,	dashArray:null},
-	RIL: {init: "yes"	,zoom: 12, type: "way",		name: "レール類",color:"#041c31",width: 1,	dashArray:"8,4"},
+	RIL: {init: "yes"	,zoom: 13, type: "way",		name: "レール類",color:"#041c31",width: 1,	dashArray:"8,4"},
 	ALY: {init: "yes"	,zoom: 16, type: "way",		name: "路地小道",color:"#e8e8e8",width: 0.8,	dashArray:"4,3"},
-	STD: {init: "yes"	,zoom: 15, type: "way",		name: "一般道路",color:"#eeeeee",width: 2,	dashArray:null},
-	PRI: {init: "yes"	,zoom: 12, type: "way",		name: "主要道路",color:"#cccccc",width: 4,	dashArray:null},
-	HIW: {init: "yes"	,zoom: 12, type: "way",		name: "高速道路",color:"#f9cb9c",width: 5,	dashArray:null},
-	BLD: {init: "yes"	,zoom: 15, type: "way",		name: "建物・家",color:"#d8e8ea",width: 0,	dashArray:null},
+	STD: {init: "yes"	,zoom: 15, type: "way",		name: "一般道路",color:"#ffffff",width: 2,	dashArray:null},
+	PRI: {init: "yes"	,zoom: 13, type: "way",		name: "主要道路",color:"#cccccc",width: 4,	dashArray:null},
+	HIW: {init: "yes"	,zoom: 13, type: "way",		name: "高速道路",color:"#f9cb9c",width: 5,	dashArray:null},
+	BLD: {init: "yes"	,zoom: 15, type: "way",		name: "建物・家",color:"#e8e8e8",width: 0,	dashArray:null},
 	STN: {init: "yes"	,zoom: 15, type: "way",		name: "駅施設等",color:"#fad4d4",width: 0,	dashArray:null},
-	SIG: {init: "no"	,zoom: 12, type: "node",	name: "信号関連",icon: "./image/signal.svg",	size: [18,34]},
-	CFE: {init: "no"	,zoom: 12, type: "node",	name: "カフェ等",icon: "./image/cafe.svg",		size: [28,28]},
-	RST: {init: "no"	,zoom: 12, type: "node",	name: "飲食店等",icon: "./image/resutrant.svg",		size: [28,28]}
+	SIG: {init: "no"	,zoom: 14, type: "node",	name: "信号関連",icon: "./image/signal.svg",	size: [18,34]},
+	CFE: {init: "no"	,zoom: 14, type: "node",	name: "カフェ等",icon: "./image/cafe.svg",		size: [28,28]},
+	RST: {init: "no"	,zoom: 14, type: "node",	name: "飲食店等"		,icon: "./image/restaurant.svg",	size: [28,28]},
+	FST: {init: "no"	,zoom: 14, type: "node",	name: "ファストフード"	,icon: "./image/fastfood.svg",	size: [28,28]},
+	EXT: {init: "no"	,zoom: 14, type: "node",	name: "消火器"			,icon: "./image/fire_extinguisher.svg",	size: [28,28]}
 };
 
 var MMK_Loads = [{file: "./basemenu.html",icon: ""},
-	{file: MakeDatas.SIG.icon,icon: "SIG"},{file: MakeDatas.CFE.icon,icon: "CFE"},{file: MakeDatas.RST.icon,icon: "RST"}];
+	{file: MakeDatas.SIG.icon,icon: "SIG"},{file: MakeDatas.CFE.icon,icon: "CFE"},
+	{file: MakeDatas.RST.icon,icon: "RST"},{file: MakeDatas.FST.icon,icon: "FST"},
+	{file: MakeDatas.EXT.icon,icon: "EXT"}];
 
 const MakeDatasCount = Object.keys(MakeDatas).length;
-const Signal_Scale = 3;
-const Signal_ofX = -16;
-const Signal_ofY = -8;
-
+const MarkerParams = {icon_x: 18, icon_y: 18, text_size: 18, text_color: "black"};
 const credit = {
-	text : "Map data © OpenStreetMap contributors",
-	size : 24,
+	text : "© OpenStreetMap contributors",
+	size : 20,
 	font : "Helvetica,Arial, Roboto, “Droid Sans”, “游ゴシック”, YuGothic,“ヒラギノ角ゴ ProN W3″,“Hiragino Kaku Gothic ProN”, “メイリオ”,Meiryo",
 };
 
@@ -77,7 +83,7 @@ $(document).ready(function() {
 	let ort = L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/ort/{z}/{x}/{y}.jpg', {	minZoom: 5, maxZoom: 18, 	attribution: "<a href='https://maps.gsi.go.jp/development/ichiran.html' target='_blank'>地理院タイル</a>"	});
 
 	BaseLayer = { 'OpenStreetMap（白黒）': osm_mono,'OpenStreetMap（標準）': osm,'MIERUNE(MONO)': mierune,'地理院タイル（基本）': pale,'地理院タイル（写真）': ort };
-	map = L.map('mapid', {center: [38.290, 138.988], zoom: 6,layers: [osm_mono]});
+	map = L.map('mapid', {center: [38.290, 138.988], zoom: 6,layers: [osm_mono],doubleClickZoom: false});
 	map.zoomControl.setPosition("bottomright");
 	L_Sel = L.control.layers(BaseLayer, null, LeafContOpt).addTo(map);
 	let hash = new L.Hash(map);
@@ -125,7 +131,7 @@ $(document).ready(function() {
 				set_btncolor(MakeDatas[key].color,key,false);																// [UI側]ボタンの色を設定
 				console.log( key + ":" + MakeDatas[key].type + "(set event,set UI)");
 				break;
-		
+
 			default:
 				console.log(key + ":" + MakeDatas[key].type + "(skip)");
 				break;
@@ -243,7 +249,8 @@ function UpdateAccessMap(){
 		if (MakeDatas[key].geojson) makeSVGlayer(MakeDatas[key]);
 	}
 	if (L_Sel !== null){ L_Sel.remove(map) }																						// Leafletコントロールパネルがあれば削除
-	L_Sel = L.control.layers(BaseLayer,MakeLayer,LeafContOpt);
+//	L_Sel = L.control.layers(BaseLayer,MakeLayer,LeafContOpt);
+	L_Sel = L.control.layers(BaseLayer,null,LeafContOpt);
 	L_Sel.addTo(map);
 	let checks = $(".leaflet-control-layers-overlays label input:checkbox");
 	for(let i = 0; i < checks.length;i++){
