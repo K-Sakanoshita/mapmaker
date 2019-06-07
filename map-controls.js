@@ -3,25 +3,17 @@
 
 // make leaflet SVG Layer
 // MakeData内 -> name:コントロール名 / color:SVG色 / width:SVG Line Weight / dashArray:破線
-function makeSVGlayer(data){
-	let param = {},svglayer,icon;
-	if (MakeLayer[data.name] !== undefined){		// 既に存在するレイヤーは一旦削除する
-		checkd["STOP"] = true;
-		MakeLayer[data.name].remove(map);
-		checkd["STOP"] = false;
-	}
+function makeSVGlayer(key){
+	let data = MakeDatas[key];
 
 	switch (data.type){
 	case "way":
-		param = {
+		if (MakeLayer[key] !== undefined){	MakeLayer[key].remove(map)	}	// Delete an existing layer
+		let param = {
 			style: function(feature){
 				 return {
-					 stroke: true,
-					 color: data.color,
-					 weight: data.width * ((map.getZoom() - MinZoomLevel) * 0.5),
-					 fillOpacity: 1.0,
-					 dashArray: data.dashArray,
-					 bubblingMouseEvents: false,
+					 stroke: true, color: data.color,	 weight: data.width * ((map.getZoom() - MinZoomLevel) * 0.5),
+					 fillOpacity: 1.0, dashArray: data.dashArray,	 bubblingMouseEvents: false,
 					}
 			 },
 			filter: function (feature, layer) {
@@ -29,31 +21,30 @@ function makeSVGlayer(data){
 				return false;
 			}
 		};
-		svglayer = L.geoJSON(data.geojson,param);					// geojsonからSVGレイヤーを作成
+		let svglayer = L.geoJSON(data.geojson,param);					// geojsonからSVGレイヤーを作成
 		svglayer.addTo(map);
-		MakeLayer[data.name] = svglayer;
+		MakeLayer[key] = svglayer;
 		break;
 
 	case "node":
-		let smallIcon = new L.Icon({	iconUrl:	data.icon,	iconSize:	data.size	});
-//		param =	{	pointToLayer: function(feature, latlng) {	return L.marker(latlng, { icon: smallIcon });}	}
-		data.geojson.features.forEach(function(node){
-			icon = L.divIcon({html: '<img class="icon" src="' + data.icon + '" icon-name="' + node.properties.tags.name + '"><span style="color: black; opacity: 1">' + node.properties.tags.name + '</span>'});
-			var marker = L.marker(new L.LatLng(node.geometry.coordinates[1],node.geometry.coordinates[0]), {icon: icon})
-			marker.addTo(map);
-		});
-		MakeLayer[data.name] = data.geojson.features;
+		let markers = [];
+		if (MakeLayer[key] !== undefined){
+			MakeLayer[key].forEach( function(marker){ marker.remove(map) });
+		}	// Delete an existing layer
 
-//		svglayer = L.geoJSON(data.geojson.features[0],param);					// geojsonからSVGレイヤーを作成
-//		svglayer.addTo(map);
-//		for (let key in svglayer["_layers"]){
-//			let svgstl = [map["_layers"][key]["_icon"]][0].style["transform"].slice(12,-1).split(",")	// transformのstyleから配列でXとY座標を取得(4と5)
-//			let nodeName = map["_layers"][key].feature.properties.tags.name;
-//			nodeName = nodeName == undefined ? '' : nodeName;
-//			nodeNames[svglayer["_layers"][key]["_icon"]["_leaflet_id"]] = {"key": key,"name":nodeName	};
-//			svglayer["_layers"][key].bindPopup((nodeName == '' ? '（名称不明）' : nodeName) +
-//				"<br><input type='button' value='アイコンを削除' onclick='DeleteMarker("+ key + ");'/>");
-//		};
+		data.geojson.features.forEach(function(node){
+			let tagname = node.properties.tags.name == undefined ? "" : node.properties.tags.name;
+			let icon = L.divIcon({
+				className: 'icon',
+				html: '<img class="icon" src="' + data.icon + '" icon-name="' + tagname + '"><span class="icon" style="color: black;">' + tagname + '</span>',
+				popupAnchor: [0, -10]
+			});
+			markers.push(L.marker(new L.LatLng(node.geometry.coordinates[1],node.geometry.coordinates[0]), {icon: icon,draggable: true}));
+			let popcont = (tagname == '' ? '（名称不明）' : tagname) + "<br><input type='button' value='アイコンを削除' onclick='DeleteMarker(\"" + key + "\"," + (markers.length - 1) + ")'></input>";
+			markers[markers.length - 1].addTo(map).bindPopup(popcont);
+		});
+		MakeLayer[key] = markers;
+		$('#' +key + "_layer").prop('checked', true);
 		break;
 
 	default:
@@ -62,8 +53,8 @@ function makeSVGlayer(data){
 	}
 }
 
-function DeleteMarker(key){
-	map.removeLayer(map["_layers"][key]);
+function DeleteMarker(keyname,keyno){
+	map.removeLayer(MakeLayer[keyname][keyno]);
 }
 
 function saveImage(type) {
@@ -95,12 +86,14 @@ function saveImage(type) {
 	let parser = new DOMParser();
 	for(let i = 0; i < marker.length; i++) {
 		let svgstl = marker.eq(i).css("transform").slice(7,-1).split(",")	// transformのstyleから配列でXとY座標を取得(4と5)
-		SVG_WriteText({
-//			"svg": svg,	"text": nodeNames[marker.eq(i)[0]["_leaflet_id"]]["name"],anchor: 'start',
-			"svg": svg,	"text": $(marker.eq(i)[0].children).attr('icon-name'),"anchor": 'start',
-			"x": Number(svgstl[4]) + 4,			"y": Number(svgstl[5]) + 4,
-			"size": MarkerParams.text_size,"color": MarkerParams.text_color,
-		});
+		let text = $(marker.eq(i)[0].children).attr('icon-name');
+		if (text != undefined){
+			SVG_WriteText({
+				"svg": svg,	"text": text,"anchor": 'start',
+				"x": Number(svgstl[4]) + 4,			"y": Number(svgstl[5]),
+				"size": MarkerParams.text_size,"color": MarkerParams.text_color,
+			});
+		}
 	}
 
 	switch (type){
@@ -174,7 +167,7 @@ function savePNG(svg, options){
 function SVG_WriteText(params){
 	let svgtext = document.createElementNS('http://www.w3.org/2000/svg', 'text');
 	svgtext.setAttributeNS(null, 'x', params.x);
-	svgtext.setAttributeNS(null, 'y', params.y);
+	svgtext.setAttributeNS(null, 'y', params.y + 6);
 	svgtext.setAttributeNS(null, 'text-anchor', params.anchor);
 	svgtext.setAttributeNS(null, 'font-size', params.size);
 	svgtext.setAttributeNS(null, 'font-family', params.font);
@@ -183,6 +176,17 @@ function SVG_WriteText(params){
 	svgtext.setAttributeNS(null, 'dominant-baseline', 'text-after-edge');
 	svgtext.textContent = params.text;
 	params.svg[0].appendChild(svgtext);
+
+	let SVGRect = svgtext.getBBox();
+	let rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    rect.setAttribute("x", SVGRect.x);
+    rect.setAttribute("y", SVGRect.y);
+    rect.setAttribute("width", SVGRect.width);
+    rect.setAttribute("height", SVGRect.height);
+    rect.setAttribute("fill", "white");
+		rect.setAttribute("fill-opacity", 0.5);
+		rect.setAttributeNS(null, 'name', 'tempsvg');
+    params.svg[0].insertBefore(rect, svgtext);
 }
 
 
@@ -208,25 +212,27 @@ $.fn.extend({
 		let svgDoc;
 		for(let i = 0; i < marker.length; i++) {
 			let marker_src = $(marker.eq(i)[0].children).attr('src');
-			let matched = MMK_Loads.filter(function(obj) {
-				 return obj.file.match(marker_src);
-			});
-			if (matched != ""){
-				svgDoc = parser.parseFromString(Icons[matched[0].icon], "text/xml");
-				let svgicon = $(svgDoc).children();
-				let svgvbox = $(svgicon).attr('viewBox').split(' ');
-				let scale = Math.ceil((MarkerParams.icon_x / (svgvbox[2] - svgvbox[0])) * 1000)/1000;
-				let group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-				for(let key in svgicon[0].childNodes){
-					let nodeName = svgicon[0].childNodes[key].nodeName;
-					if (nodeName == "path" | nodeName == "g"){
-						group.append(svgicon[0].childNodes[key].cloneNode(true));
+			if (marker_src !== undefined){
+				let matched = MMK_Loads.filter(function(obj) {
+					 return obj.file.match(marker_src);
+				});
+				if (matched != ""){
+					svgDoc = parser.parseFromString(Icons[matched[0].icon], "text/xml");
+					let svgicon = $(svgDoc).children();
+					let svgvbox = $(svgicon).attr('viewBox').split(' ');
+					let scale = Math.ceil((MarkerParams.icon_x / (svgvbox[2] - svgvbox[0])) * 1000)/1000;
+					let group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+					for(let key in svgicon[0].childNodes){
+						let nodeName = svgicon[0].childNodes[key].nodeName;
+						if (nodeName == "path" || nodeName == "g" || nodeName == "defs" || nodeName == "rect" || nodeName == "ellipse"){
+							group.append(svgicon[0].childNodes[key].cloneNode(true));
+						}
 					}
+					let svgstl = marker.eq(i).css("transform").slice(7,-1).split(",")	// transformのstyleから配列でXとY座標を取得(4と5)
+					$(group).attr("transform","matrix(1,0,0,1," + (Number(svgstl[4]) - MarkerParams.icon_x) + "," + (Number(svgstl[5]) - MarkerParams.icon_y) + ") scale(" + scale + ")");
+					$(group).attr("name","tempsvg");
+					svg.append(group);
 				}
-				let svgstl = marker.eq(i).css("transform").slice(7,-1).split(",")	// transformのstyleから配列でXとY座標を取得(4と5)
-				$(group).attr("transform","matrix(1,0,0,1," + (Number(svgstl[4]) - MarkerParams.icon_x) + "," + (Number(svgstl[5]) - MarkerParams.icon_y) + ") scale(" + scale + ")");
-				$(group).attr("name","tempsvg");
-				svg.append(group);
 			}
 		}
 		return;

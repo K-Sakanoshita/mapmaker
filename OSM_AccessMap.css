@@ -78,7 +78,7 @@ button:active {
 
 img {
 	float: left;
-	margin: 2px 4px 0px 0px;
+	margin: 0px;
 }
 
 h1 {
@@ -94,16 +94,23 @@ h1 {
 	border-bottom: 4px solid #444444;
 }
 
+div.icon {
+	width: 100% !important;
+	white-space: nowrap;
+}
+
 img.icon {
 	width: 16px;
 	height: 16px;
 }
 
-div.icon{
+span.icon{
+	margin-left: 4px;
 	font-size: 14px;
 	white-space: nowrap;
 	background-color: white;
-	opacity: 0.5;
+	line-height: 1.0;
+	opacity: 0.7;
 }
 
 .basemenu, .savemenu {
@@ -111,8 +118,8 @@ div.icon{
 
 /* button for select way color */
 .custom_map {
-	padding: 8px;
-	margin: 0px 0px 8px 0px;
+	padding: 6px;
+	margin: 0px 0px 6px 0px;
 	background-color: #ffffff;
 	display: none;
 }
@@ -135,21 +142,32 @@ div.icon{
 .make_button {
 	background-image: url("./image/osmlogo.png");
 	background-repeat: no-repeat;
-	background-size: 48px 48px;
+	background-size: 36px 36px;
 	background-position: 8px center;
-	padding: 0px 0px 0px 50px;
-	height: 60px;
+	padding: 0px 0px 0px 36px;
+	height: 48px;
 	width: 164px;
 	align-items: center;
+}
+
+.export_button {
+	background-image: url("./image/Arrow_Down.png");
+	background-repeat: no-repeat;
+	background-size: 36px 36px;
+	background-position: 8px center;
+	padding: 0px 0px 0px 36px;
+	margin: 0px 0px 8px 0px;
+	height: 48px;
+	width: 164px;
 }
 
 .clear_button {
 	background-image: url("./image/Arrow_Left.png");
 	background-repeat: no-repeat;
-	background-size: 48px 48px;
+	background-size: 36px 36px;
 	background-position: 8px center;
-	padding: 0px 0px 0px 50px;
-	height: 60px;
+	padding: 0px 0px 0px 36px;
+	height: 48px;
 	width: 164px;
 	align-items: center;
 	display: none;
@@ -160,6 +178,7 @@ div.icon{
 	height: 1.3rem;
   display: table-cell;
   vertical-align: middle;
+	margin-left: 4px;
 }
 
 .way_line {
@@ -170,24 +189,17 @@ div.icon{
   vertical-align: middle;
 }
 
-.export_button {
-	background-image: url("./image/Arrow_Down.png");
-	background-repeat: no-repeat;
-	background-size: 48px 48px;
-	background-position: 8px center;
-	padding: 0px 0px 0px 40px;
-	margin: 0px 0px 8px 0px;
-	width: 164px;
-	height: 60px;
-}
-
 .drop_button {
 	background-repeat: no-repeat;
 	background-position: 8px center;
-	padding: 0px 4px 4px 34px !important;
+	padding: 4px 4px 4px 34px !important;
 	margin: 2px 0px 2px 0px;
 	background-repeat: no-repeat;
 	background-size: 24px;
+}
+
+.leaflet-div-icon {
+	border: 0px !important;
 }
 
 .leaflet-control-container::after {
@@ -200,5 +212,48 @@ div.icon{
 	transform: translate(-50%, -50%);
 }
 
-.btn {
+/* チェックボックス */
+.checkbox {
+	display: 	table-cell;
+	vertical-align: middle;
+  position: relative;
+  width: 28px;
+}
+
+.checkbox input[type="checkbox"] {
+  display        : none;            /* チェックボックス非表示 */
+}
+
+.checkbox label {
+  display        : block;               /* ボックス要素に変更 */
+  box-sizing     : border-box;          /* 枠線を含んだサイズ */
+  height         : 1.3em;
+	border         : 2px solid #999999;   /* 未選択タブのの枠線 */
+  border-radius  : 9px;                /* 角丸               */
+	vertical-align: middle;
+	margin: 0px;
+}
+
+.checkbox input[type="checkbox"]:checked +label {
+  border-color   : #78bd78;             /* 選択タブの枠線     */
+}
+
+.checkbox div[type="swImg"] {
+  position       : absolute;            /* 親要素からの相対位置*/
+  width          : 10px;                /* 丸の横幅           */
+  height         : 10px;                /* 丸の高さ           */
+  background     : #88888888;             /* カーソルタブの背景 */
+  top            : 7px;                 /* 親要素からの位置   */
+  left           : 4px;                 /* 親要素からの位置   */
+  border-radius  : 5px;                /* 角丸               */
+  transition     : .2s;                 /* 滑らか変化         */
+}
+
+.checkbox input[type="checkbox"]:checked ~ div[type="swImg"] {
+  transform      : translateX(10px);    /* 丸も右へ移動       */
+  background     : #709070;             /* カーソルタブの背景 */
+}
+
+.modal-body{
+	font-size: 14px !important;
 }

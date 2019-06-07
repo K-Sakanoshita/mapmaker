@@ -2,70 +2,91 @@
 
 	<div class="custom_map" id="custom_map">
 		<div class="custom_group" id="PRK">
-			<input type="checkbox" value="PRK">
 			<label class="custom_label">各種公園</label>
-			<button id="PRK_color" class="way_button"></button>
-			<select id="PRK_line"  class="way_line"><option value="0">細</option><option value="1">中</option><option value="2">太</option></select>
+			<div class="checkbox"><input type="checkbox" id="PRK_layer" checked="checked">
+			<label for="PRK_layer"><span></span></label><div type="swImg"></div></div>
+			<button id="PRK_color" class="way_button" style="background-color: rgb(255, 255, 221); color: rgb(0, 0, 34);"></button>
+			<select id="PRK_line" class="way_line"><option value="0">細</option><option value="1">中</option><option value="2">太</option></select>
 		</div>
 
 		<div class="custom_group" id="GDN">
 			<label class="custom_label">庭・草原</label>
-			<button id="GDN_color" class="way_button"></button>
-			<select id="GDN_line"  class="way_line"><option value="0">細</option><option value="1">中</option><option value="2">太</option></select>
+			<div class="checkbox"><input type="checkbox" id="GDN_layer" checked="checked">
+			<label for="GDN_layer"><span></span></label><div type="swImg"></div></div>
+			<button id="GDN_color" class="way_button" style="background-color: rgb(182, 215, 168); color: rgb(73, 40, 87);"></button>
+			<select id="GDN_line" class="way_line"><option value="0">細</option><option value="1">中</option><option value="2">太</option></select>
 		</div>
 
 		<div class="custom_group" id="RIV">
 			<label class="custom_label">水路・川</label>
-			<button id="RIV_color" class="way_button"></button>
-			<select id="RIV_line"  class="way_line"><option value="0.5">細</option><option value="1">中</option><option value="2">太</option></select>
+			<div class="checkbox"><input type="checkbox" id="RIV_layer" checked="checked">
+			<label for="RIV_layer"><span></span></label><div type="swImg"></div></div>
+			<button id="RIV_color" class="way_button" style="background-color: rgb(111, 168, 220); color: rgb(144, 87, 35);"></button>
+			<select id="RIV_line" class="way_line"><option value="0.5">細</option><option value="1">中</option><option value="2">太</option></select>
 		</div>
 
 		<div class="custom_group" id="FRT">
 			<label class="custom_label">森・田畑</label>
-			<button id="FRT_color" class="way_button"></button>
-			<select id="FRT_line"  class="way_line"><option value="0">細</option><option value="1">中</option><option value="2">太</option></select>
+			<div class="checkbox"><input type="checkbox" id="FRT_layer" checked="checked">
+			<label for="FRT_layer"><span></span></label><div type="swImg"></div></div>
+			<button id="FRT_color" class="way_button" style="background-color: rgb(147, 196, 125); color: rgb(108, 59, 130);"></button>
+			<select id="FRT_line" class="way_line"><option value="0">細</option><option value="1">中</option><option value="2">太</option></select>
 		</div>
 
 		<div class="custom_group" id="RIL">
 			<label class="custom_label">レール類</label>
-			<button id="RIL_color" class="way_button"></button>
-			<select id="RIL_line"  class="way_line"><option value="0.5">細</option><option value="1">中</option><option value="1.5">太</option></select>
+			<div class="checkbox"><input type="checkbox" id="RIL_layer" checked="checked">
+			<label for="RIL_layer"><span></span></label><div type="swImg"></div></div>
+			<button id="RIL_color" class="way_button" style="background-color: rgb(4, 28, 49); color: rgb(251, 227, 206);"></button>
+			<select id="RIL_line" class="way_line"><option value="0.5">細</option><option value="1">中</option><option value="1.5">太</option></select>
 		</div>
 
 		<div class="custom_group" id="ALY">
 			<label class="custom_label">路地小道</label>
-			<button id="ALY_color" class="way_button"></button>
-			<select id="ALY_line"  class="way_line"><option value="0.4">細</option><option value="0.8">中</option><option value="1.2">太</option></select>
+			<div class="checkbox"><input type="checkbox" id="ALY_layer" checked="checked">
+			<label for="ALY_layer"><span></span></label><div type="swImg"></div></div>
+			<button id="ALY_color" class="way_button" style="background-color: rgb(232, 232, 232); color: rgb(23, 23, 23);"></button>
+			<select id="ALY_line" class="way_line"><option value="0.4">細</option><option value="0.8">中</option><option value="1.2">太</option></select>
 		</div>
 
 		<div class="custom_group" id="STD">
 			<label class="custom_label">一般道路</label>
-			<button id="STD_color" class="way_button"></button>
-			<select id="STD_line"  class="way_line"><option value="1">細</option><option value="2">中</option><option value="3">太</option></select>
+			<div class="checkbox"><input type="checkbox" id="STD_layer" checked="checked">
+			<label for="STD_layer"><span></span></label><div type="swImg"></div></div>
+			<button id="STD_color" class="way_button" style="background-color: rgb(255, 255, 255); color: rgb(0, 0, 0);"></button>
+			<select id="STD_line" class="way_line"><option value="1">細</option><option value="2">中</option><option value="3">太</option></select>
 		</div>
 
 		<div class="custom_group" id="PRI">
 			<label class="custom_label">主要道路</label>
-			<button id="PRI_color" class="way_button"></button>
-			<select id="PRI_line"  class="way_line"><option value="2">細</option><option value="4">中</option><option value="6">太</option></select>
+			<div class="checkbox"><input type="checkbox" id="PRI_layer" checked="checked">
+			<label for="PRI_layer"><span></span></label><div type="swImg"></div></div>
+			<button id="PRI_color" class="way_button" style="background-color: rgb(204, 204, 204); color: rgb(51, 51, 51);"></button>
+			<select id="PRI_line" class="way_line"><option value="2">細</option><option value="4">中</option><option value="6">太</option></select>
 		</div>
 
 		<div class="custom_group" id="HIW">
 			<label class="custom_label">高速道路</label>
-			<button id="HIW_color" class="way_button"></button>
-			<select id="HIW_line"  class="way_line"><option value="3">細</option><option value="5">中</option><option value="7">太</option></select>
+			<div class="checkbox"><input type="checkbox" id="HIW_layer" checked="checked">
+			<label for="HIW_layer"><span></span></label><div type="swImg"></div></div>
+			<button id="HIW_color" class="way_button" style="background-color: rgb(249, 203, 156); color: rgb(6, 52, 99);"></button>
+			<select id="HIW_line" class="way_line"><option value="3">細</option><option value="5">中</option><option value="7">太</option></select>
 		</div>
 
 		<div class="custom_group" id="BLD">
 			<label class="custom_label">建物・家</label>
-			<button id="BLD_color" class="way_button"></button>
-			<select id="BLD_line"  class="way_line"><option value="0">細</option><option value="0.5">中</option><option value="1">太</option></select>
+			<div class="checkbox"><input type="checkbox" id="BLD_layer" checked="checked">
+			<label for="BLD_layer"><span></span></label><div type="swImg"></div></div>
+			<button id="BLD_color" class="way_button" style="background-color: rgb(232, 232, 232); color: rgb(23, 23, 23);"></button>
+			<select id="BLD_line" class="way_line"><option value="0">細</option><option value="0.5">中</option><option value="1">太</option></select>
 		</div>
 
 		<div class="custom_group" id="STN">
 			<label class="custom_label">駅施設等</label>
-			<button id="STN_color" class="way_button"></button>
-			<select id="STN_line"  class="way_line"><option value="0">細</option><option value="0.5">中</option><option value="1">太</option></select>
+			<div class="checkbox"><input type="checkbox" id="STN_layer" checked="checked">
+			<label for="STN_layer"><span></span></label><div type="swImg"></div></div>
+			<button id="STN_color" class="way_button" style="background-color: rgb(250, 212, 212); color: rgb(5, 43, 43);"></button>
+			<select id="STN_line" class="way_line"><option value="0">細</option><option value="0.5">中</option><option value="1">太</option></select>
 		</div>
 
 
@@ -79,6 +100,8 @@
 				<a class="dropdown-item drop_button" style="background-image: url('./image/restaurant.svg')"	href="#" onclick="AddWalkingTownMap('RST')">レストランを追加</a>
 				<a class="dropdown-item drop_button" style="background-image: url('./image/fastfood.svg')"		href="#" onclick="AddWalkingTownMap('FST')">ファストフードを追加</a>
 				<a class="dropdown-item drop_button" style="background-image: url('./image/fire_extinguisher.svg')"	href="#" onclick="AddWalkingTownMap('EXT')">消火器を追加</a>
+				<a class="dropdown-item drop_button" style="background-image: url('./image/fire_hydrant.svg')" href="#" onclick="AddWalkingTownMap('HYD')">消火栓を追加</a>
+				<a class="dropdown-item drop_button" style="background-image: url('./image/shelter.svg')" href="#" onclick="AddWalkingTownMap('SHL')">避難所(大阪市)を追加<br>© Osaka Open Data</a>
 			</div>
 		</div>
 	</div>
