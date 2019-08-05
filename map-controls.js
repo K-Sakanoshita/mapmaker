@@ -36,7 +36,7 @@ function makeSVGlayer(key){
 			let tagname = node.properties.tags.name == undefined ? "" : node.properties.tags.name;
 			let icon = L.divIcon({
 				className: 'icon',
-				html: '<img class="icon" src="' + data.icon + '" icon-name="' + tagname + '"><span class="icon" style="color: black;">' + tagname + '</span>',
+				html: '<img class="icon" src="' + data.icon + '" icon-name="' + tagname + '"><span class="icon">' + tagname + '</span>',
 				popupAnchor: [0, -10]
 			});
 			markers.push(L.marker(new L.LatLng(node.geometry.coordinates[1],node.geometry.coordinates[0]), {icon: icon,draggable: true}));
@@ -77,9 +77,9 @@ function saveImage(type) {
 	svg[0].attributes.viewBox.value = viewBoxArray.join(' ');
 	let viewBox = svg[0].viewBox;
 	SVG_WriteText({
-		"svg": svg,"text": credit.text,	"size":credit.size,"color":"black",anchor: 'end',
-		"x": viewBox.baseVal.x + viewBox.baseVal.width,
-		"y": viewBox.baseVal.height - Math.abs(viewBox.baseVal.y)
+		"svg": svg,"text": credit.text,	"size":credit.size,anchor: 'end',
+		"x": viewBox.baseVal.x + viewBox.baseVal.width - credit.size,
+		"y": viewBox.baseVal.height - Math.abs(viewBox.baseVal.y) - credit.size
 	});
 
 	// add Icon Name
@@ -126,11 +126,12 @@ function saveSVG(svg, options){
 		URL.revokeObjectURL(url);
 		$("#download").remove();
 		svg.find("[name=tempsvg]").remove();
+		map.setView(map.getCenter());
 	}, Math.max(3000, dataURI.length / 512));
 }
 
 function savePNG(svg, options){
-	$("body").append("<canvas id='download' class='hidden' width=" + options.width + " height=" + (options.height + 45) +"></canvas>");
+	$("body").append("<canvas id='download' class='hidden' width=" + options.width + " height=" + (options.height) +"></canvas>");
 	var canvas = $("#download")[0];
 	var ctx = canvas.getContext("2d");
 	var data = new XMLSerializer().serializeToString(svg[0]);
@@ -155,6 +156,7 @@ function savePNG(svg, options){
 			$("#download").remove();
 			$("#download-link").remove();
 			svg.find("[name=tempsvg]").remove();
+			map.setView(map.getCenter());
 		}, Math.max(3000, dataURI.length / 512 ));
 	}
 	image.src = imgsrc;
@@ -169,7 +171,7 @@ function SVG_WriteText(params){
 	svgtext.setAttributeNS(null, 'x', params.x);
 	svgtext.setAttributeNS(null, 'y', params.y + 6);
 	svgtext.setAttributeNS(null, 'text-anchor', params.anchor);
-	svgtext.setAttributeNS(null, 'font-size', params.size);
+	svgtext.setAttributeNS(null, 'font-size', params.size + "px");
 	svgtext.setAttributeNS(null, 'font-family', params.font);
 	svgtext.setAttributeNS(null, 'fill', params.color);
 	svgtext.setAttributeNS(null, 'name', 'tempsvg');
@@ -224,7 +226,7 @@ $.fn.extend({
 					let group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
 					for(let key in svgicon[0].childNodes){
 						let nodeName = svgicon[0].childNodes[key].nodeName;
-						if (nodeName == "path" || nodeName == "g" || nodeName == "defs" || nodeName == "rect" || nodeName == "ellipse"){
+						if (nodeName == "path" || nodeName == "g" || nodeName == "defs" || nodeName == "rect" || nodeName == "ellipse" ||  nodeName == "style"){
 							group.append(svgicon[0].childNodes[key].cloneNode(true));
 						}
 					}

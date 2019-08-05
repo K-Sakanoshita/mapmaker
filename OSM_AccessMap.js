@@ -3,10 +3,10 @@
 
 // Global Variable
 var map;
+var hash;
 var L_Sel;
 var BaseLayer;							// 背景地図一覧(地理院地図、OSMなど)
 var MakeLayer = {};					// 作成した地図レイヤー
-var checkd = {};						// レイヤーのチェックボックス状態の保管
 var Icons = {};							// アイコンSVG配列
 var LL = {};								// 緯度(latitude)と経度(longitude)
 
@@ -16,7 +16,8 @@ const NoSvgMsg			= "保存するマップがありません。\nまず、左側�
 const OvGetError		=	"サーバーからのデータ取得に失敗しました。やり直してください。";
 const Mono_Filter = ['grayscale:90%','bright:85%','contrast:130%','sepia:15%']; ;
 const Download_Filename = 'Walking_Town_Map'
-const OvServer = 'https://overpass.kumi.systems/api/interpreter'	// or 'https://overpass-api.de/api/interpreter'
+//const OvServer = 'https://overpass.kumi.systems/api/interpreter'	// or 'https://overpass-api.de/api/interpreter'
+const OvServer = 'https://overpass.nchc.org.tw/api/interpreter'
 // const OvServer_Org = 'https://overpass-api.de/api/interpreter'	// 本家(更新が早い)
 const LeafContOpt = {collapsed: true};
 
@@ -37,7 +38,8 @@ const OverPass ={
 	RST: ['node["amenity"="restaurant"]'],
 	FST: ['node["amenity"="fast_food"]'],
 	EXT: ['node["emergency"="fire_extinguisher"]'],
-	HYD: ['node["emergency"="fire_hydrant"]']
+	HYD: ['node["emergency"="fire_hydrant"]'],
+	SKR: ['node["natural"="tree"]["species:en"="Cherry blossom"]']
 };
 
 const ExtDatas = {
@@ -62,6 +64,7 @@ var MakeDatas = {						// 制御情報の保管場所
 	FST: {init: "no"	,zoom: 14, type: "node",	name: "ファストフード"	,icon: "./image/fastfood.svg",	size: [28,28]},
 	EXT: {init: "no"	,zoom: 14, type: "node",	name: "消火器"			,icon: "./image/fire_extinguisher.svg",	size: [28,28]},
 	HYD: {init: "no"	,zoom: 14, type: "node",	name: "消火栓"			,icon: "./image/fire_hydrant.svg",	size: [28,28]},
+	SKR: {init: "no"	,zoom: 14, type: "node",	name: "木（さくら）"			,icon: "./image/sakura.svg",	size: [28,28]},
 	SHL: {init: "no"	,zoom: 14, type: "node",	name: "避難所(大阪市)"	,icon: "./image/shelter.svg",	size: [28,28]}
 };
 
@@ -69,7 +72,7 @@ var MMK_Loads = [{file: "./basemenu.html",icon: ""},
 	{file: MakeDatas.SIG.icon,icon: "SIG"},{file: MakeDatas.CFE.icon,icon: "CFE"},
 	{file: MakeDatas.RST.icon,icon: "RST"},{file: MakeDatas.FST.icon,icon: "FST"},
 	{file: MakeDatas.EXT.icon,icon: "EXT"},{file: MakeDatas.HYD.icon,icon: "HYD"},
-	{file: MakeDatas.SHL.icon,icon: "SHL"}
+	{file: MakeDatas.SHL.icon,icon: "SHL"},{file: MakeDatas.SKR.icon,icon: "SKR"}
 ];
 
 const MakeDatasCount = Object.keys(MakeDatas).length;
@@ -95,7 +98,7 @@ $(document).ready(function() {
 	map = L.map('mapid', {center: [38.290, 138.988], zoom: 6,layers: [osm_mono],doubleClickZoom: false});
 	map.zoomControl.setPosition("bottomright");
 	L_Sel = L.control.layers(BaseLayer, null, LeafContOpt).addTo(map);
-	let hash = new L.Hash(map);
+	hash = new L.Hash(map);
 	let lc = L.control.locate({	position: 'bottomright',	strings: { title: "現在地を表示" },locateOptions: { maxZoom: 16 }}).addTo(map);
 
 	console.log("initialize Basemenu.");
@@ -136,16 +139,18 @@ $(document).ready(function() {
 				});
 				$('#' + key + '_line').change(function(){																		// 太さ変更時のイベント定義
 					MakeDatas[key].width = $('#' + key + '_line').val();
+					$('#' + key + '_layer').prop('checked',true);																// 色変更時はチェックON
 					UpdateAccessMap();
 					return;
 				});
-				$('#'+ key + '_color').simpleColorPicker({onChangeColor: function(color){		// 色変更時のイベント定義
+				$('#' + key + '_color').simpleColorPicker({onChangeColor: function(color){		// 色変更時のイベント定義
 					set_btncolor(color,key,true);
+					$('#' + key + '_layer').prop('checked',true);																// 色変更時はチェックON
 					UpdateAccessMap();
 					return;
 				}});
 
-				$('#'+ key + '_line').val(MakeDatas[key].width);															// [UI側]線の太さを設定
+				$('#' + key + '_line').val(MakeDatas[key].width);														// [UI側]線の太さを設定
 				set_btncolor(MakeDatas[key].color,key,false);																// [UI側]ボタンの色を設定
 				console.log( key + ":" + MakeDatas[key].type + "(set event,set UI)");
 				break;
@@ -212,6 +217,7 @@ function makeWalkingTownMap(){
 	});
 };
 
+/* 情報（アイコンなど）を地図に追加 */
 function AddWalkingTownMap(key){
 	let ZoomLevel = map.getZoom();					// マップ範囲を探す
 	if( ZoomLevel < MinZoomLevel ){	alert(ZoomErrMsg);return false;}
@@ -224,6 +230,7 @@ function AddWalkingTownMap(key){
 	console.log("makeWalkingTownMap: Start(" + nowDT.getHours() + ":" + nowDT.getMinutes() + ":" + nowDT.getSeconds() + ")");
 
 	$('#Progress_Modal').on('shown.bs.modal', function (event) {
+		location.replace(hash.formatHash(map));
 		switch (OverPass[key]) {
 			case undefined:
 				$.get({url: ExtDatas[key],dataType: "json"},function(geojson){
