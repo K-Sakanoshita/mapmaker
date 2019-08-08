@@ -40,7 +40,9 @@ function makeSVGlayer(key){
 				popupAnchor: [0, -10]
 			});
 			markers.push(L.marker(new L.LatLng(node.geometry.coordinates[1],node.geometry.coordinates[0]), {icon: icon,draggable: true}));
-			let popcont = (tagname == '' ? '（名称不明）' : tagname) + "<br><input type='button' value='アイコンを削除' onclick='DeleteMarker(\"" + key + "\"," + (markers.length - 1) + ")'></input>";
+			let del_btn = "<input type='button' value='アイコンを削除' onclick='DeleteMarker(\"" + key + "\"," + (markers.length - 1) + ")'></input>";
+			let chg_btn = "<input type='button' value='英語名に変更' onclick='ChgLngMarker(\"" + key + "\"," + (markers.length - 1) + ",\"name:en\")'></input>";
+			let popcont = (tagname == '' ? '（名称不明）' : tagname) + "<br>" + del_btn + "<br>" + chg_btn;
 			markers[markers.length - 1].addTo(map).bindPopup(popcont);
 		});
 		MakeLayer[key] = markers;
@@ -55,6 +57,25 @@ function makeSVGlayer(key){
 
 function DeleteMarker(keyname,keyno){
 	map.removeLayer(MakeLayer[keyname][keyno]);
+}
+
+function ChgLngMarker(keyname,keyno,name_tag){
+	map.removeLayer(MakeLayer[keyname][keyno]);	// 一旦削除
+	let features = MakeDatas[keyname].geojson.features[keyno];
+	let tagname = features.properties.tags[name_tag];
+	tagname = tagname == undefined ? "" : tagname;
+	let icon = L.divIcon({
+		className: 'icon',
+		html: '<img class="icon" src="' + MakeDatas[keyname].icon + '" icon-name="' + tagname + '"><span class="icon">' + tagname + '</span>',
+		popupAnchor: [0, -10]
+	});
+	let marker = L.marker(new L.LatLng(features.geometry.coordinates[1],features.geometry.coordinates[0]), {icon: icon,draggable: true});
+	let del_btn = "<input type='button' value='アイコンを削除' onclick='DeleteMarker(\"" + keyname + "\"," + keyno + ")'></input>";
+	let chg_btn1 = "<input type='button' value='日本語名に変更' onclick='ChgLngMarker(\"" + keyname + "\"," + keyno + ",\"name\")'></input>";
+	let chg_btn2 = "<input type='button' value='英語名に変更' onclick='ChgLngMarker(\"" + keyname + "\"," + keyno + ",\"name:en\")'></input>";
+	let popcont = (tagname == '' ? '（名称不明）' : tagname) + "<br>" + del_btn + "<br>" + (name_tag == "name" ? chg_btn2 : chg_btn1);
+	marker.addTo(map).bindPopup(popcont);
+	MakeLayer[keyname][keyno] = marker;
 }
 
 function saveImage(type) {
