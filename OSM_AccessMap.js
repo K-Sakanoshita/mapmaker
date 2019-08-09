@@ -18,9 +18,12 @@ const Mono_Filter = ['grayscale:90%','bright:85%','contrast:130%','sepia:15%']; 
 const Download_Filename = 'Walking_Town_Map'
 //const OvServer = 'https://overpass.kumi.systems/api/interpreter'	// or 'https://overpass-api.de/api/interpreter'
 const OvServer = 'https://overpass.nchc.org.tw/api/interpreter'
-// const OvServer_Org = 'https://overpass-api.de/api/interpreter'	// 本家(更新が早い)
+const OvServer_Org = 'https://overpass-api.de/api/interpreter'	// 本家(更新が早い)
 const LeafContOpt = {collapsed: true};
 
+const Sakura1 = "Cherry blossom";
+const Sakura2 = "Cerasus itosakura";
+const Sakura3 = "Cerasus × yedoensis";
 const OverPass ={
 	PRK: ['relation["leisure"="park"]',				'way["leisure"="playground"]',	'way["leisure"="park"]'	,					'way["leisure"="pitch"]'],
 	GDN: ['way["leisure"="garden"]',					'way["landuse"="grass"]'],
@@ -35,11 +38,11 @@ const OverPass ={
 	STN: ['way["building"="train_station"]',	'relation["building"="train_station"]'],
 	SIG: ['node["highway"="traffic_signals"]'],
 	CFE: ['node["amenity"="cafe"]'],
-	RST: ['node["amenity"="restaurant"]'],
-	FST: ['node["amenity"="fast_food"]'],
+	RST: ['node["amenity"="restaurant"]','node["shop"="deli"]'],
+	FST: ['node["amenity"="fast_food"]','node["shop"="confectionery"]'],
 	EXT: ['node["emergency"="fire_extinguisher"]'],
 	HYD: ['node["emergency"="fire_hydrant"]'],
-	SKR: ['node["natural"="tree"]["species:en"="Cherry blossom"]']
+	SKR: ['node["species"="' + Sakura1 + '"]','node["species:en"="' + Sakura1 + '"]','node["species"="' + Sakura2 + '"]','node["species:en"="' + Sakura2 + '"]','node["species"="' + Sakura3 + '"]','node["species:en"="' + Sakura3 + '"]']
 };
 
 const ExtDatas = {
