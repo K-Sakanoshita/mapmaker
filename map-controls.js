@@ -39,7 +39,11 @@ function makeSVGlayer(key){
 				html: '<img class="icon" src="' + data.icon + '" icon-name="' + tagname + '"><span class="icon">' + tagname + '</span>',
 				popupAnchor: [0, -10]
 			});
-			markers.push(L.marker(new L.LatLng(node.geometry.coordinates[1],node.geometry.coordinates[0]), {icon: icon,draggable: true}));
+			if (node.geometry.type == "Polygon"){
+				markers.push(L.marker(new L.LatLng(node.geometry.coordinates[0][0][1],node.geometry.coordinates[0][0][0]), {icon: icon,draggable: true}));
+			}else{
+				markers.push(L.marker(new L.LatLng(node.geometry.coordinates[1],node.geometry.coordinates[0]), {icon: icon,draggable: true}));
+			}
 			let del_btn = "<input type='button' value='アイコンを削除' onclick='DeleteMarker(\"" + key + "\"," + (markers.length - 1) + ")'></input>";
 			let chg_btn = "<input type='button' value='英語名に変更' onclick='ChgLngMarker(\"" + key + "\"," + (markers.length - 1) + ",\"name:en\")'></input>";
 			let popcont = (tagname == '' ? '（名称不明）' : tagname) + "<br>" + del_btn + "<br>" + chg_btn;
@@ -207,7 +211,7 @@ function SVG_WriteText(params){
     rect.setAttribute("width", SVGRect.width);
     rect.setAttribute("height", SVGRect.height);
     rect.setAttribute("fill", "white");
-		rect.setAttribute("fill-opacity", 0.5);
+		rect.setAttribute("fill-opacity", 0.9);
 		rect.setAttributeNS(null, 'name', 'tempsvg');
     params.svg[0].insertBefore(rect, svgtext);
 }
@@ -232,7 +236,7 @@ $.fn.extend({
 	AddIcons : function(marker){
 		var svg = this.filter('svg') || this.find('svg');
 		let parser = new DOMParser();
-		let svgDoc;
+		let svgDoc,svgvbox;
 		for(let i = 0; i < marker.length; i++) {
 			let marker_src = $(marker.eq(i)[0].children).attr('src');
 			if (marker_src !== undefined){
@@ -242,7 +246,11 @@ $.fn.extend({
 				if (matched != ""){
 					svgDoc = parser.parseFromString(Icons[matched[0].icon], "text/xml");
 					let svgicon = $(svgDoc).children();
-					let svgvbox = $(svgicon).attr('viewBox').split(' ');
+					if ($(svgicon).attr('viewBox') == undefined){
+						svgvbox = $(svgicon)[0].attr('viewBox').split(' ');
+					}else{
+						svgvbox = $(svgicon).attr('viewBox').split(' ');
+					};
 					let scale = Math.ceil((MarkerParams.icon_x / (svgvbox[2] - svgvbox[0])) * 1000)/1000;
 					let group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
 					for(let key in svgicon[0].childNodes){

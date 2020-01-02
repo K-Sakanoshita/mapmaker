@@ -10,14 +10,14 @@ var MakeLayer = {};					// 作成した地図レイヤー
 var Icons = {};							// アイコンSVG配列
 var LL = {};								// 緯度(latitude)と経度(longitude)
 
-const MinZoomLevel = 13;		// これ未満のズームレベルでは地図は作らない
+const MinZoomLevel = 14;		// これ未満のズームレベルでは地図は作らない
 const ZoomErrMsg		= "地図を作るには、もう少しズームしてください。";
 const NoSvgMsg			= "保存するマップがありません。\nまず、左側の「以下の範囲でマップを作る」ボタンを押してください。";
 const OvGetError		=	"サーバーからのデータ取得に失敗しました。やり直してください。";
 const Mono_Filter = ['grayscale:90%','bright:85%','contrast:130%','sepia:15%']; ;
 const Download_Filename = 'Walking_Town_Map'
-//const OvServer = 'https://overpass.kumi.systems/api/interpreter'	// or 'https://overpass-api.de/api/interpreter'
-const OvServer = 'https://overpass.nchc.org.tw/api/interpreter'
+const OvServer = 'https://overpass.kumi.systems/api/interpreter'	// or 'https://overpass-api.de/api/interpreter'
+//const OvServer = 'https://overpass.nchc.org.tw/api/interpreter'
 const OvServer_Org = 'https://overpass-api.de/api/interpreter'	// 本家(更新が早い)
 const LeafContOpt = {collapsed: true};
 
@@ -42,6 +42,7 @@ const OverPass ={
 	FST: ['node["amenity"="fast_food"]','node["shop"="confectionery"]'],
 	EXT: ['node["emergency"="fire_extinguisher"]'],
 	HYD: ['node["emergency"="fire_hydrant"]'],
+	LIB: ['node["amenity"="library"]','way["amenity"="library"]'],
 	SKR: ['node["species"="' + Sakura1 + '"]','node["species:en"="' + Sakura1 + '"]','node["species"="' + Sakura2 + '"]','node["species:en"="' + Sakura2 + '"]','node["species"="' + Sakura3 + '"]','node["species:en"="' + Sakura3 + '"]']
 };
 
@@ -54,10 +55,10 @@ var MakeDatas = {						// 制御情報の保管場所
 	GDN: {init: "yes"	,zoom: 14, type: "way",		name: "庭・草原",color:"#b6d7a8",width: 0,	dashArray:null},
 	RIV: {init: "yes"	,zoom: 14, type: "way",		name: "水路・川",color:"#6fa8dc",width: 1,	dashArray:null},
 	FRT: {init: "yes"	,zoom: 14, type: "way",		name: "森・田畑",color:"#93c47d",width: 0,	dashArray:null},
-	RIL: {init: "yes"	,zoom: 13, type: "way",		name: "レール類",color:"#041c31",width: 1,	dashArray:"8,4"},
+	RIL: {init: "yes"	,zoom: 12, type: "way",		name: "レール類",color:"#041c31",width: 1,	dashArray:"8,4"},
 	ALY: {init: "yes"	,zoom: 16, type: "way",		name: "路地小道",color:"#e8e8e8",width: 0.8,	dashArray:"4,3"},
 	STD: {init: "yes"	,zoom: 15, type: "way",		name: "一般道路",color:"#ffffff",width: 2,	dashArray:null},
-	PRI: {init: "yes"	,zoom: 13, type: "way",		name: "主要道路",color:"#cccccc",width: 4,	dashArray:null},
+	PRI: {init: "yes"	,zoom: 12, type: "way",		name: "主要道路",color:"#cccccc",width: 4,	dashArray:null},
 	HIW: {init: "yes"	,zoom: 13, type: "way",		name: "高速道路",color:"#f9cb9c",width: 5,	dashArray:null},
 	BLD: {init: "yes"	,zoom: 15, type: "way",		name: "建物・家",color:"#e8e8e8",width: 0,	dashArray:null},
 	STN: {init: "yes"	,zoom: 15, type: "way",		name: "駅施設等",color:"#fad4d4",width: 0,	dashArray:null},
@@ -68,6 +69,7 @@ var MakeDatas = {						// 制御情報の保管場所
 	EXT: {init: "no"	,zoom: 14, type: "node",	name: "消火器"			,icon: "./image/fire_extinguisher.svg",	size: [28,28]},
 	HYD: {init: "no"	,zoom: 14, type: "node",	name: "消火栓"			,icon: "./image/fire_hydrant.svg",	size: [28,28]},
 	SKR: {init: "no"	,zoom: 14, type: "node",	name: "木（さくら）"			,icon: "./image/sakura.svg",	size: [28,28]},
+	LIB: {init: "no"	,zoom: 14, type: "node",	name: "図書館"			,icon: "./image/library.svg",	size: [28,28]},
 	SHL: {init: "no"	,zoom: 14, type: "node",	name: "避難所(大阪市)"	,icon: "./image/shelter.svg",	size: [28,28]}
 };
 
@@ -75,7 +77,8 @@ var MMK_Loads = [{file: "./basemenu.html",icon: ""},
 	{file: MakeDatas.SIG.icon,icon: "SIG"},{file: MakeDatas.CFE.icon,icon: "CFE"},
 	{file: MakeDatas.RST.icon,icon: "RST"},{file: MakeDatas.FST.icon,icon: "FST"},
 	{file: MakeDatas.EXT.icon,icon: "EXT"},{file: MakeDatas.HYD.icon,icon: "HYD"},
-	{file: MakeDatas.SHL.icon,icon: "SHL"},{file: MakeDatas.SKR.icon,icon: "SKR"}
+	{file: MakeDatas.SHL.icon,icon: "SHL"},{file: MakeDatas.SKR.icon,icon: "SKR"},
+	{file: MakeDatas.LIB.icon,icon: "LIB"}
 ];
 
 const MakeDatasCount = Object.keys(MakeDatas).length;
@@ -91,8 +94,8 @@ $(document).ready(function() {
 	console.log("Welcome to Walking Town Map Maker.");
 	console.log("initialize leaflet.");
 
-	let osm_mono = L.tileLayer.colorFilter(	'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{	maxZoom: 19,	attribution: '<a href="http://openstreetmap.org">&copy OpenStreetMap contributors</a>',filter: Mono_Filter	});
-	let osm = L.tileLayer(	'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{	maxZoom: 19,	attribution: '<a href="http://openstreetmap.org">&copy OpenStreetMap contributors</a>'	});
+	let osm_mono = L.tileLayer.colorFilter(	'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{	maxNativeZoom: 19,	maxZoom: 21,	attribution: '<a href="http://openstreetmap.org">&copy OpenStreetMap contributors</a>',filter: Mono_Filter	});
+	let osm = L.tileLayer(	'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{	maxNativeZoom: 19,maxZoom: 21,	attribution: '<a href="http://openstreetmap.org">&copy OpenStreetMap contributors</a>'	});
 	let mierune = L.tileLayer(	'https://tile.mierune.co.jp/mierune_mono/{z}/{x}/{y}.png',{	maxZoom: 19,	attribution: "Maptiles by <a href='http://mierune.co.jp/' target='_blank'>MIERUNE</a>, under CC BY. Data by <a href='http://osm.org/copyright' target='_blank'>OpenStreetMap</a> contributors, under ODbL.",	});
 	let pale = L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png', {	minZoom: 2, maxZoom: 18, 	attribution: "<a href='https://maps.gsi.go.jp/development/ichiran.html' target='_blank'>地理院タイル</a>"	});
 	let ort = L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/ort/{z}/{x}/{y}.jpg', {	minZoom: 5, maxZoom: 18, 	attribution: "<a href='https://maps.gsi.go.jp/development/ichiran.html' target='_blank'>地理院タイル</a>"	});
