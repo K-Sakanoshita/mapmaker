@@ -1,0 +1,30 @@
+{
+	"title": {
+		"ja": "まち歩きマップメーカー",
+		"en": "Walking Town Map Maker"
+	},
+	"subtitle1": {
+		"ja": "自由に使えるカスタム地図",
+		"en": "Custom maps for free use"
+	},
+	"subtitle2": {
+		"ja": "Copyrightをお忘れなく",
+		"en": "Don't forget the Copyright"
+	},
+	"zoomlevel": {
+		"ja": "ズームレベル：",
+		"en": "Zoom Level: "
+	},
+	"selectdate": {
+		"ja": "（任意）データ取得日付：",
+		"en": "(Option)Acquisition Date: "
+	},
+	"makemap": {
+		"ja": "この範囲内で<br />マップを作る",
+		"en": "Make a map<br />within this range"
+	},
+	"controlmenu": {
+		"ja": "カスタマイズ",
+		"en": "Customize"
+	}
+}

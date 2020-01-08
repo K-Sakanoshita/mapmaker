@@ -14,9 +14,11 @@ body {
 
 header {
 	width: 100%;
-	height: 24px;
-	margin: 0px;
-	padding: 0px;
+	height: 40px;
+	margin: 0px !important;
+	padding: 0px !important;
+	color: #ffffff !important;
+	background-color: #105010;
 }
 
 #container {
@@ -33,7 +35,7 @@ header {
 	width: 100%;
 	height: calc(100% - 34px);
 	overflow: auto;
-	position: relative; */
+	position: relative;
 	background-color: #ccf;
 	margin: 0px 0px 0px 0px;
 }
@@ -89,9 +91,6 @@ h1 {
 	margin: 0px !important;
 	padding: 2px 6px;
 	width: 100%;
-	color: #ffffff !important;
-	background-color: #666666;
-	border-bottom: 4px solid #444444;
 }
 
 div.icon {
@@ -113,13 +112,27 @@ span.icon{
 	opacity: 0.7;
 }
 
-.basemenu, .savemenu {
+/* button for select way color */
+.accordion, .card{
+	width: 180px;
+	margin-bottom: 8px;
+	display: none;
+	overflow: visible !important;
 }
 
-/* button for select way color */
+
+.modal-body{
+	font-size: 14px !important;
+}
+
+.card-header, .card-body {
+	padding: 0px !important;
+	background-color: #ffffff;
+}
+
 .custom_map {
 	padding: 6px;
-	margin: 0px 0px 6px 0px;
+	margin: 0px 0px 0px 0px;
 	background-color: #ffffff;
 	display: none;
 }
@@ -129,48 +142,43 @@ span.icon{
 }
 
 .custom_label {
-  display: table-cell;
-  vertical-align: middle;
+	display: table-cell;
+	vertical-align: middle;
 	height: 1.3rem;
-	width: 4.6rem;
+	width: 5rem;
+	overflow: hidden;
+    white-space: nowrap;
 }
 
 .save_map {
 	display: none;
 }
 
-.make_button {
-	background-image: url("./image/osmlogo.png");
+.comm_button {
+	margin: 0px 0px 8px 0px;
 	background-repeat: no-repeat;
 	background-size: 36px 36px;
 	background-position: 8px center;
 	padding: 0px 0px 0px 36px;
 	height: 48px;
-	width: 164px;
+	width: 180px;
 	align-items: center;
+}
+
+.menu_button {
+	background-image: url("./image/menu.svg")
+}
+
+.make_button {
+	background-image: url("./image/osmlogo.png");
 }
 
 .export_button {
 	background-image: url("./image/Arrow_Down.png");
-	background-repeat: no-repeat;
-	background-size: 36px 36px;
-	background-position: 8px center;
-	padding: 0px 0px 0px 36px;
-	margin: 0px 0px 8px 0px;
-	height: 48px;
-	width: 164px;
 }
 
 .clear_button {
 	background-image: url("./image/Arrow_Left.png");
-	background-repeat: no-repeat;
-	background-size: 36px 36px;
-	background-position: 8px center;
-	padding: 0px 0px 0px 36px;
-	height: 48px;
-	width: 164px;
-	align-items: center;
-	display: none;
 }
 
 .way_button {
@@ -216,21 +224,20 @@ span.icon{
 .checkbox {
 	display: 	table-cell;
 	vertical-align: middle;
-  position: relative;
-  width: 28px;
+  	position: relative;
+  	width: 28px;
 }
 
 .checkbox input[type="checkbox"] {
-  display        : none;            /* チェックボックス非表示 */
+	display        : none;            /* チェックボックス非表示 */
 }
 
 .checkbox label {
-  display        : block;               /* ボックス要素に変更 */
-  box-sizing     : border-box;          /* 枠線を含んだサイズ */
-  height         : 1.3em;
+	display        : block;               /* ボックス要素に変更 */
+  	box-sizing     : border-box;          /* 枠線を含んだサイズ */
+  	height         : 1.3em;
 	border         : 2px solid #999999;   /* 未選択タブのの枠線 */
-  border-radius  : 9px;                /* 角丸               */
-	vertical-align: middle;
+	border-radius  : 9px;                /* 角丸               */
 	margin: 0px;
 }
 
@@ -252,8 +259,4 @@ span.icon{
 .checkbox input[type="checkbox"]:checked ~ div[type="swImg"] {
   transform      : translateX(10px);    /* 丸も右へ移動       */
   background     : #709070;             /* カーソルタブの背景 */
-}
-
-.modal-body{
-	font-size: 14px !important;
 }
