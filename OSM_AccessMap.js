@@ -5,7 +5,7 @@
 var map;
 var hash;
 var Layer_Base;												// list base layers
-var Layer_Data = {};										// Layer Status,geojson,svglayer
+var Layer_Data;												// Layer Status,geojson,svglayer
 var Icons = {};												// アイコンSVG配列
 var LL = {};												// 緯度(latitude)と経度(longitude)
 var MMK_Loads = [{ file: "./basemenu.html", icon: "" }];	// filenames(for filter function)
@@ -16,10 +16,12 @@ const ZoomErrMsg = "地図を作るには、もう少しズームしてくださ
 const NoSvgMsg = "保存するマップがありません。\nまず、左側の「以下の範囲でマップを作る」ボタンを押してください。";
 const OvGetError = "サーバーからのデータ取得に失敗しました。やり直してください。";
 const Mono_Filter = ['grayscale:90%', 'bright:85%', 'contrast:130%', 'sepia:15%'];;
-const Download_Filename = 'Walking_Town_Map'
+const Download_Filename = 'Walking_Town_Map';
 const OvServer = 'https://overpass.kumi.systems/api/interpreter'	// or 'https://overpass-api.de/api/interpreter' or 'https://overpass.nchc.org.tw/api/interpreter'
-const OvServer_Org = 'https://overpass-api.de/api/interpreter'	// 本家(更新が早い)
+//const OvServer = 'https://overpass.nchc.org.tw/api/interpreter';
+const OvServer_Org = 'https://overpass-api.de/api/interpreter';	// 本家(更新が早い)
 const LeafContOpt = { collapsed: true };
+const darken_param = 0.5;
 
 const Simplify_Options = {
 	14: { tolerance: 0.0001, highQuality: true }, 15: { tolerance: 0.00001, highQuality: true }, 16: { tolerance: 0.000001, highQuality: true },
@@ -39,15 +41,16 @@ const ExtDatas = { SHL: "./data/mapnavoskdat_hinanbiru.geojson" };
 
 const OverPass = {
 	PRK: ['relation["leisure"="park"]', 'way["leisure"="playground"]', 'way["leisure"="park"]', 'way["leisure"="pitch"]'],
+	PED: ['way["highway" = "pedestrian"]["area"]'],
 	GDN: ['way["leisure"="garden"]', 'way["landuse"="grass"]'],
-	RIV: ['relation["waterway"]', 'way["waterway"]', 'way["landuse"="reservoir"]', 'way["natural"="water"]', 'way["natural"="coastline"]'],
-	FRT: ['relation["landuse"="forest"]', 'relation["natural"="wood"]', 'way["landuse"="forest"]', 'way["natural"="wood"]', 'way["landuse"="farmland"]', 'way["landuse"="allotments"]'],
+	RIV: ['relation["waterway"]', 'way["waterway"]', 'way["landuse"="reservoir"]', 'way["natural"="water"]', 'way["natural"="coastline"]["place"!="island"]'],
+	FRT: ['relation["landuse"="forest"]', 'relation["natural"="wood"]', 'way["landuse"="forest"]', 'way["natural"="wood"]', 'way["natural"="scrub"]', 'way["landuse"="farmland"]', 'way["landuse"="allotments"]'],
 	RIL: ['way["railway"]'],
 	ALY: ['way["highway"="footway"]', 'way["highway"="path"]', 'way["highway"="track"]', 'way["highway"="steps"]'],
-	STD: ['way["highway"~"unclassified"]', 'way["highway"~"residential"]', 'way["highway"="living_street"]', 'way["highway"~"pedestrian"]', 'way["highway"="service"]'],
+	STD: ['way["highway"~"unclassified"]', 'way["highway"~"residential"]', 'way["highway"="living_street"]', 'way["highway"="pedestrian"][!"area"]', 'way["highway"="service"]'],
 	PRI: ['way["highway"~"primary"]', 'way["highway"~"secondary"]', 'way["highway"~"tertiary"]'],
 	HIW: ['way["highway"~"motorway"]', 'way["highway"~"trunk"]'],
-	BLD: ['way["building"!="train_station"]["building"]', 'way["man_made"="bridge"]', 'relation["building"!="train_station"]["building"]'],
+	BLD: ['way["building"!="train_station"]["building"]', 'relation["building"!="train_station"]["building"]'],
 	BRR: ['way["barrier"]'],
 	STN: ['relation["building"="train_station"]', 'way["building"="train_station"]'],
 	SIG: ['node["highway"="traffic_signals"]'],
@@ -62,18 +65,19 @@ const OverPass = {
 };
 
 const Defaults = {	// 制御情報の保管場所
-	PRK: { init: true, zoom: 15, type: "way", name: "各種公園", color: "#ffffdd", width: 0.5, dashArray: null },
-	GDN: { init: true, zoom: 16, type: "way", name: "庭・草原", color: "#b6d7a8", width: 0.5, dashArray: null },
-	RIV: { init: true, zoom: 15, type: "way", name: "水路・川", color: "#6fa8dc", width: 1.0, dashArray: null },
-	FRT: { init: true, zoom: 15, type: "way", name: "森・田畑", color: "#93c47d", width: 0.5, dashArray: null },
-	RIL: { init: true, zoom: 13, type: "way", name: "レール類", color: "#041c31", width: 1.2, dashArray: "8,4" },
-	ALY: { init: true, zoom: 16, type: "way", name: "路地小道", color: "#e8e8e8", width: 0.8, dashArray: "4,3" },
-	STD: { init: true, zoom: 14, type: "way", name: "一般道路", color: "#ffffff", width: 2.0, dashArray: null },
-	PRI: { init: true, zoom: 13, type: "way", name: "主要道路", color: "#cccccc", width: 4.0, dashArray: null },
-	HIW: { init: true, zoom: 13, type: "way", name: "高速道路", color: "#f9cb9c", width: 5.0, dashArray: null },
-	BLD: { init: true, zoom: 16, type: "way", name: "建物・家", color: "#e8e8e8", width: 0.5, dashArray: null },
-	BRR: { init: true, zoom: 16, type: "way", name: "壁・擁壁", color: "#888888", width: 1.0, dashArray: null },
-	STN: { init: true, zoom: 15, type: "way", name: "駅施設等", color: "#fad4d4", width: 0.5, dashArray: null },
+	PRK: { init: true, zoom: 15, type: "area", name: "各種公園", color: "#ffffdd", width: 0.3, dashArray: null },
+	PED: { init: true, zoom: 15, type: "area", name: "各種広場", color: "#eeeecc", width: 0.3, dashArray: null },
+	GDN: { init: true, zoom: 16, type: "area", name: "庭・草原", color: "#b6d7a8", width: 0.3, dashArray: null },
+	RIV: { init: true, zoom: 15, type: "area", name: "水路・川", color: "#6fa8dc", width: 0.3, dashArray: null },
+	FRT: { init: true, zoom: 15, type: "area", name: "森・田畑", color: "#93c47d", width: 0.3, dashArray: null },
+	RIL: { init: true, zoom: 13, type: "line", name: "レール類", color: "#041c31", width: 1.2, dashArray: "8,4" },
+	ALY: { init: true, zoom: 16, type: "line", name: "路地小道", color: "#e8e8e8", width: 0.8, dashArray: "4,3" },
+	STD: { init: true, zoom: 14, type: "line", name: "一般道路", color: "#f0f0f0", width: 2.5, dashArray: null },
+	PRI: { init: true, zoom: 13, type: "line", name: "主要道路", color: "#dddddd", width: 4.0, dashArray: null },
+	HIW: { init: true, zoom: 13, type: "line", name: "高速道路", color: "#f9cb9c", width: 5.0, dashArray: null },
+	BLD: { init: true, zoom: 16, type: "area", name: "建物・家", color: "#e8e8e8", width: 0.5, dashArray: null },
+	BRR: { init: true, zoom: 16, type: "line", name: "壁・擁壁", color: "#888888", width: 0.7, dashArray: null },
+	STN: { init: true, zoom: 15, type: "area", name: "駅施設等", color: "#fad4d4", width: 0.5, dashArray: null },
 	SIG: { init: false, zoom: 16, type: "node", name: "信号関連", icon: "./image/signal.svg", size: [18, 34] },
 	CFE: { init: false, zoom: 16, type: "node", name: "カフェ等", icon: "./image/cafe.svg", size: [28, 28] },
 	RST: { init: false, zoom: 16, type: "node", name: "飲食店等", icon: "./image/restaurant.svg", size: [28, 28] },
@@ -97,16 +101,7 @@ const credit = {
 // initialize leaflet
 $(document).ready(function () {
 	console.log("Welcome to Walking Town Map Maker.");
-
-	console.log("initialize variable.");
-	for (let key in Defaults) {
-		Layer_Data[key] = {
-			color: typeof (Defaults[key].color) == "undefined" ? "" : Defaults[key].color,
-			width: typeof (Defaults[key].width) == "undefined" ? 0 : Defaults[key].width,
-			view: Defaults[key].init
-		};
-		if (typeof (Defaults[key].icon) !== "undefined") MMK_Loads.push({ file: Defaults[key].icon, icon: key })
-	};
+	TownMap.init();
 
 	console.log("initialize leaflet.");
 	let osm_mono = L.tileLayer.colorFilter('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxNativeZoom: 19, maxZoom: 21, attribution: '<a href="http://openstreetmap.org">&copy OpenStreetMap contributors</a>', filter: Mono_Filter });
@@ -169,13 +164,15 @@ var Control = (function () {
 					copyobj.find('label[for="AAA_layer"]').attr('for', key + "_layer");
 					copyobj.find('.custom_label').html(Defaults[key].name);
 					copyobj.appendTo($('#custom_map'));
+					$("#" + key + "_line").append('<option value="0">無</option>');
 					$("#" + key + "_line").append('<option value="' + Defaults[key].width / 2 + '">細</option>');
 					$("#" + key + "_line").append('<option value="' + Defaults[key].width * 1 + '" selected>中</option>');
 					$("#" + key + "_line").append('<option value="' + Defaults[key].width * 2 + '">太</option>');
 				};
 
 				switch (Defaults[key].type) {
-					case "way":
+					case "line":
+					case "area":
 						$('#' + key + '_layer').change(function () {																	// 表示変更時のイベント定義
 							Layer_Data[key].view = $(this).prop('checked');
 							TownMap.update(key);
@@ -190,15 +187,17 @@ var Control = (function () {
 						});
 						$('#' + key + '_color').simpleColorPicker({
 							onChangeColor: function (color) {																			// 色変更時のイベント定義
-								set_btncolor(color, key, true);
+								$("#" + key + "_color").css('background-color', color);
 								$('#' + key + '_layer').prop('checked', true);															// 色変更時はチェックON
-								Layer_Data[key].view = true
+								Layer_Data[key].color = color;
+								Layer_Data[key].color_dark = chroma(color).darken(darken_param).hex();
+								Layer_Data[key].view = true;
 								TownMap.update(key);
 								return;
 							}
 						});
 						$('#' + key + '_line').val(Defaults[key].width);																// [UI側]線の太さを設定
-						set_btncolor(Defaults[key].color, key, false);																	// [UI側]ボタンの色を設定
+						$("#" + key + "_color").css('background-color', Defaults[key].color);											// [UI側]ボタンの色を設定
 						break;
 				}
 			};
@@ -226,6 +225,20 @@ var TownMap = (function () {
 	};
 
 	return {
+		init: function () {
+			console.log("initialize variable.");
+			Layer_Data = {};
+			for (let key in Defaults) {
+				let color = typeof (Defaults[key].color) == "undefined" ? "" : Defaults[key].color;
+				Layer_Data[key] = {
+					"color": color,
+					"color_dark": color == "" ? "" : chroma(color).darken(darken_param).hex(),
+					"width": typeof (Defaults[key].width) == "undefined" ? 0 : Defaults[key].width,
+					"view": Defaults[key].init
+				};
+				if (typeof (Defaults[key].icon) !== "undefined") MMK_Loads.push({ file: Defaults[key].icon, icon: key })
+			};
+		},
 
 		// アクセスマップを作る
 		make: function (query_date) {
@@ -244,7 +257,9 @@ var TownMap = (function () {
 				if (Defaults[key].init && Defaults[key].zoom <= ZoomLevel) {
 					let query = "";
 					for (let ovpass in OverPass[key]) { query += OverPass[key][ovpass] + maparea; }
-					jqXHRs.push($.get(OvServer + '?data=[out:json][timeout:30]' + query_date + ';(' + query + ');out body;>;out skel qt;', function () {
+					let url = OvServer + '?data=[out:json][timeout:30]' + query_date + ';(' + query + ');out body;>;out skel qt;';
+					console.log("GET: " + url);
+					jqXHRs.push($.get(url, function () {
 						ProgressBar.show(Math.ceil(((++Progress + 1) * 100) / LayerCounts));
 					}));
 				}
@@ -362,19 +377,14 @@ var TownMap = (function () {
 				TownMap.control('hide');
 				for (let key in Defaults) {
 					if (Layer_Data[key].svg) {
-						if (Defaults[key].type == "way") {
+						if (Defaults[key].type !== "node") {
 							map.removeLayer(Layer_Data[key].svg);
 						} else {
 							Layer_Data[key].svg.forEach(function (icons) { map.removeLayer(icons) });
 						}
 					};
-					Layer_Data[key] = {
-						color: typeof (Defaults[key].color) == "undefined" ? "" : Defaults[key].color,
-						width: typeof (Defaults[key].width) == "undefined" ? 0 : Defaults[key].width,
-						view: Defaults[key].init
-					};
-					if (typeof (Defaults[key].icon) !== "undefined") MMK_Loads.push({ file: Defaults[key].icon, icon: key })
 				};
+				TownMap.init();
 			});
 		}
 	}

@@ -7,13 +7,25 @@ function MakeLayer(key) {
 	let data = Defaults[key];
 	console.log("MakeLayer start");
 	switch (data.type) {
-		case "way":
+		case "area":
+		case "line":
 			if (Layer_Data[key].svg !== undefined) { Layer_Data[key].svg.remove(map) }	// Delete an existing layer
 			let param = {
 				style: function (feature) {
-					return {
-						stroke: true, color: Layer_Data[key].color, weight: Layer_Data[key].width * ((map.getZoom() - MinZoomLevel) * 0.5),
-						fillOpacity: 1.0, dashArray: data.dashArray, bubblingMouseEvents: false, lineJoin: 'round', bubblingMouseEvents: false
+					let common = {
+						stroke: true,dashArray: data.dashArray, bubblingMouseEvents: false,
+						lineJoin: 'round', bubblingMouseEvents: false, fillOpacity: 1.0 
+					};
+					if (data.type == "area") {
+						return Object.assign(common, {
+							weight: Layer_Data[key].width * ((map.getZoom() - MinZoomLevel) * 0.8),
+							color: Layer_Data[key].color_dark, fillColor: Layer_Data[key].color
+						});
+					} else {
+						return Object.assign(common, {
+							weight: Layer_Data[key].width * ((map.getZoom() - MinZoomLevel) * 0.5),
+							color: Layer_Data[key].color, fillColor: Layer_Data[key].color_dark
+						});
 					}
 				},
 				filter: function (feature, layer) {
@@ -228,20 +240,6 @@ function SVG_WriteText(params) {
 	rect.setAttribute("fill-opacity", 0.9);
 	rect.setAttributeNS(null, 'name', 'tempsvg');
 	params.svg[0].insertBefore(rect, svgtext);
-}
-
-
-// frontend: color set/change
-function set_btncolor(color, key, chgWay) {
-	let rgbcolor = new RGBColor(color);
-	$("#" + key + "_color").css('background-color', color);
-	if (rgbcolor.ok) {
-		if (chgWay) { Layer_Data[key].color = color; }					// set Way color
-		rgbcolor.r = (255 - rgbcolor.r);							// set button color
-		rgbcolor.g = (255 - rgbcolor.g);
-		rgbcolor.b = (255 - rgbcolor.b);
-		$("#" + key + "_color").css("color", rgbcolor.toHex());
-	}
 }
 
 $.fn.extend({
