@@ -7,14 +7,14 @@ function MakeLayer(key) {
 	let data = Defaults[key];
 	console.log("MakeLayer start");
 	switch (data.type) {
-		case "area":
 		case "line":
+		case "area":
 			if (Layer_Data[key].svg !== undefined) { Layer_Data[key].svg.remove(map) }	// Delete an existing layer
 			let param = {
 				style: function (feature) {
 					let common = {
-						stroke: true,dashArray: data.dashArray, bubblingMouseEvents: false,
-						lineJoin: 'round', bubblingMouseEvents: false, fillOpacity: 1.0 
+						stroke: true, dashArray: data.dashArray, bubblingMouseEvents: false,
+						lineJoin: 'round', bubblingMouseEvents: false, fillOpacity: 1.0
 					};
 					if (data.type == "area") {
 						return Object.assign(common, {
@@ -23,7 +23,7 @@ function MakeLayer(key) {
 						});
 					} else {
 						return Object.assign(common, {
-							weight: Layer_Data[key].width * ((map.getZoom() - MinZoomLevel) * 0.5),
+							weight: Layer_Data[key].width * ((map.getZoom() - MinZoomLevel) * 0.8),
 							color: Layer_Data[key].color, fillColor: Layer_Data[key].color_dark
 						});
 					}

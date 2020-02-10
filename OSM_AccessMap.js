@@ -41,17 +41,18 @@ const ExtDatas = { SHL: "./data/mapnavoskdat_hinanbiru.geojson" };
 
 const OverPass = {
 	PRK: ['relation["leisure"="park"]', 'way["leisure"="playground"]', 'way["leisure"="park"]', 'way["leisure"="pitch"]'],
-	PED: ['way["highway" = "pedestrian"]["area"]'],
+	PED: ['way["highway"="pedestrian"]["area"]'],
+	PKG: ['way["amenity"="parking"]', 'way["amenity"="bicycle_parking"]'],
 	GDN: ['way["leisure"="garden"]', 'way["landuse"="grass"]'],
 	RIV: ['relation["waterway"]', 'way["waterway"]', 'way["landuse"="reservoir"]', 'way["natural"="water"]', 'way["natural"="coastline"]["place"!="island"]'],
 	FRT: ['relation["landuse"="forest"]', 'relation["natural"="wood"]', 'way["landuse"="forest"]', 'way["natural"="wood"]', 'way["natural"="scrub"]', 'way["landuse"="farmland"]', 'way["landuse"="allotments"]'],
 	RIL: ['way["railway"]'],
 	ALY: ['way["highway"="footway"]', 'way["highway"="path"]', 'way["highway"="track"]', 'way["highway"="steps"]'],
-	STD: ['way["highway"~"unclassified"]', 'way["highway"~"residential"]', 'way["highway"="living_street"]', 'way["highway"="pedestrian"][!"area"]', 'way["highway"="service"]'],
-	PRI: ['way["highway"~"primary"]', 'way["highway"~"secondary"]', 'way["highway"~"tertiary"]'],
-	HIW: ['way["highway"~"motorway"]', 'way["highway"~"trunk"]'],
+	STD: ['way["highway"~"tertiary"]','way["highway"~"unclassified"]', 'way["highway"~"residential"]', 'way["highway"="living_street"]', 'way["highway"="pedestrian"][!"area"]', 'way["highway"="service"]'],
+	PRI: ['way["highway"~"trunk"]','way["highway"~"primary"]', 'way["highway"~"secondary"]'],
+	HIW: ['way["highway"~"motorway"]'],
 	BLD: ['way["building"!="train_station"]["building"]', 'relation["building"!="train_station"]["building"]'],
-	BRR: ['way["barrier"]'],
+	BRR: ['way["barrier"]["barrier"!="kerb"]["barrier"!="ditch"]'],
 	STN: ['relation["building"="train_station"]', 'way["building"="train_station"]'],
 	SIG: ['node["highway"="traffic_signals"]'],
 	CFE: ['node["amenity"="cafe"]'],
@@ -60,24 +61,26 @@ const OverPass = {
 	EXT: ['node["emergency"="fire_extinguisher"]'],
 	HYD: ['node["emergency"="fire_hydrant"]'],
 	BNC: ['node["amenity"="bench"]'],
+	AED: ['node["emergency"="defibrillator"]'],
 	LIB: ['node["amenity"="library"]', 'way["amenity"="library"]'],
 	SKR: ['node["species"="' + Sakura1 + '"]', 'node["species:en"="' + Sakura1 + '"]', 'node["species"="' + Sakura2 + '"]', 'node["species:en"="' + Sakura2 + '"]', 'node["species"="' + Sakura3 + '"]', 'node["species:en"="' + Sakura3 + '"]']
 };
 
 const Defaults = {	// 制御情報の保管場所
-	PRK: { init: true, zoom: 15, type: "area", name: "各種公園", color: "#ffffdd", width: 0.3, dashArray: null },
-	PED: { init: true, zoom: 15, type: "area", name: "各種広場", color: "#eeeecc", width: 0.3, dashArray: null },
-	GDN: { init: true, zoom: 16, type: "area", name: "庭・草原", color: "#b6d7a8", width: 0.3, dashArray: null },
-	RIV: { init: true, zoom: 15, type: "area", name: "水路・川", color: "#6fa8dc", width: 0.3, dashArray: null },
-	FRT: { init: true, zoom: 15, type: "area", name: "森・田畑", color: "#93c47d", width: 0.3, dashArray: null },
-	RIL: { init: true, zoom: 13, type: "line", name: "レール類", color: "#041c31", width: 1.2, dashArray: "8,4" },
+	PRK: { init: true, zoom: 15, type: "area", name: "各種公園", color: "#e8ffd0", width: 0.3, dashArray: null },
+	PED: { init: true, zoom: 15, type: "area", name: "各種広場", color: "#ffffe8", width: 0.3, dashArray: null },
+	PKG: { init: true, zoom: 15, type: "area", name: "駐車場", color: "#f0f0f0", width: 0.3, dashArray: null },
+	GDN: { init: true, zoom: 16, type: "area", name: "庭・草原", color: "#d8ffb8", width: 0.3, dashArray: null },
+	RIV: { init: true, zoom: 15, type: "area", name: "水路・川", color: "#b0d0f8", width: 0.3, dashArray: null },
+	FRT: { init: true, zoom: 15, type: "area", name: "森・田畑", color: "#b0f090", width: 0.3, dashArray: null },
+	RIL: { init: true, zoom: 13, type: "line", name: "レール類", color: "#909090", width: 1.2, dashArray: "12,6" },
 	ALY: { init: true, zoom: 16, type: "line", name: "路地小道", color: "#e8e8e8", width: 0.8, dashArray: "4,3" },
-	STD: { init: true, zoom: 14, type: "line", name: "一般道路", color: "#f0f0f0", width: 2.5, dashArray: null },
-	PRI: { init: true, zoom: 13, type: "line", name: "主要道路", color: "#dddddd", width: 4.0, dashArray: null },
-	HIW: { init: true, zoom: 13, type: "line", name: "高速道路", color: "#f9cb9c", width: 5.0, dashArray: null },
+	STD: { init: true, zoom: 14, type: "line", name: "一般道路", color: "#ffffe8", width: 4.0, dashArray: null },
+	PRI: { init: true, zoom: 13, type: "line", name: "主要道路", color: "#ffe8d0", width: 4.5, dashArray: null },
+	HIW: { init: true, zoom: 13, type: "line", name: "高速道路", color: "#f8d0a0", width: 5.0, dashArray: null },
 	BLD: { init: true, zoom: 16, type: "area", name: "建物・家", color: "#e8e8e8", width: 0.5, dashArray: null },
-	BRR: { init: true, zoom: 16, type: "line", name: "壁・擁壁", color: "#888888", width: 0.7, dashArray: null },
-	STN: { init: true, zoom: 15, type: "area", name: "駅施設等", color: "#fad4d4", width: 0.5, dashArray: null },
+	BRR: { init: true, zoom: 16, type: "line", name: "壁・擁壁", color: "#b0b0b0", width: 0.6, dashArray: null },
+	STN: { init: true, zoom: 15, type: "area", name: "駅施設等", color: "#f8d8d8", width: 0.5, dashArray: null },
 	SIG: { init: false, zoom: 16, type: "node", name: "信号関連", icon: "./image/signal.svg", size: [18, 34] },
 	CFE: { init: false, zoom: 16, type: "node", name: "カフェ等", icon: "./image/cafe.svg", size: [28, 28] },
 	RST: { init: false, zoom: 16, type: "node", name: "飲食店等", icon: "./image/restaurant.svg", size: [28, 28] },
@@ -85,6 +88,7 @@ const Defaults = {	// 制御情報の保管場所
 	EXT: { init: false, zoom: 15, type: "node", name: "消火器", icon: "./image/fire_extinguisher.svg", size: [28, 28] },
 	HYD: { init: false, zoom: 15, type: "node", name: "消火栓", icon: "./image/fire_hydrant.svg", size: [28, 28] },
 	BNC: { init: false, zoom: 15, type: "node", name: "ベンチ", icon: "./image/bench.svg", size: [28, 28] },
+	AED: { init: false, zoom: 15, type: "node", name: "AED", icon: "./image/aed.svg", size: [48, 48] },
 	LIB: { init: false, zoom: 14, type: "node", name: "図書館", icon: "./image/library.svg", size: [28, 28] },
 	SKR: { init: false, zoom: 15, type: "node", name: "木（さくら）", icon: "./image/sakura.svg", size: [28, 28] },
 	SHL: { init: false, zoom: 14, type: "node", name: "避難所(大阪市)", icon: "./image/shelter.svg", size: [28, 28] }
@@ -106,9 +110,9 @@ $(document).ready(function () {
 	console.log("initialize leaflet.");
 	let osm_mono = L.tileLayer.colorFilter('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxNativeZoom: 19, maxZoom: 21, attribution: '<a href="http://openstreetmap.org">&copy OpenStreetMap contributors</a>', filter: Mono_Filter });
 	let osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxNativeZoom: 19, maxZoom: 21, attribution: '<a href="http://openstreetmap.org">&copy OpenStreetMap contributors</a>' });
-	let mierune = L.tileLayer('https://tile.mierune.co.jp/mierune_mono/{z}/{x}/{y}.png', { maxZoom: 18, attribution: "Maptiles by <a href='http://mierune.co.jp/' target='_blank'>MIERUNE</a>, under CC BY. Data by <a href='http://osm.org/copyright' target='_blank'>OpenStreetMap</a> contributors, under ODbL.", });
-	let pale = L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png', { minZoom: 2, maxZoom: 18, attribution: "<a href='https://maps.gsi.go.jp/development/ichiran.html' target='_blank'>地理院タイル</a>" });
-	let ort = L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/ort/{z}/{x}/{y}.jpg', { minZoom: 5, maxZoom: 18, attribution: "<a href='https://maps.gsi.go.jp/development/ichiran.html' target='_blank'>地理院タイル</a>" });
+	let mierune = L.tileLayer('https://tile.mierune.co.jp/mierune_mono/{z}/{x}/{y}.png', { maxNativeZoom: 18, maxZoom: 21, attribution: "Maptiles by <a href='http://mierune.co.jp/' target='_blank'>MIERUNE</a>, under CC BY. Data by <a href='http://osm.org/copyright' target='_blank'>OpenStreetMap</a> contributors, under ODbL.", });
+	let pale = L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png', { maxNativeZoom: 18, maxZoom: 21, attribution: "<a href='https://maps.gsi.go.jp/development/ichiran.html' target='_blank'>地理院タイル</a>" });
+	let ort = L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/ort/{z}/{x}/{y}.jpg', { maxNativeZoom: 18, maxZoom: 21, attribution: "<a href='https://maps.gsi.go.jp/development/ichiran.html' target='_blank'>地理院タイル</a>" });
 
 	Layer_Base = { 'OpenStreetMap（白黒）': osm_mono, 'OpenStreetMap（標準）': osm, 'MIERUNE(MONO)': mierune, '地理院タイル（基本）': pale, '地理院タイル（写真）': ort };
 	map = L.map('mapid', { center: [38.290, 138.988], zoom: 6, layers: [osm_mono], doubleClickZoom: false });
@@ -213,14 +217,16 @@ var TownMap = (function () {
 	};
 	function SetGeoJson(key, osmxml) {
 		let geojson = osmtogeojson(osmxml, { flatProperties: true });
-		geojson.features.forEach(function (val) { delete val.id });							// delete Unnecessary osmid
-		try {
-			let simple_geojson = turf.simplify(geojson, Simplify_Options[map.getZoom()]);
-			let truncated = turf.truncate(simple_geojson, Truncate_Options[map.getZoom()]);
-			Layer_Data[key].geojson = truncated;
-		} catch{
-			Layer_Data[key].geojson = geojson;
+		geojson.features.forEach(function (val) { delete val.id; }); // delete Unnecessary osmid
+		if (geojson.features.length > 0) {
+			try {
+				let simple_geojson = turf.simplify(geojson, Simplify_Options[map.getZoom()]);
+				geojson = turf.truncate(simple_geojson, Truncate_Options[map.getZoom()]);
+			} catch{
+				console.log("turf.js: error... / no simplify")
+			}
 		}
+		Layer_Data[key].geojson = geojson;
 		Layer_Data[key].view = true;														// view when there is a target
 	};
 
@@ -290,6 +296,7 @@ var TownMap = (function () {
 
 			switch (OverPass[key]) {
 				case undefined:
+					console.log(ExtDatas[key]);
 					$.get({ url: ExtDatas[key], dataType: "json" }, function (geojson) {
 						let maped_geojson = geojson.features.filter(function (value) {
 							let geoll = value.geometry.coordinates;
