@@ -1,4 +1,3 @@
-/*	まち歩きマップメーカー Licence: MIT */
 "use strict";
 
 // make Layer

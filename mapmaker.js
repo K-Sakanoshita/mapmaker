@@ -44,12 +44,12 @@ const OverPass = {
 	PED: ['way["highway"="pedestrian"]["area"]'],
 	PKG: ['way["amenity"="parking"]', 'way["amenity"="bicycle_parking"]'],
 	GDN: ['way["leisure"="garden"]', 'way["landuse"="grass"]'],
-	RIV: ['relation["waterway"]', 'way["waterway"]', 'way["landuse"="reservoir"]', 'way["natural"="water"]', 'way["natural"="coastline"]["place"!="island"]'],
+	RIV: ['relation["waterway"]', 'way["waterway"]', 'way["landuse"="reservoir"]', 'relation["natural"="water"]', 'way["natural"="water"]', 'way["natural"="coastline"]["place"!="island"]'],
 	FRT: ['relation["landuse"="forest"]', 'relation["natural"="wood"]', 'way["landuse"="forest"]', 'way["natural"="wood"]', 'way["natural"="scrub"]', 'way["landuse"="farmland"]', 'way["landuse"="allotments"]'],
 	RIL: ['way["railway"]'],
 	ALY: ['way["highway"="footway"]', 'way["highway"="path"]', 'way["highway"="track"]', 'way["highway"="steps"]'],
-	STD: ['way["highway"~"tertiary"]','way["highway"~"unclassified"]', 'way["highway"~"residential"]', 'way["highway"="living_street"]', 'way["highway"="pedestrian"][!"area"]', 'way["highway"="service"]'],
-	PRI: ['way["highway"~"trunk"]','way["highway"~"primary"]', 'way["highway"~"secondary"]'],
+	STD: ['way["highway"~"tertiary"]', 'way["highway"~"unclassified"]', 'way["highway"~"residential"]', 'way["highway"="living_street"]', 'way["highway"="pedestrian"][!"area"]', 'way["highway"="service"]'],
+	PRI: ['way["highway"~"trunk"]', 'way["highway"~"primary"]', 'way["highway"~"secondary"]'],
 	HIW: ['way["highway"~"motorway"]'],
 	BLD: ['way["building"!="train_station"]["building"]', 'relation["building"!="train_station"]["building"]'],
 	BRR: ['way["barrier"]["barrier"!="kerb"]["barrier"!="ditch"]'],
@@ -73,10 +73,10 @@ const Defaults = {	// 制御情報の保管場所
 	GDN: { init: true, zoom: 16, type: "area", name: "庭・草原", color: "#d8ffb8", width: 0.3, dashArray: null },
 	RIV: { init: true, zoom: 15, type: "area", name: "水路・川", color: "#b0d0f8", width: 0.3, dashArray: null },
 	FRT: { init: true, zoom: 15, type: "area", name: "森・田畑", color: "#b0f090", width: 0.3, dashArray: null },
-	RIL: { init: true, zoom: 13, type: "line", name: "レール類", color: "#909090", width: 1.2, dashArray: "12,6" },
-	ALY: { init: true, zoom: 16, type: "line", name: "路地小道", color: "#e8e8e8", width: 0.8, dashArray: "4,3" },
-	STD: { init: true, zoom: 14, type: "line", name: "一般道路", color: "#ffffe8", width: 4.0, dashArray: null },
-	PRI: { init: true, zoom: 13, type: "line", name: "主要道路", color: "#ffe8d0", width: 4.5, dashArray: null },
+	RIL: { init: true, zoom: 13, type: "line", name: "レール類", color: "#909090", width: 1.2, dashArray: "12,4" },
+	ALY: { init: true, zoom: 16, type: "line", name: "路地小道", color: "#e8e8e8", width: 0.8, dashArray: "4,2" },
+	STD: { init: true, zoom: 14, type: "line", name: "一般道路", color: "#ffffe8", width: 3.0, dashArray: null },
+	PRI: { init: true, zoom: 13, type: "line", name: "主要道路", color: "#ffe8d0", width: 4.0, dashArray: null },
 	HIW: { init: true, zoom: 13, type: "line", name: "高速道路", color: "#f8d0a0", width: 5.0, dashArray: null },
 	BLD: { init: true, zoom: 16, type: "area", name: "建物・家", color: "#e8e8e8", width: 0.5, dashArray: null },
 	BRR: { init: true, zoom: 16, type: "line", name: "壁・擁壁", color: "#b0b0b0", width: 0.6, dashArray: null },
@@ -115,13 +115,38 @@ $(document).ready(function () {
 	let ort = L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/ort/{z}/{x}/{y}.jpg', { maxNativeZoom: 18, maxZoom: 21, attribution: "<a href='https://maps.gsi.go.jp/development/ichiran.html' target='_blank'>地理院タイル</a>" });
 
 	Layer_Base = { 'OpenStreetMap（白黒）': osm_mono, 'OpenStreetMap（標準）': osm, 'MIERUNE(MONO)': mierune, '地理院タイル（基本）': pale, '地理院タイル（写真）': ort };
-	map = L.map('mapid', { center: [38.290, 138.988], zoom: 6, layers: [osm_mono], doubleClickZoom: false });
+	//map = L.map('mapid', { center: [38.290, 138.988], zoom: 6, layers: [osm_mono], doubleClickZoom: false });
+	map = L.map('mapid', { center: [38.290, 138.988], zoom: 6, doubleClickZoom: false });
 	map.zoomControl.setPosition("bottomright");
 	let L_Sel = L.control.layers(Layer_Base, null, LeafContOpt).addTo(map);
 	hash = new L.Hash(map);
 	let lc = L.control.locate({ position: 'bottomright', strings: { title: "現在地を表示" }, locateOptions: { maxZoom: 16 } }).addTo(map);
 
+	var gl = L.mapboxGL({
+		attribution: '<a href="https://www.maptiler.com/copyright/" target="_blank">© MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">© OpenStreetMap contributors</a>',
+		accessToken: 'no-token',
+		style: 'https://api.maptiler.com/maps/371812ac-52d8-4ace-a720-a027cec01eac/style.json?key=Eq2IyrHsOEGFU1W1fvd7'
+	}).addTo(map);
+
 	console.log("initialize Basemenu.");
+	let search = L.control({ position: "topleft" });			// 検索欄追加
+	search.onAdd = function (map) {
+		this.ele = L.DomUtil.create('div', "search");
+		this.ele.id = "search";
+		return this.ele;
+	};
+	search.addTo(map);
+	$("#search").html("<span class='search'>住所：<input type='search' id='search_input' class='form-control'></input></span>");
+	$("#search_input").on('change', function (e) {
+		console.log(e.target.value);
+		getLatLng(e.target.value, (latnng) => {
+			console.log(latnng);
+			map.panTo(latnng);
+		}, (e) => {
+			$("#AddressNotFound_Modal").modal({ backdrop: "static", keyboard: false });
+		})
+	});
+
 	let basemenu = L.control({ position: "topleft" });			// 標準メニュー追加
 	basemenu.onAdd = function (map) {
 		this.ele = L.DomUtil.create('div', "basemenu");
@@ -222,8 +247,8 @@ var TownMap = (function () {
 			try {
 				let simple_geojson = turf.simplify(geojson, Simplify_Options[map.getZoom()]);
 				geojson = turf.truncate(simple_geojson, Truncate_Options[map.getZoom()]);
-			} catch{
-				console.log("turf.js: error... / no simplify")
+			} catch (e) {
+				console.log("turf.js: error... / no simplify / " + e);
 			}
 		}
 		Layer_Data[key].geojson = geojson;

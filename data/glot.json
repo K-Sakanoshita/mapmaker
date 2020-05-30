@@ -8,7 +8,7 @@
 		"en": "Custom maps for free use"
 	},
 	"subtitle2": {
-		"ja": "Copyrightをお忘れなく",
+		"ja": "Copyrightは必要",
 		"en": "Don't forget the Copyright"
 	},
 	"zoomlevel": {
@@ -16,8 +16,8 @@
 		"en": "Zoom Level: "
 	},
 	"selectdate": {
-		"ja": "（任意）データ取得日付：",
-		"en": "(Option)Acquisition Date: "
+		"ja": "（実験）日付指定：",
+		"en": "(TEST)Acquisition Date: "
 	},
 	"makemap": {
 		"ja": "この範囲内で<br />マップを作る",
@@ -26,5 +26,13 @@
 	"controlmenu": {
 		"ja": "カスタマイズ",
 		"en": "Customize"
+	},
+	"AddressNotFound_title":{
+		"ja": "住所が見つかりません",
+		"en": "Address not found"
+	},
+	"AddressNotFound_body": {
+		"ja": "お手数ですが都道府県から入力ください。また、施設名や「上る」「下る」は未対応です。",
+		"en": "Please enter your name from your prefecture. Also, the name of the facility and \"up\" and \"down\" are not supported."
 	}
 }
