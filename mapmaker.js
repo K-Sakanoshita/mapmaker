@@ -108,17 +108,17 @@ $(document).ready(function () {
 	TownMap.init();
 
 	console.log("initialize leaflet.");
-	let osm_mono = L.tileLayer.colorFilter('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxNativeZoom: 19, maxZoom: 21, attribution: '<a href="http://openstreetmap.org">&copy OpenStreetMap contributors</a>', filter: Mono_Filter });
-	let osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxNativeZoom: 19, maxZoom: 21, attribution: '<a href="http://openstreetmap.org">&copy OpenStreetMap contributors</a>' });
-	let mierune = L.tileLayer('https://tile.mierune.co.jp/mierune_mono/{z}/{x}/{y}.png', { maxNativeZoom: 18, maxZoom: 21, attribution: "Maptiles by <a href='http://mierune.co.jp/' target='_blank'>MIERUNE</a>, under CC BY. Data by <a href='http://osm.org/copyright' target='_blank'>OpenStreetMap</a> contributors, under ODbL.", });
-	let pale = L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png', { maxNativeZoom: 18, maxZoom: 21, attribution: "<a href='https://maps.gsi.go.jp/development/ichiran.html' target='_blank'>地理院タイル</a>" });
-	let ort = L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/ort/{z}/{x}/{y}.jpg', { maxNativeZoom: 18, maxZoom: 21, attribution: "<a href='https://maps.gsi.go.jp/development/ichiran.html' target='_blank'>地理院タイル</a>" });
+	// let osm_mono = L.tileLayer.colorFilter('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxNativeZoom: 19, maxZoom: 21, attribution: '<a href="http://openstreetmap.org">&copy OpenStreetMap contributors</a>', filter: Mono_Filter });
+	// let osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxNativeZoom: 19, maxZoom: 21, attribution: '<a href="http://openstreetmap.org">&copy OpenStreetMap contributors</a>' });
+	// let mierune = L.tileLayer('https://tile.mierune.co.jp/mierune_mono/{z}/{x}/{y}.png', { maxNativeZoom: 18, maxZoom: 21, attribution: "Maptiles by <a href='http://mierune.co.jp/' target='_blank'>MIERUNE</a>, under CC BY. Data by <a href='http://osm.org/copyright' target='_blank'>OpenStreetMap</a> contributors, under ODbL.", });
+	// let pale = L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png', { maxNativeZoom: 18, maxZoom: 21, attribution: "<a href='https://maps.gsi.go.jp/development/ichiran.html' target='_blank'>地理院タイル</a>" });
+	// let ort = L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/ort/{z}/{x}/{y}.jpg', { maxNativeZoom: 18, maxZoom: 21, attribution: "<a href='https://maps.gsi.go.jp/development/ichiran.html' target='_blank'>地理院タイル</a>" });
 
-	Layer_Base = { 'OpenStreetMap（白黒）': osm_mono, 'OpenStreetMap（標準）': osm, 'MIERUNE(MONO)': mierune, '地理院タイル（基本）': pale, '地理院タイル（写真）': ort };
+	// Layer_Base = { 'OpenStreetMap（白黒）': osm_mono, 'OpenStreetMap（標準）': osm, 'MIERUNE(MONO)': mierune, '地理院タイル（基本）': pale, '地理院タイル（写真）': ort };
 	//map = L.map('mapid', { center: [38.290, 138.988], zoom: 6, layers: [osm_mono], doubleClickZoom: false });
 	map = L.map('mapid', { center: [38.290, 138.988], zoom: 6, doubleClickZoom: false });
 	map.zoomControl.setPosition("bottomright");
-	let L_Sel = L.control.layers(Layer_Base, null, LeafContOpt).addTo(map);
+	// let L_Sel = L.control.layers(Layer_Base, null, LeafContOpt).addTo(map);
 	hash = new L.Hash(map);
 	let lc = L.control.locate({ position: 'bottomright', strings: { title: "現在地を表示" }, locateOptions: { maxZoom: 16 } }).addTo(map);
 
