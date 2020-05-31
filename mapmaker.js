@@ -8,7 +8,7 @@ var Layer_Base;												// list base layers
 var Layer_Data;												// Layer Status,geojson,svglayer
 var Icons = {};												// アイコンSVG配列
 var LL = {};												// 緯度(latitude)と経度(longitude)
-var MMK_Loads = [{ file: "./basemenu.html", icon: "" }];	// filenames(for filter function)
+var MMK_Loads = [{ file: "./basemenu.html", icon: "" }, { file: "./modals.html", icon: "" }];	// filenames(for filter function)
 
 const glot = new Glottologist();
 const MinZoomLevel = 14;		// これ未満のズームレベルでは地図は作らない
@@ -164,6 +164,7 @@ $(document).ready(function () {
 	for (let key in MMK_Loads) { jqXHRs.push($.get(MMK_Loads[key].file)) };
 	$.when.apply($, jqXHRs).always(function () {
 		$("#basemenu").html(arguments[0][0]);																						// メニューHTML読み込み
+		$("#modals").html(arguments[1][0]);																						// メニューHTML読み込み
 		let xs = new XMLSerializer();
 		for (let i = 0; i < MMK_Loads.length; i++) {
 			if (MMK_Loads[i].icon != "") Icons[MMK_Loads[i].icon] = xs.serializeToString(arguments[i][0]);

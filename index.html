@@ -35,7 +35,7 @@
 		<script src="https://cdn.maptiler.com/mapbox-gl-js/v1.5.1/mapbox-gl.js"></script>
 		<script src="https://cdn.maptiler.com/mapbox-gl-leaflet/latest/leaflet-mapbox-gl.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.65.2/src/L.Control.Locate.min.js"></script>
-		<script src="https://geolonia.github.io/simple-geocoder/api.js"></script>
+		<script src="https://community-geocoder.geolonia.com/api.js"></script>
 		<script src="https://unpkg.com/glottologist"></script>
 		<script src="./lib/leaflet-tilelayer-colorfilter.min.js"></script>
 		<script src="./lib/jquery.simple-color-picker.js"></script>
@@ -64,73 +64,7 @@
 			</article>
 		</div>
 
-		<!-- モーダル用HTML -->
-		<div id="Progress_Modal" class="modal fade" tabindex="-1" role="dialog">
-			<div class="modal-dialog modal-lg" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h4 class="modal-title">マップデータのロード中</h4>
-					</div>
-					<div class="modal-body">
-						<p>サーバーからロード中です。しばらくお待ちください。</p>
-						<div class="progress">
-							<div id="Progress_Bar" class="progress-bar progress-bar-striped progress-bar-animated"
-								role="progressbar"></div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-
-		<div id="Clear_Modal" class="modal fade" tabindex="-1" role="dialog">
-			<div class="modal-dialog modal-lg" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h4 class="modal-title">最初からやり直す</h4>
-					</div>
-					<div class="modal-body">
-						<p>今のマップデータを削除して、最初からやり直ししますか？</p>
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-primary" id="Clear_Modal_Submit">最初からやり直す</button>
-						<button type="button" class="btn btn-secondary" data-dismiss="modal">やり直さない</button>
-					</div>
-				</div>
-			</div>
-		</div>
-
-		<div id="MakeCancel_Modal" class="modal fade" tabindex="-1" role="dialog">
-			<div class="modal-dialog modal-lg" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h4 class="modal-title">地図を作るには、もう少しズームしてください。</h4>
-					</div>
-					<div class="modal-body">
-						<p>ズームレベル14から作ることが出来ます。更にズームすると建物や公園も作ることが出来ます。</p>
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-primary" data-dismiss="modal">分かりました</button>
-					</div>
-				</div>
-			</div>
-		</div>
-
-		<div id="AddressNotFound_Modal" class="modal fade" tabindex="-1" role="dialog">
-			<div class="modal-dialog modal-lg" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h4 class="modal-title" glot-model="AddressNotFound_title"></h4>
-					</div>
-					<div class="modal-body">
-						<p glot-model="AddressNotFound_body"></p>
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-primary" data-dismiss="modal">分かりました</button>
-					</div>
-				</div>
-			</div>
-		</div>
-
+		<div id="modals"></div>
 	</body>
 
 </html>
