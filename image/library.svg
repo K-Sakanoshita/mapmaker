@@ -1,6 +1,70 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg xml:space="default" version="1.1" viewBox="0 0 250 250" width="250" height="250" xmlns="http://www.w3.org/2000/svg">
-	<title>日本の地図記号 - 図書館</title>
-	<path fill="none" stroke="black" stroke-width="16px" d="M 60 215 L 16 84 Q 40 40 110 54 Q 146 16 191 30 L 235 161   Q 177 147 154 185 Q 86 171 58 215 L 16 84   M 110 54 L 148 180"/>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
+   sodipodi:docname="library.svg"
+   id="svg6"
+   height="250"
+   width="250"
+   viewBox="0 0 250 250"
+   version="1.1"
+   xml:space="default">
+  <metadata
+     id="metadata12">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs10" />
+  <sodipodi:namedview
+     inkscape:document-rotation="0"
+     inkscape:current-layer="svg6"
+     inkscape:window-maximized="0"
+     inkscape:window-y="0"
+     inkscape:window-x="156"
+     inkscape:cy="79.862105"
+     inkscape:cx="178.42201"
+     inkscape:zoom="1.888"
+     showgrid="false"
+     id="namedview8"
+     inkscape:window-height="1050"
+     inkscape:window-width="1170"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0"
+     guidetolerance="10"
+     gridtolerance="10"
+     objecttolerance="10"
+     borderopacity="1"
+     bordercolor="#666666"
+     pagecolor="#ffffff" />
+  <title
+     id="title2">日本の地図記号 - 図書館</title>
+  <path
+     id="path2-3"
+     d="m 221.7135,250.74427 c 16.64146,0 30.11217,-13.35307 30.11217,-29.88808 V 30.233851 c 0,-16.536008 -13.47071,-29.92114503 -30.11217,-29.92114503 H 29.875479 c -16.641512,0 -30.11216921,13.38513703 -30.11216921,29.92114503 V 220.85796 c 0,16.5358 13.47065721,29.88865 30.11216921,29.88865 H 221.7135 Z"
+     style="fill:#ffffff;stroke-width:2.03389978"
+     inkscape:connector-curvature="0" />
+  <path
+     id="path4-4"
+     d="m 33.690912,13.518759 c -13.126878,0 -23.8101831,10.370316 -23.8101831,23.112833 V 213.91293 c 0,12.74184 10.6833051,23.09719 23.8101831,23.09719 H 216.30913 c 13.14234,0 23.81014,-10.35535 23.81014,-23.09719 V 36.633665 c 0,-12.742567 -10.66775,-23.112685 -23.81014,-23.112685 H 33.683134 Z"
+     style="fill:#ef9235;stroke-width:1.91375089;fill-opacity:1"
+     inkscape:connector-curvature="0" />
+  <path
+     sodipodi:nodetypes="ccccccccccc"
+     style="display:inline;fill:#ffffff;stroke:#ef9235;stroke-width:4.25114;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     inkscape:connector-curvature="0"
+     id="path4"
+     d="M 63.771108,216.90484 22.779706,97.352162 C 37.685671,70.582098 66.876517,61.45594 110.35225,69.973688 132.71121,46.854086 157.86502,39.55316 185.8137,48.070907 l 38.25661,111.576553 2.73479,7.97613 c -36.02273,-8.51777 -61.17655,-1.21683 -75.46143,21.90275 -42.23358,-8.51774 -72.045514,0.60843 -89.435806,27.3785 L 22.779706,97.352162 M 110.35225,69.973688 145.75393,184.96328" />
 </svg>

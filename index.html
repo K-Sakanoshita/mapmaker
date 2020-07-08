@@ -2,69 +2,79 @@
 <html>
 
 	<head>
-		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-98610409-2"></script>
-		<script>
-			window.dataLayer = window.dataLayer || [];
-			function gtag() { dataLayer.push(arguments); }
-			gtag('js', new Date());
-			gtag('config', 'UA-98610409-2');
-		</script>
-
+		<meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1, maximum-scale=1, minimum-scale=1" />
 		<meta charset="utf-8" />
-		<title>まち歩きマップメーカー(ver 2020-05-31)</title>
-		<meta property="og:url" content="https://www.netfort.gr.jp/~saka/accessmap/" />
+		<meta name=“keywords” content=“Mapmaker,まち歩き,マップメーカー,OpenStreetMap”>
+		<title>まち歩きマップメーカー</title>
+		<meta property="og:url" content="https://k-sakanoshita.github.io/mapmaker/" />
 		<meta property="og:type" content="website" />
 		<meta property="og:title" content="まち歩きマップメーカー" />
-		<meta property="og:description" content="自由に印刷して配れる地図を作るサイト" />
-		<meta property="og:image" content="https://www.netfort.gr.jp/~saka/accessmap/image/thumbnail.png" />
+		<meta property="og:description" content="商用含めて自由に使えるカスタム地図を作ります。" />
+		<meta property="og:image" content="https://k-sakanoshita.github.io/mapmaker/image/thumbnail.png" />
 		<link rel="shortcut icon" href="favicon.ico" />
 		<link rel="stylesheet" href="mapmaker.css" />
-		<link rel="stylesheet" href="./lib/jquery.simple-color-picker.css" />
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.1.2/css/tempusdominus-bootstrap-4.min.css" />
+		<link rel="stylesheet" href="basemenu.css" />
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.css" />
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.65.2/dist/L.Control.Locate.min.css" />
 		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css">
-		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 		<link rel="stylesheet" href="https://cdn.maptiler.com/mapbox-gl-js/v1.5.1/mapbox-gl.css" />
-		<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/@turf/turf@5/turf.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.1.0/chroma.min.js"></script>
-		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet-src.js"></script>
-		<script src="https://cdn.maptiler.com/mapbox-gl-js/v1.5.1/mapbox-gl.js"></script>
-		<script src="https://cdn.maptiler.com/mapbox-gl-leaflet/latest/leaflet-mapbox-gl.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.65.2/src/L.Control.Locate.min.js"></script>
-		<script src="https://community-geocoder.geolonia.com/api.js"></script>
-		<script src="https://unpkg.com/glottologist"></script>
-		<script src="./lib/leaflet-tilelayer-colorfilter.min.js"></script>
-		<script src="./lib/jquery.simple-color-picker.js"></script>
-		<script src="./lib/osmtogeojson.js"></script>
-		<script src="./lib/leaflet-hash.js"></script>
-		<script src="./lib/simplifygeometry-0.0.2.min.js"></script>
-		<script src="./mapmaker.js"></script>
-		<script src="./map-controls.js"></script>
+		<link rel="stylesheet" href="https://cdn.datatables.net/v/bs4/dt-1.10.21/sl-1.3.1/datatables.min.css" />
+		<link rel="stylesheet" href="./lib/jquery.simple-color-picker.css" />
+		<script defer src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+		<script defer src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
+		<script defer src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.1.0/chroma.min.js"></script>
+		<script defer src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+		<script defer src="https://cdn.datatables.net/v/bs4/dt-1.10.21/sl-1.3.1/datatables.min.js"></script>
+		<script defer src="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet-src.js"></script>
+		<script defer src="https://cdnjs.cloudflare.com/ajax/libs/mapbox-gl/1.10.1/mapbox-gl.min.js"></script>
+		<script defer src="https://cdnjs.cloudflare.com/ajax/libs/mapbox-gl-leaflet/0.0.12/leaflet-mapbox-gl.min.js"></script>
+		<script defer src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.65.2/src/L.Control.Locate.min.js"></script>
+		<script defer src="https://cdn.jsdelivr.net/npm/leaflet-responsive-popup@0.6.4/leaflet.responsive.popup.min.js"></script>
+		<script defer src="https://community-geocoder.geolonia.com/api.js"></script>
+		<script defer src="https://unpkg.com/glottologist"></script>
+		<script defer src="./lib/jquery.simple-color-picker.js"></script>
+		<script defer src="./lib/osmtogeojson.js"></script>
+		<script defer src="./lib/leaflet-hash.js"></script>
+		<script defer src="./basiclib.js"></script>
+		<script defer src="./geolib.js"></script>
+		<script defer src="./mapmaker.js"></script>
+		<script defer src="./mapmakerlib.js"></script>
 	</head>
 
 	<body>
 		<div id="container">
 			<header class="row">
-				<div class="col-6">
-					<h1 glot-model="title"></h1>
-					<span glot-model="subtitle1"></span>(<a href="https://www.openstreetmap.org/copyright" target="_blank"><span glot-model="subtitle2"></span></a>)
+				<div class="col-7 pl-1">
+					<img class="h1" src="./image/mapmaker.png">
+					<div>
+						<a style="color:white;" href="javascript:Mapmaker.licence()">
+							<span class="title" glot-model="title"></span><br>
+							<span class="subtitle" glot-model="subtitle"></span>
+						</a>
+					</div>
 				</div>
-				<div class="col">
-					<div class="float-right text-right"><span glot-model="zoomlevel"></span><span id="zoomlevel"></span><br>
-						<span glot-model="selectdate"></span><input type="date" id="Select_Date"></div>
+				<div class="col-5 d-flex flex-row-reverse align-items-center pr-2">
+					<!-- div class="float-right text-right"><span glot-model="selectdate"></span><input type="date" id="Select_Date"></div -->
+					<div class="form-control menu pr-0 pl-0">
+						<button type="button" class="btn btn-sm float-right" data-toggle="dropdown" aria-expanded="true">
+							<i class="fas fa-bars fa-2x text-white"></i></button>
+						<div class="dropdown-menu dropdown-menu-right" style="z-index: 1020;" id="temp_menu">
+							<a class="dropdown-item"><span></span></a>
+							<div class="dropdown-divider"></div>
+						</div>
+					</div>
+					<div class="form-control search">
+						<input type='search' id='search_input' style="width: 100%" class='form-control'></input>
+					</div>
 				</div>
-			</header>
 			</header>
 			<article id="article">
 				<div id="mapid"></div>
 			</article>
 		</div>
-
 		<div id="modals"></div>
+		<div id="colors"></div>
 	</body>
 
 </html>

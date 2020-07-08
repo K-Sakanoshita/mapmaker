@@ -1,0 +1,63 @@
+{
+    "category": {
+        "amenity": {
+            "library": "図書館（目印の施設）",
+            "bar": "バー/酒場",
+            "bench": "ベンチ",
+            "cafe": "カフェ/喫茶店",
+            "drinking_water": "給水所/水栓",
+            "fast_food": "ファーストフード",
+            "food_court": "フードコート",
+            "ice_cream": "アイスクリーム店",
+            "pub": "パブ/居酒屋",
+            "restaurant": "レストラン",
+            "vending_machine": "自動販売機"
+        },
+        "shop": {
+            "alcohol": "酒屋",
+            "bakery": "パン屋",
+            "beverages": "飲料店",
+            "brewing_supplies": "醸造所",
+            "butcher": "精肉店",
+            "cheese": "チーズ店",
+            "chocolate": "チョコレート店",
+            "coffee": "コーヒー店",
+            "confectionery": "お菓子店(甘味)",
+            "convenience": "コンビニエンスストア",
+            "deli": "お弁当/惣菜屋",
+            "dairy": "乳製品店",
+            "farm": "農場直売店",
+            "frozen_food": "冷凍食品専門店",
+            "greengrocer": "八百屋",
+            "health_food": "健康食品店",
+            "ice_cream": "アイスクリーム店",
+            "pasta": "パスタ専門店",
+            "pastry": "お菓子店(焼き菓子)",
+            "seafood": "鮮魚店",
+            "spices": "スパイス専門店",
+            "tea": "お茶専門店",
+            "water": "飲料水専門店",
+            "wine": "ワイン専門店",
+            "kiosk": "キオスク",
+            "supermarket": "スーパーマーケット",
+            "variety_store": "雑貨店"
+        },
+        "natural": {
+            "tree": "樹木"
+        },
+        "emergency": {
+            "fire_extinguisher": "消火器",
+            "fire_hydrant": "消火栓",
+            "defibrillator": "AED"
+        },
+        "highway": {
+            "traffic_signals": "信号機"
+        },
+        "social_facility": {
+            "shelter": "一時避難所"
+        },
+        "assembly_point:tsunami": {
+            "yes":"津波避難"
+        }
+    }
+}

@@ -1,0 +1,109 @@
+.card-header, .card-body {
+    padding: 0px !important;
+}
+
+.accordion, .card {
+    width: 164px;
+    margin-bottom: 8px;
+    display: none;
+    overflow: visible !important;
+}
+
+.custom_map {
+    margin: 8px 0px 0px 0px;
+    background-color: #ffffff;
+    display: none;
+}
+
+.custom_group {
+    display: table;
+}
+
+.custom_label {
+    display: table-cell;
+    vertical-align: middle;
+    height: 18px;
+    width: 68px;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+button, select {
+    display: inline-block;
+    cursor: pointer;
+    color: #000000;
+    text-decoration: none;
+    background-color: #FFFFFF;
+    outline: none;
+    border: none;
+    border-radius: 2px;
+    box-shadow: 0px 1px 2px #999;
+}
+
+button:active {
+    color: #000000;
+    background-color: #DDDDDD;
+    box-shadow: 0px 2px #666;
+    transform: translateY(2px);
+}
+
+.comm_button {
+    margin: 0px 0px 6px 0px;
+    padding: 0px 6px 0px 16px;
+    background-repeat: no-repeat;
+    background-size: 36px 36px;
+    background-position: 8px center;
+    height: 46px;
+    width: 164px;
+    align-items: center;
+}
+
+.half_button {
+    margin: 0px 4px 6px 0px;
+    padding: 0px 6px 0px 12px;
+    height: 46px;
+    width: 80px;
+    align-items: center;
+}
+
+.del_button {
+    margin: 2px 2px 2px 2px;
+    padding: 0px 0px 0px 2px;
+    width: 28px;
+    height: 18px;
+    display: table-cell;
+    vertical-align: middle;
+    margin-left: 4px;
+}
+
+.color_button {
+    margin: 2px 2px 2px 2px;
+    padding: 0px 0px 0px 2px;
+    width: 38px;
+    height: 18px;
+    display: table-cell;
+    vertical-align: middle;
+    margin-left: 4px;
+}
+
+.drop_button {
+    background-repeat: no-repeat;
+    background-position: 8px center;
+    padding: 4px 4px 4px 38px !important;
+    margin: 2px 0px 2px 0px;
+    background-repeat: no-repeat;
+    background-size: 24px;
+}
+
+.bg-clear-old {
+    width: 38px;
+    height: 18px;
+    background-position: 0px 0px, 8px 8px;
+    background-size: 16px 16px;
+    background-image: -webkit-linear-gradient(45deg, #eee 25%, transparent 25%, transparent 75%, #ccc 75%, #ccc 100%), -webkit-linear-gradient(45deg, #ccc 25%, white 25%, white 75%, #ccc 75%, #eee 100%);
+    background-image: linear-gradient(45deg, #ccc 25%, transparent 25%, transparent 75%, #ccc 75%, #ccc 100%), linear-gradient(45deg, #ccc 25%, white 25%, white 75%, #ccc 75%, #ccc 100%);
+}
+
+.bg-clear {
+    background: transparent url("./image/transparent.png") !important;
+}

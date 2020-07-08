@@ -1,15 +1,35 @@
 {
+	"about": {
+		"ja": "まち歩きマップメーカーについて",
+		"en": "about Street Map Maker"
+	},
+	"owner": {
+		"ja": "開発サイト",
+		"en": "development site"
+	},
+	"openstreetmap": {
+		"ja": "OpenStreetMapについて",
+		"en": "about OpenStreetMap"
+	},
 	"title": {
 		"ja": "まち歩きマップメーカー",
-		"en": "Walking Town Map Maker"
+		"en": "Street Map Maker"
 	},
-	"subtitle1": {
-		"ja": "自由に使えるカスタム地図",
-		"en": "Custom maps for free use"
+	"subtitle": {
+		"ja": "自由に編集＆何にでも使える地図",
+		"en": "Free to edit & use the map for anything"
 	},
-	"subtitle2": {
-		"ja": "Copyrightは必要",
-		"en": "Don't forget the Copyright"
+	"licence_title": {
+		"ja": "地図の利用規約",
+		"en": "Terms of Use for Maps"
+	},
+	"licence_message": {
+		"ja": "地図は <a href=\"https://creativecommons.org/licenses/by/4.0/deed.ja\" target='_blank'>CC BY 4.0</a> ライセンスで提供します。<br>簡単に書くと、以下の条件を守る限り商用も含めて自由に使えます。<br><ul class='mt-3'><li>表示:「© OpenStreetMap contributors」を地図の何処かに表示すること</li></li></ul>上記の条件を守れば、商用利用も含めて自由に使えます。",
+		"en": "Maps are provided under a <a href=\"https://creativecommons.org/licenses/by/4.0/\" target='_blank'>CC BY 4.0</a> license.<br>In brief, you can use it freely, including for commercial purposes, as long as you keep the following conditions.<br><ul class='mt-3'><li>View: place \"© OpenStreetMap contributors\" somewhere on the map crisis</li></ul>You can use it freely, including commercial use, as long as you comply with the above conditions."
+	},
+	"more_message": {
+		"ja": "<hr>道路や建物が無い時は<a href=\"https://wiki.openstreetmap.org/wiki/JA:%E5%88%9D%E5%BF%83%E8%80%85%E3%82%AC%E3%82%A4%E3%83%89\" target='_blank'>OpenStreetMapを編集</a>してみてください。<br>描いた地図は様々に活用され将来に残ります。",
+		"en": "<hr>If you don't have a road or a building, <a href=\"https://wiki.openstreetmap.org/wiki/Beginners%27_guide\" target='_blank'>you can edit OpenStreetMap</a>.<br>Your edited map will be used for many activities and will be preserved for future use."
 	},
 	"zoomlevel": {
 		"ja": "ズームレベル：",
@@ -20,19 +40,211 @@
 		"en": "(TEST)Acquisition Date: "
 	},
 	"makemap": {
-		"ja": "この範囲内で<br />マップを作る",
-		"en": "Make a map<br />within this range"
+		"ja": "このエリアで<br />マップを作る",
+		"en": "Make a map<br />within this area"
 	},
 	"controlmenu": {
-		"ja": "カスタマイズ",
-		"en": "Customize"
+		"ja": "マップを編集",
+		"en": "Edit the map"
 	},
-	"AddressNotFound_title":{
+	"address": {
+		"ja": "住所",
+		"en": "Address"
+	},
+	"addressnotfound_title": {
 		"ja": "住所が見つかりません",
 		"en": "Address not found"
 	},
-	"AddressNotFound_body": {
-		"ja": "お手数ですが都道府県から入力ください。また、施設名や「上る」「下る」は未対応です。",
-		"en": "Please enter your name from your prefecture. Also, the name of the facility and \"up\" and \"down\" are not supported."
+	"addressnotfound_body": {
+		"ja": "都道府県から町名まで正確に入力ください（町名まで必要）",
+		"en": "Please enter the exact name of the town from the state to the town."
+	},
+	"morezoom": {
+		"ja": "地図を作るにはズームしてください。",
+		"en": "Zoom in to create a map."
+	},
+	"morezoom2": {
+		"ja": "ズームすると地物が増えます。",
+		"en": "When you zoom in, you will see more ground objects."
+	},
+	"custommode": {
+		"ja": "地図編集モード（スクロールロック中）",
+		"en": "Map Editing Mode(scroll locked)"
+	},
+	"line_weight": {
+		"ja": "輪郭線の太さ",
+		"en": "line weight"
+	},
+	"all_select": {
+		"ja": "全て選択",
+		"en": "All select"
+	},
+	"all_deselect": {
+		"ja": "全て解除",
+		"en": "All deselect"
+	},
+	"facilityname": {
+		"ja": "施設名",
+		"en": "Facility Name"
+	},
+	"button_ok": {
+		"ja": "決定",
+		"en": "OK"
+	},
+	"button_cancel": {
+		"ja": "キャンセル",
+		"en": "Cancel"
+	},
+	"button_close": {
+		"ja": "閉じる",
+		"en": "close"
+	},
+	"button_yes": {
+		"ja": "はい",
+		"en": "YES"
+	},
+	"button_no": {
+		"ja": "いいえ",
+		"en": "NO"
+	},
+	"chglng_error_title": {
+		"ja": "言語切り替えエラー",
+		"en": "language switching error"
+	},
+	"chglng_error_message": {
+		"ja": "切り替え先の言語がありません。",
+		"en": "There is no language to switch to."
+	},
+	"loading_title": {
+		"ja": "マップデータのロード中",
+		"en": "Loading map data"
+	},
+	"loading_message": {
+		"ja": "サーバーからロード中です。しばらくお待ちください。",
+		"en": "Loading from the server. Please wait a moment."
+	},
+	"restart_title": {
+		"ja": "最初からやり直し",
+		"en": "Start over from the beginning."
+	},
+	"restart_message": {
+		"ja": "今のマップデータを削除して、最初からやり直ししますか？",
+		"en": "Do you want to delete the current map data and start over?"
+	},
+	"location": {
+		"ja": "現在地を表示",
+		"en": "Show current location."
+	},
+	"sverror_title": {
+		"ja": "データ取得に失敗",
+		"en": "Failed to retrieve data."
+	},
+	"sverror_message": {
+		"ja": "サーバーからのデータ取得に失敗しました。やり直してください。",
+		"en": "Failed to retrieve data from the server. Please start over."
+	},
+	"icon_add": {
+		"ja": "アイコン追加",
+		"en": "Add Icon"
+	},
+	"icon_shops": {
+		"ja": "各種施設",
+		"en": "Facilities"
+	},
+	"icon_SKR": {
+		"ja": "木（さくら）",
+		"en": "Sakura"
+	},
+	"icon_disaster": {
+		"ja": "防災関連",
+		"en": "Disaster Prevention"
+	},
+	"icon_takeaway": {
+		"ja": "テイクアウト/デリバリー",
+		"en": "Take-out/delivery"
+	},
+	"icon_Shelter_temporary": {
+		"ja": "一時避難所(大阪市)",
+		"en": "temporary shelter(OSAKA)"
+	},
+	"icon_Shelter_tsunami": {
+		"ja": "津波・洪水避難所(大阪市)",
+		"en": "Tsunami and flood shelters(OSAKA)"
+	},
+	"menu_BAK": {
+		"ja": "背景色",
+		"en": "Background"
+	},
+	"menu_PRK": {
+		"ja": "各種公園",
+		"en": "Park"
+	},
+	"menu_PED": {
+		"ja": "各種広場",
+		"en": "Piazza"
+	},
+	"menu_PKG": {
+		"ja": "駐車場",
+		"en": "Parking"
+	},
+	"menu_GDN": {
+		"ja": "庭・草原",
+		"en": "Garden"
+	},
+	"menu_RIV": {
+		"ja": "水路・川",
+		"en": "Waterway"
+	},
+	"menu_FRT": {
+		"ja": "森・田畑",
+		"en": "Wood/Crop"
+	},
+	"menu_RIL": {
+		"ja": "レール類",
+		"en": "Railway"
+	},
+	"menu_ALY": {
+		"ja": "路地小道",
+		"en": "Pathway"
+	},
+	"menu_STD": {
+		"ja": "一般道路",
+		"en": "Std road"
+	},
+	"menu_PRI": {
+		"ja": "主要道路",
+		"en": "Pri road"
+	},
+	"menu_HIW": {
+		"ja": "高速道路",
+		"en": "Highway"
+	},
+	"menu_BLD": {
+		"ja": "建物・家",
+		"en": "Building"
+	},
+	"menu_BRR": {
+		"ja": "壁・擁壁",
+		"en": "Wall"
+	},
+	"menu_STN": {
+		"ja": "駅施設等",
+		"en": "Station"
+	},
+	"marker_delete": {
+		"ja": "アイコンを削除",
+		"en": "Remove Icon"
+	},
+	"marker_to_en": {
+		"ja": "英語に変更",
+		"en": "Change to English"
+	},
+	"marker_to_ja": {
+		"ja": "日本語に変更",
+		"en": "Change to Japanese"
+	},
+	"marker_noname": {
+		"ja": "(名称不明)",
+		"en": "(name unknown)"
 	}
 }

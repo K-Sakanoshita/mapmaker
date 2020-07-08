@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Generator: Adobe Illustrator 13.0.2, SVG Export Plug-In . SVG Version: 6.00 Build 14948)  -->
-
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:cc="http://creativecommons.org/ns#"
@@ -10,16 +8,15 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    id="Layer_1"
-   style="enable-background:new -0.258 -0.548 123.547 123.539"
    xml:space="preserve"
-   viewBox="-0.258 -0.548 123.547 123.539"
+   viewBox="-0.258 -0.548 32 32"
    version="1.1"
    y="0px"
    x="0px"
-   width="10"
-   height="10"
+   width="32"
+   height="32"
    sodipodi:docname="restaurant.svg"
-   inkscape:version="0.92.3 (2405546, 2018-03-11)"><defs
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"><defs
    id="defs17" /><sodipodi:namedview
    pagecolor="#ffffff"
    bordercolor="#666666"
@@ -33,32 +30,33 @@
    inkscape:window-height="1027"
    id="namedview15"
    showgrid="false"
-   inkscape:zoom="153.24"
-   inkscape:cx="3.8637056"
-   inkscape:cy="2.9497795"
+   inkscape:zoom="19.155"
+   inkscape:cx="14.229028"
+   inkscape:cy="10.046147"
    inkscape:window-x="-8"
    inkscape:window-y="-8"
    inkscape:window-maximized="1"
-   inkscape:current-layer="g10" />
+   inkscape:current-layer="g10"
+   inkscape:document-rotation="0" />
 <g
    id="g10">
 	<path
-   style="fill:#231F20"
-   d="m109.09 123.36c8.156 0 14.758-6.586 14.758-14.742v-94.022c0-8.156-6.602-14.758-14.758-14.758h-94.02c-8.156 0-14.758 6.602-14.758 14.758v94.023c0 8.156 6.602 14.742 14.758 14.742h94.02z"
+   style="fill:#ffffff;fill-opacity:1;stroke-width:0.258306"
+   d="m 27.840084,31.374316 c 2.107067,0 3.812667,-1.700952 3.812667,-3.807384 V 3.2840765 c 0,-2.1064323 -1.7056,-3.81151633 -3.812667,-3.81151633 H 3.5504056 c -2.1070689,0 -3.81266819,1.70508403 -3.81266819,3.81151633 V 27.56719 c 0,2.106432 1.70559929,3.807385 3.81266819,3.807385 H 27.840084 Z"
    id="path2" />
 	<path
-   style="fill:#FFFFFF"
-   d="m15.07 2.34c-6.758 0-12.258 5.5-12.258 12.258v94.023c0 6.758 5.5 12.25 12.258 12.25h94.016c6.766 0 12.258-5.492 12.258-12.25v-94.022c0-6.758-5.492-12.258-12.258-12.258h-94.02z"
+   style="fill:#ef8f35;fill-opacity:1;stroke-width:0.255345"
+   d="m 3.6255836,0.23191716 c -1.7223897,0 -3.12415681,1.40702324 -3.12415681,3.13587114 V 27.420982 c 0,1.728845 1.40176711,3.133822 3.12415681,3.133822 H 27.587137 c 1.724428,0 3.124156,-1.404977 3.124156,-3.133822 V 3.368044 c 0,-1.7288477 -1.399728,-3.13587103 -3.124156,-3.13587103 H 3.624564 Z"
    id="path4" />
 	<path
-   style="fill:#231f20"
-   d="m 56.711,43.301 c 0,3.258 -2.969,6.734 -6.812,6.734 v 55.031 c 0,7.805 -10.656,7.805 -10.656,0 V 50.031 c -3.75,0 -7.008,-2.891 -7.008,-7.227 V 13.913537 c 0,-2.633 4.352247,-4.0432046 4.288739,-1.199914 l 0.08062,22.221753 2.965501,0.806233 3.007645,-0.806232 C 42.806334,27.981406 42.228928,19.576217 42.457754,12.622246 42.540993,10.092616 46.753362,9.836 46.753362,12.555 V 35.016 L 50.05088,35.741609 52.758215,35.016 52.435638,12.622246 C 52.399745,10.130505 56.711,11.430355 56.711,14.110355 V 43.297 Z"
+   style="fill:#ffffff;fill-opacity:1;stroke-width:0.306662"
+   d="m 14.308185,11.04308 c 0,0.875871 -1.038585,1.810349 -2.382904,1.810349 v 14.79437 c 0,2.098273 -3.7275722,2.098273 -3.7275722,0 V 12.852355 c -1.3117866,0 -2.4514669,-0.777208 -2.4514669,-1.942886 V 3.1426438 c 0,-0.7078477 1.5224584,-1.0869628 1.5002428,-0.3225812 L 7.2746863,8.794092 8.3120474,9.0108371 9.3641511,8.7940923 C 9.4441977,6.9246076 9.2422154,4.6649817 9.3222611,2.795497 9.3513788,2.1154388 10.824907,2.0464511 10.824907,2.7774183 v 6.0383478 l 1.153504,0.1950705 0.947052,-0.1950705 -0.11284,-6.0202696 c -0.01256,-0.6698716 1.495562,-0.3204238 1.495562,0.4000594 v 7.8464501 z"
    id="path6"
    inkscape:connector-curvature="0"
    sodipodi:nodetypes="scsscsssccccscccsscs" />
 	<path
-   style="fill:#231f20"
-   d="m 90.094,19.582 v 85.445 c 0,7.641 -10.672,7.531 -10.672,0 V 71.786986 L 73.734,71.142 V 19.579 c 0,-10.2182895 16.36,-11.992 16.36,0 z"
+   style="fill:#ffffff;fill-opacity:1;stroke-width:0.302898"
+   d="M 23.816231,4.5429398 V 27.521175 c 0,2.05485 -3.640955,2.02527 -3.640955,0 V 18.582128 L 18.234708,18.408676 V 4.542133 c 0,-2.747946 5.581523,-3.2249399 5.581523,0 z"
    id="path8"
    inkscape:connector-curvature="0"
    sodipodi:nodetypes="cssccssc" />
@@ -66,9 +64,14 @@
 <metadata
    id="metadata12"><rdf:RDF><cc:Work><dc:format>image/svg+xml</dc:format><dc:type
          rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><cc:license
-         rdf:resource="http://creativecommons.org/licenses/publicdomain/" /><dc:publisher><cc:Agent
-           rdf:about="http://openclipart.org/"><dc:title>Openclipart</dc:title></cc:Agent></dc:publisher><dc:title>NPS map pictographs part 2</dc:title><dc:date>2008-01-20T22:07:47</dc:date><dc:description>Second set of 4 sets of map pictographs for U.S. national park maps. PD US Government - National Park Service, U.S. Dept. of the Interior\n\nrest of sets:\nhttp://openclipart.org/media/files/johnny_automatic/6741\nhttp://openclipart.org/media/files/johnny_automatic/6757\nhttp://openclipart.org/media/files/johnny_automatic/6765</dc:description><dc:source>https://openclipart.org/detail/11307/nps-map-pictographs-part-2-by-johnny_automatic-11307</dc:source><dc:creator><cc:Agent><dc:title>johnny_automatic</dc:title></cc:Agent></dc:creator><dc:subject><rdf:Bag><rdf:li>cartography</rdf:li><rdf:li>externalsource</rdf:li><rdf:li>map</rdf:li><rdf:li>park</rdf:li><rdf:li>pictograph</rdf:li><rdf:li>sign</rdf:li><rdf:li>symbol</rdf:li></rdf:Bag></dc:subject></cc:Work><cc:License
-       rdf:about="http://creativecommons.org/licenses/publicdomain/"><cc:permits
+         rdf:resource="http://creativecommons.org/publicdomain/zero/1.0/" /><dc:publisher><cc:Agent
+           rdf:about="http://openclipart.org/"><dc:title>Openclipart</dc:title></cc:Agent></dc:publisher><dc:title>NPS map pictographs part 2</dc:title><dc:date>2008-01-20T22:07:47</dc:date><dc:description>Second set of 4 sets of map pictographs for U.S. national park maps. PD US Government - National Park Service, U.S. Dept. of the Interior
+\n
+\nrest of sets:
+\nhttp://openclipart.org/media/files/johnny_automatic/6741
+\nhttp://openclipart.org/media/files/johnny_automatic/6757
+\nhttp://openclipart.org/media/files/johnny_automatic/6765</dc:description><dc:source>https://openclipart.org/detail/11307/nps-map-pictographs-part-2-by-johnny_automatic-11307</dc:source><dc:creator><cc:Agent><dc:title>johnny_automatic</dc:title></cc:Agent></dc:creator><dc:subject><rdf:Bag><rdf:li>cartography</rdf:li><rdf:li>externalsource</rdf:li><rdf:li>map</rdf:li><rdf:li>park</rdf:li><rdf:li>pictograph</rdf:li><rdf:li>sign</rdf:li><rdf:li>symbol</rdf:li></rdf:Bag></dc:subject></cc:Work><cc:License
+       rdf:about="http://creativecommons.org/publicdomain/zero/1.0/"><cc:permits
          rdf:resource="http://creativecommons.org/ns#Reproduction" /><cc:permits
          rdf:resource="http://creativecommons.org/ns#Distribution" /><cc:permits
          rdf:resource="http://creativecommons.org/ns#DerivativeWorks" /></cc:License></rdf:RDF></metadata></svg>

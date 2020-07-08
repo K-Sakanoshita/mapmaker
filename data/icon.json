@@ -1,0 +1,63 @@
+{
+    "icon": {
+        "amenity": {
+            "library": "library.svg",
+            "bar": "bentou.svg",
+            "bench": "bench.svg",
+            "cafe": "cafe.svg",
+            "drinking_water": "water.svg",
+            "fast_food": "fastfood.svg",
+            "food_court": "fastfood.svg",
+            "ice_cream": "confectionery.svg",
+            "pub": "bar.svg",
+            "restaurant": "restaurant.svg",
+            "vending_machine": "vending.svg"
+        },
+        "shop": {
+            "alcohol": "bar.svg",
+            "bakery": "bakery.svg",
+            "beverages": "water.svg",
+            "brewing_supplies": "bar.svg",
+            "butcher": "bentou.svg",
+            "cheese": "bentou.svg",
+            "chocolate": "confectionery.svg",
+            "coffee": "cafe.svg",
+            "confectionery": "confectionery.svg",
+            "convenience": "bentou.svg",
+            "deli": "bentou.svg",
+            "dairy": "bentou.svg",
+            "farm": "bentou.svg",
+            "frozen_food": "deli.svg",
+            "greengrocer": "bentou.svg",
+            "health_food": "bentou.svg",
+            "ice_cream": "confectionery.svg",
+            "pasta": "bentou.svg",
+            "pastry": "pastry.svg",
+            "seafood": "bentou.svg",
+            "spices": "bentou.svg",
+            "tea": "cafe.svg",
+            "water": "water.svg",
+            "wine": "bar.svg",
+            "kiosk": "bentou.svg",
+            "supermarket": "bentou.svg",
+            "variety_store": "shops.svg"
+        },
+        "natural": {
+            "tree": "sakura.svg"
+        },
+        "emergency": {
+            "fire_extinguisher": "fire_extinguisher.svg",
+            "fire_hydrant": "fire_hydrant.svg",
+            "defibrillator": "aed.svg"
+        },
+        "highway": {
+            "traffic_signals": "signal.svg"
+        },
+        "social_facility": {
+            "shelter": "shelter.svg"
+        },
+        "assembly_point:tsunami": {
+            "yes": "shelter.svg"
+        }
+    }
+}

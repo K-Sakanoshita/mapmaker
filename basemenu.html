@@ -1,43 +1,30 @@
-<button class="comm_button make_button" id="make_map" onclick="TownMap.make(Control.getdate())">
-	<span glot-model="makemap"></span>
-</button>
+<div id="make_map">
+	<button class="comm_button d-flex" onclick="Mapmaker.make(Basic.getdate())">
+		<i class="flex-row fas fa-map fa-2x mr-3"></i>
+		<span class="flex-row" glot-model="makemap"></span>
+	</button>
+</div>
 
 <div class="accordion" id="accordion">
 	<div class="card">
 		<div class="card-header" id="headingOne">
-			<button class="comm_button menu_button" data-toggle="collapse" data-target="#collapseOne"
-				aria-expanded="false" aria-controls="collapseOne"><span glot-model="controlmenu"></span>
+			<button class="comm_button d-flex" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+				<i class="flex-row fas fa-palette fa-2x mr-4"></i>
+				<span class="flex-row" glot-model="controlmenu"></span>
 			</button>
-
 			<div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
 				<div class="card-body">
-					<div class="dropdown" style="margin: 0px;padding: 6px;">
-						<button class="btn btn-light dropdown-toggle" style="width: 100%;" type="button"
-							id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-							アイコン追加
+					<div class="dropdown m-0 pl-1 pr-1 pb-2">
+						<button class="btn btn-light dropdown-toggle w-100" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<i class="fas fa-map-marker mr-3"></i>
+							<span class="" glot-model="icon_add"></span>
 						</button>
-						<div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id="menu_list">
-							<a class="dropdown-item drop_button" style="background-image: url('./image/signal.svg')" href="#" onclick="TownMap.add('SIG')">交差点を追加</a>
-							<a class="dropdown-item drop_button" style="background-image: url('./image/cafe.svg')" href="#" onclick="TownMap.add('CFE')">カフェを追加</a>
-							<a class="dropdown-item drop_button" style="background-image: url('./image/restaurant.svg')" href="#" onclick="TownMap.add('RST')">レストランを追加</a>
-							<a class="dropdown-item drop_button" style="background-image: url('./image/fastfood.svg')" href="#" onclick="TownMap.add('FST')">ファストフードを追加</a>
-							<a class="dropdown-item drop_button" style="background-image: url('./image/sakura.svg')" href="#" onclick="TownMap.add('SKR')">木（さくら）を追加</a>
-							<a class="dropdown-item drop_button" style="background-image: url('./image/library.svg')" href="#" onclick="TownMap.add('LIB')">図書館を追加</a>
-							<a class="dropdown-item drop_button" style="background-image: url('./image/fire_extinguisher.svg')" href="#" onclick="TownMap.add('EXT')">消火器を追加</a>
-							<a class="dropdown-item drop_button" style="background-image: url('./image/fire_hydrant.svg')" href="#" onclick="TownMap.add('HYD')">消火栓を追加</a>
-							<a class="dropdown-item drop_button" style="background-image: url('./image/bench.svg')" href="#" onclick="TownMap.add('BNC')">ベンチを追加</a>
-							<a class="dropdown-item drop_button" style="background-image: url('./image/aed.svg')" href="#" onclick="TownMap.add('AED')">AEDを追加</a>
-							<a class="dropdown-item drop_button" style="background-image: url('./image/shelter.svg')" href="#" onclick="TownMap.add('SHL')">避難所(大阪市)を追加<br>© Osaka Open Data</a>
-						</div>
+						<div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id="menu_list"> </div>
 						<div class="custom_map" id="custom_map">
-							<div class="custom_group" id="AAA">
+							<div class="custom_group mx-auto" id="AAA">
 								<label class="custom_label"></label>
-								<div class="checkbox"><input type="checkbox" id="AAA_layer" checked="checked">
-									<label for="AAA_layer"><span></span></label>
-									<div type="swImg"></div>
-								</div>
-								<button id="AAA_color" class="way_button"></button>
-								<select id="AAA_line" class="way_line"> </select>
+								<button id="AAA_layer" class="del_button mr-1"><i class="fas fa-trash-alt mr-1"></i></button>
+								<button id="AAA_color" class="color_button mr-1"></button>
 							</div>
 						</div>
 					</div>
@@ -48,7 +35,18 @@
 </div>
 
 <div class="save_map" id="save_map">
-	<button class="comm_button export_button" onclick="saveImage('png')">ダウンロード<br>PNG形式</button><br>
-	<button class="comm_button export_button" onclick="saveImage('svg')">ダウンロード<br>SVG形式</button><br>
-	<button class="comm_button clear_button" id="clear_map" onclick="TownMap.clear()">最初からやり直す</button>
+	<div class="d-flex">
+		<button class="half_button d-flex" onclick="LayerCont.save('png');">
+			<i class="fas fa-file-download fa-2x mr-2 flex-row"></i>
+			<span class="flex-row">PNG</span>
+		</button>
+		<button class="half_button d-flex" onclick="LayerCont.save('svg');">
+			<i class="fas fa-file-download fa-2x mr-2 flex-row"></i>
+			<span class="flex-row">SVG</span>
+		</button>
+	</div>
+	<button class="comm_button d-flex" id="clear_map" onclick="Mapmaker.all_clear()">
+		<i class="fas fa-undo fa-2x mr-3 flex-row"></i>
+		<span glot-model="restart_title"></span>
+	</button>
 </div>

@@ -1,10 +1,21 @@
 html {
-	font-size: 12px;
+	font-size: 14px;
 	padding: 0px;
 	margin: 0px;
 }
 
+.modal-dialog-fluid {
+	max-width: inherit !important;
+	max-height: 50% !important;
+	width: 80% !important;
+}
+
+table.dataTable tbody>tr.selected, table.dataTable tbody>tr>.selected {
+	background-color: #0274d880 !important;
+}
+
 body {
+	font-family: "Tahoma";
 	height: 100%;
 	background-color: #000000;
 	padding: 0px;
@@ -14,11 +25,12 @@ body {
 
 header {
 	width: 100%;
-	height: 48px;
+	height: 60px;
 	margin: 0px !important;
 	padding: 0px !important;
 	color: #ffffff !important;
-	background-color: #105010;
+	background-image: url('./image/hato.jpg');
+	background-size: cover;
 }
 
 #container {
@@ -33,10 +45,9 @@ header {
 	float: none;
 	clear: both;
 	width: 100%;
-	height: calc(100% - 48px);
+	height: calc(100% - 60px);
 	overflow: auto;
 	position: relative;
-	background-color: #ccf;
 	margin: 0px 0px 0px 0px;
 }
 
@@ -60,45 +71,37 @@ header {
 	z-index: 3000;
 }
 
-/* default parts set */
-
-button, select {
-	display: inline-block;
-	cursor: pointer;
-	color: #000000;
-	text-decoration: none;
-	background-color: #FFFFFF;
-	outline: none;
-	border: none;
-	border-radius: 2px;
-	box-shadow: 0px 1px 5px #999;
-}
-
-button:active {
-	color: #000000;
-	background-color: #DDDDDD;
-	box-shadow: 0 2px #666;
-	transform: translateY(2px);
-}
-
 img {
 	float: left;
 	margin: 0px;
 }
 
-h1 {
-	float: left;
-	font-family: Helvetica, Arial, Roboto, “Droid Sans”, “游ゴシック”, YuGothic, “ヒラギノ角ゴ ProN W3″, “Hiragino Kaku Gothic ProN”, “メイリオ”, Meiryo, sans-serif;
-	font-weight: 700 !important;
-	font-size: 16px !important;
-	margin: 0px !important;
-	padding: 2px 2px;
-	width: 100%;
+img.h1 {
+	width: 50px;
+	height: 50px;
+	margin: 5px 5px 5px 5px;
 }
 
-div.icon {
-	width: 100% !important;
-	white-space: nowrap;
+h2.zoom {
+	font-size: 16px;
+	color: rgba(0, 0, 0, 1);
+	background-color: rgba(255, 255, 255, 0.5);
+	padding: 10px;
+}
+
+div.search {
+	color: white;
+	height: 44px;
+	background-color: rgba(0, 48, 0, 0.6);
+	border: 0px;
+}
+
+div.menu {
+	color: white;
+	height: 44px;
+	background-color: rgba(0, 48, 0, 0.6);
+	border: 0px;
+	width: initial !important;
 }
 
 img.icon {
@@ -106,196 +109,57 @@ img.icon {
 	height: 20px;
 }
 
-span {
-	font-size: 12px;
-	padding: 2px 2px;
+p {
+	line-height: 1.5;
+}
+
+span.title {
+	display: inline-block;
+	font-size: 20px !important;
+	font-weight: bold;
+	padding: 0px 8px 0px 8px;
+	margin: 4px 0px -15px 0px;
+	background-color: rgba(0, 48, 0, 0.6);
+	border-radius: .25rem;
+}
+
+span.subtitle {
+	display: inline-block;
+	font-weight: bold;
+	padding: 0px 4px 4px 4px;
+	background-color: rgba(0, 48, 0, 0.6);
+	border-radius: .25rem;
 }
 
 span.search {
-	display: inline-block;
-	height: 100%;
-	background-color: white;
-	width: 180px;
-	word-wrap: none;
-	box-shadow: 0px 1px 5px #999;
+	font-weight: bold;
 }
 
 span.icon {
 	margin-left: 4px;
+	padding: 0px 6px;
 	font-size: 14px;
 	white-space: nowrap;
 	background-color: white;
-	line-height: 1.0;
-	opacity: 0.7;
 }
 
 /* button for select way color */
 
-.accordion, .card {
-	width: 180px;
-	margin-bottom: 8px;
-	display: none;
-	overflow: visible !important;
-}
-
 .modal-body {
 	font-size: 14px !important;
-}
-
-.card-header, .card-body {
-	padding: 0px !important;
-	background-color: #ffffff;
-}
-
-.custom_map {
-	padding: 6px;
-	margin: 0px 0px 0px 0px;
-	background-color: #ffffff;
-	display: none;
-}
-
-.custom_group {
-	display: table;
-}
-
-.custom_label {
-	display: table-cell;
-	vertical-align: middle;
-	height: 1.3rem;
-	width: 5rem;
-	overflow: hidden;
-	white-space: nowrap;
+	overflow-x: hidden;
 }
 
 .save_map {
 	display: none;
 }
 
-.comm_button {
-	margin: 0px 0px 8px 0px;
-	background-repeat: no-repeat;
-	background-size: 36px 36px;
-	background-position: 8px center;
-	padding: 0px 0px 0px 36px;
-	height: 48px;
-	width: 180px;
-	align-items: center;
-}
-
-.menu_button {
-	background-image: url("./image/menu.svg")
-}
-
-.make_button {
-	background-image: url("./image/osmlogo.png");
-}
-
-.export_button {
-	background-image: url("./image/Arrow_Down.png");
-}
-
-.clear_button {
-	background-image: url("./image/Arrow_Left.png");
-}
-
-.way_button {
-	width: 1.8rem;
-	height: 1.3rem;
-	display: table-cell;
-	vertical-align: middle;
-	margin-left: 4px;
-}
-
-.way_line {
-	margin: 4px 0px 4px 4px;
-	width: 3rem;
-	height: 1.3rem;
-	display: table-cell;
-	vertical-align: middle;
-}
-
-.drop_button {
-	background-repeat: no-repeat;
-	background-position: 8px center;
-	padding: 4px 4px 4px 34px !important;
-	margin: 2px 0px 2px 0px;
-	background-repeat: no-repeat;
-	background-size: 24px;
-}
-
 .leaflet-div-icon {
 	border: 0px !important;
 }
 
-.leaflet-control-container::after {
-	content: url("./image/cross.png");
-	z-index: 1000;
-	display: block;
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-}
-
 input[type="search"] {
+	font-size: 14px;
 	display: inline-block;
-	width: calc(180px - 3.5em);
-}
-
-/* チェックボックス */
-
-.checkbox {
-	display: table-cell;
-	vertical-align: middle;
-	position: relative;
-	width: 28px;
-}
-
-.checkbox input[type="checkbox"] {
-	display: none;
-	/* チェックボックス非表示 */
-}
-
-.checkbox label {
-	display: block;
-	/* ボックス要素に変更 */
-	box-sizing: border-box;
-	/* 枠線を含んだサイズ */
-	height: 1.3em;
-	border: 2px solid #999999;
-	/* 未選択タブのの枠線 */
-	border-radius: 9px;
-	/* 角丸               */
-	margin: 0px;
-}
-
-.checkbox input[type="checkbox"]:checked+label {
-	border-color: #78bd78;
-	/* 選択タブの枠線     */
-}
-
-.checkbox div[type="swImg"] {
-	position: absolute;
-	/* 親要素からの相対位置*/
-	width: 10px;
-	/* 丸の横幅           */
-	height: 10px;
-	/* 丸の高さ           */
-	background: #88888888;
-	/* カーソルタブの背景 */
-	top: 7px;
-	/* 親要素からの位置   */
-	left: 4px;
-	/* 親要素からの位置   */
-	border-radius: 5px;
-	/* 角丸               */
-	transition: .2s;
-	/* 滑らか変化         */
-}
-
-.checkbox input[type="checkbox"]:checked~div[type="swImg"] {
-	transform: translateX(10px);
-	/* 丸も右へ移動       */
-	background: #709070;
-	/* カーソルタブの背景 */
+	width: calc(180px - 4em);
 }
