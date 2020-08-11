@@ -1,25 +1,43 @@
 <div id="make_map">
 	<button class="comm_button d-flex" onclick="Mapmaker.make(Basic.getdate())">
-		<i class="flex-row fas fa-map fa-2x mr-3"></i>
-		<span class="flex-row" glot-model="makemap"></span>
+		<i class="flex-row fas fa-map fa-2x mr-3"></i> <span class="flex-row" glot-model="makemap"></span>
 	</button>
+	<button class="mini_button d-flex dropdown-toggle" id="AreaSelect1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		<i class="fas fa-vector-square mr-4"></i> <span class="flex-row"></i><span glot-model="area_select"></span></span>
+	</button>
+	<div class="dropdown-menu" aria-labelledby="AreaSelect1">
+		<a class="dropdown-item drop_button btn mr-1 pl-3" onclick="Mapmaker.select_area('A4')"><i class="fas fa-arrows-alt-v ml-1 pr-1 mr-2"></i><span glot-model="area_A4"></span></a>
+		<a class="dropdown-item drop_button btn mr-1 pl-3" onclick="Mapmaker.select_area('A4_landscape')"><i class="fas fa-arrows-alt-h mr-2"></i><span glot-model="area_A4_landscape"></span></a>
+		<a class="dropdown-item drop_button btn mr-1 pl-3" onclick="Mapmaker.select_area('')"><i class="fas fa-vector-square mr-2"></i><span glot-model="area_deselect"></span></a>
+	</div>
 </div>
 
 <div class="accordion" id="accordion">
 	<div class="card">
 		<div class="card-header" id="headingOne">
 			<button class="comm_button d-flex" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-				<i class="flex-row fas fa-palette fa-2x mr-4"></i>
-				<span class="flex-row" glot-model="controlmenu"></span>
+				<i class="flex-row fas fa-palette fa-2x mr-4"></i> <span class="flex-row" glot-model="controlmenu"></span>
 			</button>
 			<div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
-				<div class="card-body">
-					<div class="dropdown m-0 pl-1 pr-1 pb-2">
-						<button class="btn btn-light dropdown-toggle w-100" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-							<i class="fas fa-map-marker mr-3"></i>
-							<span class="" glot-model="icon_add"></span>
-						</button>
-						<div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id="menu_list"> </div>
+				<div class="m-0 pl-1 pr-1 pb-2">
+					<div class="card-body">
+						<div class="btn-group">
+							<button class="minihalf_button dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+								<i class="fas fa-map-marker"></i>
+							</button>
+							<div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id="menu_list"> </div>
+						</div>
+						<div class="btn-group">
+							<button class="minihalf_button ml-1 dropdown-toggle" id="AreaSelect2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+								<i class="fas fa-vector-square"></i>
+							</button>
+							<div class="dropdown-menu" aria-labelledby="AreaSelect2">
+								<a class="dropdown-item drop_button btn mr-1 pl-3" onclick="Mapmaker.select_area('A4')"><i class="fas fa-arrows-alt-v ml-1 pr-1 mr-2"></i><span glot-model="area_A4"></span></a>
+								<a class="dropdown-item drop_button btn mr-1 pl-3" onclick="Mapmaker.select_area('A4_landscape')"><i class="fas fa-arrows-alt-h mr-2"></i><span glot-model="area_A4_landscape"></span></a>
+								<a class="dropdown-item drop_button btn mr-1 pl-3" onclick="Mapmaker.select_area('')"><i class="fas fa-vector-square mr-2"></i><span glot-model="area_deselect"></span></a>
+							</div>
+						</div>
+
 						<div class="custom_map" id="custom_map">
 							<div class="custom_group mx-auto" id="AAA">
 								<label class="custom_label"></label>
@@ -36,11 +54,11 @@
 
 <div class="save_map" id="save_map">
 	<div class="d-flex">
-		<button class="half_button d-flex" onclick="LayerCont.save('png');">
+		<button class="half_button d-flex" onclick="Mapmaker.save('png');">
 			<i class="fas fa-file-download fa-2x mr-2 flex-row"></i>
 			<span class="flex-row">PNG</span>
 		</button>
-		<button class="half_button d-flex" onclick="LayerCont.save('svg');">
+		<button class="half_button d-flex" onclick="Mapmaker.save('svg');">
 			<i class="fas fa-file-download fa-2x mr-2 flex-row"></i>
 			<span class="flex-row">SVG</span>
 		</button>

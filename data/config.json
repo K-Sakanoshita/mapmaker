@@ -32,6 +32,11 @@
             "anchor": "end",
             "font": "Helvetica"
         },
+        "Paper": {
+            "x": 210,
+            "y": 297,
+            "dpi": 150
+        },
         "Icon": {
             "x": 0,
             "y": 0,
@@ -79,7 +84,8 @@
             "way[\"landuse\"=\"reservoir\"]",
             "relation[\"natural\"=\"water\"]",
             "way[\"natural\"=\"water\"]",
-            "way[\"natural\"=\"coastline\"]"
+            "way[\"natural\"=\"coastline\"]",
+            "relation[\"landuse\"=\"basin\"]"
         ],
         "PED": [
             "relation[\"highway\"=\"pedestrian\"]",
@@ -174,6 +180,11 @@
             "node[\"species:en\"=\"Cerasus itosakura\"]",
             "node[\"species\"=\"Cerasus × yedoensis\"]",
             "node[\"species:en\"=\"Cerasus × yedoensis\"]"
+        ],
+        "wikipedia": [
+            "node[\"wikipedia\"]",
+            "way[\"wikipedia\"]",
+            "relation[\"wikipedia\"]"
         ]
     },
     "marker": {
@@ -189,7 +200,7 @@
         "takeaway": {
             "icon": "./image/bentou.svg"
         },
-        "Shelter_temporary": {
+        "shelter_temporary": {
             "icon": "./image/shelter.svg",
             "file": "./data/opendata_2015.csv",
             "columns": {
@@ -207,7 +218,7 @@
                 "social_facility": "shelter"
             }
         },
-        "Shelter_tsunami": {
+        "shelter_tsunami": {
             "icon": "./image/shelter.svg",
             "file": "./data/opendata_2016.csv",
             "columns": {
@@ -224,6 +235,12 @@
             "tags": {
                 "assembly_point:tsunami": "yes"
             }
+        },
+        "wikipedia": {
+            "icon": "./image/wikipedia.svg",
+            "api": "wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles=",
+            "domain": "wikipedia.org",
+            "tag": "wikipedia"
         }
     },
     "Style": {

@@ -58,11 +58,27 @@ button:active {
     align-items: center;
 }
 
+.mini_button {
+    margin: 0px;
+    padding: 0px 0px 0px 24px;
+    height: 28px;
+    width: 164px;
+    align-items: center;
+}
+
 .half_button {
     margin: 0px 4px 6px 0px;
     padding: 0px 6px 0px 12px;
     height: 46px;
     width: 80px;
+    align-items: center;
+}
+
+.minihalf_button {
+    margin: 0px;
+    padding: 0px;
+    height: 23px;
+    width: 74px;
     align-items: center;
 }
 

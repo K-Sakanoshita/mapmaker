@@ -58,6 +58,9 @@
         },
         "assembly_point:tsunami": {
             "yes": "shelter.svg"
+        },
+        "wikipedia":{
+            "*": "wikipedia.svg"
         }
     }
 }

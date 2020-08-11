@@ -143,9 +143,25 @@
 		"ja": "サーバーからのデータ取得に失敗しました。やり直してください。",
 		"en": "Failed to retrieve data from the server. Please start over."
 	},
+	"area_select": {
+		"ja": "範囲選択",
+		"en": "range selection"
+	},
+	"area_deselect": {
+		"ja": "選択解除",
+		"en": "deselection"
+	},
+	"area_A4": {
+		"ja": "A4縦サイズ",
+		"en": "A4 portrait size"
+	},
+	"area_A4_landscape": {
+		"ja": "A4横サイズ",
+		"en": "A4 landscape size"
+	},
 	"icon_add": {
-		"ja": "アイコン追加",
-		"en": "Add Icon"
+		"ja": "施設",
+		"en": "facility"
 	},
 	"icon_shops": {
 		"ja": "各種施設",
@@ -163,13 +179,17 @@
 		"ja": "テイクアウト/デリバリー",
 		"en": "Take-out/delivery"
 	},
-	"icon_Shelter_temporary": {
+	"icon_shelter_temporary": {
 		"ja": "一時避難所(大阪市)",
 		"en": "temporary shelter(OSAKA)"
 	},
-	"icon_Shelter_tsunami": {
+	"icon_shelter_tsunami": {
 		"ja": "津波・洪水避難所(大阪市)",
 		"en": "Tsunami and flood shelters(OSAKA)"
+	},
+	"icon_wikipedia": {
+		"ja": "Wikipedia",
+		"en": "Wikipedia"
 	},
 	"menu_BAK": {
 		"ja": "背景色",
@@ -230,6 +250,10 @@
 	"menu_STN": {
 		"ja": "駅施設等",
 		"en": "Station"
+	},
+	"qrcode_make":{
+			"ja":"QRコード生成",
+			"en":"QR-code generatie"
 	},
 	"marker_delete": {
 		"ja": "アイコンを削除",

@@ -57,7 +57,7 @@
             "shelter": "一時避難所"
         },
         "assembly_point:tsunami": {
-            "yes":"津波避難"
+            "yes": "津波避難"
         }
     }
 }

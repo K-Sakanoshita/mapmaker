@@ -188,7 +188,7 @@ var GeoCont = (function () {
                 if (columns[cols[i]] !== undefined) tag_key[i] = columns[cols[i]];
             };
             texts.shift();
-            let geojsons = texts.map((text,line) => {
+            let geojsons = texts.map((text, line) => {
                 cols = text.split('","').map(col => col.replace(/^"|"$/g, ''));
                 let geojson = { "type": "Feature", "geometry": { "type": "Point", "coordinates": [] }, "properties": {} };
                 let tag_val = {};
@@ -232,6 +232,42 @@ var GeoCont = (function () {
             return cords;
         },
 
+        multi2flat: (cords, type) => {     // MultiPoylgon MultiString -> Polygon(broken) String
+            let flats;
+            switch (type) {
+                case "Point":
+                    flats = cords;
+                    break;
+                case "LineString":
+                    flats = [cords];
+                    break;
+                case "MultiPolygon":
+                    flats = cords.flat();   // no break;
+                default:
+                    flats = [cords.flat()];
+                    break;
+            };
+            return flats;
+        },
+
+        flat2single: (cords, type) => {  // flat cordsの平均値(Poiの座標計算用)
+            let cord, lat = 0, lng = 0, counts;
+            switch (type) {
+                case "Point":
+                    cord = [cords[0], cords[1]];
+                    break;
+                default:
+                    counts = cords[0].length;
+                    for (let idx in cords[0]) {
+                        lat += cords[0][idx][0];
+                        lng += cords[0][idx][1];
+                    };
+                    cord = [lat / counts, lng / counts];
+                    break;
+            };
+            return cord;
+        },
+
         // 指定した方位の衝突するcords内のidxを返す
         get_maxll: (st_cord, cords, exc_idx, orient) => {
             let LLL = GeoCont.get_LLL(), idx, ed_cord = [], found = -1;
@@ -265,8 +301,13 @@ var GeoCont = (function () {
             return LL;
         },
 
-        get_maparea: () => {	// OverPassクエリのエリア指定
-            let LL = GeoCont.get_LLL();
+        get_maparea: (mode) => {	// OverPassクエリのエリア指定
+            let LL;
+            if (mode == "LLL") {
+                LL = GeoCont.get_LLL();
+            } else {
+                LL = GeoCont.get_LL();
+            };
             return `(${LL.SE.lat},${LL.NW.lng},${LL.NW.lat},${LL.SE.lng});`;
         },
 

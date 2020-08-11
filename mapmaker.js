@@ -3,6 +3,7 @@
 
 // Global Variable
 var map;				// leaflet map object
+var area;				// leafley areaselect object
 var Locate;				// leaflet locate object
 var Layers = {};		// Layer Status,geojson,svglayer
 var Conf = {};			// Config Praams
@@ -26,10 +27,10 @@ $(document).ready(function () {
 		});
 
 		glot.import("./data/glot.json").then(() => {	// Multi-language support
-			document.title = glot.get("title");				// Title
-			LayerCont.init();								// LayerCont Initialize
-			Mapmaker.init(menuhtml);						// Mapmaker Initialize
-			Marker.init();									// Marker Initialize
+			document.title = glot.get("title");			// Title
+			LayerCont.init();							// LayerCont Initialize
+			Mapmaker.init(menuhtml);					// Mapmaker Initialize
+			Marker.init();								// Marker Initialize
 
 			// Google Analytics
 			if (Conf.default.GoogleAnalytics !== "") {
@@ -46,7 +47,7 @@ $(document).ready(function () {
 });
 
 var Mapmaker = (function () {
-	var custom_mode = false, init_basemenu, Locate, view_license = false;
+	var custom_mode = false, init_basemenu, Locate, view_license = false, select_mode = "";
 
 	return {
 		// Initialize
@@ -70,7 +71,7 @@ var Mapmaker = (function () {
 			};
 			zoomlevel.addTo(map);
 
-			Mapmaker.makemenu(menuhtml);					// Make edit menu
+			Mapmaker.makemenu(menuhtml);								// Make edit menu
 
 			L.control.scale({ imperial: false, maxWidth: 200 }).addTo(map);		// Add Scale
 			Locate = L.control.locate({ position: 'bottomright', strings: { title: glot.get("location") }, locateOptions: { maxZoom: 16 } }).addTo(map);
@@ -110,7 +111,7 @@ var Mapmaker = (function () {
 
 			let icon_keys = Object.keys(Conf.marker);
 			icon_keys.forEach(key => {
-				let html = `<a class="dropdown-item drop_button mr-1" style="background-image: url('${Conf.marker[key].icon}')" onclick="Mapmaker.poi_add('${key}')">${glot.get("icon_" + key)}</a>`
+				let html = `<a class="dropdown-item drop_button btn mr-1" style="background-image: url('${Conf.marker[key].icon}')" onclick="Mapmaker.poi_add('${key}')">${glot.get("icon_" + key)}</a>`
 				$("#menu_list").append(html);
 			});
 
@@ -166,7 +167,7 @@ var Mapmaker = (function () {
 			let nowzoom = map.getZoom();
 			if (nowzoom < Conf.default.MinZoomLevel) return false;
 			if (typeof (query_date) == "undefined") query_date = "";
-			let maparea = GeoCont.get_maparea();
+			let maparea = GeoCont.get_maparea('LLL');
 			WinCont.modal_open({ "title": glot.get("loading_title"), "message": glot.get("loading_message"), "mode": "" });
 
 			let Progress = 0, jqXHRs = [];
@@ -222,36 +223,48 @@ var Mapmaker = (function () {
 				let geojsons = { geojson: [], targets: [] };
 				answer.geojson.forEach((geojson, idx) => {
 					let geo = geojson.geometry;
-					let cords = geo.coordinates.length == 1 && geo.coordinates[0][0].length > 1 ? geo.coordinates[0] : [geo.coordinates];
+					let cords = geo.coordinates;
+					//					let cords = geo.coordinates.length == 1 && geo.coordinates[0][0].length > 1 ? geo.coordinates[0] : ;
+					cords = GeoCont.multi2flat(cords, geo.type);
+					cords = GeoCont.flat2single(cords, geo.type);
 					cords = GeoCont.bboxclip(cords, true);
 					if (cords.length > 0) {
+						geojson.geometry.type = "Point";
+						geojson.geometry.coordinates = cords;
 						geojsons.geojson.push(geojson);
 						geojsons.targets.push(answer.targets[idx]);
 					};
 				});
 				PoiCont.add(geojsons);
-				//PoiCont.get_target(key);
 				WinCont.modal_select(key).then((slanswer) => {
 					PoiCont.add(slanswer);
 					Marker.set(key);
 					WinCont.modal_close();
 					console.log(`Mapmaker: Add: ${key} end`);
-				}).catch(() => console.log("poi_add: cancel"));
+				}); // .catch(() => console.log("poi_add: cancel"));
 			};
 		},
 
 		// delete poi
-		poi_del: (target, id) => {
-			let poi = PoiCont.get_osmid(id);
+		poi_del: (target, osmid) => {
+			let poi = PoiCont.get_osmid(osmid);
 			if (poi !== undefined) {
 				poi.enable = false;
 				PoiCont.set(poi);
-				Marker.delete(target, id);
+				Marker.delete(target, osmid);
+			};
+		},
+
+		qr_add: (osmid) => {
+			let marker = Marker.get(osmid);
+			if (marker !== undefined) {
+				console.log(marker);
+//				Marker.qr_add();
 			};
 		},
 
 		// Show/Hide Custom Panel(mode change)
-		custom: mode => {
+		custom: (mode) => {
 			switch (mode) {
 				case true:
 					for (let key in Conf.Style) {		// Show control if key is present
@@ -290,8 +303,24 @@ var Mapmaker = (function () {
 			return custom_mode;
 		},
 
+		// Area Selevct(A4)
+		select_area: (mode) => {
+			let dragging = false;
+			switch (mode) {
+				case "":
+					dragging = true;
+				case "A4":
+				case "A4_landscape":
+					select_mode = mode;
+					LayerCont.select(mode, dragging);
+					break;
+				default:
+					return select_mode;
+			};
+		},
+
 		// Search Address(Japan Only)
-		search_address: e => {
+		search_address: (e) => {
 			getLatLng(e.target.value, (latnng) => {
 				map.setZoom(Conf.default.SearchZoom);
 				map.panTo(latnng);
@@ -301,6 +330,21 @@ var Mapmaker = (function () {
 					mode: "close", callback_close: () => { WinCont.modal_close() }
 				});
 			})
+		},
+
+		// Update layers(color/lime weight change)
+		update: targetkey => {
+			if (targetkey == "" || typeof (targetkey) == "undefined") {		// no targetkey then update all layer
+				for (let key in Conf.Style) if (Layers[key].geojson) LayerCont.layer_make(key);
+			} else {
+				if (Layers[targetkey].geojson) LayerCont.layer_make(targetkey);
+			};
+			console.log("Mapmaker: update... end ");
+		},
+
+		// save layers&pois
+		save: (type) => {
+			LayerCont.save({ type: type, mode: select_mode });
 		},
 
 		// View Zoom Level & Status Comment
@@ -316,18 +360,6 @@ var Mapmaker = (function () {
 			};
 			if (Mapmaker.custom()) message += `<br>${glot.get("custommode")}`;
 			$("#zoomlevel").html("<h2 class='zoom'>" + message + "</h2>");
-		},
-
-		// Update Access Map(color/lime weight change)
-		update: targetkey => {
-			if (targetkey == "" || typeof (targetkey) == "undefined") {		// no targetkey then update all layer
-				for (let key in Conf.Style) {
-					if (Layers[key].geojson) LayerCont.layer_make(key);
-				};
-			} else {
-				if (Layers[targetkey].geojson) LayerCont.layer_make(targetkey);
-			};
-			console.log("Mapmaker: update... end ");
 		},
 
 		// Try Again

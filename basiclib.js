@@ -1,32 +1,52 @@
 // Basic Closure
 var Basic = (function () {
     return {
-        getdate: () => {							// Overpass Queryに付ける日付指定
+        getdate: () => {							                // Overpass Queryに付ける日付指定
             let seldate = $("#Select_Date").val();
             return seldate ? '[date:"' + (new Date(seldate)).toISOString() + '"]' : "";
         },
-        dataURItoBlob: (dataURI) => {               // DataURIからBlobへ変換（ファイルサイズ2MB超過対応）
+        dataURItoBlob: (dataURI) => {                               // DataURIからBlobへ変換（ファイルサイズ2MB超過対応）
             const b64 = atob(dataURI.split(',')[1]);
             const u8 = Uint8Array.from(b64.split(""), function (e) { return e.charCodeAt() });
             return new Blob([u8], { type: "image/png" });
         },
-        concatTwoDimensionalArray: (array1, array2, axis) => {        // 2次元配列の合成
+        concatTwoDimensionalArray: (array1, array2, axis) => {      // 2次元配列の合成
             if (axis != 1) axis = 0;
             var array3 = [];
-            if (axis == 0) {  //　縦方向の結合
+            if (axis == 0) {    //　縦方向の結合
                 array3 = array1.slice();
                 for (var i = 0; i < array2.length; i++) {
                     array3.push(array2[i]);
                 }
             }
-            else {  //　横方向の結合
+            else {              //　横方向の結合
                 for (var i = 0; i < array1.length; i++) {
                     array3[i] = array1[i].concat(array2[i]);
                 }
             }
             return array3;
         },
-    }
+        unicodeUnescape: (str) => {     // \uxxx形式→文字列変換
+            let result = "", strs = str.match(/\\u.{4}/ig);
+            if (!strs) return '';
+            for (var i = 0, len = strs.length; i < len; i++) {
+                result += String.fromCharCode(strs[i].replace('\\u', '0x'));
+            };
+            return result;
+        },
+        getWikipedia: (lang, url) => {      // get wikipedia contents
+            return new Promise((resolve, reject) => {
+                let encurl = encodeURI(url);
+                encurl = "https://" + lang + "." + Conf.marker.wikipedia.api + encurl;
+                $.get({ url: encurl, dataType: "jsonp" }, function (data) {
+                    let key = Object.keys(data.query.pages);
+                    let text = data.query.pages[key].extract;
+                    console.log(text);
+                    resolve(text);
+                });
+            });
+        }
+    };
 })();
 
 // Display Status(progress&message)
