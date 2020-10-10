@@ -1,0 +1,127 @@
+{
+    "marker_tag": {
+        "amenity": {
+            "library": "library.svg",
+            "bar": "bentou.svg",
+            "bench": "bench.svg",
+            "cafe": "cafe.svg",
+            "drinking_water": "water.svg",
+            "fast_food": "fastfood.svg",
+            "food_court": "fastfood.svg",
+            "ice_cream": "confectionery.svg",
+            "pub": "bar.svg",
+            "restaurant": "restaurant.svg",
+            "vending_machine": "vending.svg",
+            "place_of_worship": "information3.svg"
+        },
+        "shop": {
+            "alcohol": "bar.svg",
+            "bakery": "bakery.svg",
+            "beverages": "water.svg",
+            "brewing_supplies": "bar.svg",
+            "butcher": "bentou.svg",
+            "cheese": "bentou.svg",
+            "chocolate": "confectionery.svg",
+            "coffee": "cafe.svg",
+            "confectionery": "confectionery.svg",
+            "convenience": "bentou.svg",
+            "deli": "bentou.svg",
+            "dairy": "bentou.svg",
+            "farm": "bentou.svg",
+            "frozen_food": "deli.svg",
+            "greengrocer": "bentou.svg",
+            "health_food": "bentou.svg",
+            "ice_cream": "confectionery.svg",
+            "pasta": "bentou.svg",
+            "pastry": "pastry.svg",
+            "seafood": "bentou.svg",
+            "spices": "bentou.svg",
+            "tea": "cafe.svg",
+            "water": "water.svg",
+            "wine": "bar.svg",
+            "kiosk": "bentou.svg",
+            "supermarket": "bentou.svg",
+            "variety_store": "shops.svg"
+        },
+        "species": {
+            "Cherry blossom": "sakura.svg",
+            "Cerasus itosakura": "sakura.svg",
+            "Cerasus × yedoensis": "sakura.svg"
+        },
+        "natural": {
+            "tree": "tree.svg"
+        },
+        "emergency": {
+            "fire_extinguisher": "fire_extinguisher.svg",
+            "fire_hydrant": "fire_hydrant.svg",
+            "defibrillator": "aed.svg"
+        },
+        "highway": {
+            "traffic_signals": "signal.svg"
+        },
+        "social_facility": {
+            "shelter": "shelter.svg"
+        },
+        "assembly_point:tsunami": {
+            "yes": "shelter.svg"
+        },
+        "wikipedia": {
+            "*": "wikipedia.svg"
+        },
+        "attraction": {
+            "animal": "animal.svg"
+        },
+        "playground": {
+            "structure": "playground.svg",
+            "slide": "playground.svg",
+            "climbingframe": "playground.svg",
+            "climbingwall": "playground.svg",
+            "balancebeam": "playground.svg",
+            "playhouse": "playground.svg",
+            "sandpit": "playground.svg",
+            "hopscotch": "playground.svg",
+            "teenshelter": "playground.svg",
+            "sledding": "playground.svg",
+            "youth_bench": "playground.svg",
+            "map": "playground.svg",
+            "swing": "playground.svg",
+            "basketswing": "playground.svg",
+            "basketrotator": "playground.svg",
+            "aerialrotator": "playground.svg",
+            "seesaw": "playground.svg",
+            "springy": "playground.svg",
+            "trampoline": "playground.svg",
+            "roundabout": "playground.svg",
+            "cushion": "playground.svg",
+            "zipwire": "playground.svg",
+            "water": "playground.svg",
+            "splash_pad": "playground.svg",
+            "horizontal_bar": "playground.svg",
+            "activitypanel": "playground.svg",
+            "exercise": "playground.svg"
+        },
+        "tourism": {
+            "viewpoint": "star.svg",
+            "artwork": "artwork.svg"
+        },
+        "historic": {
+            "memorial": "memorial.svg"
+        },
+        "information": {
+            "board": "information2.svg",
+            "terminal": "information.svg",
+            "audioguide": "information.svg",
+            "map": "information2.svg",
+            "tactile_map": "information2.svg",
+            "guidepost": "information.svg"
+        },
+        "man_made": {
+            "torii": "torii.svg",
+            "lamp":"lantern.svg"
+        }
+    },
+    "marker_append_files": [
+        "wikipedia_orange.svg",
+        "attention.svg"
+    ]
+}

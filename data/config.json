@@ -7,13 +7,14 @@
         ],
         "DefaultZoom": 6,
         "ZoomSnap": 0.25,
-        "MinZoomLevel": 12.0,
-        "LimitZoomLevel": 15.0,
+        "MinZoomLevel": 12.5,
+        "LimitZoomLevel": 15.5,
         "MaxZoomLevel": 23,
         "FileName": "mapmaker",
         "SearchZoom": 16,
-        "OverPassServer": "https://overpass.nchc.org.tw/api/interpreter",
+        "__OverPassServer": "https://overpass.nchc.org.tw/api/interpreter",
         "_OverPassServer": "https://overpass.kumi.systems/api/interpreter",
+        "OverPassServer": "https://overpass-api.de/api/interpreter",
         "OverPassParams": "?data=[out:json][timeout:30]",
         "Attribution": "<a href=\"https://www.maptiler.com/copyright/\" target=\"_blank\">© MapTiler</a> <a href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\">© OpenStreetMap contributors</a>",
         "MapStyle": "https://api.maptiler.com/maps/371812ac-52d8-4ace-a720-a027cec01eac/style.json?key=Eq2IyrHsOEGFU1W1fvd7",
@@ -26,10 +27,12 @@
             "fillOpacity": 0.1,
             "timer": 2000
         },
-        "Credit": {
+        "credit": {
             "text": "© OpenStreetMap contributors",
+            "width": 170,
+            "height":20,
             "size": 12,
-            "anchor": "end",
+            "anchor": "start",
             "font": "Helvetica"
         },
         "Paper": {
@@ -38,8 +41,8 @@
             "dpi": 150
         },
         "Icon": {
-            "x": 0,
-            "y": 0,
+            "x": 20,
+            "y": 20,
             "scale": 1.66
         },
         "Text": {
@@ -58,7 +61,7 @@
         {
             "glot-model": "about",
             "linkto": "https://medium.com/@K_Sakanoshita/ea38ce4fd10",
-            "divider": true
+            "divider": false
         },
         {
             "glot-model": "owner",
@@ -71,281 +74,14 @@
             "divider": false
         }
     ],
-    "overpass": {
-        "PRK": [
-            "relation[\"leisure\"=\"park\"]",
-            "way[\"leisure\"=\"playground\"]",
-            "way[\"leisure\"=\"park\"]",
-            "way[\"leisure\"=\"pitch\"]"
-        ],
-        "RIV": [
-            "relation[\"waterway\"]",
-            "way[\"waterway\"]",
-            "way[\"landuse\"=\"reservoir\"]",
-            "relation[\"natural\"=\"water\"]",
-            "way[\"natural\"=\"water\"]",
-            "way[\"natural\"=\"coastline\"]",
-            "relation[\"landuse\"=\"basin\"]"
-        ],
-        "PED": [
-            "relation[\"highway\"=\"pedestrian\"]",
-            "way[\"highway\"=\"pedestrian\"][\"area\"]",
-            "way[\"man_made\"=\"bridge\"]"
-        ],
-        "PKG": [
-            "way[\"amenity\"=\"parking\"]",
-            "way[\"amenity\"=\"bicycle_parking\"]"
-        ],
-        "GDN": [
-            "way[\"leisure\"=\"garden\"]",
-            "way[\"landuse\"=\"grass\"]",
-            "way[\"natural\"=\"tree_row\"]"
-        ],
-        "FRT": [
-            "relation[\"landuse\"=\"forest\"]",
-            "relation[\"natural\"=\"wood\"]",
-            "way[\"landuse\"=\"forest\"]",
-            "way[\"natural\"=\"wood\"]",
-            "way[\"natural\"=\"scrub\"]",
-            "way[\"landuse\"=\"farmland\"]",
-            "way[\"landuse\"=\"allotments\"]"
-        ],
-        "RIL": [
-            "way[\"railway\"][\"railway\"!=\"subway\"]"
-        ],
-        "ALY": [
-            "way[\"highway\"=\"footway\"]",
-            "way[\"highway\"=\"path\"]",
-            "way[\"highway\"=\"track\"]",
-            "way[\"highway\"=\"steps\"]"
-        ],
-        "STD": [
-            "way[\"highway\"~\"unclassified\"]",
-            "way[\"highway\"~\"residential\"]",
-            "way[\"highway\"=\"living_street\"]",
-            "way[\"highway\"=\"pedestrian\"][!\"area\"]",
-            "way[\"highway\"=\"service\"]"
-        ],
-        "PRI": [
-            "way[\"highway\"~\"trunk\"]",
-            "way[\"highway\"~\"primary\"]",
-            "way[\"highway\"~\"secondary\"]",
-            "way[\"highway\"~\"tertiary\"]"
-        ],
-        "HIW": [
-            "way[\"highway\"~\"motorway\"]"
-        ],
-        "BLD": [
-            "way[\"building\"!=\"train_station\"][\"building\"]",
-            "relation[\"building\"!=\"train_station\"][\"building\"]"
-        ],
-        "BRR": [
-            "way[\"barrier\"][\"barrier\"!=\"kerb\"][\"barrier\"!=\"ditch\"]"
-        ],
-        "STN": [
-            "relation[\"building\"=\"train_station\"]",
-            "way[\"building\"=\"train_station\"]"
-        ],
-        "shops": [
-            "node[\"shop\"]",
-            "node[\"amenity\"]",
-            "way[\"amenity\"]"
-        ],
-        "disaster": [
-            "node[\"highway\"=\"traffic_signals\"]",
-            "node[\"emergency\"=\"fire_extinguisher\"]",
-            "node[\"emergency\"=\"fire_hydrant\"]",
-            "node[\"emergency\"=\"defibrillator\"]"
-        ],
-        "takeaway": [
-            "node[\"takeaway\"]",
-            "way[\"takeaway\"]",
-            "node[\"takeaway:covid19\"]",
-            "way[\"takeaway:covid19\"]",
-            "node[\"delivery\"]",
-            "way[\"delivery\"]",
-            "node[\"delivery:covid19\"]",
-            "way[\"delivery:covid19\"]",
-            "node[\"shop\"=\"bakery\"]",
-            "way[\"shop\"=\"bakery\"]",
-            "node[\"shop\"=\"deli\"]",
-            "way[\"shop\"=\"deli\"]",
-            "node[\"shop\"=\"alcohol\"]",
-            "way[\"shop\"=\"alcohol\"]"
-        ],
-        "SKR": [
-            "node[\"species\"=\"Cherry blossom\"]",
-            "node[\"species:en\"=\"Cherry blossom\"]",
-            "node[\"species\"=\"Cerasus itosakura\"]",
-            "node[\"species:en\"=\"Cerasus itosakura\"]",
-            "node[\"species\"=\"Cerasus × yedoensis\"]",
-            "node[\"species:en\"=\"Cerasus × yedoensis\"]"
-        ],
-        "wikipedia": [
-            "node[\"wikipedia\"]",
-            "way[\"wikipedia\"]",
-            "relation[\"wikipedia\"]"
-        ]
-    },
-    "marker": {
-        "shops": {
-            "icon": "./image/shops.svg"
+    "effect":{
+        "icon": {
+            "x": 0,
+            "y": 0
         },
-        "SKR": {
-            "icon": "./image/sakura.svg"
-        },
-        "disaster": {
-            "icon": "./image/aed.svg"
-        },
-        "takeaway": {
-            "icon": "./image/bentou.svg"
-        },
-        "shelter_temporary": {
-            "icon": "./image/shelter.svg",
-            "file": "./data/opendata_2015.csv",
-            "columns": {
-                "場所の名前": "name",
-                "区名": "_addr",
-                "所在地": "_addr",
-                "TEL": "tel",
-                "避難可能時間": "opening_hours",
-                "避難場所の対象とする災害": "_disasters",
-                "経度": "_lng",
-                "緯度": "_lat",
-                "分類": "description"
-            },
-            "tags": {
-                "social_facility": "shelter"
-            }
-        },
-        "shelter_tsunami": {
-            "icon": "./image/shelter.svg",
-            "file": "./data/opendata_2016.csv",
-            "columns": {
-                "場所の名前": "name",
-                "区名": "_addr",
-                "所在地": "_addr",
-                "TEL": "tel",
-                "避難可能時間": "opening_hours",
-                "避難場所の対象とする災害": "_disasters",
-                "経度": "_lng",
-                "緯度": "_lat",
-                "分類": "description"
-            },
-            "tags": {
-                "assembly_point:tsunami": "yes"
-            }
-        },
-        "wikipedia": {
-            "icon": "./image/wikipedia.svg",
-            "api": "wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles=",
-            "domain": "wikipedia.org",
-            "tag": "wikipedia"
-        }
-    },
-    "Style": {
-        "BAK": {
-            "type": "background",
-            "color": "#000000",
-            "opacity": 0
-        },
-        "PRK": {
-            "zoom": 15,
-            "type": "area",
-            "color": "#e8ffd0",
-            "width": 1,
-            "dashArray": null
-        },
-        "RIV": {
-            "zoom": 12,
-            "type": "area",
-            "color": "#b0d0f8",
-            "width": 1,
-            "dashArray": null
-        },
-        "PED": {
-            "zoom": 15,
-            "type": "area",
-            "color": "#ede9e7",
-            "width": 1,
-            "dashArray": null
-        },
-        "PKG": {
-            "zoom": 15.5,
-            "type": "area",
-            "color": "#ffffe8",
-            "width": 1,
-            "dashArray": null
-        },
-        "GDN": {
-            "zoom": 16,
-            "type": "area",
-            "color": "#d8ffb8",
-            "width": 1,
-            "dashArray": null
-        },
-        "FRT": {
-            "zoom": 12,
-            "type": "area",
-            "color": "#a0e080",
-            "width": 1,
-            "dashArray": null
-        },
-        "RIL": {
-            "zoom": 12,
-            "type": "line",
-            "color": "#909090",
-            "width": 1.5,
-            "dashArray": "12,4"
-        },
-        "ALY": {
-            "zoom": 16,
-            "type": "line",
-            "color": "#b9a89b",
-            "width": 0.5,
-            "dashArray": "4,2"
-        },
-        "STD": {
-            "zoom": 13,
-            "type": "line",
-            "color": "#f0f0f0",
-            "width": 2.0,
-            "dashArray": null
-        },
-        "PRI": {
-            "zoom": 12,
-            "type": "line",
-            "color": "#f8e0c0",
-            "width": 4.0,
-            "dashArray": null
-        },
-        "HIW": {
-            "zoom": 12,
-            "type": "line",
-            "color": "#f8d0a0",
-            "width": 5.0,
-            "dashArray": null
-        },
-        "BLD": {
-            "zoom": 15,
-            "type": "area",
-            "color": "#dcd3cd",
-            "width": 1,
-            "dashArray": null
-        },
-        "BRR": {
-            "zoom": 17,
-            "type": "line",
-            "color": "#b0b0b0",
-            "width": 1,
-            "dashArray": null
-        },
-        "STN": {
-            "zoom": 14,
-            "type": "area",
-            "color": "#f8d8d8",
-            "width": 1,
-            "dashArray": null
+        "text": {
+            "size": 12,
+            "view": true
         }
     }
-}
+ }

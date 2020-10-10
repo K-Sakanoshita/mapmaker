@@ -1,7 +1,11 @@
 {
 	"about": {
 		"ja": "まち歩きマップメーカーについて",
-		"en": "about Street Map Maker"
+		"en": "about Town Walk Map Maker"
+	},
+	"about-bg": {
+		"ja": "ヘッダー部の背景画像について",
+		"en": "about background image of header"
 	},
 	"owner": {
 		"ja": "開発サイト",
@@ -13,7 +17,7 @@
 	},
 	"title": {
 		"ja": "まち歩きマップメーカー",
-		"en": "Street Map Maker"
+		"en": "Town Walk Map Maker"
 	},
 	"subtitle": {
 		"ja": "自由に編集＆何にでも使える地図",
@@ -107,11 +111,11 @@
 		"ja": "いいえ",
 		"en": "NO"
 	},
-	"chglng_error_title": {
+	"change_lang_error_title": {
 		"ja": "言語切り替えエラー",
 		"en": "language switching error"
 	},
-	"chglng_error_message": {
+	"change_lang_error_message": {
 		"ja": "切り替え先の言語がありません。",
 		"en": "There is no language to switch to."
 	},
@@ -143,6 +147,14 @@
 		"ja": "サーバーからのデータ取得に失敗しました。やり直してください。",
 		"en": "Failed to retrieve data from the server. Please start over."
 	},
+	"nodata_title": {
+		"ja": "データが見つかりません",
+		"en": "Data not found."
+	},
+	"nodata_message": {
+		"ja": "指定した種類のデータは見つかりません。マッピングしてください。",
+		"en": "The type of data you specified was not found. Please mapping it."
+	},
 	"area_select": {
 		"ja": "範囲選択",
 		"en": "range selection"
@@ -159,43 +171,55 @@
 		"ja": "A4横サイズ",
 		"en": "A4 landscape size"
 	},
-	"icon_add": {
+	"marker_add": {
 		"ja": "施設",
 		"en": "facility"
 	},
-	"icon_shops": {
+	"marker_shops": {
 		"ja": "各種施設",
 		"en": "Facilities"
 	},
-	"icon_SKR": {
-		"ja": "木（さくら）",
-		"en": "Sakura"
+	"marker_tree": {
+		"ja": "樹木",
+		"en": "tree"
 	},
-	"icon_disaster": {
+	"marker_disaster": {
 		"ja": "防災関連",
 		"en": "Disaster Prevention"
 	},
-	"icon_takeaway": {
+	"marker_takeaway": {
 		"ja": "テイクアウト/デリバリー",
 		"en": "Take-out/delivery"
 	},
-	"icon_shelter_temporary": {
+	"marker_shelter_temporary": {
 		"ja": "一時避難所(大阪市)",
 		"en": "temporary shelter(OSAKA)"
 	},
-	"icon_shelter_tsunami": {
+	"marker_shelter_tsunami": {
 		"ja": "津波・洪水避難所(大阪市)",
 		"en": "Tsunami and flood shelters(OSAKA)"
 	},
-	"icon_wikipedia": {
+	"marker_wikipedia": {
 		"ja": "Wikipedia",
 		"en": "Wikipedia"
+	},
+	"marker_animal": {
+		"ja": "動物",
+		"en": "Animal"
+	},
+	"marker_playground": {
+		"ja": "遊具",
+		"en": "Playground"
+	},
+	"marker_viewpoint": {
+		"ja": "ちょっとしたポイント",
+		"en": "viewpoint"
 	},
 	"menu_BAK": {
 		"ja": "背景色",
 		"en": "Background"
 	},
-	"menu_PRK": {
+	"menu_Park": {
 		"ja": "各種公園",
 		"en": "Park"
 	},
@@ -251,13 +275,17 @@
 		"ja": "駅施設等",
 		"en": "Station"
 	},
-	"qrcode_make":{
-			"ja":"QRコード生成",
-			"en":"QR-code generatie"
+	"qrcode_make": {
+		"ja": "QRコード生成",
+		"en": "QR-code generatie"
 	},
 	"marker_delete": {
 		"ja": "アイコンを削除",
 		"en": "Remove Icon"
+	},
+	"marker_change": {
+		"ja": "アイコンを変更",
+		"en": "Change Icon"
 	},
 	"marker_to_en": {
 		"ja": "英語に変更",

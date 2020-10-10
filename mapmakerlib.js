@@ -5,19 +5,23 @@ var LayerCont = (function () {		// for line&area / nodeはMarker
 	return {
 		init: () => {
 			let lamp = Layers.MAP == undefined ? "" : Layers.MAP;
-			Layers = { "BAK": { "opacity": Conf.Style.BAK.opacity }, "MAP": lamp };
-			for (let key in Conf.Style) {
-				let color = typeof (Conf.Style[key].color) == "undefined" ? "" : Conf.Style[key].color;
-				let opacity = typeof (Conf.Style[key].opacity) == "undefined" ? "" : Conf.Style[key].opacity;
+			Layers = { "BAK": { "opacity": Conf.style.BAK.opacity }, "MAP": lamp };
+			for (let key in Conf.style) {
+				let color = typeof (Conf.style[key].color) == "undefined" ? "" : Conf.style[key].color;
+				let opacity = typeof (Conf.style[key].opacity) == "undefined" ? "" : Conf.style[key].opacity;
 				Layers[key] = {
 					"color": color, "color_dark": color == "" ? "" : chroma(color).darken(Conf.default.ColorDarken).hex(),
-					"width": typeof (Conf.Style[key].width) == "undefined" ? 0 : Conf.Style[key].width, "opacity": opacity
+					"width": typeof (Conf.style[key].width) == "undefined" ? 0 : Conf.style[key].width, "opacity": opacity
 				};
 			};
+			WinCont.domAdd("a4_top", "article");			// make area_select
+			WinCont.domAdd("a4_bottom", "article");
+			WinCont.domAdd("a4_left", "article");
+			WinCont.domAdd("a4_right", "article");
 		},
 
 		layer_make: (key, view) => {						// MakeData内 -> name:コントロール名 / color:SVG色 / width:SVG Line Weight / dashArray:破線
-			let type = Conf.Style[key].type, ways = [], opacity;
+			let type = Conf.style[key].type, ways = [], opacity;
 			if (view !== undefined) Layers[key].opacity = view ? 1 : 0;
 			let style = svg_style(key);
 			if (Layers[key].svg) {							// already svg layers
@@ -31,13 +35,13 @@ var LayerCont = (function () {		// for line&area / nodeはMarker
 					ways.setStyle(Object.assign(style, opacity));
 					ways.options = Object.assign(ways.options, opacity);
 				});
-			} else if (Layers[key].geojson !== undefined) {	//already geojson
+			} else if (Layers[key].geojson !== undefined) {		//already geojson
 				opacity = { "fillOpacity": 1, "opacity": 1 };
 				if (view == false) opacity = { "fillOpacity": 0, "opacity": 0 };	// false以外(trueとundefined)はopacity=1
 				if (type !== "area") opacity.fillOpacity = 0; 	// LineがPolygon化された場合の対処
 				style = Object.assign(style, opacity);
 				Layers[key].geojson.forEach(way => {
-					ways.push(L.geoJSON(way, style));		// geojsonからSVGレイヤーを作成
+					ways.push(L.geoJSON(way, style));			// geojsonからSVGレイヤーを作成
 					ways[ways.length - 1].addTo(map).on('click', way_toggle);
 					ways[ways.length - 1].mapmaker = { id: ways.length - 1, "key": key };
 				});
@@ -47,20 +51,29 @@ var LayerCont = (function () {		// for line&area / nodeはMarker
 		},
 
 		// Aree select(A4)
-		select: (mode, dragging) => {
-			let p = Conf.default.Paper, params = {};
-			if (area !== undefined) { area.off(); area.remove(); };
-			area = undefined;
-			switch (mode) {
-				case "free": params = { width: p.x, height: p.y, keepAspectRatio: false }; break;
-				case "A4": params = { width: p.x, height: p.y, keepAspectRatio: true }; break;
-				case "A4_landscape": params = { width: p.y, height: p.x, keepAspectRatio: true }; break;
+		area_select: (mode) => {
+			let dom, p = WinCont.a4_getsize(mode);
+			if (p.top > 0) {
+				dom = document.getElementById("a4_top");
+				dom.innerHTML = `<div class="area_mask" style="width: 100%; height: ${p.top}px; top: 0px; left: 0px;"></div>`;
+				dom = document.getElementById("a4_bottom");
+				dom.innerHTML = `<div class="area_mask" style="width: 100%; height: ${p.bottom}px; top:  ${p.height - p.bottom}px; left: 0px;"></div>`;
+			} else {
+				dom = document.getElementById("a4_top");
+				if (dom !== null) { dom.innerHTML = `` };
+				dom = document.getElementById("a4_bottom");
+				if (dom !== null) { dom.innerHTML = `` };
 			};
-			if (params.width !== undefined) { area = L.areaSelect(params); area.addTo(map) };
-			if (dragging) map.dragging.enable();
-			if (area !== undefined && !dragging) {
-				map.dragging.disable();
-				area.on("change", () => map.dragging.disable());
+			if (p.left > 0) {
+				dom = document.getElementById("a4_left");
+				dom.innerHTML = `<div class="area_mask" style="width: ${p.left}px; height: 100%; top: 0px; left: 0px;"></div>`;
+				dom = document.getElementById("a4_right");
+				dom.innerHTML = `<div class="area_mask" style="width: ${p.right}px; height: 100%; top: 0px; left: ${p.width - p.right}px;"></div>`;
+			} else {
+				dom = document.getElementById("a4_left");
+				if (dom !== null) { dom.innerHTML = `` };
+				dom = document.getElementById("a4_right");
+				if (dom !== null) { dom.innerHTML = `` };
 			};
 		},
 
@@ -68,31 +81,27 @@ var LayerCont = (function () {		// for line&area / nodeはMarker
 		text_write: (svg, params) => {
 			let svgtext = document.createElementNS('http://www.w3.org/2000/svg', 'text');
 			let textpath = document.createElementNS('http://www.w3.org/2000/svg', 'textPath');
-//			svgtext.setAttribute('x', params.x);
-//			svgtext.setAttribute('y', params.y + offset[params.type]);
-			svgtext.setAttribute('width', params.width + 6);
-			svgtext.setAttribute('height', params.height + 3);
 			svgtext.setAttribute('text-anchor', params.anchor);
 			svgtext.setAttribute('font-size', params.size + "px");
 			svgtext.setAttribute('font-family', params.font);
 			svgtext.setAttribute('fill', params.color);
-			svgtext.setAttribute('dominant-baseline', 'middle');
+			svgtext.setAttribute('dominant-baseline', 'text-before-edge');	// 理由:textPath のy座標が0起点のため
 			textpath.textContent = params.text;
 			textpath.setAttribute('xlink:href', "#textpath" + params.no);
 			svgtext.appendChild(textpath);
 			svg[0].appendChild(svgtext);
 
 			let svgpath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-			svgpath.setAttribute('transform', `translate(${params.x},${params.y})`);
+			svgpath.setAttribute('transform', `matrix(1,0,0,1,${params.x},${params.y - 2})`);
 			svgpath.setAttribute('id', "textpath" + params.no);
-			svgpath.setAttribute('d', "M0,20 H300 M0,40 H300 M0,60 H300 M0,80 H300");
+			svgpath.setAttribute('d', "M0,0 H360 M0,18 H360 M0,36 H360 M0,54 H360 M0,72 H360 M0,90 H360 M0,108 H360 M0,126 H360 M0,144");
 			svg[0].insertBefore(svgpath, svgtext);
 
 			let rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-			rect.setAttribute("x", params.x - 2);
-			rect.setAttribute("y", params.y - 1);
+			rect.setAttribute("x", params.x - 3);
+			rect.setAttribute("y", params.y - 4);
 			rect.setAttribute("width", params.width + 6);
-			rect.setAttribute("height", params.height + 3);
+			rect.setAttribute("height", params.height - 2);
 			rect.setAttribute("fill", "white");
 			rect.setAttribute("fill-opacity", 0.9);
 			svg[0].insertBefore(rect, svgtext);
@@ -103,17 +112,14 @@ var LayerCont = (function () {		// for line&area / nodeはMarker
 			let data, canvas_width, canvas_height, svg = $("svg").clone();
 			let base = svg[0].viewBox.baseVal;
 
-			switch (params.mode) {
-				case "":
-					base = { x: base.x + 100, y: base.y + 100, width: base.width - 200, height: base.height - 200 };
-					break;
-				default:
-					let LL = area.getBBoxCoordinates();
-					let nw = map.latLngToContainerPoint(LL[1].nw);
-					let se = map.latLngToContainerPoint(LL[3].se);
-					base = { x: base.x + 100 + nw.x, y: base.y + 100 + nw.y, width: (se.x - nw.x), height: (se.y - nw.y) };
-					break;
-			}
+			let box = WinCont.a4_getsize(params.mode);
+			base = {
+				width: box.width - (box.left + box.right),
+				height: box.height - (box.top + box.bottom),
+				x: base.x + 122 + box.left,
+				y: base.y + 106 + box.top
+			};
+
 			switch (params.mode) {
 				case "":
 					canvas_width = base.width * 2;
@@ -148,9 +154,9 @@ var LayerCont = (function () {		// for line&area / nodeはMarker
 			}
 			$("body").append(svg);
 
-			LayerCont.text_write(svg, Object.assign(Conf.default.Credit, {
-				"x": base.width + base.x - 2, "y": base.height + base.y - Conf.default.Credit.size,"no": "copyright",
-				"width": 128, "height": 12, "type": params.type, "color": Conf.default.Text.color
+			LayerCont.text_write(svg, Object.assign(Conf.default.credit, {
+				"x": base.width + base.x - Conf.default.credit.width, "y": base.height + base.y - Conf.default.credit.size - 2, "no": "copyright",
+				"width": Conf.default.credit.width, "height": Conf.default.credit.height + 2, "type": params.type, "color": Conf.default.Text.color
 			})); // add Copyrigt
 
 			svg.attr("style", "");
@@ -167,7 +173,7 @@ var LayerCont = (function () {		// for line&area / nodeはMarker
 						let scale = canvas_width / base.width;
 						ctx.drawImage(image, 0, 0, base.width * scale, base.height * scale);
 						save_common(svg, canvas.toDataURL("image/png"), 'png');
-					}
+					};
 					image.src = imgsrc;
 					break;
 				case 'svg':
@@ -179,7 +185,7 @@ var LayerCont = (function () {		// for line&area / nodeはMarker
 
 		all_clear: () => {
 			console.log("LayerCont: all clear... ");
-			for (let key in Conf.Style) if (Layers[key].svg) Layers[key].svg.forEach(svg => map.removeLayer(svg));
+			for (let key in Conf.style) if (Layers[key].svg) Layers[key].svg.forEach(svg => map.removeLayer(svg));
 			LayerCont.init();
 		}
 	};
@@ -192,10 +198,10 @@ var LayerCont = (function () {		// for line&area / nodeはMarker
 			weight = (nowzoom - 15) * 0.6;
 		};
 		let common = {
-			"stroke": true, "dashArray": Conf.Style[key].dashArray, "bubblingMouseEvents": false, "lineJoin": 'round',
+			"stroke": true, "dashArray": Conf.style[key].dashArray, "bubblingMouseEvents": false, "lineJoin": 'round',
 			"bubblingMouseEvents": false, "weight": Layers[key].width * weight
 		};
-		if (Conf.Style[key].type == "area") {
+		if (Conf.style[key].type == "area") {
 			style = Object.assign(common, { "color": Layers[key].color_dark, "fillColor": Layers[key].color });
 		} else {
 			style = Object.assign(common, { "color": Layers[key].color, "fillColor": Layers[key].color_dark });
@@ -210,7 +216,7 @@ var LayerCont = (function () {		// for line&area / nodeはMarker
 			options.fillOpacity = 1;
 			options.opacity = 1;
 			ev.target.options.opacity = 1;
-			if (Conf.Style[key].type !== "area") options.fillOpacity = 0; 	// LineがPolygon化された場合の対処
+			if (Conf.style[key].type !== "area") options.fillOpacity = 0; 	// LineがPolygon化された場合の対処
 		} else {
 			options.fillOpacity = 0;
 			options.opacity = 0;
@@ -293,16 +299,14 @@ var PoiCont = (function () {
 		},
 		get_catname: (tags) => {          							// get Category Name from Conf.category(Global Variable)
 			let categorys = Object.keys(Conf.category);
-			let catname = "";
 			let key1 = categorys.find(key => tags[key] !== undefined);
 			let key2 = tags[key1] == undefined ? "" : tags[key1];
-			if (key2 !== "") {                  // known tags
-				catname = Conf.category[key1][key2];
-				if (catname == undefined) catname = "";
-			} else if (tags["wikipedia"]) {							// wikipediaの時は:の右側を返す
-				catname = tags["wikipedia"].split(':')[1];
-			};
-			return catname;
+			let catname = (key2 !== "") ? Conf.category[key1][key2] : "";   // known tags
+			return (catname == undefined) ? "" : catname;
+		},
+		get_wikiname: (tags) => {          							// get Wikipedia Name from tag
+			let wikiname = tags["wikipedia"] ? tags["wikipedia"].split(':')[1] : "";	// value値の":"の右側を返す
+			return wikiname;
 		},
 		list: function (targets) {              // DataTables向きのJsonデータリストを出力
 			let pois = poi_filter(targets);     // targetsに指定されたpoiのみフィルター
@@ -334,22 +338,23 @@ var PoiCont = (function () {
 			return found;
 		});
 		return { geojson: geojson, latlng: lls, targets: tars, enable: enas };
-	}
+	};
 })();
 
-var Marker = (function () {		// Marker closure
-	var markers = {}, SvgIcon = {};	// SVGアイコン連想配列(filename,svg text)
+var Marker = (function () {				// Marker closure
+	var markers = {}, SvgIcon = {};		// SVGアイコン連想配列(filename,svg text)
 
 	return {
 		init: () => {
-			let jqXHRs = [], keys = [];			// SVGテキストをSvgIconへ保存
-			Object.keys(Conf.icon).forEach(key1 => {
-				Object.keys(Conf.icon[key1]).forEach((key2) => {
-					let filename = Conf.icon[key1][key2];
+			Marker.set_size(Conf.default.Text.size, Conf.default.Text.view);
+			let jqXHRs = [], keys = [];			// SVGファイルをSvgIconへ読み込む
+			Object.keys(Conf.marker_tag).forEach(key1 => {
+				Object.keys(Conf.marker_tag[key1]).forEach((key2) => {
+					let filename = Conf.marker_tag[key1][key2];
 					if (keys.indexOf(filename) == -1) {
 						keys.push(filename);
 						jqXHRs.push($.get(`./image/${filename}`));
-					}
+					};
 				});
 			});
 			$.when.apply($, jqXHRs).always(function () {
@@ -357,10 +362,15 @@ var Marker = (function () {		// Marker closure
 				for (let key in keys) SvgIcon[keys[key]] = xs.serializeToString(arguments[key][0]);
 			});
 		},
-		have: (target) => {					// Markerか確認(true: marker)
-			return Object.keys(Conf.marker).some(key => key == target);
+		images: () => {							// SvgIcon(svgを返す)
+			return SvgIcon;
 		},
-		set: (target) => {					// Poi表示
+		have: (target) => {						// Markerか確認(true: marker)
+			let keys = Object.keys(Conf.target);
+			let markers = keys.filter(key => Conf.target[key].marker !== undefined);
+			return markers.some(key => key == target);
+		},
+		set: (target) => {						// Poi表示
 			Marker.delete(target);
 			markers[target] = [];
 			let pois = PoiCont.get_target(target);
@@ -368,7 +378,7 @@ var Marker = (function () {		// Marker closure
 				pois.geojson.forEach(function (geojson, idx) {
 					let poi = { "geojson": pois.geojson[idx], "targets": pois.targets[idx], "latlng": pois.latlng[idx], "enable": pois.enable[idx] };
 					if (poi.enable) {
-						make_popup(target, poi, 'name').then(marker => {
+						make_popup({ target: target, poi: poi, langname: 'name' }).then(marker => {
 							if (marker !== undefined) marker.forEach(val => markers[target].push(val));
 						});
 					};
@@ -382,75 +392,106 @@ var Marker = (function () {		// Marker closure
 			return marker;
 		},
 
-		qr_add: (url, latlng, text) => {
-			var qrcode = new QRCode({ content: url, join: true, container: "svg", width: 128, height: 128 });
+		qr_add: (target, osmid, url, latlng, text) => {
+			let idx = markers[target].findIndex(val => val.mapmaker_id == osmid);
+			let qrcode = new QRCode({ content: url, join: true, container: "svg", width: 128, height: 128 });
 			let data = qrcode.svg();
 			let icon = L.divIcon({ "className": "icon", "iconSize": [512, 128], "html": `<div class="d-flex"><div class="flex-row">${data}</div><div class="p-2 bg-light"><span>${text}</span></div></div>` });
-			let marker = L.marker(new L.LatLng(latlng.lat, latlng.lng), { icon: icon, draggable: true });
-			marker.addTo(map);
-			return { marker: marker, svg: data };
+			let qr_marker = L.marker(new L.LatLng(latlng.lat, latlng.lng), { icon: icon, draggable: true });
+			qr_marker.addTo(map);
+			qr_marker.mapmaker_id = osmid + "-qr";
+			qr_marker.mapmaker_key = target;
+			qr_marker.mapmaker_svg = qrcode.svg;
+			markers[target][idx] = [markers[target][idx], qr_marker];
+			map.closePopup();
 		},
 
-		chglng: (target, osmid, lang) => {
-			let idx = markers[target].findIndex(val => val.mapmaker_id == osmid);
+		change_lang: (target, osmid, lang) => {
+			let idx = markers[target].findIndex(vals => {
+				let val = vals.length == undefined ? vals : vals[0];
+				return val.mapmaker_id == osmid;
+			});
 			let marker = markers[target][idx];
+			if (marker.length > 1) marker = marker[0];		// markerが複数の時への対応（qr_codeなど）
 			let poi = PoiCont.get_osmid(marker.mapmaker_id);
 			let geojson = poi.geojson;
-			let name = geojson.properties[lang];
-			name = name == undefined ? "" : name;
+			let name = geojson.properties[lang] == undefined ? "" : geojson.properties[lang];
 			if (name == "") {
 				WinCont.modal_open({
-					"title": glot.get("chglng_error_title"), "message": glot.get("chglng_error_message"),
+					"title": glot.get("change_lang_error_title"), "message": glot.get("change_lang_error_message"),
 					"mode": "close", "callback_close": () => WinCont.modal_close()
 				});
 			} else {
 				map.closePopup();
 				marker.off('click');
 				marker.removeFrom(map);
-				make_popup(target, poi, lang).then(marker => {
-					markers[target][idx] = marker[0];
-				});
+				make_popup({ target: target, poi: poi, langname: lang }).then(marker => { markers[target][idx] = marker[0] });
 			}
 		},
+
+		change_icon: (target, osmid, filename) => {
+			let idx = markers[target].findIndex(vals => {
+				let val = vals.length == undefined ? vals : vals[0];
+				return val.mapmaker_id == osmid;
+			});
+			let marker = markers[target][idx];
+			if (marker.length > 1) marker = marker[0];		// markerが複数の時への対応（qr_codeなど）
+			let poi = PoiCont.get_osmid(marker.mapmaker_id);
+			map.closePopup();
+			marker.off('click');
+			marker.removeFrom(map);
+			make_popup({ target: target, poi: poi, filename: filename }).then(marker => { markers[target][idx] = marker[0] });
+		},
+
 		conv_svg: (svg, type) => {					// MakerをSVGに追加 理由：leafletがアイコンをIMG扱いするため
 			let marker = $("div.leaflet-marker-pane").children();
-			let parser = new DOMParser(), svgicon, svgtext, svgstl, text;
+			let parser = new DOMParser(), svgicon, svgtext, text, svgstl;
 			for (let i = 0; i < marker.length; i++) {
 				let pathname = $(marker.eq(i)[0].children).children().attr('src');
+				svgstl = marker.eq(i).css("transform").slice(7, -1).split(",");
+				let offset = [];
+				switch (marker.eq(i).css("margin")) {
+					case "":
+						offset[0] = parseInt(marker.eq(i).css("margin-top"), 10);
+						offset[3] = parseInt(marker.eq(i).css("margin-left"), 10);
+						break;
+					default:
+						marker.eq(i).css("margin").split(" ").forEach((val) => offset.push(parseInt(val, 10)));	// オフセット値を取得
+						break;
+				}
 				svgtext = $(marker.eq(i)[0].children).find("span");
 				switch (pathname) {
 					case undefined:					// not icon(qr etc...)
 						svgicon = $(marker.eq(i)[0].children).find("svg");
-						svg_append(svg, svgicon, marker.eq(i), { x: $(svgicon).width() / 2, y: $(svgicon).height() / 2 });
+						svg_append(svg, svgicon, marker.eq(i), { x: $(svgicon).width() / 2, y: $(svgicon).height() / 2 }, offset);
 						text = svgtext.text();
-						svgstl = svgicon.offset();
 						if (text !== undefined) {	// QRCode Text
 							LayerCont.text_write(svg, {
-								"text": text, "anchor": 'start', "x": Number(svgstl.left) + Math.ceil($(svgicon).width() / 2) + 4, "y": Number(svgstl.top), "no": i,
-								"width": svgtext.width(), "height": svgtext.height(), "size": Conf.default.Text.size, "color": Conf.default.Text.color, "font": "Helvetica", "type": type
+								"text": text, "anchor": 'start', "x": Number(svgstl[4]) + offset[3] + $(svgicon).width(), "y": Number(svgstl[5]) + offset[0] + 5, "no": i,
+								"width": svgtext.width(), "height": $(svgicon).height(), "size": parseInt(svgtext.css("font-size")), "color": Conf.effect.text.color, "font": "Helvetica", "type": type
 							});
 						};
 						break;
 					default:
 						let filename = pathname.match(".+/(.+?)([\?#;].*)?$")[1];
+						svgicon = $(marker.eq(i)[0].children).find("img");
+						let svgsize = { x: svgicon.width(), y: svgicon.height() };
 						svgicon = $(parser.parseFromString(SvgIcon[filename], "text/xml")).children();
-						svg_append(svg, svgicon, marker.eq(i), Conf.default.Icon);
+						svg_append(svg, svgicon, marker.eq(i), svgsize, offset);
 						text = $(marker.eq(i)[0].children).children().attr('icon-name');
-						svgstl = marker.eq(i).css("transform").slice(7, -1).split(",")		// transformのstyleから配列でXとY座標を取得(4と5)
-						if (text !== undefined && Conf.default.Text.view) {					// Marker Text
+						if (text !== undefined && text !== "" && Conf.effect.text.view) {					// Marker Text
 							LayerCont.text_write(svg, {
-								"text": text, "anchor": 'start', "x": Number(svgstl[4]) + Math.ceil(Conf.default.Icon.x / 2) + 4, "y": Number(svgstl[5]), "no": i,
-								"width": svgtext.width(), "height": svgtext.height(), "size": Conf.default.Text.size, "color": Conf.default.Text.color, "font": "Helvetica", "type": type
+								"text": text, "anchor": 'start', "x": Number(svgstl[4]) + Math.ceil(svgsize.x / 2) + 4, "y": Number(svgstl[5]) + offset[0] + 5, "no": i,
+								"width": svgtext.width(), "height": svgtext.height(), "size": parseInt(svgtext.css("font-size")), "color": Conf.default.Text.color, "font": "Helvetica", "type": type
 							});
 						};
 						break;
 				};
 			};
 
-			function svg_append(svg, svgicon, marker, size) {
+			function svg_append(svg, svgicon, marker, size, offset) {
 				let svgvbox;
 				if ($(svgicon).attr('viewBox') == undefined) {
-					//svgvbox = $(svgicon)[0].attr('viewBox').split(' ');
 					svgvbox = [0, 0, size.x, size.y];
 				} else {
 					svgvbox = $(svgicon).attr('viewBox').split(' ');
@@ -462,19 +503,19 @@ var Marker = (function () {		// Marker closure
 					if (nodeName == "path" || nodeName == "g" || nodeName == "defs" || nodeName == "rect" || nodeName == "ellipse" || nodeName == "style") {
 						group.append(svgicon[0].childNodes[key].cloneNode(true));
 					};
-				}
-				let svgstl = marker.css("transform").slice(7, -1).split(",")	// transformのstyleから配列でXとY座標を取得(4と5)
-				$(group).attr("transform", "matrix(1,0,0,1," + (Number(svgstl[4]) - size.x / 2) + "," + (Number(svgstl[5]) - size.y / 2) + ") scale(" + scale + ")");
+				};
+				let svgstl = marker.css("transform").slice(7, -1).split(",")						// transformのstyleから配列でXとY座標を取得(4と5)
+				$(group).attr("transform", "matrix(1,0,0,1," + (Number(svgstl[4]) + offset[3]) + "," + (Number(svgstl[5]) + offset[0]) + ") scale(" + scale + ")");
 				svg.append(group);
 			};
 		},
 
 		set_size: (size, view) => {
 			let icon_xy = Math.ceil(size * Conf.default.Icon.scale);
-			Conf.default.Text.size = size;		// set font size 
-			Conf.default.Text.view = view;
-			Conf.default.Icon.x = icon_xy;		// set icon size
-			Conf.default.Icon.y = icon_xy;
+			Conf.effect.text.size = size;		// set font size 
+			Conf.effect.text.view = view;
+			Conf.effect.icon.x = icon_xy;		// set icon size
+			Conf.effect.icon.y = icon_xy;
 		},
 
 		center: (osmid) => {
@@ -491,165 +532,87 @@ var Marker = (function () {		// Marker closure
 		delete: (target, osmid) => {														// Marker delete * don't set PoiData
 			if (osmid == undefined || osmid == "") {	// all osmid
 				if (markers[target] !== undefined) {
-					markers[target].forEach(marker => map.removeLayer(marker));
+					markers[target].forEach(marker => delmaker(marker));
 					markers[target] = [];
 				};
 			} else {									// delete osmid
-				let idx = markers[target].findIndex(val => val.mapmaker_id == osmid);
+				let idx = markers[target].findIndex(vals => {
+					let val = vals.length == undefined ? vals : vals[0];
+					return val.mapmaker_id == osmid;
+				});
 				let marker = markers[target][idx];
-				map.removeLayer(marker);
+				delmaker(marker);
 			};
 			map.closePopup();
+
+			function delmaker(marker) {	// 実際にマーカーを消す処理
+				if (marker.length == undefined) { map.removeLayer(marker); return };
+				marker.forEach(m => map.removeLayer(m));								// qr_code で markerが複数ある場合
+			};
 		}
 	};
 
-	function make_popup(target, poi, lang) {	// markerは複数返す時がある
+	function make_popup(params) {	// markerは複数返す時がある
 		return new Promise((resolve, reject) => {
-			let categorys = Object.keys(Conf.category), icon;
-			let tags = poi.geojson.properties.tags == undefined ? poi.geojson.properties : poi.geojson.properties.tags;
-			let name = tags[lang] == undefined ? tags.name : tags[lang];
+			let categorys = Object.keys(Conf.category), icon_name;
+			let tags = params.poi.geojson.properties.tags == undefined ? params.poi.geojson.properties : params.poi.geojson.properties.tags;
+			let name = tags[params.langname] == undefined ? tags.name : tags[params.langname];
 			name = (name == "" || name == undefined) ? "" : name;
-			let keyn = categorys.find(key => tags[key] !== undefined);
-			if (keyn !== undefined) {	// in category
-				icon = Conf.icon[keyn][tags[keyn]];
-				icon = "./image/" + (icon !== undefined ? icon : Conf.icon.default);
-				let html = `<div class="d-flex"><img class="icon flex-row" src="${icon}" icon-name="${name}">`;
-				if (name !== "" && Conf.default.Text.view) html = `${html}<span class="icon flex-row">${name}</span>`;
-				icon = L.divIcon({ "className": "icon", "iconSize": [200, 20], "iconAnchor": [Conf.default.Icon.x / 2, Conf.default.Icon.y / 2], "html": html + "</div>" });
-				let marker = L.marker(new L.LatLng(poi.latlng.lat, poi.latlng.lng), { icon: icon, draggable: true });
-				marker.addTo(map).on('click', e => { popup_icon(e) });
-				marker.mapmaker_id = poi.geojson.id;
-				marker.mapmaker_key = target;
-				marker.mapmaker_lang = lang;
-				resolve([marker]);
-			} else {		// undefined(no category)
-				switch (target) {
-					case "wikipedia":
-						icon = "./image/" + Conf.icon.wikipedia["*"];
-						name = tags[Conf.marker.wikipedia.tag].split(':')[1];
-						let html = `<div class="d-flex"><img class="icon flex-row" src="${icon}" icon-name="${name}">`;
-						if (name !== "" && Conf.default.Text.view) html = `${html}<span class="icon flex-row">${name}</span>`;
-						icon = L.divIcon({ "className": "icon", "iconSize": [200, 20], "iconAnchor": [Conf.default.Icon.x / 2, Conf.default.Icon.y / 2], "html": html + "</div>" });
-						let marker = L.marker(new L.LatLng(poi.latlng.lat, poi.latlng.lng), { icon: icon, draggable: true });
+			switch (params.target) {
+				case "wikipedia":
+					icon_name = params.filename == undefined ? Conf.target.wikipedia.marker : params.filename;
+					name = tags[Conf.target.wikipedia.tag].split(':')[1];
+					let html = `<div class="d-flex"><img style="width: ${Conf.effect.icon.x}px; height: ${Conf.effect.icon.y}px;" src="./image/${icon_name}" icon-name="${name}">`;
+					if (name !== "" && Conf.effect.text.view) html = `${html}<span class="icon" style="font-size: ${Conf.effect.text.size}px">${name}</span>`;
+					let icon = L.divIcon({ "className": "", "iconSize": [200 * Conf.default.Icon.scale, Conf.effect.icon.y], "iconAnchor": [Conf.effect.icon.x / 2, Conf.effect.icon.y / 2], "html": html + "</div>" });
+					let marker = L.marker(new L.LatLng(params.poi.latlng.lat, params.poi.latlng.lng), { icon: icon, draggable: true });
+					marker.addTo(map).on('click', e => { popup_icon(e) });
+					marker.mapmaker_id = params.poi.geojson.id;
+					marker.mapmaker_key = params.target;
+					marker.mapmaker_lang = tags[Conf.target.wikipedia.tag];
+					marker.mapmaker_icon = icon_name;
+					resolve([marker]);
+					break;
+				default:
+					let keyn = categorys.find(key => tags[key] !== undefined);
+					let keyv = (keyn !== undefined) ? Conf.marker_tag[keyn][tags[keyn]] : undefined;
+					if (keyn !== undefined && keyv !== undefined) {	// in category
+						icon_name = params.filename == undefined ? Conf.marker_tag[keyn][tags[keyn]] : params.filename;
+						let html = `<div class="d-flex"><img style="width: ${Conf.effect.icon.x}px; height: ${Conf.effect.icon.y}px;" src="./image/${icon_name}" icon-name="${name}">`;
+						if (name !== "" && Conf.effect.text.view) html = `${html}<span class="icon" style="font-size: ${Conf.effect.text.size}px">${name}</span>`;
+						let icon = L.divIcon({ "className": "", "iconSize": [200 * Conf.default.Icon.scale, Conf.effect.icon.y], "iconAnchor": [Conf.effect.icon.x / 2, Conf.effect.icon.y / 2], "html": html + "</div>" });
+						let marker = L.marker(new L.LatLng(params.poi.latlng.lat, params.poi.latlng.lng), { icon: icon, draggable: true });
 						marker.addTo(map).on('click', e => { popup_icon(e) });
-						marker.mapmaker_id = poi.geojson.id;
-						marker.mapmaker_key = target;
-						marker.mapmaker_lang = Conf.marker.wikipedia.tag;
-						let wiki = tags[Conf.marker.wikipedia.tag].split(':')[0];
-						let url = encodeURI(`https://${wiki}.${Conf.marker.wikipedia.domain}/wiki/${name}`);
-						let ll1 = new L.LatLng(poi.latlng.lat, poi.latlng.lng);
-						let pix = map.latLngToLayerPoint(ll1);
-						//	pix.y += 20;
-						let ll2 = map.layerPointToLatLng(pix);
-						Basic.getWikipedia(wiki, name).then(text => {
-							let qrcode = Marker.qr_add(url, ll2, text);
-							qrcode.marker.mapmaker_id = poi.geojson.id + "-qr";
-							qrcode.marker.mapmaker_key = target;
-							qrcode.marker.mapmaker_svg = qrcode.svg;
-							resolve([marker, qrcode.marker]);
-						});
-				};
+						marker.mapmaker_id = params.poi.geojson.id;
+						marker.mapmaker_key = params.target;
+						marker.mapmaker_lang = params.langname;
+						marker.mapmaker_icon = icon_name;
+						resolve([marker]);
+					};
+					break;
 			};
 		});
-
 	};
 
-	function popup_icon(ev) {
+	function popup_icon(ev) {	// PopUpを表示
 		let popcont;
 		let id = ev.target.mapmaker_id;
 		let key = ev.target.mapmaker_key;
 		let lang = ev.target.mapmaker_lang;
 		let tags = PoiCont.get_osmid(id).geojson.properties;
-		if (lang == Conf.marker.wikipedia.tag) {
-			let qr_btn = `<button onclick='Mapmaker.qr_add("${id}")'>${glot.get("qrcode_make")}</button>`;
-			popcont = tags[Conf.marker.wikipedia.tag] + "<br>" + qr_btn;
-		} else {
+		let chg_mkr = `<button class='btn btn-sm m-2' onclick='Mapmaker.poi_marker_change("${key}","${id}")'>${glot.get("marker_change")}</button>`;
+		let del_btn = `<button class='btn btn-sm m-2' onclick='Mapmaker.poi_del("${key}","${id}")'>${glot.get("marker_delete")}</button>`;
+		if (key == Conf.target.wikipedia.tag) {		// Wikipedia時のPopUp
+			let qr_btn = `<button class='btn btn-sm m-2' onclick='Mapmaker.qr_add("wikipedia","${id}")'>${glot.get("qrcode_make")}</button>`;
+			popcont = tags[Conf.target.wikipedia.tag] + "<br>" + chg_mkr + del_btn + "<br>" + qr_btn;
+		} else {									// その他
 			let name = tags.name == undefined ? "" : tags.name;
-			let del_btn = `<button onclick='Mapmaker.poi_del("${key}","${id}")'>${glot.get("marker_delete")}</button>`;
-			let chg_eng = `<button onclick='Marker.chglng("${key}","${id}","name:en")'>${glot.get("marker_to_en")}</button>`;
-			let chg_jpn = `<button onclick='Marker.chglng("${key}","${id}","name")'>${glot.get("marker_to_ja")}</button>`;
-			popcont = (name == '' ? glot.get("marker_noname") : name) + "<br>" + del_btn + "<br>" + (lang == "name" ? chg_eng : chg_jpn);
+			let chg_eng = `<button class='btn btn-sm m-2' onclick='Marker.change_lang("${key}","${id}","name:en")'>${glot.get("marker_to_en")}</button>`;
+			let chg_jpn = `<button class='btn btn-sm m-2' onclick='Marker.change_lang("${key}","${id}","name")'>${glot.get("marker_to_ja")}</button>`;
+			popcont = (name == '' ? glot.get("marker_noname") : name) + "<br>" + chg_mkr + del_btn + "<br>" + (lang == "name" ? chg_eng : chg_jpn);
 		};
 		L.responsivePopup({ "keepInView": true }).setContent(popcont).setLatLng(ev.latlng).openOn(map);
 		ev.target.openPopup();
 		return false;
-	};
-})();
-
-// OverPass Server Control
-var OvPassCnt = (function () {
-	return {
-		get: function (targets) {
-			return new Promise((resolve, reject) => {
-				WinCont.modal_open({ "title": glot.get("loading_title"), "message": glot.get("loading_message"), "mode": "" });
-				WinCont.modal_progress(0);
-				let sverror = { "title": glot.get("sverror_title"), "message": glot.get("sverror_message"), "mode": "close", "callback_close": () => Mapmaker.all_clear() };
-				let maparea = GeoCont.get_maparea('LL');
-
-				let jqXHRs = [], Progress = 0, query_date = "";
-				targets.forEach(target => {
-					let query = "";
-					for (let idx in Conf.overpass[target]) { query += Conf.overpass[target][idx] + maparea };
-					let url = `${Conf.default.OverPassServer}${Conf.default.OverPassParams}${query_date};(${query});out body;>;out skel qt;`;
-					console.log("GET: " + url);
-					jqXHRs.push($.get(url, () => { WinCont.modal_progress(Math.ceil(((++Progress + 1) * 100) / targets.length)) }));
-				});
-				$.when.apply($, jqXHRs).done(function () {
-					let i = 0, ovanswer = { geojson: [], targets: [] };
-					targets.forEach(target => {
-						let arg = arguments[i][1] == undefined ? arguments[1] : arguments[i][1];
-						if (arg !== "success") {
-							WinCont.modal_open(sverror);
-							reject();
-						};
-						let osmxml = arguments[i][0] == undefined ? arguments[0] : arguments[i][0];
-						i++;
-						let geojson = osmtogeojson(osmxml, { flatProperties: true });
-						geojson = geojson.features.filter(node => {
-							let tags = node.properties;
-							if (PoiCont.get_catname(tags) !== "") {	// 対象種別であるか
-								let result = false;
-								switch (target) {
-									case "takeaway":
-										let take1 = tags.takeaway == undefined ? "" : tags.takeaway;                        // どれか一つにYesがあればOK
-										let take2 = tags["takeaway:covid19"] == undefined ? "" : tags["takeaway:covid19"];
-										if ([take1, take2].includes("yes")) result = true;
-										if ([take1, take2].includes("only")) result = true;
-										break;
-									case "delivery":
-										let deli1 = tags.delivery == undefined ? "" : tags.delivery;
-										let deli2 = tags["delivery:covid19"] == undefined ? "" : tags["delivery:covid19"];
-										if ([deli1, deli2].includes("yes")) result = true;
-										if ([deli1, deli2].includes("only")) result = true;
-										break;
-									case "takeaway_shop":
-									default:
-										result = true
-										break;
-								};
-								if (result) return node;
-							};
-						});
-						geojson.forEach(function (val1) {	// 既にデータがあるか確認
-							let cidx = ovanswer.geojson.findIndex(val2 => val2.id == val1.id);
-							if (cidx === -1) {                          // データが無い時は更新
-								ovanswer.geojson.push(val1);
-								cidx = ovanswer.geojson.length - 1;
-							};
-							if (ovanswer.targets[cidx] == undefined) {  // 
-								ovanswer.targets[cidx] = [target];
-							} else if (ovanswer.targets[cidx].indexOf(target) === -1) {
-								ovanswer.targets[cidx].push(target);
-							};
-						});
-					});
-					console.log("OvPassCnt: get: end.");
-					WinCont.modal_close();
-					resolve(ovanswer);
-				}).fail((jqXHR, statusText) => {
-					WinCont.modal_open(sverror);
-				});
-			});
-		}
 	};
 })();

@@ -1,0 +1,442 @@
+{
+    "target": {
+        "Park": {
+            "overpass": [
+                "relation[\"leisure\"=\"park\"]",
+                "way[\"leisure\"=\"playground\"]",
+                "way[\"leisure\"=\"park\"]",
+                "way[\"leisure\"=\"pitch\"]"
+            ],
+            "tags": [
+                "leisure=park",
+                "leisure=playground",
+                "leisure=pitch"
+            ]
+        },
+        "RIV": {
+            "overpass": [
+                "relation[\"waterway\"]",
+                "way[\"waterway\"]",
+                "way[\"landuse\"=\"reservoir\"]",
+                "relation[\"natural\"=\"water\"]",
+                "way[\"natural\"=\"water\"]",
+                "way[\"natural\"=\"coastline\"]",
+                "relation[\"landuse\"=\"basin\"]"
+            ],
+            "tags": [
+                "waterway",
+                "landuse=reservoir",
+                "natural=water",
+                "natural=coastline",
+                "landuse=basin"
+            ]
+        },
+        "PED": {
+            "overpass": [
+                "relation[\"highway\"=\"pedestrian\"]",
+                "way[\"highway\"=\"pedestrian\"][\"area\"]",
+                "way[\"man_made\"=\"bridge\"]"
+            ],
+            "tags": [
+                "highway=pedestrian",
+                "man_made=bridge"
+            ]
+        },
+        "PKG": {
+            "overpass": [
+                "way[\"amenity\"=\"parking\"]",
+                "way[\"amenity\"=\"bicycle_parking\"]"
+            ],
+            "tags": [
+                "amenity=parking",
+                "amenity=bicycle_parking"
+            ]
+        },
+        "GDN": {
+            "overpass": [
+                "way[\"leisure\"=\"garden\"]",
+                "way[\"landuse\"=\"grass\"]",
+                "way[\"natural\"=\"tree_row\"]",
+                "way[\"natural\"=\"scrub\"]",
+                "way[\"landuse\"=\"farmland\"]",
+                "way[\"landuse\"=\"allotments\"]"
+            ],
+            "tags": [
+                "leisure=garden",
+                "landuse=grass",
+                "natural=tree_row",
+                "natural=scrub",
+                "landuse=farmland",
+                "landuse=allotments"
+            ]
+        },
+        "FRT": {
+            "overpass": [
+                "relation[\"landuse\"=\"forest\"]",
+                "relation[\"natural\"=\"wood\"]",
+                "way[\"natural\"=\"wood\"]",
+                "way[\"landuse\"=\"forest\"]"
+            ],
+            "tags": [
+                "landuse=forest",
+                "natural=wood"
+            ]
+        },
+        "RIL": {
+            "overpass": [
+                "way[\"railway\"][\"railway\"!=\"subway\"]"
+            ],
+            "tags": [
+                "railway"
+            ]
+        },
+        "ALY": {
+            "overpass": [
+                "way[\"highway\"=\"footway\"]",
+                "way[\"highway\"=\"path\"]",
+                "way[\"highway\"=\"track\"]",
+                "way[\"highway\"=\"steps\"]"
+            ],
+            "tags": [
+                "highway=footway",
+                "highway=path",
+                "highway=track",
+                "highway=steps"
+            ]
+        },
+        "STD": {
+            "overpass": [
+                "way[\"highway\"~\"unclassified\"]",
+                "way[\"highway\"~\"residential\"]",
+                "way[\"highway\"=\"living_street\"]",
+                "way[\"highway\"=\"pedestrian\"][!\"area\"]",
+                "way[\"highway\"=\"service\"]"
+            ],
+            "tags": [
+                "highway=unclassified",
+                "highway=residential",
+                "highway=living_street",
+                "highway=pedestrian",
+                "highway=service"
+            ]
+        },
+        "PRI": {
+            "overpass": [
+                "way[\"highway\"~\"trunk\"]",
+                "way[\"highway\"~\"primary\"]",
+                "way[\"highway\"~\"secondary\"]",
+                "way[\"highway\"~\"tertiary\"]"
+            ],
+            "tags": [
+                "highway=trunk",
+                "highway=primary",
+                "highway=secondary",
+                "highway=tertiary"
+            ]
+        },
+        "HIW": {
+            "overpass": [
+                "way[\"highway\"~\"motorway\"]"
+            ],
+            "tags": [
+                "highway=motorway"
+            ]
+        },
+        "BLD": {
+            "overpass": [
+                "way[\"building\"!=\"train_station\"][\"building\"]",
+                "relation[\"building\"!=\"train_station\"][\"building\"]"
+            ],
+            "tags": [
+                "building!=train_station"
+            ]
+        },
+        "BRR": {
+            "overpass": [
+                "way[\"barrier\"][\"barrier\"!=\"kerb\"][\"barrier\"!=\"ditch\"]"
+            ],
+            "tags": [
+                "barrier"
+            ]
+        },
+        "STN": {
+            "overpass": [
+                "relation[\"building\"=\"train_station\"]",
+                "way[\"building\"=\"train_station\"]"
+            ],
+            "tags": [
+                "building=train_station"
+            ]
+        },
+        "shops": {
+            "marker": "shops.svg",
+            "overpass": [
+                "node[\"shop\"]",
+                "node[\"amenity\"!=\"bench\"]",
+                "way[\"amenity\"!=\"bench\"]"
+            ],
+            "tags": [
+                "shop",
+                "amenity"
+            ]
+        },
+        "disaster": {
+            "marker": "aed.svg",
+            "overpass": [
+                "node[\"highway\"=\"traffic_signals\"]",
+                "node[\"emergency\"=\"fire_extinguisher\"]",
+                "node[\"emergency\"=\"fire_hydrant\"]",
+                "node[\"emergency\"=\"defibrillator\"]"
+            ],
+            "tags": [
+                "highway=traffic_signals",
+                "emergency"
+            ]
+        },
+        "takeaway": {
+            "marker": "bentou.svg",
+            "overpass": [
+                "node[\"takeaway\"]",
+                "way[\"takeaway\"]",
+                "node[\"takeaway:covid19\"]",
+                "way[\"takeaway:covid19\"]",
+                "node[\"delivery\"]",
+                "way[\"delivery\"]",
+                "node[\"delivery:covid19\"]",
+                "way[\"delivery:covid19\"]",
+                "node[\"shop\"=\"bakery\"]",
+                "way[\"shop\"=\"bakery\"]",
+                "node[\"shop\"=\"deli\"]",
+                "way[\"shop\"=\"deli\"]",
+                "node[\"shop\"=\"alcohol\"]",
+                "way[\"shop\"=\"alcohol\"]"
+            ],
+            "tags": [
+                "takeaway",
+                "takeaway:covid19",
+                "delivery",
+                "delivery:covid19",
+                "shop=bakery",
+                "shop=deli",
+                "shop=alcohol"
+            ]
+        },
+        "viewpoint": {
+            "marker": "star.svg",
+            "overpass": [
+                "node[\"amenity\"=\"bench\"]",
+                "node[\"historic\"=\"memorial\"]",
+                "node[\"tourism\"=\"artwork\"]",
+                "node[\"tourism\"=\"viewpoint\"]",
+                "node[\"man_made\"=\"torii\"]",
+                "node[\"man_made\"=\"lamp\"]",
+                "node[\"information\"]"
+            ],
+            "tags":[
+                "amenity=bench",
+                "historic=memorial",
+                "tourism=artwork",
+                "tourism=viewpoint",
+                "information",
+                "man_made=torii",
+                "man_made=lamp"
+            ]
+        },
+        "tree": {
+            "marker": "tree.svg",
+            "overpass": [
+                "node[\"natural\"=\"tree\"]",
+                "node[\"species\"=\"Cherry blossom\"]",
+                "node[\"species:en\"=\"Cherry blossom\"]",
+                "node[\"species\"=\"Cerasus itosakura\"]",
+                "node[\"species:en\"=\"Cerasus itosakura\"]",
+                "node[\"species\"=\"Cerasus × yedoensis\"]",
+                "node[\"species:en\"=\"Cerasus × yedoensis\"]"
+            ],
+            "tags": [
+                "natural=tree",
+                "species=Cherry blossom",
+                "species:en=Cherry blossom",
+                "species=Cerasus itosakura",
+                "species:en=Cerasus itosakura",
+                "species=Cerasus × yedoensis",
+                "species:en=Cerasus × yedoensis"
+            ]
+        },
+        "animal": {
+            "marker": "animal.svg",
+            "overpass": [
+                "node[\"attraction\"=\"animal\"]",
+                "way[\"attraction\"=\"animal\"]"
+            ],
+            "tags": [
+                "attraction=animal"
+            ]
+        },
+        "playground": {
+            "marker": "playground.svg",
+            "overpass": [
+                "node[\"playground\"]",
+                "way[\"playground\"]"
+            ],
+            "tags": [
+                "playground"
+            ]
+        },
+        "wikipedia": {
+            "marker": "wikipedia.svg",
+            "api": "wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles=",
+            "domain": "wikipedia.org",
+            "tag": "wikipedia",
+            "overpass": [
+                "node[\"wikipedia\"]",
+                "way[\"wikipedia\"]",
+                "relation[\"wikipedia\"]"
+            ],
+            "tags": [
+                "wikipedia"
+            ]
+        },
+        "shelter_temporary": {
+            "marker": "shelter.svg",
+            "file": "./data/opendata_2015.csv",
+            "columns": {
+                "場所の名前": "name",
+                "区名": "_addr",
+                "所在地": "_addr",
+                "TEL": "tel",
+                "避難可能時間": "opening_hours",
+                "避難場所の対象とする災害": "_disasters",
+                "経度": "_lng",
+                "緯度": "_lat",
+                "分類": "description"
+            },
+            "add_tag": {
+                "social_facility": "shelter"
+            }
+        },
+        "shelter_tsunami": {
+            "marker": "shelter.svg",
+            "file": "./data/opendata_2016.csv",
+            "columns": {
+                "場所の名前": "name",
+                "区名": "_addr",
+                "所在地": "_addr",
+                "TEL": "tel",
+                "避難可能時間": "opening_hours",
+                "避難場所の対象とする災害": "_disasters",
+                "経度": "_lng",
+                "緯度": "_lat",
+                "分類": "description"
+            },
+            "add_tag": {
+                "assembly_point:tsunami": "yes"
+            }
+        }
+    },
+    "style": {
+        "BAK": {
+            "type": "background",
+            "color": "#000000",
+            "opacity": 0
+        },
+        "Park": {
+            "zoom": 15,
+            "type": "area",
+            "color": "#e8ffd0",
+            "width": 1,
+            "dashArray": null
+        },
+        "RIV": {
+            "zoom": 12,
+            "type": "area",
+            "color": "#d0e8ff",
+            "width": 1,
+            "dashArray": null
+        },
+        "PED": {
+            "zoom": 15,
+            "type": "area",
+            "color": "#ede9e7",
+            "width": 1,
+            "dashArray": null
+        },
+        "PKG": {
+            "zoom": 15.5,
+            "type": "area",
+            "color": "#ffffe8",
+            "width": 1,
+            "dashArray": null
+        },
+        "GDN": {
+            "zoom": 16,
+            "type": "area",
+            "color": "#d8ffb8",
+            "width": 1,
+            "dashArray": null
+        },
+        "FRT": {
+            "zoom": 12,
+            "type": "area",
+            "color": "#c0f8a0",
+            "width": 0,
+            "dashArray": null
+        },
+        "RIL": {
+            "zoom": 12,
+            "type": "line",
+            "color": "#909090",
+            "width": 1.5,
+            "dashArray": "12,4"
+        },
+        "ALY": {
+            "zoom": 16,
+            "type": "line",
+            "color": "#b9a89b",
+            "width": 0.5,
+            "dashArray": "4,2"
+        },
+        "STD": {
+            "zoom": 13,
+            "type": "line",
+            "color": "#f0f0f0",
+            "width": 2.0,
+            "dashArray": null
+        },
+        "PRI": {
+            "zoom": 12,
+            "type": "line",
+            "color": "#f8e0c0",
+            "width": 4.0,
+            "dashArray": null
+        },
+        "HIW": {
+            "zoom": 12,
+            "type": "line",
+            "color": "#f8d0a0",
+            "width": 5.0,
+            "dashArray": null
+        },
+        "BLD": {
+            "zoom": 15,
+            "type": "area",
+            "color": "#dcd3cd",
+            "width": 1,
+            "dashArray": null
+        },
+        "BRR": {
+            "zoom": 17,
+            "type": "line",
+            "color": "#b0b0b0",
+            "width": 1,
+            "dashArray": null
+        },
+        "STN": {
+            "zoom": 14,
+            "type": "area",
+            "color": "#f8d8d8",
+            "width": 1,
+            "dashArray": null
+        }
+    }
+}

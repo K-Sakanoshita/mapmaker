@@ -11,7 +11,8 @@
             "ice_cream": "ice cream",
             "pub": "pub",
             "restaurant": "restaurant",
-            "vending_machine": "vending machine"
+            "vending_machine": "vending machine",
+            "place_of_worship": "place of worship"
         },
         "shop": {
             "alcohol": "alcohol",
@@ -42,6 +43,11 @@
             "supermarket": "supermarket",
             "variety_store": "variety"
         },
+        "species": {
+            "Cherry blossom": "sakura",
+            "Cerasus itosakura": "sakura",
+            "Cerasus × yedoensis": "sakura"
+        },
         "natural": {
             "tree": "tree"
         },
@@ -58,6 +64,57 @@
         },
         "assembly_point:tsunami": {
             "yes": "tsunami evacuation"
+        },
+        "attraction": {
+            "animal": "animal"
+        },
+        "playground": {
+            "structure": "structure",
+            "slide": "slide",
+            "climbingframe": "jungle gym",
+            "climbingwall": "climbingwall",
+            "balancebeam": "balancebeam",
+            "playhouse": "playhouse",
+            "sandpit": "sandpit",
+            "hopscotch": "hopscotch",
+            "teenshelter": "teenshelter",
+            "sledding": "sledding",
+            "youth_bench": "youth bench",
+            "map": "map",
+            "swing": "swing",
+            "basketswing": "basketswing",
+            "basketrotator": "asketrotator",
+            "aerialrotator": "aerialrotator",
+            "seesaw": "seesaw",
+            "springy": "springy",
+            "trampoline": "trampoline",
+            "roundabout": "roundabout",
+            "cushion": "cushion",
+            "zipwire": "zipwire",
+            "water": "water",
+            "splash_pad": "splash pad",
+            "horizontal_bar": "horizontal_bar",
+            "activitypanel": "activitypanel",
+            "exercise": "exercise"
+        },
+        "tourism": {
+            "viewpoint": "viewpoint",
+            "artwork": "artwork"
+        },
+        "historic": {
+            "memorial": "memorial"
+        },
+        "information": {
+            "board": "board",
+            "terminal": "terminal",
+            "audioguide": "audioguide",
+            "map": "map",
+            "tactile_map": "tactile map",
+            "guidepost": "guidepost"
+        },
+        "man_made": {
+            "torii": "torii",
+            "lamp": "lantern"
         }
     }
 }

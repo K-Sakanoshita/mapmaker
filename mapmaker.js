@@ -3,12 +3,12 @@
 
 // Global Variable
 var map;				// leaflet map object
-var area;				// leafley areaselect object
 var Locate;				// leaflet locate object
 var Layers = {};		// Layer Status,geojson,svglayer
 var Conf = {};			// Config Praams
+var LL = {};
 const LANG = (window.navigator.userLanguage || window.navigator.language || window.navigator.browserLanguage).substr(0, 2) == "ja" ? "ja" : "en";
-const FILES = ["./basemenu.html", "./modals.html", "./data/config.json", `./data/category-${LANG}.json`, `data/datatables-${LANG}.json`, `./data/icon.json`];
+const FILES = ["./basemenu.html", "./modals.html", "./data/config.json", './data/target.json', `./data/category-${LANG}.json`, `data/datatables-${LANG}.json`, `./data/marker.json`];
 const glot = new Glottologist();
 
 // initialize leaflet
@@ -20,18 +20,19 @@ $(document).ready(function () {
 	$.when.apply($, jqXHRs).always(function () {
 		let arg = {}, menuhtml = arguments[0][0];								// Get Menu HTML
 		$("#modals").html(arguments[1][0]);										// Make Modal HTML
-		for (let i = 2; i <= 5; i++) arg = Object.assign(arg, arguments[i][0]);	// Make Config Object
+		for (let i = 2; i <= 6; i++) arg = Object.assign(arg, arguments[i][0]);	// Make Config Object
 		Object.keys(arg).forEach(key1 => {
 			Conf[key1] = {};
 			Object.keys(arg[key1]).forEach((key2) => Conf[key1][key2] = arg[key1][key2]);
 		});
+		let def = Conf.default;
+		map = L.map('mapid', { center: def.DefaultCenter, zoom: def.DefaultZoom, zoomSnap: def.ZoomSnap, zoomDelta: def.ZoomSnap, maxZoom: def.maxZoomLevel });
 
 		glot.import("./data/glot.json").then(() => {	// Multi-language support
-			document.title = glot.get("title");			// Title
+			// document.title = glot.get("title");		// Title(no change / Google検索で日本語表示させたいので)
 			LayerCont.init();							// LayerCont Initialize
 			Mapmaker.init(menuhtml);					// Mapmaker Initialize
 			Marker.init();								// Marker Initialize
-
 			// Google Analytics
 			if (Conf.default.GoogleAnalytics !== "") {
 				$('head').append('<script async src="https://www.googletagmanager.com/gtag/js?id=' + Conf.default.GoogleAnalytics + '"></script>');
@@ -40,7 +41,6 @@ $(document).ready(function () {
 				gtag('js', new Date());
 				gtag('config', Conf.default.GoogleAnalytics);
 			};
-
 			glot.render();
 		});
 	});
@@ -54,17 +54,12 @@ var Mapmaker = (function () {
 		init: (menuhtml) => {
 
 			// leaflet panel
-			let def = Conf.default;
-			map = L.map('mapid', {
-				center: def.DefaultCenter, zoom: def.DefaultZoom, doubleClickZoom: false,
-				zoomSnap: def.ZoomSnap, zoomDelta: def.ZoomSnap, maxZoom: def.maxZoomLevel
-			});
 			map.zoomControl.setPosition("bottomright");
 			new L.Hash(map);
-			Layers["MAP"] = L.mapboxGL({ attribution: def.Attribution, accessToken: '', style: def.MapStyle }).addTo(map);
+			Layers["MAP"] = L.mapboxGL({ attribution: Conf.default.Attribution, accessToken: '', style: Conf.default.MapStyle }).addTo(map);
 
-			let zoomlevel = L.control({ position: "topright" });
-			zoomlevel.onAdd = function (map) {
+			let zoomlevel = L.control({ position: "topright" });		// make: zoom level
+			zoomlevel.onAdd = function () {
 				this.ele = L.DomUtil.create('div');
 				this.ele.id = "zoomlevel";
 				return this.ele;
@@ -75,7 +70,7 @@ var Mapmaker = (function () {
 
 			L.control.scale({ imperial: false, maxWidth: 200 }).addTo(map);		// Add Scale
 			Locate = L.control.locate({ position: 'bottomright', strings: { title: glot.get("location") }, locateOptions: { maxZoom: 16 } }).addTo(map);
-			WinCont.menu_make();
+			WinCont.menulist_make();
 			Mapmaker.zoom_view();										// Zoom 
 			map.on('zoomend', () => Mapmaker.zoom_view());				// ズーム終了時に表示更新
 			$("#search_input").attr('placeholder', glot.get("address"))	// set placeholder
@@ -104,24 +99,27 @@ var Mapmaker = (function () {
 				basemenu.addTo(map);
 				$("#basemenu").html(menuhtml);
 			} else {
-				for (let key in Conf.Style) $(`[id^=${key}_]`).off();		// Delete Key_* events
+				for (let key in Conf.style) $(`[id^=${key}_]`).off();		// Delete Key_* events
 				$("#basemenu").html(init_basemenu);
 				$("#colors").html("");
 			};
 
-			let icon_keys = Object.keys(Conf.marker);
-			icon_keys.forEach(key => {
-				let html = `<a class="dropdown-item drop_button btn mr-1" style="background-image: url('${Conf.marker[key].icon}')" onclick="Mapmaker.poi_add('${key}')">${glot.get("icon_" + key)}</a>`
-				$("#menu_list").append(html);
+			let keys = Object.keys(Conf.target);							// マーカー追加メニュー作成
+			keys.forEach(key => {
+				if (Conf.target[key].marker !== undefined) {
+					let html = `<a class="dropdown-item drop_button btn mr-1" style="background-image: url('./image/${Conf.target[key].marker}')" onclick="Mapmaker.poi_add('${key}')">`;
+					html += `${glot.get("marker_" + key)}</a>\n`;
+					$("#menu_list").append(html);
+				};
 			});
 
-			for (let key in Conf.Style) {
+			for (let key in Conf.style) {
 				let key_layer = `#${key}_layer`;
 				let key_color = `#${key}_color`;
 				let copyobj = $("#AAA").clone();
 				if (Layers[key].opacity === 0) copyobj.find('#AAA_color').addClass("bg-clear");
 				copyobj.attr('id', key);
-				copyobj.find('#AAA_color').css('background-color', Conf.Style[key].color);
+				copyobj.find('#AAA_color').css('background-color', Conf.style[key].color);
 				copyobj.find('#AAA_color').attr('id', key + "_color");
 				copyobj.find('#AAA_layer').attr('id', key + "_layer");
 				copyobj.find('label[for="AAA_layer"]').attr('for', key + "_layer");
@@ -163,60 +161,77 @@ var Mapmaker = (function () {
 
 		// make custom map
 		make: query_date => {
-			let layercnt = Object.keys(Conf.Style).length;;
-			let nowzoom = map.getZoom();
+			let nowzoom = map.getZoom(), def_msg;
 			if (nowzoom < Conf.default.MinZoomLevel) return false;
 			if (typeof (query_date) == "undefined") query_date = "";
-			let maparea = GeoCont.get_maparea('LLL');
-			WinCont.modal_open({ "title": glot.get("loading_title"), "message": glot.get("loading_message"), "mode": "" });
+			def_msg = glot.get("loading_message");
+			WinCont.modal_open({ "title": glot.get("loading_title"), "message": def_msg, "mode": "" });
+			WinCont.modal_spinner(true);
 
-			let Progress = 0, jqXHRs = [];
-			for (let key in Conf.Style) {
-				if (Conf.Style[key].zoom <= nowzoom) {
-					let query = "";
-					for (let ovpass in Conf.overpass[key]) { query += Conf.overpass[key][ovpass] + maparea; };
-					let url = `${Conf.default.OverPassServer}${Conf.default.OverPassParams}${query_date};(${query});out body;>;out skel qt;`;
-					console.log("GET: " + url);
-					jqXHRs.push($.get(url, () => WinCont.modal_progress(Math.ceil(((++Progress + 1) * 100) / layercnt))));
-				};
-			};
-			if (jqXHRs.length == 0) {
-				WinCont.modal_close();
-				console.log("Make Mapmaker: no data");
-				return;
-			};
-
-			$.when.apply($, jqXHRs).done(function () {
-				let i = 0;
-				for (let key in Conf.Style) {
-					if (Conf.Style[key].zoom <= nowzoom) {
-						if (arguments[i][1] !== "success") {
-							let modal = { "title": glot.get("sverror_title"), "message": glot.get("sverror_message"), "mode": "close", "callback_close": () => Mapmaker.all_clear() };
-							WinCont.modal_open(modal);
+			var targets = [];
+			var progress = function (data_length) { WinCont.modal_text(def_msg + "<br>Data Loading... " + data_length + "Bytes.", false) };
+			for (let key in Conf.style) if (Conf.style[key].zoom <= nowzoom) targets.push(key);
+			OvPassCnt.get(targets, false, progress).then((ovasnswer) => {
+				WinCont.modal_text("<br>Data Loading Complate... ", true);
+				targets.forEach(target => {
+					let geojson = OvPassCnt.get_target(ovasnswer, target);
+					if (geojson.length > 0) {
+						let fil_geojson = {	// node以外なのにPoint以外だとfalse(削除)
+							"features": geojson.filter((val) => { return (Conf.style[target].type !== "node") ? val.geometry.type !== "Point" : true; })
 						};
-						GeoCont.set(key, arguments[i++][0]);
+						if (target == "RIV") fil_geojson = GeoCont.coastline_merge(fil_geojson.features);
+						Layers[target].geojson = fil_geojson.features;
+					};
+				});
+				for (let key in Conf.style) {
+					if (Layers[key].geojson) {
+						WinCont.modal_text(`<br>Map Writeing... ${key}`, true);
+						LayerCont.layer_make(key);
 					};
 				};
-				Mapmaker.update();
-				WinCont.modal_close();
 				Mapmaker.custom(true);
+				WinCont.modal_close();
 				console.log("Mapmaker: make: end");
-			}).fail((jqXHR, statusText) => {
+			}).catch(() => {
 				let modal = { "title": glot.get("sverror_title"), "message": glot.get("sverror_message"), "mode": "close", "callback_close": () => Mapmaker.all_clear() };
 				WinCont.modal_open(modal);
 			});
+			return;
+		},
+
+		// Update layers(color/lime weight change)
+		update: targetkey => {
+			if (targetkey == "" || typeof (targetkey) == "undefined") {		// no targetkey then update all layer
+				for (let key in Conf.style) if (Layers[key].geojson) LayerCont.layer_make(key);
+			} else {
+				if (Layers[targetkey].geojson) LayerCont.layer_make(targetkey);
+			};
+			console.log("Mapmaker: update... end ");
 		},
 
 		// 情報（アイコンなど）を地図に追加
 		poi_add: key => {
-			if (Conf.marker[key].file !== undefined) {
-				$.get(Conf.marker[key].file).then((csv) => {
+			WinCont.modal_open({ "title": glot.get("loading_title"), "message": glot.get("loading_message"), "mode": "" });
+			WinCont.modal_spinner(true);
+			if (Conf.target[key].file !== undefined) {		// "file"がある場合
+				$.get(Conf.target[key].file).then((csv) => {
 					let geojsons = GeoCont.csv2geojson(csv, key);
 					let targets = geojsons.map(() => [key]);
 					poiset(key, { "geojson": geojsons, "targets": targets });
 				});
 			} else {
-				OvPassCnt.get([key]).then((ovasnswer) => poiset(key, ovasnswer));
+				OvPassCnt.get([key], true)
+					.then((ovasnswer) => {
+						if (ovasnswer == undefined) {
+							let modal = { "title": glot.get("nodata_title"), "message": glot.get("nodata_message"), "mode": "close", "callback_close": () => WinCont.modal_close() };
+							WinCont.modal_open(modal);
+						} else {
+							poiset(key, ovasnswer);
+						};
+					}).catch(() => {
+						let modal = { "title": glot.get("sverror_title"), "message": glot.get("sverror_message"), "mode": "close", "callback_close": () => Mapmaker.all_clear() };
+						WinCont.modal_open(modal);
+					})
 			};
 
 			function poiset(key, answer) {
@@ -224,18 +239,18 @@ var Mapmaker = (function () {
 				answer.geojson.forEach((geojson, idx) => {
 					let geo = geojson.geometry;
 					let cords = geo.coordinates;
-					//					let cords = geo.coordinates.length == 1 && geo.coordinates[0][0].length > 1 ? geo.coordinates[0] : ;
 					cords = GeoCont.multi2flat(cords, geo.type);
 					cords = GeoCont.flat2single(cords, geo.type);
-					cords = GeoCont.bboxclip(cords, true);
+					cords = GeoCont.bboxclip([cords], true);
 					if (cords.length > 0) {
 						geojson.geometry.type = "Point";
-						geojson.geometry.coordinates = cords;
+						geojson.geometry.coordinates = cords[0];
 						geojsons.geojson.push(geojson);
 						geojsons.targets.push(answer.targets[idx]);
 					};
 				});
 				PoiCont.add(geojsons);
+				WinCont.modal_close();
 				WinCont.modal_select(key).then((slanswer) => {
 					PoiCont.add(slanswer);
 					Marker.set(key);
@@ -255,11 +270,38 @@ var Mapmaker = (function () {
 			};
 		},
 
-		qr_add: (osmid) => {
-			let marker = Marker.get(osmid);
+		// Image List and select
+		poi_marker_change: (target, osmid, filename) => {
+			switch (filename) {
+				case "":
+				case undefined:
+					let html = "", images = [];
+					Object.keys(Conf.marker_tag).forEach(key1 => {
+						Object.keys(Conf.marker_tag[key1]).forEach((key2) => {
+							let filename = Conf.marker_tag[key1][key2];
+							if (images.indexOf(filename) == -1) { images.push(filename) };
+						});
+					});
+					Object.assign(images, Conf.marker_append_files);
+					images.sort();
+					Object.keys(images).forEach(fidx => { html += `<a href="#" onclick="Mapmaker.poi_marker_change('${target}','${osmid}','${images[fidx]}')"><img class="iconx2" src="./image/${images[fidx]}"></a>` });
+					WinCont.modal_open({ "title": "", "message": html, "mode": "close", callback_close: WinCont.modal_close });
+					break;
+				default:
+					Marker.change_icon(target, osmid, filename);
+					WinCont.modal_close();
+					break;
+			};
+		},
+
+		qr_add: (target, osmid) => {
+			let marker = Marker.get(target, osmid);
 			if (marker !== undefined) {
-				console.log(marker);
-//				Marker.qr_add();
+				let wiki = marker.mapmaker_lang.split(':');
+				let url = encodeURI(`https://${wiki[0]}.${Conf.target.wikipedia.domain}/wiki/${wiki[1]}`);
+				let pix = map.latLngToLayerPoint(marker.getLatLng());
+				let ll2 = map.layerPointToLatLng(pix);
+				Basic.getWikipedia(wiki[0], wiki[1]).then(text => Marker.qr_add(target, osmid, url, ll2, text));
 			};
 		},
 
@@ -267,9 +309,10 @@ var Mapmaker = (function () {
 		custom: (mode) => {
 			switch (mode) {
 				case true:
-					for (let key in Conf.Style) {		// Show control if key is present
+					map.doubleClickZoom.disable();
+					for (let key in Conf.style) {		// Show control if key is present
 						$('#' + key).hide();
-						let zoom = Conf.Style[key].zoom == undefined ? 0 : Conf.Style[key].zoom;
+						let zoom = Conf.style[key].zoom == undefined ? 0 : Conf.style[key].zoom;
 						if (zoom <= map.getZoom()) $('#' + key).show();
 					};
 					$("#make_map").hide();
@@ -288,6 +331,7 @@ var Mapmaker = (function () {
 					Mapmaker.zoom_view();
 					break;
 				case false:
+					map.doubleClickZoom.enable();
 					$("#make_map").show();
 					["#accordion", "#custom_map", "#save_map", "#clear_map"].forEach(key => $(key).hide());
 					["dragging", "zoomControl", "scrollWheelZoom", "touchZoom"].forEach(key => map[key].enable());
@@ -303,20 +347,11 @@ var Mapmaker = (function () {
 			return custom_mode;
 		},
 
-		// Area Selevct(A4)
-		select_area: (mode) => {
-			let dragging = false;
-			switch (mode) {
-				case "":
-					dragging = true;
-				case "A4":
-				case "A4_landscape":
-					select_mode = mode;
-					LayerCont.select(mode, dragging);
-					break;
-				default:
-					return select_mode;
-			};
+		// Area Select(A4)
+		area_select: (mode) => {
+			select_mode = mode;
+			LayerCont.area_select(mode);
+			return mode;
 		},
 
 		// Search Address(Japan Only)
@@ -332,16 +367,6 @@ var Mapmaker = (function () {
 			})
 		},
 
-		// Update layers(color/lime weight change)
-		update: targetkey => {
-			if (targetkey == "" || typeof (targetkey) == "undefined") {		// no targetkey then update all layer
-				for (let key in Conf.Style) if (Layers[key].geojson) LayerCont.layer_make(key);
-			} else {
-				if (Layers[targetkey].geojson) LayerCont.layer_make(targetkey);
-			};
-			console.log("Mapmaker: update... end ");
-		},
-
 		// save layers&pois
 		save: (type) => {
 			LayerCont.save({ type: type, mode: select_mode });
@@ -350,6 +375,8 @@ var Mapmaker = (function () {
 		// View Zoom Level & Status Comment
 		zoom_view: () => {
 			let nowzoom = map.getZoom();
+			LL.NW = map.getBounds().getNorthWest();
+			LL.SE = map.getBounds().getSouthEast();
 			let message = `${glot.get("zoomlevel")}${map.getZoom()} `;
 			if (nowzoom < Conf.default.MinZoomLevel) {
 				message += `<br>${glot.get("morezoom")}`;
@@ -406,13 +433,13 @@ var DataList = (function () {
 				DataList.filter(category == "-" ? "" : category);
 			});
 		},
-		make_select: result => {    // 店舗種別リストを作成
+		make_select: result => {    		// 店舗種別リストを作成
 			WinCont.select_clear(`${MS}_category`);
 			let pois = result.map(data => { return data.category });
 			pois = pois.filter((x, i, self) => { return self.indexOf(x) === i });
 			pois.map(poi => WinCont.select_add(`${MS}_category`, poi, poi));
 		},
-		view: function (targets) {  // PoiDataのリスト表示
+		view_select: function (targets) {  	// PoiDataのリスト表示
 			DataList.lock(true);
 			if (table !== undefined) table.destroy();
 			let result = PoiCont.list(targets);

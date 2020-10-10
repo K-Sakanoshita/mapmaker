@@ -11,7 +11,8 @@
             "ice_cream": "アイスクリーム店",
             "pub": "パブ/居酒屋",
             "restaurant": "レストラン",
-            "vending_machine": "自動販売機"
+            "vending_machine": "自動販売機",
+            "place_of_worship": "宗教施設"
         },
         "shop": {
             "alcohol": "酒屋",
@@ -42,6 +43,11 @@
             "supermarket": "スーパーマーケット",
             "variety_store": "雑貨店"
         },
+        "species": {
+            "Cherry blossom": "桜",
+            "Cerasus itosakura": "桜",
+            "Cerasus × yedoensis": "桜"
+        },
         "natural": {
             "tree": "樹木"
         },
@@ -58,6 +64,57 @@
         },
         "assembly_point:tsunami": {
             "yes": "津波避難"
+        },
+        "attraction": {
+            "animal": "動物"
+        },
+        "playground": {
+            "structure": "複合遊具",
+            "slide": "すべり台",
+            "climbingframe": "ジャングルジム",
+            "climbingwall": "クライミングウォール",
+            "balancebeam": "平均台",
+            "playhouse": "プレイハウス",
+            "sandpit": "砂場",
+            "hopscotch": "遊べるフィールド",
+            "teenshelter": "子ども用東屋",
+            "sledding": "小さな丘",
+            "youth_bench": "運動用ベンチ",
+            "map": "マップ",
+            "swing": "ブランコ",
+            "basketswing": "カゴブランコ",
+            "basketrotator": "旋回カゴ",
+            "aerialrotator": "回旋塔",
+            "seesaw": "シーソー",
+            "springy": "スプリング",
+            "trampoline": "トランポリン",
+            "roundabout": "メリーゴーランド",
+            "cushion": "ふわふわドーム",
+            "zipwire": "移動滑車",
+            "water": "水や泥で遊ぶ場所",
+            "splash_pad": "水遊びをする場所",
+            "horizontal_bar": "鉄棒",
+            "activitypanel": "パネル遊具",
+            "exercise": "健康遊具"
+        },
+        "tourism": {
+            "viewpoint": "ビューポイント",
+            "artwork": "アート作品"
+        },
+        "historic": {
+            "memorial": "石碑"
+        },
+        "information": {
+            "board": "掲示板",
+            "terminal": "情報端末",
+            "audioguide": "音声ガイド",
+            "map": "地図",
+            "tactile_map": "触地図",
+            "guidepost": "道しるべ"
+        },
+        "man_made": {
+            "torii": "鳥居",
+            "lamp":"灯籠"
         }
     }
 }

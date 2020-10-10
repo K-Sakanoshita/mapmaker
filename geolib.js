@@ -5,7 +5,7 @@ var GeoCont = (function () {
         set: (key, osmxml) => {
             let org_geojson = osmtogeojson(osmxml, { flatProperties: true });
             let fil_geojson = {	// node以外なのにPoint以外だとfalse(削除)
-                "features": org_geojson.features.filter((val) => { return (Conf.Style[key].type !== "node") ? val.geometry.type !== "Point" : true; })
+                "features": org_geojson.features.filter((val) => { return (Conf.style[key].type !== "node") ? val.geometry.type !== "Point" : true; })
             };
             if (key == "RIV") fil_geojson = GeoCont.coastline_merge(fil_geojson.features);
             Layers[key].geojson = fil_geojson.features;
@@ -181,7 +181,7 @@ var GeoCont = (function () {
 
         // csv(「”」で囲われたカンマ区切りテキスト)をConf.markerのcolumns、tagsをもとにgeojsonへ変換
         csv2geojson: (csv, key) => {
-            let tag_key = [], columns = Conf.marker[key].columns;
+            let tag_key = [], columns = Conf.target[key].columns;
             let texts = csv.split(/\r\n|\r|\n/).filter(val => val !== "");
             cols = texts[0].split('","').map(col => col.replace(/^"|"$|/g, ''));
             for (let i = 0; i < cols.length; i++) {
@@ -202,8 +202,8 @@ var GeoCont = (function () {
                 Object.keys(tag_val).forEach((idx) => {
                     if (idx.slice(0, 1) !== "_") geojson.properties[idx] = tag_val[idx];
                 });
-                Object.keys(Conf.marker[key].tags).forEach(tkey => {
-                    geojson.properties[tkey] = Conf.marker[key].tags[tkey];
+                Object.keys(Conf.target[key].add_tag).forEach(tkey => {
+                    geojson.properties[tkey] = Conf.target[key].add_tag[tkey];
                 });
                 return geojson;
             });
@@ -220,16 +220,15 @@ var GeoCont = (function () {
         },
 
         bboxclip: (cords, strict) => { // geojsonは[経度lng,緯度lat]
-            let LL = GeoCont[strict ? "get_LL" : "get_LLL"](), old = cords.length;
-            cords = cords.filter((cord) => {
+            let LL = GeoCont[strict ? "get_LL" : "get_LLL"]();
+            new_cords = cords.filter((cord) => {
                 if (cord[0] < (LL.NW.lng)) return false;
                 if (cord[0] > (LL.SE.lng)) return false;
                 if (cord[1] < (LL.SE.lat)) return false;
                 if (cord[1] > (LL.NW.lat)) return false;
                 return true;
             });
-            //console.log(`bboxclip: ${old} -> ${cords.length}`);
-            return cords;
+            return new_cords;
         },
 
         multi2flat: (cords, type) => {     // MultiPoylgon MultiString -> Polygon(broken) String
@@ -242,7 +241,8 @@ var GeoCont = (function () {
                     flats = [cords];
                     break;
                 case "MultiPolygon":
-                    flats = cords.flat();   // no break;
+                    flats = cords.flat();
+                    break;
                 default:
                     flats = [cords.flat()];
                     break;
@@ -370,7 +370,7 @@ var GeoCont = (function () {
         },
 
         cord_search: (target) => {    // search leyers
-            Object.keys(Conf.Style).forEach(key => {
+            Object.keys(Conf.style).forEach(key => {
                 if (Layers[key].geojson !== undefined) {
                     console.log("Search: " + key);
                     Layers[key].geojson.forEach((geojson, gidx) => {

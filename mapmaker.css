@@ -29,7 +29,7 @@ header {
 	margin: 0px !important;
 	padding: 0px !important;
 	color: #ffffff !important;
-	background-image: url('./image/bg1.jpg');
+	background-image: url('./image/bg1.png');
 	background-size: inherit;
 }
 
@@ -92,21 +92,29 @@ h2.zoom {
 div.search {
 	color: white;
 	height: 44px;
-	background-color: rgba(0, 48, 0, 0.6);
+	background-color: rgba(0, 48, 0, 0.4);
 	border: 0px;
 }
 
 div.menu {
 	color: white;
 	height: 44px;
-	background-color: rgba(0, 48, 0, 0.6);
+	background-color: rgba(0, 48, 0, 0.4);
 	border: 0px;
 	width: initial !important;
 }
 
+/*
+
 img.icon {
 	width: 20px;
 	height: 20px;
+}
+*/
+
+img.iconx2 {
+	width: 40px;
+	height: 40px;
 }
 
 p {
@@ -119,7 +127,7 @@ span.title {
 	font-weight: bold;
 	padding: 0px 8px 0px 8px;
 	margin: 2px 0px 0px 0px;
-	background-color: rgba(0, 48, 0, 0.6);
+	background-color: rgba(0, 48, 0, 0.4);
 	border-radius: .25rem;
 }
 
@@ -127,7 +135,7 @@ span.subtitle {
 	display: inline-block;
 	font-weight: bold;
 	padding: 0px 4px 4px 4px;
-	background-color: rgba(0, 48, 0, 0.6);
+	background-color: rgba(0, 48, 0, 0.4);
 	border-radius: .25rem;
 }
 
@@ -136,9 +144,8 @@ span.search {
 }
 
 span.icon {
-	margin-left: 4px;
-	padding: 0px 6px;
-	font-size: 14px;
+	margin-left: 2px;
+	padding: 0px 2px;
 	white-space: nowrap;
 	background-color: white;
 }
@@ -162,4 +169,14 @@ input[type="search"] {
 	font-size: 14px;
 	display: inline-block;
 	width: calc(180px - 4em);
+}
+
+/* area mask */
+
+.area_mask {
+	padding: 0px;
+	margin: 0px;
+	position: absolute;
+	background: rgba(0, 0, 0, 0.4);
+	z-index: 799;
 }

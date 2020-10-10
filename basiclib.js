@@ -37,7 +37,7 @@ var Basic = (function () {
         getWikipedia: (lang, url) => {      // get wikipedia contents
             return new Promise((resolve, reject) => {
                 let encurl = encodeURI(url);
-                encurl = "https://" + lang + "." + Conf.marker.wikipedia.api + encurl;
+                encurl = "https://" + lang + "." + Conf.target.wikipedia.api + encurl;
                 $.get({ url: encurl, dataType: "jsonp" }, function (data) {
                     let key = Object.keys(data.query.pages);
                     let text = data.query.pages[key].extract;
@@ -59,17 +59,30 @@ var WinCont = (function () {
             let act = mode ? { backdrop: 'static', keyboard: false } : 'hide';
             $('#Splash_Modal').modal(act);
         },
-        modal_open: params => {   // open modal window(params: title,message,mode(yes no close),callback_yes,callback_no,callback_close)
-            $(`${MW}_title`).html(params.title);
-            $(`${MW}_message`).html(params.message);
+        modal_open: p => {   // open modal window(p: title,message,mode(yes no close),callback_yes,callback_no,callback_close)
+            $(`${MW}_spinner`).hide();
+            $(`${MW}_title`).html(p.title);
+            $(`${MW}_message`).html(p.message);
             [`${MW}_yes`, `${MW}_no`, `${MW}_close`].forEach(id => $(id).hide());
             $(`${MW}_progress`).parent().hide();
-            if (params.mode.indexOf("yes") > -1) $(`${MW}_yes`).html(glot.get("button_yes")).on('click', params.callback_yes).show();
-            if (params.mode.indexOf("no") > -1) $(`${MW}_no`).html(glot.get("button_no")).on('click', params.callback_no).show();
-            if (params.mode.indexOf("close") > -1) $(`${MW}_close`).html(glot.get("button_close")).on('click', params.callback_close).show();
+            if (p.mode.indexOf("yes") > -1) $(`${MW}_yes`).html(glot.get("button_yes")).on('click', p.callback_yes).show();
+            if (p.mode.indexOf("no") > -1) $(`${MW}_no`).html(glot.get("button_no")).on('click', p.callback_no).show();
+            if (p.mode.indexOf("close") > -1) $(`${MW}_close`).html(glot.get("button_close")).on('click', p.callback_close).show();
+
             $(MW).modal({ backdrop: false, keyboard: true });
             modal_open = true;
             $(MW).on('shown.bs.modal', () => { if (!modal_open) $(MW).modal('hide') }); // Open中にCloseされた時の対応
+        },
+        modal_text: (text, append) => {
+            let newtext = append ? $(`${MW}_message`).html() + text : text;
+            $(`${MW}_message`).html(newtext);
+        },
+        modal_spinner: view => {
+            if (view) {
+                $(`${MW}_spinner`).show();
+            } else {
+                $(`${MW}_spinner`).hide();
+            };
         },
         modal_progress: percent => {
             percent = percent == 0 ? 0.1 : percent;
@@ -79,7 +92,7 @@ var WinCont = (function () {
         modal_select: (target) => { // View Poi Select List
             return new Promise((resolve, reject) => {
                 DataList.init();
-                DataList.view(target);
+                DataList.view_select(target);
                 $(`${MS}_facilityname`).html(glot.get("facilityname"));
                 $(`${MS}_size`).val(Conf.default.Text.size);
                 $(`${MS}_facility`).prop("checked", Conf.default.Text.view);
@@ -113,7 +126,7 @@ var WinCont = (function () {
             $(`${MW}`).modal('hide');
             [`${MW}_yes`, `${MW}_no`, `${MW}_close`].forEach(id => $(id).off('click'));
         },
-        menu_make: () => {
+        menulist_make: () => {
             Object.keys(Conf.menu).forEach(key => {
                 let confkey = Conf.menu[key];
                 $("#temp_menu>a:first").attr("href", confkey.linkto);
@@ -136,6 +149,44 @@ var WinCont = (function () {
         select_clear: (domid) => {
             $('#' + domid + ' option').remove();
             $('#' + domid).append($('<option>').html("---").val("-"));
+        },
+        a4_getsize: (mode) => {                     // A4サイズにするマスク値を取得
+            let p = { top: 0, left: 0, right: 0, bottom: 0, width: 0, height: 0 };
+            let dom = document.getElementById("mapid");
+            p.width = dom.clientWidth;              // 横
+            p.height = dom.clientHeight;            // 縦
+            switch (mode) {
+                case "A4":
+                    if (p.width >= (p.height / Math.SQRT2)) {   // 横広画面（左右をマスク）
+                        p.left = Math.round(((p.width - (p.height / Math.SQRT2)) / 2));
+                        p.right = p.left;
+                    } else {                                    // 縦長画面
+                        p.top = Math.round(((p.height - (p.width * Math.SQRT2)) / 2));
+                        p.bottom = p.top;
+                    };
+                    break;
+                case "A4_landscape":
+                    if (p.width >= (p.height * Math.SQRT2)) {   // 横広画面（左右をマスク）
+                        p.left = Math.round(((p.width - (p.height * Math.SQRT2)) / 2));
+                        p.right = p.left;
+                    } else {                                    // 縦長画面
+                        p.top = Math.round(((p.height - (p.width / Math.SQRT2)) / 2));
+                        p.bottom = p.top;
+                    };
+                    break;
+                default:                                        // その他(全て0)
+                    break;
+            };
+            return p;
+        },
+        domAdd: (id, parent_id) => {                         // leafletにcontrollを追加
+            let dom = document.getElementById(id);
+            if (dom == null) {
+                dom = document.createElement("div");
+                dom.id = id;
+                document.getElementById(parent_id).appendChild(dom);
+            };
+            return document.getElementById(id);             // domを返す
         },
         window_resize: () => {
             console.log("Window Width: " + window.innerWidth);
