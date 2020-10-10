@@ -579,8 +579,10 @@ var Marker = (function () {				// Marker closure
 					if (keyn !== undefined && keyv !== undefined) {	// in category
 						icon_name = params.filename == undefined ? Conf.marker_tag[keyn][tags[keyn]] : params.filename;
 						let html = `<div class="d-flex"><img style="width: ${Conf.effect.icon.x}px; height: ${Conf.effect.icon.y}px;" src="./image/${icon_name}" icon-name="${name}">`;
-						if (name !== "" && Conf.effect.text.view) html = `${html}<span class="icon" style="font-size: ${Conf.effect.text.size}px">${name}</span>`;
-						let icon = L.divIcon({ "className": "", "iconSize": [200 * Conf.default.Icon.scale, Conf.effect.icon.y], "iconAnchor": [Conf.effect.icon.x / 2, Conf.effect.icon.y / 2], "html": html + "</div>" });
+						let span = `<span class="icon" style="font-size: ${Conf.effect.text.size}px">${name}</span>`;
+						if (name !== "" && Conf.effect.text.view) html += span;
+						let span_width = name !== "" ? name.length * Conf.effect.text.size : 0;
+						let icon = L.divIcon({ "className": "", "iconSize": [Conf.effect.icon.x + span_width, Conf.effect.icon.y], "iconAnchor": [Conf.effect.icon.x / 2, Conf.effect.icon.y / 2], "html": html + "</div>" });
 						let marker = L.marker(new L.LatLng(params.poi.latlng.lat, params.poi.latlng.lng), { icon: icon, draggable: true });
 						marker.addTo(map).on('click', e => { popup_icon(e) });
 						marker.mapmaker_id = params.poi.geojson.id;

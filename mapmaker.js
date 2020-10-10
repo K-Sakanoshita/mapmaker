@@ -14,7 +14,6 @@ const glot = new Glottologist();
 // initialize leaflet
 $(document).ready(function () {
 	console.log("Welcome to MapMaker.");
-
 	let jqXHRs = [];
 	for (let key in FILES) { jqXHRs.push($.get(FILES[key])) };
 	$.when.apply($, jqXHRs).always(function () {
