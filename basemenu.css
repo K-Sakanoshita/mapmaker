@@ -122,3 +122,9 @@ button:active {
 .bg-clear {
     background: transparent url("./image/transparent.png") !important;
 }
+
+.modal-dialog-fluid {
+    max-width: inherit !important;
+    width: 98% !important;
+    margin-left: 8px !important;
+}
