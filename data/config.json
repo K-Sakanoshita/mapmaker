@@ -7,7 +7,7 @@
         ],
         "DefaultZoom": 6,
         "ZoomSnap": 0.25,
-        "MinZoomLevel": 12.5,
+        "MinZoomLevel": 10,
         "LimitZoomLevel": 15.5,
         "MaxZoomLevel": 23,
         "FileName": "mapmaker",
@@ -30,7 +30,7 @@
         "credit": {
             "text": "© OpenStreetMap contributors",
             "width": 170,
-            "height":20,
+            "height": 20,
             "size": 12,
             "anchor": "start",
             "font": "Helvetica"
@@ -54,6 +54,11 @@
     },
     "menu": [
         {
+            "glot-model": "address",
+            "linkto": "html:<div class='d-flex align-items-center'><input type='search' id='search_input' class='form-control w-100'></input><button class='btn btn-primary' onclick='Mapmaker.poi_search($(\"#search_input\").val())'></button></div>",
+            "divider": true
+        },
+        {
             "glot-model": "licence_title",
             "linkto": "javascript:Mapmaker.licence()",
             "divider": false
@@ -74,7 +79,7 @@
             "divider": false
         }
     ],
-    "effect":{
+    "effect": {
         "icon": {
             "x": 0,
             "y": 0
@@ -84,4 +89,4 @@
             "view": true
         }
     }
- }
+}

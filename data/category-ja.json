@@ -99,7 +99,8 @@
         },
         "tourism": {
             "viewpoint": "ビューポイント",
-            "artwork": "アート作品"
+            "artwork": "アート作品",
+            "information": "案内"
         },
         "historic": {
             "memorial": "石碑"
@@ -114,7 +115,7 @@
         },
         "man_made": {
             "torii": "鳥居",
-            "lamp":"灯籠"
+            "lamp": "灯籠"
         }
     }
 }

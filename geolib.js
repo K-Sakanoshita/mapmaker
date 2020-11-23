@@ -7,7 +7,7 @@ var GeoCont = (function () {
             let fil_geojson = {	// node以外なのにPoint以外だとfalse(削除)
                 "features": org_geojson.features.filter((val) => { return (Conf.style[key].type !== "node") ? val.geometry.type !== "Point" : true; })
             };
-            if (key == "RIV") fil_geojson = GeoCont.coastline_merge(fil_geojson.features);
+            if (key == "river") fil_geojson = GeoCont.coastline_merge(fil_geojson.features);
             Layers[key].geojson = fil_geojson.features;
         },
         coastline_merge: (geojson_s) => {
@@ -313,7 +313,6 @@ var GeoCont = (function () {
 
 
         // Debug Code
-
 
         gcircle: (geojson) => { // view geojson in map
             let features = [], colors = ["#000000", "#800000", "#FF0080", "#008000", "#00FF00", "#000080", "#0000FF", "#800080", "#FF00FF", "#808000", "#FFFF00", "#008080", "#00FFFF", "#800080", "#FF00FF"];

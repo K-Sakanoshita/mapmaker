@@ -102,7 +102,8 @@
         },
         "tourism": {
             "viewpoint": "star.svg",
-            "artwork": "artwork.svg"
+            "artwork": "artwork.svg",
+            "information": "information.svg"
         },
         "historic": {
             "memorial": "memorial.svg"
@@ -117,7 +118,7 @@
         },
         "man_made": {
             "torii": "torii.svg",
-            "lamp":"lantern.svg"
+            "lamp": "lantern.svg"
         }
     },
     "marker_append_files": [

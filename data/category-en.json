@@ -99,7 +99,8 @@
         },
         "tourism": {
             "viewpoint": "viewpoint",
-            "artwork": "artwork"
+            "artwork": "artwork",
+            "information": "information"
         },
         "historic": {
             "memorial": "memorial"

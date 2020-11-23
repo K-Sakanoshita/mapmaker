@@ -4,14 +4,14 @@ html {
 	margin: 0px;
 }
 
-.modal-dialog-fluid {
-	max-width: inherit !important;
-	max-height: 50% !important;
-	width: 80% !important;
-}
-
-table.dataTable tbody>tr.selected, table.dataTable tbody>tr>.selected {
-	background-color: #0274d880 !important;
+header {
+	width: 100%;
+	height: 60px;
+	margin: 0px !important;
+	padding: 0px !important;
+	color: #ffffff !important;
+	background-image: url('./image/bg1.png');
+	background-size: inherit;
 }
 
 body {
@@ -21,16 +21,6 @@ body {
 	padding: 0px;
 	margin: 0px;
 	overflow: hidden;
-}
-
-header {
-	width: 100%;
-	height: 60px;
-	margin: 0px !important;
-	padding: 0px !important;
-	color: #ffffff !important;
-	background-image: url('./image/bg1.png');
-	background-size: inherit;
 }
 
 #container {
@@ -82,6 +72,11 @@ img.h1 {
 	margin: 5px 5px 5px 5px;
 }
 
+img.iconx2 {
+	width: 40px;
+	height: 40px;
+}
+
 h2.zoom {
 	font-size: 16px;
 	color: rgba(0, 0, 0, 1);
@@ -92,29 +87,16 @@ h2.zoom {
 div.search {
 	color: white;
 	height: 44px;
-	background-color: rgba(0, 48, 0, 0.4);
 	border: 0px;
 }
 
-div.menu {
+.menu {
 	color: white;
-	height: 44px;
+	height: 50px;
+	margin: 5px 0px;
 	background-color: rgba(0, 48, 0, 0.4);
 	border: 0px;
 	width: initial !important;
-}
-
-/*
-
-img.icon {
-	width: 20px;
-	height: 20px;
-}
-*/
-
-img.iconx2 {
-	width: 40px;
-	height: 40px;
 }
 
 p {
@@ -123,24 +105,17 @@ p {
 
 span.title {
 	display: inline-block;
-	font-size: 20px !important;
+	font-size: 18px !important;
 	font-weight: bold;
-	padding: 0px 8px 0px 8px;
-	margin: 2px 0px 0px 0px;
-	background-color: rgba(0, 48, 0, 0.4);
-	border-radius: .25rem;
+	padding: 0px 8px 0px 0px;
+	margin: 0px 0px 0px 0px;
 }
 
 span.subtitle {
 	display: inline-block;
+	font-size: 12px !important;
 	font-weight: bold;
-	padding: 0px 4px 4px 4px;
-	background-color: rgba(0, 48, 0, 0.4);
-	border-radius: .25rem;
-}
-
-span.search {
-	font-weight: bold;
+	padding: 0px 4px 4px 0px;
 }
 
 span.icon {
@@ -151,6 +126,12 @@ span.icon {
 }
 
 /* button for select way color */
+
+.modal-dialog-fluid {
+	max-width: inherit !important;
+	max-height: 50% !important;
+	width: 80% !important;
+}
 
 .modal-body {
 	font-size: 14px !important;
@@ -171,7 +152,9 @@ input[type="search"] {
 	width: calc(180px - 4em);
 }
 
-/* area mask */
+table.dataTable tbody>tr.selected, table.dataTable tbody>tr>.selected {
+	background-color: #0274d880 !important;
+}
 
 .area_mask {
 	padding: 0px;

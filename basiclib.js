@@ -45,6 +45,13 @@ var Basic = (function () {
                     resolve(text);
                 });
             });
+        },
+        isSmartPhone: () => {
+            if (window.matchMedia && window.matchMedia('(max-device-width: 640px)').matches) {
+                return true;
+            } else {
+                return false;
+            }
         }
     };
 })();
@@ -128,16 +135,22 @@ var WinCont = (function () {
         },
         menulist_make: () => {
             Object.keys(Conf.menu).forEach(key => {
-                let confkey = Conf.menu[key];
-                $("#temp_menu>a:first").attr("href", confkey.linkto);
-                $("#temp_menu>a:first").attr("target", "");
-                if (confkey.linkto.indexOf("javascript:") == -1) $("#temp_menu>a:first").attr("target", "_blank");
-                $("#temp_menu>a>span:first").attr("glot-model", confkey["glot-model"]);
-                let link = $("#temp_menu>a:first").clone();
+                let link,confkey = Conf.menu[key];
+                if (confkey.linkto.indexOf("html:") > -1) {
+                    $("#temp_menu>span:first").html(confkey.linkto.substring(5));
+                    link = $("#temp_menu>span:first").clone();
+                } else {
+                    $("#temp_menu>a:first").attr("href", confkey.linkto);
+                    $("#temp_menu>a:first").attr("target", "");
+                    if (confkey.linkto.indexOf("javascript:") == -1) $("#temp_menu>a:first").attr("target", "_blank");
+                    $("#temp_menu>a>span:first").attr("glot-model", confkey["glot-model"]);
+                    link = $("#temp_menu>a:first").clone();
+                };
                 $("#temp_menu").append(link);
                 if (confkey["divider"]) $("#temp_menu>div:first").clone().appendTo($("#temp_menu"));
             });
             $("#temp_menu>a:first").remove();
+            $("#temp_menu>span:first").remove();
             $("#temp_menu>div:first").remove();
         },
         select_add: (domid, text, value) => {

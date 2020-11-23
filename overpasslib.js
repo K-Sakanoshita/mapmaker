@@ -5,6 +5,7 @@ var OvPassCnt = (function () {
 	return {
 		get: function (targets, poi, progress) {
 			return new Promise((resolve, reject) => {
+				let LL = GeoCont.get_LL();
 				let offset_lat = (LL.NW.lat - LL.SE.lat) / 4;
 				let offset_lng = (LL.SE.lng - LL.NW.lng) / 4;
 				let SE_lat = LL.SE.lat - offset_lat;
@@ -72,7 +73,7 @@ var OvPassCnt = (function () {
 				let keys = Object.keys(Conf.target).filter(key => Conf.target[key].file == undefined);
 				keys.forEach(val2 => {
 					var target = val2;
-					Conf.target[target].tags.forEach(function (tag) {
+					Conf.target[target].tags.forEach(function (tag) {		// target[category].tags による該当チェック
 						let tag_kv = tag.split("=").concat([""]);
 						let tag_not = tag_kv[0].slice(-1) == "!" ? true : false;
 						tag_kv[0] = tag_kv[0].replace(/!/, "");

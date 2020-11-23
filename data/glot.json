@@ -55,6 +55,10 @@
 		"ja": "住所",
 		"en": "Address"
 	},
+	"search": {
+		"ja": "検索",
+		"en": "Search"
+	},
 	"addressnotfound_title": {
 		"ja": "住所が見つかりません",
 		"en": "Address not found"
@@ -68,12 +72,12 @@
 		"en": "Zoom in to create a map."
 	},
 	"morezoom2": {
-		"ja": "ズームすると地物が増えます。",
-		"en": "When you zoom in, you will see more ground objects."
+		"ja": "ズームすると<br />地物が増えます。",
+		"en": "When you zoom in,<br />will see more objects."
 	},
 	"custommode": {
-		"ja": "地図編集モード（スクロールロック中）",
-		"en": "Map Editing Mode(scroll locked)"
+		"ja": "編集中（ロック）",
+		"en": "Editing(locked)"
 	},
 	"line_weight": {
 		"ja": "輪郭線の太さ",
@@ -124,16 +128,16 @@
 		"en": "Loading map data"
 	},
 	"loading_message": {
-		"ja": "サーバーからロード中です。しばらくお待ちください。",
-		"en": "Loading from the server. Please wait a moment."
+		"ja": "ロード中です。しばらくお待ちください。",
+		"en": "Loading... Please wait a moment."
 	},
 	"restart_title": {
 		"ja": "最初からやり直し",
 		"en": "Start over from the beginning."
 	},
 	"restart_message": {
-		"ja": "今のマップデータを削除して、最初からやり直ししますか？",
-		"en": "Do you want to delete the current map data and start over?"
+		"ja": "データを削除して、やり直ししますか？",
+		"en": "Do you want to delete the data and start over?"
 	},
 	"location": {
 		"ja": "現在地を表示",
@@ -215,63 +219,63 @@
 		"ja": "ちょっとしたポイント",
 		"en": "viewpoint"
 	},
-	"menu_BAK": {
+	"menu_background": {
 		"ja": "背景色",
 		"en": "Background"
 	},
-	"menu_Park": {
+	"menu_park": {
 		"ja": "各種公園",
 		"en": "Park"
 	},
-	"menu_PED": {
+	"menu_pedestrian": {
 		"ja": "各種広場",
 		"en": "Piazza"
 	},
-	"menu_PKG": {
+	"menu_parking": {
 		"ja": "駐車場",
 		"en": "Parking"
 	},
-	"menu_GDN": {
+	"menu_garden": {
 		"ja": "庭・草原",
 		"en": "Garden"
 	},
-	"menu_RIV": {
+	"menu_river": {
 		"ja": "水路・川",
 		"en": "Waterway"
 	},
-	"menu_FRT": {
+	"menu_forest": {
 		"ja": "森・田畑",
 		"en": "Wood/Crop"
 	},
-	"menu_RIL": {
+	"menu_railway": {
 		"ja": "レール類",
 		"en": "Railway"
 	},
-	"menu_ALY": {
+	"menu_highway_alley": {
 		"ja": "路地小道",
 		"en": "Pathway"
 	},
-	"menu_STD": {
+	"menu_highway_standard": {
 		"ja": "一般道路",
 		"en": "Std road"
 	},
-	"menu_PRI": {
+	"menu_highway_primary": {
 		"ja": "主要道路",
 		"en": "Pri road"
 	},
-	"menu_HIW": {
+	"menu_highway_motorway": {
 		"ja": "高速道路",
 		"en": "Highway"
 	},
-	"menu_BLD": {
+	"menu_building": {
 		"ja": "建物・家",
 		"en": "Building"
 	},
-	"menu_BRR": {
+	"menu_barrier": {
 		"ja": "壁・擁壁",
 		"en": "Wall"
 	},
-	"menu_STN": {
+	"menu_station": {
 		"ja": "駅施設等",
 		"en": "Station"
 	},

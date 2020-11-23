@@ -12,8 +12,8 @@
 	</div>
 </div>
 
-<div class="accordion" id="accordion">
-	<div class="card">
+<div class="accordion mb-1" id="accordion">
+	<div class="card mb-0">
 		<div class="card-header" id="headingOne">
 			<button class="comm_button d-flex" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
 				<i class="flex-row fas fa-palette fa-2x mr-4"></i> <span class="flex-row" glot-model="controlmenu"></span>
@@ -63,7 +63,10 @@
 			<span class="flex-row">SVG</span>
 		</button>
 	</div>
-	<button class="comm_button d-flex" id="clear_map" onclick="Mapmaker.all_clear()">
+</div>
+
+<div class="save_map" id="clear_map">
+	<button class="comm_button d-flex" onclick="Mapmaker.all_clear()">
 		<i class="fas fa-undo fa-2x mr-3 flex-row"></i>
 		<span glot-model="restart_title"></span>
 	</button>

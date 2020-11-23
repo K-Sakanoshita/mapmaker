@@ -5,7 +5,7 @@ var LayerCont = (function () {		// for line&area / nodeはMarker
 	return {
 		init: () => {
 			let lamp = Layers.MAP == undefined ? "" : Layers.MAP;
-			Layers = { "BAK": { "opacity": Conf.style.BAK.opacity }, "MAP": lamp };
+			Layers = { "background": { "opacity": Conf.style.background.opacity }, "MAP": lamp };
 			for (let key in Conf.style) {
 				let color = typeof (Conf.style[key].color) == "undefined" ? "" : Conf.style[key].color;
 				let opacity = typeof (Conf.style[key].opacity) == "undefined" ? "" : Conf.style[key].opacity;
@@ -21,21 +21,22 @@ var LayerCont = (function () {		// for line&area / nodeはMarker
 		},
 
 		layer_make: (key, view) => {						// MakeData内 -> name:コントロール名 / color:SVG色 / width:SVG Line Weight / dashArray:破線
-			let type = Conf.style[key].type, ways = [], opacity;
+			let type = Conf.style[key].type, opacity;
 			if (view !== undefined) Layers[key].opacity = view ? 1 : 0;
 			let style = svg_style(key);
 			if (Layers[key].svg) {							// already svg layers
-				Layers[key].svg.forEach(ways => {
+				Layers[key].svg.forEach(way => {
 					switch (view) {
-						case undefined: opacity = { "fillOpacity": ways.options.fillOpacity, "opacity": ways.options.opacity }; break;
+						case undefined: opacity = { "fillOpacity": way.options.fillOpacity, "opacity": way.options.opacity }; break;
 						case true: opacity = { "fillOpacity": 1, "opacity": 1 }; break;
 						case false: opacity = { "fillOpacity": 0, "opacity": 0 }; break;
 					};
 					if (type !== "area") opacity.fillOpacity = 0; 					// LineがPolygon化された場合の対処
-					ways.setStyle(Object.assign(style, opacity));
-					ways.options = Object.assign(ways.options, opacity);
+					way.setStyle(Object.assign(style, opacity));
+					way.options = Object.assign(way.options, opacity);
 				});
 			} else if (Layers[key].geojson !== undefined) {		//already geojson
+				let ways = [];
 				opacity = { "fillOpacity": 1, "opacity": 1 };
 				if (view == false) opacity = { "fillOpacity": 0, "opacity": 0 };	// false以外(trueとundefined)はopacity=1
 				if (type !== "area") opacity.fillOpacity = 0; 	// LineがPolygon化された場合の対処
@@ -111,13 +112,19 @@ var LayerCont = (function () {		// for line&area / nodeはMarker
 		save: (params) => {
 			let data, canvas_width, canvas_height, svg = $("svg").clone();
 			let base = svg[0].viewBox.baseVal;
-
 			let box = WinCont.a4_getsize(params.mode);
 			base = {
 				width: box.width - (box.left + box.right),
 				height: box.height - (box.top + box.bottom),
-				x: base.x + 122 + box.left,
-				y: base.y + 106 + box.top
+				x: base.x + box.left, y: base.y + box.top
+			};
+
+			if (Basic.isSmartPhone()) {
+				base.x = base.x + 36;
+				base.y = base.y + 60;
+			} else {
+				base.x = base.x + 132;
+				base.y = base.y + 76;
 			};
 
 			switch (params.mode) {
@@ -143,13 +150,13 @@ var LayerCont = (function () {		// for line&area / nodeはMarker
 			svg.attr("xmlns:xlink", "http://www.w3.org/1999/xlink");
 			svg.attr("viewBox", [base.x, base.y, base.width, base.height].join(" "));
 
-			if (Layers.BAK.opacity !== 0) {
+			if (Layers.background.opacity !== 0) {
 				let rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
 				rect.setAttribute("x", base.x);
 				rect.setAttribute("y", base.y);
 				rect.setAttribute("width", base.width);
 				rect.setAttribute("height", base.height);
-				rect.setAttribute("fill", Layers["BAK"].color);
+				rect.setAttribute("fill", Layers["background"].color);
 				svg[0].insertBefore(rect, svg[0].firstChild);
 			}
 			$("body").append(svg);
@@ -190,6 +197,25 @@ var LayerCont = (function () {		// for line&area / nodeはMarker
 		}
 	};
 
+	function save_common(svg, dataURI, ext) {	// save処理のファイル作成&保存部分
+		let blob = Basic.dataURItoBlob(dataURI);
+		let url = URL.createObjectURL(blob);
+		let a = document.createElement("a");
+		a.setAttribute("type", "hidden");
+		a.setAttribute("id", "download-link");
+		a.download = Conf.default.FileName + '.' + ext;
+		a.href = url;
+		$('body').append(a);
+		a.click();
+		setTimeout(function () {
+			URL.revokeObjectURL(url);
+			$("#download").remove();
+			$("#download-link").remove();
+			svg.remove();
+			map.setView(map.getCenter());
+		}, Math.max(3000, dataURI.length / 512));
+	};
+
 	function svg_style(key) {	// set svg style(no set opacity)
 		let style, weight = 1, nowzoom = map.getZoom();
 		if (nowzoom < 15) {
@@ -227,25 +253,6 @@ var LayerCont = (function () {		// for line&area / nodeはMarker
 		options.fillColor = style.fillColor;
 		options.weight = style.weight;
 		ev.target.setStyle(options);
-	};
-
-	function save_common(svg, dataURI, ext) {	// save処理のファイル作成&保存部分
-		let blob = Basic.dataURItoBlob(dataURI);
-		let url = URL.createObjectURL(blob);
-		let a = document.createElement("a");
-		a.setAttribute("type", "hidden");
-		a.setAttribute("id", "download-link");
-		a.download = Conf.default.FileName + '.' + ext;
-		a.href = url;
-		$('body').append(a);
-		a.click();
-		setTimeout(function () {
-			URL.revokeObjectURL(url);
-			$("#download").remove();
-			$("#download-link").remove();
-			svg.remove();
-			map.setView(map.getCenter());
-		}, Math.max(3000, dataURI.length / 512));
 	};
 })();
 

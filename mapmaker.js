@@ -3,13 +3,12 @@
 
 // Global Variable
 var map;				// leaflet map object
-var Locate;				// leaflet locate object
 var Layers = {};		// Layer Status,geojson,svglayer
 var Conf = {};			// Config Praams
-var LL = {};
 const LANG = (window.navigator.userLanguage || window.navigator.language || window.navigator.browserLanguage).substr(0, 2) == "ja" ? "ja" : "en";
 const FILES = ["./basemenu.html", "./modals.html", "./data/config.json", './data/target.json', `./data/category-${LANG}.json`, `data/datatables-${LANG}.json`, `./data/marker.json`];
 const glot = new Glottologist();
+const Mono_Filter = ['grayscale:90%', 'bright:85%', 'contrast:130%', 'sepia:15%'];;
 
 // initialize leaflet
 $(document).ready(function () {
@@ -24,8 +23,6 @@ $(document).ready(function () {
 			Conf[key1] = {};
 			Object.keys(arg[key1]).forEach((key2) => Conf[key1][key2] = arg[key1][key2]);
 		});
-		let def = Conf.default;
-		map = L.map('mapid', { center: def.DefaultCenter, zoom: def.DefaultZoom, zoomSnap: def.ZoomSnap, zoomDelta: def.ZoomSnap, maxZoom: def.maxZoomLevel });
 
 		glot.import("./data/glot.json").then(() => {	// Multi-language support
 			// document.title = glot.get("title");		// Title(no change / Google検索で日本語表示させたいので)
@@ -46,18 +43,36 @@ $(document).ready(function () {
 });
 
 var Mapmaker = (function () {
-	var custom_mode = false, init_basemenu, Locate, view_license = false, select_mode = "";
+	var maps, custom_mode = false, init_basemenu, view_license = false, select_mode = "";
+	var Control = { "locate": "", "maps": "" };		// leaflet control object
 
 	return {
 		// Initialize
 		init: (menuhtml) => {
 
+			// set map layer
+			let osm_mono = L.tileLayer.colorFilter('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxNativeZoom: 19, maxZoom: 21, attribution: '<a href="http://openstreetmap.org">&copy OpenStreetMap contributors</a>', filter: Mono_Filter });
+			let osm_std = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&amp;copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors' });
+			let osm_tiler = L.mapboxGL({ attribution: Conf.default.Attribution, accessToken: '', style: Conf.default.MapStyle });
+			let t_pale = L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png', { attribution: "<a href='https://www.gsi.go.jp/kikakuchousei/kikakuchousei40182.html' target='_blank'>国土地理院</a>" });
+			let t_ort = L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/ort/{z}/{x}/{y}.jpg', { attribution: "<a href='https://www.gsi.go.jp/kikakuchousei/kikakuchousei40182.html' target='_blank'>国土地理院</a>" });
+
+			let def = Conf.default;
+			map = L.map('mapid', { center: def.DefaultCenter, zoom: def.DefaultZoom, zoomSnap: def.ZoomSnap, zoomDelta: def.ZoomSnap, maxZoom: def.maxZoomLevel, layers: [osm_mono] });
+			maps = {
+				"OpenStreetMap Mono": osm_mono,
+				"OpenStreetMap Standard": osm_std,
+				"OpenStreetMap Maptiler": osm_tiler,
+				"地理院地図 オルソ": t_ort,
+				"地理院地図 淡色": t_pale
+			};
+			Control["maps"] = L.control.layers(maps, null, null).addTo(map);
+
 			// leaflet panel
 			map.zoomControl.setPosition("bottomright");
 			new L.Hash(map);
-			Layers["MAP"] = L.mapboxGL({ attribution: Conf.default.Attribution, accessToken: '', style: Conf.default.MapStyle }).addTo(map);
 
-			let zoomlevel = L.control({ position: "topright" });		// make: zoom level
+			let zoomlevel = L.control({ position: "bottomleft" });				// make: zoom level
 			zoomlevel.onAdd = function () {
 				this.ele = L.DomUtil.create('div');
 				this.ele.id = "zoomlevel";
@@ -65,15 +80,15 @@ var Mapmaker = (function () {
 			};
 			zoomlevel.addTo(map);
 
-			Mapmaker.makemenu(menuhtml);								// Make edit menu
+			Mapmaker.makemenu(menuhtml);										// Make edit menu
 
-			L.control.scale({ imperial: false, maxWidth: 200 }).addTo(map);		// Add Scale
-			Locate = L.control.locate({ position: 'bottomright', strings: { title: glot.get("location") }, locateOptions: { maxZoom: 16 } }).addTo(map);
+			Control["locate"] = L.control.locate({ position: 'bottomright', strings: { title: glot.get("location") }, locateOptions: { maxZoom: 16 } }).addTo(map);
 			WinCont.menulist_make();
-			Mapmaker.zoom_view();										// Zoom 
-			map.on('zoomend', () => Mapmaker.zoom_view());				// ズーム終了時に表示更新
-			$("#search_input").attr('placeholder', glot.get("address"))	// set placeholder
-			$("#search_input").on('change', Mapmaker.search_address);	// Address Search
+			Mapmaker.zoom_view();																// Zoom 
+			map.on('zoomend', () => Mapmaker.zoom_view());										// ズーム終了時に表示更新
+			$("#search_input").attr('placeholder', glot.get("address"))							// set placeholder
+			$("#search_input").next().html(glot.get("search"))									// set button name
+			$("#search_input").on('change', (e) => { Mapmaker.poi_search(e.target.value) });	// Address Search
 		},
 
 		// About Street Map Maker's license
@@ -90,13 +105,24 @@ var Mapmaker = (function () {
 			if (menuhtml !== undefined) {
 				init_basemenu = menuhtml;
 				let basemenu = L.control({ position: "topleft" });			// Add BaseMenu
-				basemenu.onAdd = function (map) {
+				basemenu.onAdd = function () {
 					this.ele = L.DomUtil.create('div');
 					this.ele.id = "basemenu";
 					return this.ele;
 				};
 				basemenu.addTo(map);
 				$("#basemenu").html(menuhtml);
+				let clearhtml = document.getElementById("clear_map").outerHTML;
+				document.getElementById("clear_map").outerHTML = "";
+
+				let clearmenu = L.control({ position: "topright" });			// Add BaseMenu
+				clearmenu.onAdd = function () {
+					this.ele = L.DomUtil.create('div');
+					this.ele.id = "clearmenu";
+					return this.ele;
+				};
+				clearmenu.addTo(map);
+				document.getElementById("clearmenu").innerHTML = clearhtml;
 			} else {
 				for (let key in Conf.style) $(`[id^=${key}_]`).off();		// Delete Key_* events
 				$("#basemenu").html(init_basemenu);
@@ -112,11 +138,12 @@ var Mapmaker = (function () {
 				};
 			});
 
-			for (let key in Conf.style) {
+			for (let key in Conf.style) {									// make style panel
 				let key_layer = `#${key}_layer`;
 				let key_color = `#${key}_color`;
 				let copyobj = $("#AAA").clone();
 				if (Layers[key].opacity === 0) copyobj.find('#AAA_color').addClass("bg-clear");
+
 				copyobj.attr('id', key);
 				copyobj.find('#AAA_color').css('background-color', Conf.style[key].color);
 				copyobj.find('#AAA_color').attr('id', key + "_color");
@@ -127,7 +154,7 @@ var Mapmaker = (function () {
 
 				$(key_color).simpleColorPicker({
 					onChangeColor: function (color, width) {															// 色変更時のイベント定義
-						if (key_layer.indexOf("BAK") > -1) {
+						if (key_layer.indexOf("background") > -1) {
 							$("#mapid").css('background-color', color);
 							$("#mapid").removeClass("bg-clear");
 						};
@@ -141,12 +168,12 @@ var Mapmaker = (function () {
 					}
 				});
 				$(key_layer).on('click', function () {																	// 表示変更時のイベント定義
-					if (key_layer.indexOf("BAK") > -1) {
+					if (key_layer.indexOf("background") > -1) {
 						$("#mapid").css('background-color', "");
 						$("#mapid").addClass("bg-clear");
-						$("#BAK_color").css('background-color', "");
-						$("#BAK_color").addClass("bg-clear");
-						Layers["BAK"].opacity = 0;
+						$("#background_color").css('background-color', "");
+						$("#background_color").addClass("bg-clear");
+						Layers["background"].opacity = 0;
 					} else {
 						let view = $(key_layer).children().attr("class").indexOf("fa-trash-alt") > 0 ? false : true;
 						$(key_layer).children().toggleClass("fa-trash-alt fa-undo");
@@ -178,15 +205,12 @@ var Mapmaker = (function () {
 						let fil_geojson = {	// node以外なのにPoint以外だとfalse(削除)
 							"features": geojson.filter((val) => { return (Conf.style[target].type !== "node") ? val.geometry.type !== "Point" : true; })
 						};
-						if (target == "RIV") fil_geojson = GeoCont.coastline_merge(fil_geojson.features);
+						if (target == "river") fil_geojson = GeoCont.coastline_merge(fil_geojson.features);
 						Layers[target].geojson = fil_geojson.features;
 					};
 				});
 				for (let key in Conf.style) {
-					if (Layers[key].geojson) {
-						WinCont.modal_text(`<br>Map Writeing... ${key}`, true);
-						LayerCont.layer_make(key);
-					};
+					if (Layers[key].geojson) { WinCont.modal_text(`<br>Map Writeing... ${key}`, true); LayerCont.layer_make(key); };
 				};
 				Mapmaker.custom(true);
 				WinCont.modal_close();
@@ -206,6 +230,19 @@ var Mapmaker = (function () {
 				if (Layers[targetkey].geojson) LayerCont.layer_make(targetkey);
 			};
 			console.log("Mapmaker: update... end ");
+		},
+
+		// Search Address(Japan Only)
+		poi_search: (keyword) => {
+			getLatLng(keyword, (latnng) => {
+				map.setZoom(Conf.default.SearchZoom);
+				map.panTo(latnng);
+			}, () => {
+				WinCont.modal_open({
+					title: glot.get("addressnotfound_title"), message: glot.get("addressnotfound_body"),
+					mode: "close", callback_close: () => { WinCont.modal_close() }
+				});
+			})
 		},
 
 		// 情報（アイコンなど）を地図に追加
@@ -318,13 +355,14 @@ var Mapmaker = (function () {
 					["#accordion", "#custom_map", "#save_map", "#clear_map"].forEach(key => $(key).show());
 					["dragging", "zoomControl", "scrollWheelZoom", "touchZoom"].forEach(key => map[key].disable());
 					$("#search_input").attr('disabled', 'disabled');
-					Locate.remove(map);
-					Layers.MAP.remove(map);
-					if (Layers.BAK.opacity === 0) {		// set background
+					Control["locate"].remove(map);
+					Control["maps"].remove(map);
+					Object.keys(maps).forEach(key => { if (map.hasLayer(maps[key])) { Layers["MAP"] = maps[key]; map.removeLayer(maps[key]) } });	// remove select layer
+					if (Layers.background.opacity === 0) {		// set background
 						$("#mapid").addClass("bg-clear");
 					} else {
 						$("#mapid").removeClass("bg-clear");
-						$("#BAK_color").css('background-color', Layers.BAK.color);
+						$("#background_color").css('background-color', Layers.background.color);
 					};
 					custom_mode = mode;
 					Mapmaker.zoom_view();
@@ -335,10 +373,11 @@ var Mapmaker = (function () {
 					["#accordion", "#custom_map", "#save_map", "#clear_map"].forEach(key => $(key).hide());
 					["dragging", "zoomControl", "scrollWheelZoom", "touchZoom"].forEach(key => map[key].enable());
 					$("#search_input").attr('disabled', false);
-					Locate.addTo(map);
+					Control["locate"].addTo(map);
+					Control["maps"].addTo(map);
 					Layers.MAP.addTo(map);
 					$("#mapid").removeClass("bg-clear");
-					$("#BAK_color").css('background-color', "");
+					$("#background_color").css('background-color', "");
 					custom_mode = mode;
 					Mapmaker.zoom_view();
 					break;
@@ -353,19 +392,6 @@ var Mapmaker = (function () {
 			return mode;
 		},
 
-		// Search Address(Japan Only)
-		search_address: (e) => {
-			getLatLng(e.target.value, (latnng) => {
-				map.setZoom(Conf.default.SearchZoom);
-				map.panTo(latnng);
-			}, (e) => {
-				WinCont.modal_open({
-					title: glot.get("addressnotfound_title"), message: glot.get("addressnotfound_body"),
-					mode: "close", callback_close: () => { WinCont.modal_close() }
-				});
-			})
-		},
-
 		// save layers&pois
 		save: (type) => {
 			LayerCont.save({ type: type, mode: select_mode });
@@ -374,8 +400,6 @@ var Mapmaker = (function () {
 		// View Zoom Level & Status Comment
 		zoom_view: () => {
 			let nowzoom = map.getZoom();
-			LL.NW = map.getBounds().getNorthWest();
-			LL.SE = map.getBounds().getSouthEast();
 			let message = `${glot.get("zoomlevel")}${map.getZoom()} `;
 			if (nowzoom < Conf.default.MinZoomLevel) {
 				message += `<br>${glot.get("morezoom")}`;

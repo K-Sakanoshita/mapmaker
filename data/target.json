@@ -1,6 +1,6 @@
 {
     "target": {
-        "Park": {
+        "park": {
             "overpass": [
                 "relation[\"leisure\"=\"park\"]",
                 "way[\"leisure\"=\"playground\"]",
@@ -13,7 +13,23 @@
                 "leisure=pitch"
             ]
         },
-        "RIV": {
+        "garden": {
+            "overpass": [
+                "way[\"leisure\"=\"garden\"]",
+                "way[\"landuse\"=\"grass\"]",
+                "way[\"natural\"=\"scrub\"]",
+                "way[\"landuse\"=\"farmland\"]",
+                "way[\"landuse\"=\"allotments\"]"
+            ],
+            "tags": [
+                "leisure=garden",
+                "landuse=grass",
+                "natural=scrub",
+                "landuse=farmland",
+                "landuse=allotments"
+            ]
+        },
+        "river": {
             "overpass": [
                 "relation[\"waterway\"]",
                 "way[\"waterway\"]",
@@ -31,7 +47,33 @@
                 "landuse=basin"
             ]
         },
-        "PED": {
+        "parking": {
+            "overpass": [
+                "way[\"amenity\"=\"parking\"]",
+                "way[\"amenity\"=\"bicycle_parking\"]"
+            ],
+            "tags": [
+                "amenity=parking",
+                "amenity=bicycle_parking"
+            ]
+        },
+        "forest": {
+            "overpass": [
+                "relation[\"landuse\"=\"forest\"]",
+                "relation[\"natural\"=\"wood\"]",
+                "way[\"natural\"=\"wood\"]",
+                "way[\"natural\"=\"tree_row\"]",
+                "way[\"landuse\"=\"forest\"]",
+                "way[\"barrier\"=\"hedge\"]"
+            ],
+            "tags": [
+                "landuse=forest",
+                "natural=tree_row",
+                "natural=wood",
+                "barrier=hedge"
+            ]
+        },
+        "pedestrian": {
             "overpass": [
                 "relation[\"highway\"=\"pedestrian\"]",
                 "way[\"highway\"=\"pedestrian\"][\"area\"]",
@@ -42,55 +84,15 @@
                 "man_made=bridge"
             ]
         },
-        "PKG": {
+        "railway": {
             "overpass": [
-                "way[\"amenity\"=\"parking\"]",
-                "way[\"amenity\"=\"bicycle_parking\"]"
+                "way[\"railway\"][\"railway\"!=\"platform\"]"
             ],
             "tags": [
-                "amenity=parking",
-                "amenity=bicycle_parking"
+                "railway!=platform"
             ]
         },
-        "GDN": {
-            "overpass": [
-                "way[\"leisure\"=\"garden\"]",
-                "way[\"landuse\"=\"grass\"]",
-                "way[\"natural\"=\"tree_row\"]",
-                "way[\"natural\"=\"scrub\"]",
-                "way[\"landuse\"=\"farmland\"]",
-                "way[\"landuse\"=\"allotments\"]"
-            ],
-            "tags": [
-                "leisure=garden",
-                "landuse=grass",
-                "natural=tree_row",
-                "natural=scrub",
-                "landuse=farmland",
-                "landuse=allotments"
-            ]
-        },
-        "FRT": {
-            "overpass": [
-                "relation[\"landuse\"=\"forest\"]",
-                "relation[\"natural\"=\"wood\"]",
-                "way[\"natural\"=\"wood\"]",
-                "way[\"landuse\"=\"forest\"]"
-            ],
-            "tags": [
-                "landuse=forest",
-                "natural=wood"
-            ]
-        },
-        "RIL": {
-            "overpass": [
-                "way[\"railway\"][\"railway\"!=\"subway\"]"
-            ],
-            "tags": [
-                "railway"
-            ]
-        },
-        "ALY": {
+        "highway_alley": {
             "overpass": [
                 "way[\"highway\"=\"footway\"]",
                 "way[\"highway\"=\"path\"]",
@@ -104,45 +106,55 @@
                 "highway=steps"
             ]
         },
-        "STD": {
+        "highway_standard": {
             "overpass": [
                 "way[\"highway\"~\"unclassified\"]",
                 "way[\"highway\"~\"residential\"]",
                 "way[\"highway\"=\"living_street\"]",
                 "way[\"highway\"=\"pedestrian\"][!\"area\"]",
-                "way[\"highway\"=\"service\"]"
+                "way[\"highway\"=\"service\"]",
+                "way[\"highway\"~\"tertiary\"]",
+                "way[\"highway\"~\"tertiary_link\"]"
             ],
             "tags": [
                 "highway=unclassified",
                 "highway=residential",
                 "highway=living_street",
                 "highway=pedestrian",
-                "highway=service"
+                "highway=service",
+                "highway=tertiary",
+                "highway=tertiary_link"
             ]
         },
-        "PRI": {
+        "highway_primary": {
             "overpass": [
                 "way[\"highway\"~\"trunk\"]",
+                "way[\"highway\"~\"trunk_link\"]",
                 "way[\"highway\"~\"primary\"]",
+                "way[\"highway\"~\"primary_link\"]",
                 "way[\"highway\"~\"secondary\"]",
-                "way[\"highway\"~\"tertiary\"]"
+                "way[\"highway\"~\"secondary_link\"]"
             ],
             "tags": [
                 "highway=trunk",
+                "highway=trunk_link",
                 "highway=primary",
+                "highway=primary_link",
                 "highway=secondary",
-                "highway=tertiary"
+                "highway=secondary_link"
             ]
         },
-        "HIW": {
+        "highway_motorway": {
             "overpass": [
-                "way[\"highway\"~\"motorway\"]"
+                "way[\"highway\"~\"motorway\"]",
+                "way[\"highway\"~\"motorway_link\"]"
             ],
             "tags": [
-                "highway=motorway"
+                "highway=motorway",
+                "highway=motorway_link"
             ]
         },
-        "BLD": {
+        "building": {
             "overpass": [
                 "way[\"building\"!=\"train_station\"][\"building\"]",
                 "relation[\"building\"!=\"train_station\"][\"building\"]"
@@ -151,21 +163,25 @@
                 "building!=train_station"
             ]
         },
-        "BRR": {
+        "barrier": {
             "overpass": [
-                "way[\"barrier\"][\"barrier\"!=\"kerb\"][\"barrier\"!=\"ditch\"]"
+                "way[\"barrier\"=\"wall\"][\"barrier\"=\"fence\"][\"barrier\"!=\"retaining_wall\"]"
             ],
             "tags": [
-                "barrier"
+                "barrier=wall",
+                "barrier=fence",
+                "barrier=retaining_wall"
             ]
         },
-        "STN": {
+        "station": {
             "overpass": [
                 "relation[\"building\"=\"train_station\"]",
-                "way[\"building\"=\"train_station\"]"
+                "way[\"building\"=\"train_station\"]",
+                "way[\"railway\"=\"platform\"]"
             ],
             "tags": [
-                "building=train_station"
+                "building=train_station",
+                "railway=platform"
             ]
         },
         "shops": {
@@ -237,6 +253,7 @@
                 "historic=memorial",
                 "tourism=artwork",
                 "tourism=viewpoint",
+                "tourism=information",
                 "information",
                 "man_made=torii",
                 "man_made=lamp"
@@ -335,103 +352,103 @@
         }
     },
     "style": {
-        "BAK": {
+        "background": {
             "type": "background",
             "color": "#000000",
             "opacity": 0
         },
-        "Park": {
+        "park": {
             "zoom": 15,
             "type": "area",
-            "color": "#e8ffd0",
+            "color": "#f0ffd8",
             "width": 1,
             "dashArray": null
         },
-        "RIV": {
-            "zoom": 12,
-            "type": "area",
-            "color": "#d0e8ff",
-            "width": 1,
-            "dashArray": null
-        },
-        "PED": {
-            "zoom": 15,
-            "type": "area",
-            "color": "#ede9e7",
-            "width": 1,
-            "dashArray": null
-        },
-        "PKG": {
-            "zoom": 15.5,
-            "type": "area",
-            "color": "#ffffe8",
-            "width": 1,
-            "dashArray": null
-        },
-        "GDN": {
+        "garden": {
             "zoom": 16,
             "type": "area",
             "color": "#d8ffb8",
             "width": 1,
             "dashArray": null
         },
-        "FRT": {
-            "zoom": 12,
+        "river": {
+            "zoom": 10,
             "type": "area",
-            "color": "#c0f8a0",
-            "width": 0,
+            "color": "#d0e8ff",
+            "width": 1,
             "dashArray": null
         },
-        "RIL": {
-            "zoom": 12,
+        "parking": {
+            "zoom": 15.5,
+            "type": "area",
+            "color": "#ffffe8",
+            "width": 1,
+            "dashArray": null
+        },
+        "forest": {
+            "zoom": 10,
+            "type": "area",
+            "color": "#b0f090",
+            "width": 1,
+            "dashArray": null
+        },
+        "pedestrian": {
+            "zoom": 15,
+            "type": "area",
+            "color": "#ede9e7",
+            "width": 1,
+            "dashArray": null
+        },
+        "railway": {
+            "zoom": 11,
             "type": "line",
             "color": "#909090",
             "width": 1.5,
-            "dashArray": "12,4"
+            "dashArray": "12 4"
         },
-        "ALY": {
+        "highway_alley": {
             "zoom": 16,
             "type": "line",
             "color": "#b9a89b",
             "width": 0.5,
-            "dashArray": "4,2"
+            "dashArray": "4 2"
         },
-        "STD": {
-            "zoom": 13,
+        "highway_standard": {
+            "zoom": 14,
             "type": "line",
-            "color": "#f0f0f0",
+            "color": "#e0e0e0",
             "width": 2.0,
             "dashArray": null
         },
-        "PRI": {
+        "highway_primary": {
             "zoom": 12,
             "type": "line",
             "color": "#f8e0c0",
+            "width": 3.0,
+            "dashArray": null
+        },
+        "highway_motorway": {
+            "zoom": 10,
+            "type": "line",
+            "color": "#f8d0a0",
             "width": 4.0,
             "dashArray": null
         },
-        "HIW": {
-            "zoom": 12,
-            "type": "line",
-            "color": "#f8d0a0",
-            "width": 5.0,
-            "dashArray": null
-        },
-        "BLD": {
+        "building": {
             "zoom": 15,
             "type": "area",
             "color": "#dcd3cd",
             "width": 1,
             "dashArray": null
         },
-        "BRR": {
+        "barrier": {
             "zoom": 17,
             "type": "line",
             "color": "#b0b0b0",
             "width": 1,
             "dashArray": null
         },
-        "STN": {
+        "station": {
             "zoom": 14,
             "type": "area",
             "color": "#f8d8d8",
