@@ -95,7 +95,9 @@ var LayerCont = (function () {		// for line&area / nodeはMarker
 			let svgpath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
 			svgpath.setAttribute('transform', `matrix(1,0,0,1,${params.x},${params.y - 2})`);
 			svgpath.setAttribute('id', "textpath" + params.no);
-			svgpath.setAttribute('d', "M0,0 H360 M0,18 H360 M0,36 H360 M0,54 H360 M0,72 H360 M0,90 H360 M0,108 H360 M0,126 H360 M0,144");
+			let height = "", safari = L.Browser.safari ? 9 : 0;
+			for (let i = 0; i < 5; i++) { height += `M0,${i * 18 + safari} H360 ` };
+			svgpath.setAttribute('d', height);
 			svg[0].insertBefore(svgpath, svgtext);
 
 			let rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
