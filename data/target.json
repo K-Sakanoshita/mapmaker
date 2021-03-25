@@ -165,7 +165,7 @@
         },
         "barrier": {
             "overpass": [
-                "way[\"barrier\"=\"wall\"][\"barrier\"=\"fence\"][\"barrier\"!=\"retaining_wall\"]"
+                "way[\"barrier\"=\"wall\"][\"barrier\"=\"fence\"][\"barrier\"=\"retaining_wall\"]"
             ],
             "tags": [
                 "barrier=wall",
