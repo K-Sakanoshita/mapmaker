@@ -12,7 +12,8 @@
             "pub": "パブ/居酒屋",
             "restaurant": "レストラン",
             "vending_machine": "自動販売機",
-            "place_of_worship": "宗教施設"
+            "place_of_worship": "宗教施設",
+            "social_facility": "社会福祉施設"
         },
         "shop": {
             "alcohol": "酒屋",
@@ -54,10 +55,13 @@
         "emergency": {
             "fire_extinguisher": "消火器",
             "fire_hydrant": "消火栓",
-            "defibrillator": "AED"
+            "defibrillator": "AED",
+            "water_tank":"消火用水"
         },
         "highway": {
-            "traffic_signals": "信号機"
+            "traffic_signals": "信号機",
+            "steps":"階段",
+            "street_lamp": "街灯"
         },
         "social_facility": {
             "shelter": "一時避難所"
@@ -115,7 +119,8 @@
         },
         "man_made": {
             "torii": "鳥居",
-            "lamp": "灯籠"
+            "lamp": "灯籠",
+            "surveillance": "監視装置"
         }
     }
 }

@@ -12,7 +12,8 @@
             "pub": "pub",
             "restaurant": "restaurant",
             "vending_machine": "vending machine",
-            "place_of_worship": "place of worship"
+            "place_of_worship": "place of worship",
+            "social_facility": "social facility"
         },
         "shop": {
             "alcohol": "alcohol",
@@ -54,10 +55,13 @@
         "emergency": {
             "fire_extinguisher": "extinguisher",
             "fire_hydrant": "hydrant",
-            "defibrillator": "AED"
+            "defibrillator": "AED",
+            "water_tank": "water tank"
         },
         "highway": {
-            "traffic_signals": "traffic signals"
+            "traffic_signals": "traffic signals",
+            "steps": "steps",
+            "street_lamp": "street lamp"
         },
         "social_facility": {
             "shelter": "temporary sleeping"
@@ -115,7 +119,8 @@
         },
         "man_made": {
             "torii": "torii",
-            "lamp": "lantern"
+            "lamp": "lantern",
+            "surveillance": "surveillance"
         }
     }
 }

@@ -106,7 +106,7 @@ var LayerCont = (function () {		// for line&area / nodeはMarker
 			rect.setAttribute("width", params.width + 6);
 			rect.setAttribute("height", params.height - 2);
 			rect.setAttribute("fill", "white");
-			rect.setAttribute("fill-opacity", 0.9);
+			rect.setAttribute("fill-opacity", 0.6);
 			svg[0].insertBefore(rect, svgtext);
 		},
 
@@ -226,7 +226,7 @@ var LayerCont = (function () {		// for line&area / nodeはMarker
 			weight = (nowzoom - 15) * 0.6;
 		};
 		let common = {
-			"stroke": true, "dashArray": Conf.style[key].dashArray, "bubblingMouseEvents": false, "lineJoin": 'round',
+			"stroke": true, "dashArray": Conf.style[key].dashArray, "bubblingMouseEvents": false, "lineJoin": 'round', "lineCap": "butt",
 			"bubblingMouseEvents": false, "weight": Layers[key].width * weight
 		};
 		if (Conf.style[key].type == "area") {
@@ -566,9 +566,11 @@ var Marker = (function () {				// Marker closure
 			let categorys = Object.keys(Conf.category), icon_name;
 			let tags = params.poi.geojson.properties.tags == undefined ? params.poi.geojson.properties : params.poi.geojson.properties.tags;
 			let name = tags[params.langname] == undefined ? tags.name : tags[params.langname];
+			let step = tags.step_count !== undefined ? tags.step_count + glot.get("step_count") : "";	// step count
 			name = (name == "" || name == undefined) ? "" : name;
+			name = (step !== "" && name !== "") ? name + "(" + step + ")" : (step !== "" ? step : name);
 			switch (params.target) {
-				case "wikipedia":
+				case "wikipedia":		// wikipedia
 					icon_name = params.filename == undefined ? Conf.target.wikipedia.marker : params.filename;
 					name = tags[Conf.target.wikipedia.tag].split(':')[1];
 					let html = `<div class="d-flex"><img style="width: ${Conf.effect.icon.x}px; height: ${Conf.effect.icon.y}px;" src="./image/${icon_name}" icon-name="${name}">`;

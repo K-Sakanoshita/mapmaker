@@ -128,7 +128,7 @@
 		"en": "Loading map data"
 	},
 	"loading_message": {
-		"ja": "ロード中です。しばらくお待ちください。",
+		"ja": "サーバーからダウンロード中です。しばらくお待ちください。",
 		"en": "Loading... Please wait a moment."
 	},
 	"restart_title": {
@@ -148,8 +148,8 @@
 		"en": "Failed to retrieve data."
 	},
 	"sverror_message": {
-		"ja": "サーバーからのデータ取得に失敗しました。やり直してください。",
-		"en": "Failed to retrieve data from the server. Please start over."
+		"ja": "サーバーからのデータ取得に失敗しました。2分程待ってからやり直してください。",
+		"en": "Failed to retrieve data from the server. Please wait about 2 minutes and try again."
 	},
 	"nodata_title": {
 		"ja": "データが見つかりません",
@@ -183,12 +183,8 @@
 		"ja": "各種施設",
 		"en": "Facilities"
 	},
-	"marker_tree": {
-		"ja": "樹木",
-		"en": "tree"
-	},
-	"marker_disaster": {
-		"ja": "防災関連",
+	"marker_disaster&move": {
+		"ja": "防災・防犯・移動",
 		"en": "Disaster Prevention"
 	},
 	"marker_takeaway": {
@@ -206,6 +202,10 @@
 	"marker_wikipedia": {
 		"ja": "Wikipedia",
 		"en": "Wikipedia"
+	},
+	"marker_Animals&plants": {
+		"ja": "動物の檻・樹木",
+		"en": "tree"
 	},
 	"marker_animal": {
 		"ja": "動物",
@@ -255,6 +255,10 @@
 		"ja": "路地小道",
 		"en": "Pathway"
 	},
+	"menu_highway_step": {
+		"ja": "階段",
+		"en": "Step"
+	},
 	"menu_highway_standard": {
 		"ja": "一般道路",
 		"en": "Std road"
@@ -300,7 +304,11 @@
 		"en": "Change to Japanese"
 	},
 	"marker_noname": {
-		"ja": "(名称不明)",
-		"en": "(name unknown)"
+		"ja": "(名称無し)",
+		"en": "(no name)"
+	},
+	"step_count":{
+		"ja": "段",
+		"en": "steps"
 	}
 }

@@ -96,13 +96,19 @@
             "overpass": [
                 "way[\"highway\"=\"footway\"]",
                 "way[\"highway\"=\"path\"]",
-                "way[\"highway\"=\"track\"]",
-                "way[\"highway\"=\"steps\"]"
+                "way[\"highway\"=\"track\"]"
             ],
             "tags": [
                 "highway=footway",
                 "highway=path",
-                "highway=track",
+                "highway=track"
+            ]
+        },
+        "highway_step": {
+            "overpass": [
+                "way[\"highway\"=\"steps\"]"
+            ],
+            "tags": [
                 "highway=steps"
             ]
         },
@@ -184,29 +190,30 @@
                 "railway=platform"
             ]
         },
+        "wikipedia": {
+            "marker": "wikipedia_orange.svg",
+            "api": "wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles=",
+            "domain": "wikipedia.org",
+            "tag": "wikipedia",
+            "overpass": [
+                "node[\"wikipedia\"]",
+                "way[\"wikipedia\"]",
+                "relation[\"wikipedia\"]"
+            ],
+            "tags": [
+                "wikipedia"
+            ]
+        },
         "shops": {
             "marker": "shops.svg",
             "overpass": [
                 "node[\"shop\"]",
-                "node[\"amenity\"!=\"bench\"]",
-                "way[\"amenity\"!=\"bench\"]"
+                "node[\"amenity\"]",
+                "way[\"amenity\"]"
             ],
             "tags": [
                 "shop",
-                "amenity"
-            ]
-        },
-        "disaster": {
-            "marker": "aed.svg",
-            "overpass": [
-                "node[\"highway\"=\"traffic_signals\"]",
-                "node[\"emergency\"=\"fire_extinguisher\"]",
-                "node[\"emergency\"=\"fire_hydrant\"]",
-                "node[\"emergency\"=\"defibrillator\"]"
-            ],
-            "tags": [
-                "highway=traffic_signals",
-                "emergency"
+                "amenity!=bench"
             ]
         },
         "takeaway": {
@@ -241,14 +248,20 @@
             "marker": "star.svg",
             "overpass": [
                 "node[\"amenity\"=\"bench\"]",
+                "way[\"amenity\"=\"bench\"]",
                 "node[\"historic\"=\"memorial\"]",
+                "way[\"historic\"=\"memorial\"]",
                 "node[\"tourism\"=\"artwork\"]",
+                "way[\"tourism\"=\"artwork\"]",
                 "node[\"tourism\"=\"viewpoint\"]",
                 "node[\"man_made\"=\"torii\"]",
+                "way[\"man_made\"=\"torii\"]",
                 "node[\"man_made\"=\"lamp\"]",
-                "node[\"information\"]"
+                "node[\"information\"]",
+                "node[\"playground\"]",
+                "way[\"playground\"]"
             ],
-            "tags":[
+            "tags": [
                 "amenity=bench",
                 "historic=memorial",
                 "tourism=artwork",
@@ -256,11 +269,12 @@
                 "tourism=information",
                 "information",
                 "man_made=torii",
-                "man_made=lamp"
+                "man_made=lamp",
+                "playground"
             ]
         },
-        "tree": {
-            "marker": "tree.svg",
+        "Animals&plants": {
+            "marker": "animal.svg",
             "overpass": [
                 "node[\"natural\"=\"tree\"]",
                 "node[\"species\"=\"Cherry blossom\"]",
@@ -268,7 +282,9 @@
                 "node[\"species\"=\"Cerasus itosakura\"]",
                 "node[\"species:en\"=\"Cerasus itosakura\"]",
                 "node[\"species\"=\"Cerasus × yedoensis\"]",
-                "node[\"species:en\"=\"Cerasus × yedoensis\"]"
+                "node[\"species:en\"=\"Cerasus × yedoensis\"]",
+                "node[\"attraction\"=\"animal\"]",
+                "way[\"attraction\"=\"animal\"]"
             ],
             "tags": [
                 "natural=tree",
@@ -277,41 +293,27 @@
                 "species=Cerasus itosakura",
                 "species:en=Cerasus itosakura",
                 "species=Cerasus × yedoensis",
-                "species:en=Cerasus × yedoensis"
-            ]
-        },
-        "animal": {
-            "marker": "animal.svg",
-            "overpass": [
-                "node[\"attraction\"=\"animal\"]",
-                "way[\"attraction\"=\"animal\"]"
-            ],
-            "tags": [
+                "species:en=Cerasus × yedoensis",
                 "attraction=animal"
             ]
         },
-        "playground": {
-            "marker": "playground.svg",
+        "disaster&move": {
+            "marker": "aed.svg",
             "overpass": [
-                "node[\"playground\"]",
-                "way[\"playground\"]"
+                "node[\"highway\"=\"street_lamp\"]",
+                "node[\"amenity\"=\"social_facility\"]",
+                "way[\"amenity\"=\"social_facility\"]",
+                "node[\"highway\"=\"traffic_signals\"]",
+                "way[\"highway\"=\"steps\"]",
+                "node[\"emergency\"]",
+                "way[\"emergency\"]"
             ],
             "tags": [
-                "playground"
-            ]
-        },
-        "wikipedia": {
-            "marker": "wikipedia.svg",
-            "api": "wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles=",
-            "domain": "wikipedia.org",
-            "tag": "wikipedia",
-            "overpass": [
-                "node[\"wikipedia\"]",
-                "way[\"wikipedia\"]",
-                "relation[\"wikipedia\"]"
-            ],
-            "tags": [
-                "wikipedia"
+                "highway=street_lamp",
+                "highway=traffic_signals",
+                "highway=steps",
+                "amenity=social_facility",
+                "emergency"
             ]
         },
         "shelter_temporary": {
@@ -404,14 +406,21 @@
             "type": "line",
             "color": "#909090",
             "width": 1.5,
-            "dashArray": "12 4"
+            "dashArray": "16 4"
         },
         "highway_alley": {
             "zoom": 16,
             "type": "line",
             "color": "#b9a89b",
             "width": 0.5,
-            "dashArray": "4 2"
+            "dashArray": "6 3"
+        },
+        "highway_step": {
+            "zoom": 16,
+            "type": "line",
+            "color": "#eda89b",
+            "width": 2,
+            "dashArray": "2 4"
         },
         "highway_standard": {
             "zoom": 14,

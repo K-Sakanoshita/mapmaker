@@ -12,7 +12,8 @@
             "pub": "bar.svg",
             "restaurant": "restaurant.svg",
             "vending_machine": "vending.svg",
-            "place_of_worship": "information3.svg"
+            "place_of_worship": "information3.svg",
+            "social_facility": "shelter.svg"
         },
         "shop": {
             "alcohol": "bar.svg",
@@ -54,10 +55,13 @@
         "emergency": {
             "fire_extinguisher": "fire_extinguisher.svg",
             "fire_hydrant": "fire_hydrant.svg",
-            "defibrillator": "aed.svg"
+            "defibrillator": "aed.svg",
+            "water_tank": "water_tank.svg"
         },
         "highway": {
-            "traffic_signals": "signal.svg"
+            "traffic_signals": "signal.svg",
+            "steps": "steps.svg",
+            "street_lamp": "street_lamp.svg"
         },
         "social_facility": {
             "shelter": "shelter.svg"
@@ -118,11 +122,13 @@
         },
         "man_made": {
             "torii": "torii.svg",
-            "lamp": "lantern.svg"
+            "lamp": "lantern.svg",
+            "surveillance": "point_orange.svg"
         }
     },
     "marker_append_files": [
         "wikipedia_orange.svg",
-        "attention.svg"
+        "attention.svg",
+        "tree2.svg"
     ]
 }
