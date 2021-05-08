@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   id="svg2"
+   viewBox="0 0 14 14"
+   height="14"
+   width="14"
+   version="1.1"
+   sodipodi:docname="community_center_orange.svg"
+   inkscape:version="1.0.2-2 (e86c870879, 2021-01-15)">
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     id="namedview7"
+     showgrid="false"
+     inkscape:zoom="30.357143"
+     inkscape:cx="2.0373498"
+     inkscape:cy="8.1442725"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2"
+     inkscape:document-rotation="0" />
+  <metadata
+     id="metadata8">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs6" />
+  <path
+     inkscape:connector-curvature="0"
+     style="fill:#ffffff;stroke-width:0.259048"
+     d="m 12.291346,13.957534 c 0.920879,0 1.6663,-0.743692 1.6663,-1.664667 V 1.6758877 c 0,-0.92097651 -0.745421,-1.66647523 -1.6663,-1.66647523 H 1.6757109 c -0.92087942,0 -1.66629934,0.74549872 -1.66629934,1.66647523 V 12.292979 c 0,0.920977 0.74541992,1.664668 1.66629934,1.664668 H 12.291346 Z"
+     id="path2-3" />
+  <path
+     inkscape:connector-curvature="0"
+     style="fill:#ef9235;fill-opacity:1;stroke-width:0.254014"
+     d="m 1.8233523,0.46506511 c -0.746772,0 -1.35453227,0.60984689 -1.35453227,1.35918239 V 12.249635 c 0,0.749336 0.60776027,1.358295 1.35453227,1.358295 H 12.212301 c 0.747656,0 1.354532,-0.608959 1.354532,-1.358295 V 1.8243583 c 10e-7,-0.7493355 -0.606876,-1.35918229 -1.354532,-1.35918229 H 1.8229099 Z"
+     id="path4" />
+  <rect
+     style="fill:none;stroke:none;visibility:hidden"
+     id="canvas"
+     y="0"
+     x="0"
+     height="14"
+     width="14" />
+  <text
+     xml:space="preserve"
+     style="font-style:normal;font-weight:normal;font-size:12.437px;line-height:1.25;font-family:sans-serif;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1"
+     x="0.8320322"
+     y="11.729523"
+     id="text834"><tspan
+       sodipodi:role="line"
+       id="tspan832"
+       x="0.8320322"
+       y="11.729523"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12.437px;font-family:'Meiryo UI';-inkscape-font-specification:'Meiryo UI Bold';fill:#ffffff;fill-opacity:1;stroke-width:1">公</tspan></text>
+</svg>

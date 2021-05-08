@@ -318,7 +318,8 @@ var Mapmaker = (function () {
 							if (images.indexOf(filename) == -1) { images.push(filename) };
 						});
 					});
-					Object.assign(images, Conf.marker_append_files);
+					images = images.concat(Object.values(Conf.marker_append_files));
+					images = images.filter((x, i, self) => { return self.indexOf(x) === i });
 					images.sort();
 					Object.keys(images).forEach(fidx => { html += `<a href="#" onclick="Mapmaker.poi_marker_change('${target}','${osmid}','${images[fidx]}')"><img class="iconx2" src="./image/${images[fidx]}"></a>` });
 					WinCont.modal_open({ "title": "", "message": html, "mode": "close", callback_close: WinCont.modal_close });
@@ -418,15 +419,15 @@ var Mapmaker = (function () {
 				title: glot.get("restart_title"),
 				message: glot.get("restart_message"),
 				mode: "yesno",
-				callback_yes: () => {
+				callback_yes: () => WinCont.modal_close(),
+				callback_no: () => {
 					Mapmaker.custom(false);
 					LayerCont.all_clear();
 					Marker.all_clear();
 					Mapmaker.makemenu();
 					PoiCont.all_clear();
 					WinCont.modal_close();
-				},
-				callback_no: () => WinCont.modal_close()
+				}
 			});
 		}
 	}
@@ -460,6 +461,7 @@ var DataList = (function () {
 			WinCont.select_clear(`${MS}_category`);
 			let pois = result.map(data => { return data.category });
 			pois = pois.filter((x, i, self) => { return self.indexOf(x) === i });
+			pois.sort((x, y) => x.localeCompare(y, 'ja'));
 			pois.map(poi => WinCont.select_add(`${MS}_category`, poi, poi));
 		},
 		view_select: function (targets) {  	// PoiDataのリスト表示

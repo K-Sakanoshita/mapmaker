@@ -204,16 +204,33 @@
                 "wikipedia"
             ]
         },
-        "shops": {
-            "marker": "shops.svg",
+        "shop": {
+            "marker": "shop.svg",
             "overpass": [
                 "node[\"shop\"]",
-                "node[\"amenity\"]",
-                "way[\"amenity\"]"
+                "way[\"shop\"]",
+                "relation[\"shop\"]"
             ],
             "tags": [
-                "shop",
-                "amenity!=bench"
+                "shop"
+            ]
+        },
+        "facility": {
+            "marker": "facility_orange.svg",
+            "overpass": [
+                "node[\"amenity\"]",
+                "way[\"amenity\"]",
+                "relation[\"amenity\"]",
+                "node[\"tourism\"]",
+                "way[\"tourism\"]",
+                "relation[\"tourism\"]",
+                "node[\"office\"]",
+                "way[\"office\"]"
+            ],
+            "tags": [
+                "amenity",
+                "tourism",
+                "office"
             ]
         },
         "takeaway": {
@@ -249,8 +266,8 @@
             "overpass": [
                 "node[\"amenity\"=\"bench\"]",
                 "way[\"amenity\"=\"bench\"]",
-                "node[\"historic\"=\"memorial\"]",
-                "way[\"historic\"=\"memorial\"]",
+                "node[\"historic\"]",
+                "way[\"historic\"]",
                 "node[\"tourism\"=\"artwork\"]",
                 "way[\"tourism\"=\"artwork\"]",
                 "node[\"tourism\"=\"viewpoint\"]",
@@ -263,7 +280,7 @@
             ],
             "tags": [
                 "amenity=bench",
-                "historic=memorial",
+                "historic",
                 "tourism=artwork",
                 "tourism=viewpoint",
                 "tourism=information",
@@ -273,7 +290,7 @@
                 "playground"
             ]
         },
-        "Animals&plants": {
+        "Animals&plant": {
             "marker": "animal.svg",
             "overpass": [
                 "node[\"natural\"=\"tree\"]",
@@ -300,18 +317,15 @@
         "disaster&move": {
             "marker": "aed.svg",
             "overpass": [
-                "node[\"highway\"=\"street_lamp\"]",
+                "node[\"highway\"]",
+                "way[\"highway\"]",
                 "node[\"amenity\"=\"social_facility\"]",
                 "way[\"amenity\"=\"social_facility\"]",
-                "node[\"highway\"=\"traffic_signals\"]",
-                "way[\"highway\"=\"steps\"]",
                 "node[\"emergency\"]",
                 "way[\"emergency\"]"
             ],
             "tags": [
-                "highway=street_lamp",
-                "highway=traffic_signals",
-                "highway=steps",
+                "highway",
                 "amenity=social_facility",
                 "emergency"
             ]

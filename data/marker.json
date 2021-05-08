@@ -5,15 +5,49 @@
             "bar": "bentou.svg",
             "bench": "bench.svg",
             "cafe": "cafe.svg",
-            "drinking_water": "water.svg",
             "fast_food": "fastfood.svg",
             "food_court": "fastfood.svg",
             "ice_cream": "confectionery.svg",
             "pub": "bar.svg",
             "restaurant": "restaurant.svg",
             "vending_machine": "vending.svg",
-            "place_of_worship": "information3.svg",
-            "social_facility": "shelter.svg"
+            "place_of_worship": "Place-of-worship-16.svg",
+            "social_facility": "shelter.svg",
+            "community_centre": "Community_centre-14.svg",
+            "kindergarten": "point_black.svg",
+            "school": "C04_11_shougakkou.svg",
+            "university": "university_black2.svg",
+            "college": "university_black2.svg",
+            "hospital": "Hospital-16.svg",
+            "clinic": "Hospital-16.svg",
+            "doctors": "Doctor-16.svg",
+            "veterinary": "Veterinary-14.svg",
+            "police": "Police-16.svg",
+            "parking": "Parking-16.svg",
+            "bicycle_parking": "Parking-bicycle-16.svg",
+            "motorcycle_parking": "Parking-bicycle-16.svg",
+            "townhall": "Town-hall-16.svg",
+            "bbq": "Bbq-14.svg",
+            "courthouse": "Courthouse-16.svg",
+            "fire_station": "Fire-station-16.svg",
+            "post_box": "Post_box-12.svg",
+            "post_office": "Post_office-14.svg",
+            "prison": "Prison-16.svg",
+            "shelter": "Shelter-14.svg",
+            "shower": "Shower-14.svg",
+            "public_bath": "Public_bath.svg",
+            "telephone": "Telephone.16.svg",
+            "toilets": "Toilets-16.svg",
+            "drinking_water": "Drinking-water-16.svg",
+            "water_point": "Drinking-water-16.svg",
+            "recycling": "Recycling-16.svg",
+            "waste_basket": "Waste-basket-12.svg",
+            "crematorium": "point_black.svg",
+            "internet_cafe": "Internet_cafe-14.svg",
+            "photo_booth": "Photo-14.svg",
+            "public_bookcase": "Public_bookcase-14.svg",
+            "theatre": "Theatre-16.svg",
+            "pharmacy": "Pharmacy-14.svg"
         },
         "shop": {
             "alcohol": "bar.svg",
@@ -24,25 +58,51 @@
             "cheese": "bentou.svg",
             "chocolate": "confectionery.svg",
             "coffee": "cafe.svg",
-            "confectionery": "confectionery.svg",
+            "confectionery": "Confectionery-14.svg",
             "convenience": "bentou.svg",
-            "deli": "bentou.svg",
-            "dairy": "bentou.svg",
-            "farm": "bentou.svg",
+            "deli": "Deli-14.svg",
+            "dairy": "Dairy.svg",
+            "farm": "Greengrocer-14.svg",
             "frozen_food": "deli.svg",
-            "greengrocer": "bentou.svg",
+            "greengrocer": "Greengrocer-14.svg",
             "health_food": "bentou.svg",
             "ice_cream": "confectionery.svg",
             "pasta": "bentou.svg",
-            "pastry": "pastry.svg",
-            "seafood": "bentou.svg",
+            "pastry": "Confectionery-14.svg",
+            "seafood": "Seafood-14.svg",
             "spices": "bentou.svg",
-            "tea": "cafe.svg",
+            "tea": "Tea-14.svg",
             "water": "water.svg",
             "wine": "bar.svg",
-            "kiosk": "bentou.svg",
-            "supermarket": "bentou.svg",
-            "variety_store": "shops.svg"
+            "kiosk": "Newsagent-14.svg",
+            "supermarket": "Supermarket-14.svg",
+            "variety_store": "Variety_store-14.svg",
+            "chemist": "Chemist-14.svg",
+            "department_store": "Department_store-16.svg",
+            "mall": "Shop-other-16.svg",
+            "baby_goods": "Shop-other-16.svg",
+            "boutique": "Shop-other-16.svg",
+            "clothes": "Clothes-16.svg",
+            "cosmetics": "Perfumery-14.svg",
+            "erotic": "Shop-other-16.svg",
+            "beauty": "Beauty-14.svg",
+            "massage": "Massage-14.svg",
+            "shoes": "Shoes-16.svg",
+            "dry_cleaning": "Laundry-14.svg",
+            "optician": "Optician-16.svg",
+            "watches": "Shop-other-16.svg",
+            "second_hand": "Second_hand-14.svg",
+            "pawnbroker": "Shop-other-16.svg",
+            "doityourself": "Doityourself-16.svg",
+            "hairdresser": "Hairdresser-16.svg",
+            "medical_supply": "Medical_supply.svg",
+            "florist": "Florist-16.svg",
+            "garden_centre": "Garden_centre-14.svg",
+            "hardware":"Doityourself-16.svg",
+            "furniture":"Furniture-16.svg",
+            "interior_decoration": "Interior_decoration-14.svg",
+            "computer":"Computer-14.svg",
+            "electronics":"Electronics-16.svg"
         },
         "species": {
             "Cherry blossom": "sakura.svg",
@@ -61,7 +121,8 @@
         "highway": {
             "traffic_signals": "signal.svg",
             "steps": "steps.svg",
-            "street_lamp": "street_lamp.svg"
+            "street_lamp": "street_lamp.svg",
+            "elevator": "Elevator-12.svg"
         },
         "social_facility": {
             "shelter": "shelter.svg"
@@ -70,7 +131,7 @@
             "yes": "shelter.svg"
         },
         "wikipedia": {
-            "*": "wikipedia.svg"
+            "*": "wikipedia_black.svg"
         },
         "attraction": {
             "animal": "animal.svg"
@@ -107,10 +168,14 @@
         "tourism": {
             "viewpoint": "star.svg",
             "artwork": "artwork.svg",
-            "information": "information.svg"
+            "information": "information.svg",
+            "gallery": "Gallery-14.svg",
+            "museum": "Museum-16.svg",
+            "picnic_site": "Table-16.svg"
         },
         "historic": {
-            "memorial": "memorial.svg"
+            "memorial": "memorial.svg",
+            "archaeological_site": "Archaeological-site-16.svg"
         },
         "information": {
             "board": "information2.svg",
@@ -124,11 +189,91 @@
             "torii": "torii.svg",
             "lamp": "lantern.svg",
             "surveillance": "point_orange.svg"
+        },
+        "office": {
+            "government": "Office-16.svg"
+        }
+    },
+    "marker_subtag": {
+        "place_of_worship": {
+            "religion": {
+                "shinto": "torii.svg",
+                "buddhist": "Buddhist-16.svg"
+            }
+        },
+        "school": {
+            "isced:level": {
+                "1": "C04_08_shoubousho.svg",
+                "2": "C04_10_chuugakkou.svg",
+                "3": "C04_09_koutougakkou_chuutoukyouikugakkou.svg",
+                "4": "C04_09_koutougakkou_chuutoukyouikugakkou.svg",
+                "5": "C04_09_koutougakkou_chuutoukyouikugakkou.svg"
+            }
+        },
+        "parking": {
+            "access": {
+                "private": "point_black.svg"
+            }
         }
     },
     "marker_append_files": [
+        "shop.svg",
         "wikipedia_orange.svg",
         "attention.svg",
-        "tree2.svg"
+        "tree2.svg",
+        "community_center_black.svg",
+        "pastry.svg",
+        "Police-16.svg",
+        "C01_01_VLBIkannsokutenn.svg",
+        "C01_02_dennshikijunntenn.svg",
+        "C01_03_sannkakutenn_tikakuhenndoukannsokutenn.svg",
+        "C01_04_suijunntenn.svg",
+        "C01_05_jikitenn.svg",
+        "C03_01_kokudoubanngou.svg",
+        "C03_02_humikiri.svg",
+        "C04_01_kannkousho.svg",
+        "C04_02_saibannsho.svg",
+        "C04_03_zeimusho.svg",
+        "C04_04_shiyakusho.svg",
+        "C04_05_chousonyakuba_kuyakusho.svg",
+        "C04_06_keisatusho.svg",
+        "C04_07_koubann.svg",
+        "C04_08_shoubousho.svg",
+        "C04_09_koutougakkou_chuutoukyouikugakkou.svg",
+        "C04_10_chuugakkou.svg",
+        "C04_11_shougakkou.svg",
+        "C04_12_byouinn.svg",
+        "C04_13_hokennjo.svg",
+        "C04_14_roujinhome.svg",
+        "C04_15_hakubutukann.svg",
+        "C04_16_toshokann.svg",
+        "C04_17_toudai.svg",
+        "C04_18_jinnja.svg",
+        "C04_19_jiinn.svg",
+        "C04_20_yuubinnkyoku.svg",
+        "C05_01_koutou.svg",
+        "C05_02_enntotsu.svg",
+        "C05_03_huusha.svg",
+        "C05_04_yudenn_gasusei.svg",
+        "C05_05_kouguti.svg",
+        "C06_01_ta.svg",
+        "C06_02_hatake.svg",
+        "C06_03_chabatake.svg",
+        "C06_04_kajuenn.svg",
+        "C06_05_kouyouju.svg",
+        "C06_06_shinnyouju.svg",
+        "C06_07_tikurinn.svg",
+        "C06_08_yashikajurinn.svg",
+        "C06_09_haimatsuchi.svg",
+        "C06_10_sasachi.svg",
+        "C06_11_arechi.svg",
+        "C06_12_bochi.svg",
+        "C06_13_onnsenn.svg",
+        "C06_14_hunnkakou_hunnkikou.svg",
+        "C06_15_shiseki_meishou_tennnennkinennbutsu.svg",
+        "C06_16_jouseki.svg",
+        "C06_17_saikouchi.svg",
+        "C06_18_kouwann.svg",
+        "C06_19_gyokou.svg"
     ]
 }

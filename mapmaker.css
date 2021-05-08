@@ -75,6 +75,7 @@ img.h1 {
 img.iconx2 {
 	width: 40px;
 	height: 40px;
+	margin: 2px;
 }
 
 h2.zoom {
@@ -122,7 +123,7 @@ span.icon {
 	margin-left: 2px;
 	padding: 0px 2px;
 	white-space: nowrap;
-	background-color: white;
+	background: rgba(255, 255, 255, 0.5);
 }
 
 /* button for select way color */

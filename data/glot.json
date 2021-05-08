@@ -135,10 +135,6 @@
 		"ja": "最初からやり直し",
 		"en": "Start over from the beginning."
 	},
-	"restart_message": {
-		"ja": "データを削除して、やり直ししますか？",
-		"en": "Do you want to delete the data and start over?"
-	},
 	"location": {
 		"ja": "現在地を表示",
 		"en": "Show current location."
@@ -150,6 +146,10 @@
 	"sverror_message": {
 		"ja": "サーバーからのデータ取得に失敗しました。2分程待ってからやり直してください。",
 		"en": "Failed to retrieve data from the server. Please wait about 2 minutes and try again."
+	},
+	"restart_message": {
+		"ja": "データ削除は行わず、少しの間待ってみますか？",
+		"en": "Would you like to wait for a while without deleting the data?"
 	},
 	"nodata_title": {
 		"ja": "データが見つかりません",
@@ -175,21 +175,33 @@
 		"ja": "A4横サイズ",
 		"en": "A4 landscape size"
 	},
-	"marker_add": {
-		"ja": "施設",
-		"en": "facility"
+	"marker_wikipedia": {
+		"ja": "Wikipedia記事",
+		"en": "Wikipedia article"
 	},
-	"marker_shops": {
+	"marker_shop": {
+		"ja": "各種店舗",
+		"en": "Shop"
+	},
+	"marker_facility": {
 		"ja": "各種施設",
-		"en": "Facilities"
-	},
-	"marker_disaster&move": {
-		"ja": "防災・防犯・移動",
-		"en": "Disaster Prevention"
+		"en": "Facility"
 	},
 	"marker_takeaway": {
 		"ja": "テイクアウト/デリバリー",
 		"en": "Take-out/delivery"
+	},
+	"marker_viewpoint": {
+		"ja": "歴史・文化・アートなど",
+		"en": "viewpoint"
+	},
+	"marker_Animals&plant": {
+		"ja": "動物の檻・樹木",
+		"en": "tree"
+	},
+	"marker_disaster&move": {
+		"ja": "防災・防犯・移動",
+		"en": "Disaster Prevention"
 	},
 	"marker_shelter_temporary": {
 		"ja": "一時避難所(大阪市)",
@@ -199,14 +211,6 @@
 		"ja": "津波・洪水避難所(大阪市)",
 		"en": "Tsunami and flood shelters(OSAKA)"
 	},
-	"marker_wikipedia": {
-		"ja": "Wikipedia",
-		"en": "Wikipedia"
-	},
-	"marker_Animals&plants": {
-		"ja": "動物の檻・樹木",
-		"en": "tree"
-	},
 	"marker_animal": {
 		"ja": "動物",
 		"en": "Animal"
@@ -214,10 +218,6 @@
 	"marker_playground": {
 		"ja": "遊具",
 		"en": "Playground"
-	},
-	"marker_viewpoint": {
-		"ja": "ちょっとしたポイント",
-		"en": "viewpoint"
 	},
 	"menu_background": {
 		"ja": "背景色",

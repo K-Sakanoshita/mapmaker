@@ -357,15 +357,25 @@ var Marker = (function () {				// Marker closure
 		init: () => {
 			Marker.set_size(Conf.default.Text.size, Conf.default.Text.view);
 			let jqXHRs = [], keys = [];			// SVGファイルをSvgIconへ読み込む
-			Object.keys(Conf.marker_tag).forEach(key1 => {
+			Object.keys(Conf.marker_tag).forEach(key1 => {					// main svg icon
 				Object.keys(Conf.marker_tag[key1]).forEach((key2) => {
 					let filename = Conf.marker_tag[key1][key2];
-					if (keys.indexOf(filename) == -1) {
-						keys.push(filename);
-						jqXHRs.push($.get(`./image/${filename}`));
-					};
+					if (keys.indexOf(filename) == -1) keys.push(filename);
 				});
 			});
+			Object.keys(Conf.marker_subtag).forEach(key1 => {				// sub svg icon
+				Object.keys(Conf.marker_subtag[key1]).forEach((key2) => {
+					Object.keys(Conf.marker_subtag[key1][key2]).forEach((key3) => {
+						let filename = Conf.marker_subtag[key1][key2][key3];
+						if (keys.indexOf(filename) == -1) keys.push(filename);
+					});
+				});
+			});
+			Object.values(Conf.marker_append_files).forEach(filename => {	// append svg icon
+				if (keys.indexOf(filename) == -1) keys.push(filename);
+			});
+			Object.values(keys).forEach(filename => jqXHRs.push($.get(`./image/${filename}`)));
+
 			$.when.apply($, jqXHRs).always(function () {
 				let xs = new XMLSerializer();
 				for (let key in keys) SvgIcon[keys[key]] = xs.serializeToString(arguments[key][0]);
@@ -585,10 +595,24 @@ var Marker = (function () {				// Marker closure
 					resolve([marker]);
 					break;
 				default:
+					// get marker icon filename
 					let keyn = categorys.find(key => tags[key] !== undefined);
 					let keyv = (keyn !== undefined) ? Conf.marker_tag[keyn][tags[keyn]] : undefined;
 					if (keyn !== undefined && keyv !== undefined) {	// in category
-						icon_name = params.filename == undefined ? Conf.marker_tag[keyn][tags[keyn]] : params.filename;
+						if (params.filename == undefined) {
+							icon_name = Conf.marker_tag[keyn][tags[keyn]];
+							// get sub marker icon(神社とお寺など)
+							let subtag = Conf.marker_subtag[tags[keyn]];		// ex: subtag = {"religion": {"shinto":"a.svg","buddhist":"b.svg"}}
+							if (subtag !== undefined) {		// サブタグが存在する場合
+								Object.keys(subtag).forEach((sval1) => {		// sval1: ex: religion
+									Object.keys(subtag[sval1]).forEach((sval2) => {			// sval2: ex: shinto
+										if (tags[sval1] == sval2) icon_name = subtag[sval1][sval2];
+									});
+								});
+							};
+						} else {
+							icon_name = params.filename;;
+						};
 						let html = `<div class="d-flex"><img style="width: ${Conf.effect.icon.x}px; height: ${Conf.effect.icon.y}px;" src="./image/${icon_name}" icon-name="${name}">`;
 						let span = `<span class="icon" style="font-size: ${Conf.effect.text.size}px">${name}</span>`;
 						if (name !== "" && Conf.effect.text.view) html += span;

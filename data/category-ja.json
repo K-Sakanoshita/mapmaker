@@ -1,11 +1,10 @@
 {
     "category": {
         "amenity": {
-            "library": "図書館（目印の施設）",
+            "library": "図書館",
             "bar": "バー/酒場",
             "bench": "ベンチ",
             "cafe": "カフェ/喫茶店",
-            "drinking_water": "給水所/水栓",
             "fast_food": "ファーストフード",
             "food_court": "フードコート",
             "ice_cream": "アイスクリーム店",
@@ -13,7 +12,42 @@
             "restaurant": "レストラン",
             "vending_machine": "自動販売機",
             "place_of_worship": "宗教施設",
-            "social_facility": "社会福祉施設"
+            "social_facility": "社会福祉施設",
+            "community_centre": "コミュニティセンター",
+            "kindergarten": "幼稚園・保育園",
+            "school": "学校(小中高)",
+            "university": "大学",
+            "college": "短大",
+            "hospital": "病院(大規模)",
+            "clinic": "病院(中規模)",
+            "doctors": "診療所・医院",
+            "veterinary": "動物病院",
+            "police": "警察署・交番",
+            "parking": "駐車場",
+            "bicycle_parking": "駐輪場(自転車)",
+            "motorcycle_parking": "駐輪場(バイク)",
+            "townhall": "役所・役場",
+            "bbq": "バーベキュー",
+            "courthouse": "裁判所",
+            "fire_station": "消防署",
+            "post_box": "郵便ポスト",
+            "post_office": "郵便局",
+            "prison": "刑務所",
+            "shelter": "避難小屋",
+            "shower": "シャワー",
+            "public_bath": "銭湯・公衆浴場",
+            "telephone": "公衆電話",
+            "toilets": "トイレ",
+            "drinking_water": "水飲み場(個人向け少量)",
+            "water_point": "給水所(浄水タンクなど)",
+            "recycling": "リサイクル施設・回収所",
+            "waste_basket": "ゴミ箱",
+            "crematorium": "火葬場",
+            "internet_cafe": "インターネットカフェ",
+            "photo_booth": "証明写真ボックス",
+            "public_bookcase": "街角文庫",
+            "theatre": "劇場",
+            "pharmacy": "薬局"
         },
         "shop": {
             "alcohol": "酒屋",
@@ -42,7 +76,33 @@
             "wine": "ワイン専門店",
             "kiosk": "キオスク",
             "supermarket": "スーパーマーケット",
-            "variety_store": "雑貨店"
+            "variety_store": "雑貨店",
+            "chemist": "薬局",
+            "department_store": "デパート",
+            "mall": "モール",
+            "baby_goods": "赤ちゃん用品",
+            "boutique": "ブティック",
+            "clothes": "衣服店",
+            "cosmetics": "化粧品店",
+            "erotic": "大人のおもちゃ",
+            "beauty": "美容院",
+            "massage": "マッサージ店",
+            "shoes": "靴屋",
+            "dry_cleaning": "クリーニング店",
+            "optician": "眼鏡店",
+            "watches": "時計店",
+            "second_hand": "古着・リサイクル店",
+            "pawnbroker": "質屋",
+            "doityourself": "ホームセンター",
+            "hairdresser": "散髪屋",
+            "medical_supply": "医療用品店",
+            "florist": "花屋",
+            "garden_centre": "園芸・植木屋",
+            "hardware": "金物屋",
+            "furniture": "家具屋",
+            "interior_decoration": "内容用品店",
+            "computer": "パソコンショップ",
+            "electronics":"家電販売店"
         },
         "species": {
             "Cherry blossom": "桜",
@@ -56,12 +116,13 @@
             "fire_extinguisher": "消火器",
             "fire_hydrant": "消火栓",
             "defibrillator": "AED",
-            "water_tank":"消火用水"
+            "water_tank": "消火用水"
         },
         "highway": {
             "traffic_signals": "信号機",
-            "steps":"階段",
-            "street_lamp": "街灯"
+            "steps": "階段",
+            "street_lamp": "街灯",
+            "elevator": "エレベーター"
         },
         "social_facility": {
             "shelter": "一時避難所"
@@ -104,10 +165,14 @@
         "tourism": {
             "viewpoint": "ビューポイント",
             "artwork": "アート作品",
-            "information": "案内"
+            "information": "案内",
+            "gallery": "美術館",
+            "museum": "博物館",
+            "picnic_site": "ピクニック場"
         },
         "historic": {
-            "memorial": "石碑"
+            "memorial": "石碑",
+            "archaeological_site": "遺跡"
         },
         "information": {
             "board": "掲示板",
@@ -121,6 +186,9 @@
             "torii": "鳥居",
             "lamp": "灯籠",
             "surveillance": "監視装置"
+        },
+        "office": {
+            "government": "行政機関"
         }
     }
 }

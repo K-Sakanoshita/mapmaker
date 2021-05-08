@@ -5,7 +5,6 @@
             "bar": "bar",
             "bench": "bench",
             "cafe": "cafe",
-            "drinking_water": "drinking water",
             "fast_food": "fast food",
             "food_court": "food court",
             "ice_cream": "ice cream",
@@ -13,7 +12,42 @@
             "restaurant": "restaurant",
             "vending_machine": "vending machine",
             "place_of_worship": "place of worship",
-            "social_facility": "social facility"
+            "social_facility": "social facility",
+            "community_centre": "community center",
+            "kindergarten": "kindergarten",
+            "school": "school",
+            "university": "university",
+            "college": "college",
+            "hospital": "hospital",
+            "clinic": "clinic",
+            "doctors": "doctors",
+            "veterinary": "veterinary",
+            "police": "police",
+            "parking": "parking",
+            "bicycle_parking": "bicycle parking",
+            "motorcycle_parking": "motorcycle parking",
+            "townhall": "town hall",
+            "bbq": "bbq",
+            "courthouse": "courthouse",
+            "fire_station": "fire station",
+            "post_box": "post box",
+            "post_office": "post office",
+            "prison": "prison",
+            "shelter": "shelter",
+            "shower": "shower",
+            "public_bath": "public bath",
+            "telephone": "telephone",
+            "toilets": "toilets",
+            "drinking_water": "drinking water",
+            "water_point": "water point",
+            "recycling": "recycling",
+            "waste_basket": "waste basket",
+            "crematorium": "crematorium",
+            "internet_cafe": "internet cafe",
+            "photo_booth": "photo booth",
+            "public_bookcase": "public bookcase",
+            "theatre": "theatre",
+            "pharmacy": "pharmacy"
         },
         "shop": {
             "alcohol": "alcohol",
@@ -42,7 +76,33 @@
             "wine": "wine",
             "kiosk": "kiosk",
             "supermarket": "supermarket",
-            "variety_store": "variety"
+            "variety_store": "variety",
+            "chemist": "chemist",
+            "department_store": "department store",
+            "mall": "mall",
+            "baby_goods": "baby goods",
+            "boutique": "boutique",
+            "clothes": "clothes",
+            "cosmetics": "cosmetics",
+            "erotic": "erotic",
+            "beauty": "beauty",
+            "massage": "massage",
+            "shoes": "shoes",
+            "dry_cleaning": "cleaning",
+            "optician": "optician",
+            "watches": "watches",
+            "second_hand": "second hand",
+            "pawnbroker": "pawnbroker",
+            "doityourself": "do it yourself",
+            "hairdresser": "hairdresser",
+            "medical_supply": "medical supply",
+            "florist": "florist",
+            "garden_centre": "garden center",
+            "hardware": "hardware",
+            "furniture": "furniture",
+            "interior_decoration": "interior decoration",
+            "computer":"computer",
+            "electronics":"electronics"
         },
         "species": {
             "Cherry blossom": "sakura",
@@ -61,7 +121,8 @@
         "highway": {
             "traffic_signals": "traffic signals",
             "steps": "steps",
-            "street_lamp": "street lamp"
+            "street_lamp": "street lamp",
+            "elevator": "elevator"
         },
         "social_facility": {
             "shelter": "temporary sleeping"
@@ -104,10 +165,14 @@
         "tourism": {
             "viewpoint": "viewpoint",
             "artwork": "artwork",
-            "information": "information"
+            "information": "information",
+            "gallery": "gallery",
+            "museum": "museum",
+            "picnic_site": "picnic site"
         },
         "historic": {
-            "memorial": "memorial"
+            "memorial": "memorial",
+            "archaeological_site": "archaeological site"
         },
         "information": {
             "board": "board",
@@ -121,6 +186,9 @@
             "torii": "torii",
             "lamp": "lantern",
             "surveillance": "surveillance"
+        },
+        "office": {
+            "government": "government"
         }
     }
 }
