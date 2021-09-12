@@ -5,10 +5,10 @@ var Basic = (function () {
             let seldate = $("#Select_Date").val();
             return seldate ? '[date:"' + (new Date(seldate)).toISOString() + '"]' : "";
         },
-        dataURItoBlob: (dataURI) => {                               // DataURIからBlobへ変換（ファイルサイズ2MB超過対応）
+        dataURItoBlob: (dataURI,type) => {                               // DataURIからBlobへ変換（ファイルサイズ2MB超過対応）
             const b64 = atob(dataURI.split(',')[1]);
             const u8 = Uint8Array.from(b64.split(""), function (e) { return e.charCodeAt() });
-            return new Blob([u8], { type: "image/png" });
+            return new Blob([u8], { "type": type });
         },
         concatTwoDimensionalArray: (array1, array2, axis) => {      // 2次元配列の合成
             if (axis != 1) axis = 0;

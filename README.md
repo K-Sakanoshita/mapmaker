@@ -117,7 +117,7 @@
 * アイコンのデザインを追加・変更
 * * 自動販売機、樹木、階段、貯水槽、汎用ポイント（オレンジ）
 
-2022/05/09
+2021/05/09
 * OpenStreetMapの標準地図で使われているMapnik Iconの取り込み開始
 * * [Mapnik Icon svg](https://wiki.openstreetmap.org/w/index.php?title=Category:Mapnik_Icon_svg)
 * * [Amenity icons](https://wiki.openstreetmap.org/wiki/Category:Amenity_icons)
@@ -138,3 +138,6 @@
 * * Poi表示時の白背景に透過度を追加(印刷時の透過は実施済み)
 * * Poi選択時のカテゴリが増えたためソートさせてから表示させる
 * * キオスクなど、いくつかのアイコンをMapnikなどのアイコンへ変更
+
+2021/09/12
+* Firefox でsvgファイルをダウンロードすると拡張子がpngになる不具合を修正

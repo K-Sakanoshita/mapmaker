@@ -200,7 +200,7 @@ var LayerCont = (function () {		// for line&area / nodeはMarker
 	};
 
 	function save_common(svg, dataURI, ext) {	// save処理のファイル作成&保存部分
-		let blob = Basic.dataURItoBlob(dataURI);
+		let blob = Basic.dataURItoBlob(dataURI, Conf.header[ext]);
 		let url = URL.createObjectURL(blob);
 		let a = document.createElement("a");
 		a.setAttribute("type", "hidden");

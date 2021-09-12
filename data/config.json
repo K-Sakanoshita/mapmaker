@@ -88,5 +88,9 @@
             "size": 12,
             "view": true
         }
+    },
+    "header": {
+        "png": "image/png",
+        "svg": "image/svg+xml"
     }
 }
