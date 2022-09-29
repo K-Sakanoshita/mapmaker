@@ -100,7 +100,7 @@ var Mapmaker = (function () {
 
 		// 基本メニューの作成 menuhtml:指定したHTMLで左上に作成 menuhtmlが空の時は過去のHTMLから復元
 		makemenu: (menuhtml) => {
-			console.log("Start: makemenu.")
+			console.log("Start: make menu.")
 			if (menuhtml !== undefined) {
 				let basemenu = L.control({ position: "topleft" });			// Add BaseMenu
 				basemenu.onAdd = function () {
@@ -125,9 +125,9 @@ var Mapmaker = (function () {
 			} else {
 				for (let key in Conf.style) $(`[id^=${key}_]`).off();		// Delete Key_* events
 				$("#basemenu").html(init_basemenu);
-				$("#colors").html("");
 			};
 
+			console.log("Start: make marker.")
 			let keys = Object.keys(Conf.osm);							// マーカー追加メニュー作成
 			keys.forEach(key => {
 				if (Conf.osm[key].marker !== undefined) {
@@ -137,6 +137,7 @@ var Mapmaker = (function () {
 				};
 			});
 
+			console.log("Start: make custom panel.")
 			for (let key in Conf.style) {									// make style panel
 				let key_layer = `#${key}_layer`;
 				let key_line = `#${key}_line`;
@@ -188,6 +189,7 @@ var Mapmaker = (function () {
 				});
 			};
 			$("#AAA").remove();
+			console.log("Start: make glot render.")
 			glot.render();
 		},
 

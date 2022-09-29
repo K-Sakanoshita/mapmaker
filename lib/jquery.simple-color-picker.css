@@ -1,4 +1,0 @@
-html, body { height: 100%; }
-div.color-picker {z-index: 2000; border: 2px solid #fff; position: absolute; left: 0px; top: 0px; padding: 0px; }
-div.color-picker ul {z-index: 2000; list-style: none; padding: 1px; margin: 0px; float: left; }
-div.color-picker ul li {z-index: 2000; display: block; width: 28px; height: 18px; border: 1px solid #fff;margin: 0px; float: left; cursor: pointer; }
