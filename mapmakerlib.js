@@ -23,7 +23,7 @@ var LayerCont = (function () {		// for line&area / nodeはMarker
 		layer_make: (key, view) => {						// MakeData内 -> name:コントロール名 / color:SVG色 / width:SVG Line Weight / dashArray:破線
 			let type = Conf.style[key].type, opacity;
 			if (view !== undefined) Layers[key].opacity = view ? 1 : 0;
-			let style = svg_style(key);
+			let style = SVGCont.svg_style(key);
 			if (Layers[key].svg) {							// already svg layers
 				Layers[key].svg.forEach(way => {
 					switch (view) {
@@ -77,164 +77,11 @@ var LayerCont = (function () {		// for line&area / nodeはMarker
 				if (dom !== null) { dom.innerHTML = `` };
 			};
 		},
-
-		// WriteText params .svg,text,size,font,color,type,anchor
-		text_write: (svg, params) => {
-			let svgtext = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-			let textpath = document.createElementNS('http://www.w3.org/2000/svg', 'textPath');
-			svgtext.setAttribute('text-anchor', params.anchor);
-			svgtext.setAttribute('font-size', params.size + "px");
-			svgtext.setAttribute('font-family', params.font);
-			svgtext.setAttribute('fill', params.color);
-			svgtext.setAttribute('dominant-baseline', 'text-before-edge');	// 理由:textPath のy座標が0起点のため
-			textpath.textContent = params.text;
-			textpath.setAttribute('xlink:href', "#textpath" + params.no);
-			svgtext.appendChild(textpath);
-			svg[0].appendChild(svgtext);
-
-			let svgpath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-			svgpath.setAttribute('transform', `matrix(1,0,0,1,${params.x},${params.y - 2})`);
-			svgpath.setAttribute('id', "textpath" + params.no);
-			let height = "", safari = L.Browser.safari ? 9 : 0;
-			for (let i = 0; i < 5; i++) { height += `M0,${i * 18 + safari} H360 ` };
-			svgpath.setAttribute('d', height);
-			svg[0].insertBefore(svgpath, svgtext);
-
-			let rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-			rect.setAttribute("x", params.x - 3);
-			rect.setAttribute("y", params.y - 4);
-			rect.setAttribute("width", params.width + 6);
-			rect.setAttribute("height", params.height - 2);
-			rect.setAttribute("fill", "white");
-			rect.setAttribute("fill-opacity", 0.6);
-			svg[0].insertBefore(rect, svgtext);
-		},
-
-		// Save PNG/SVG {type : 'PNG' or 'SVG' mode: '' or 'A4' or 'A4_landscape'}
-		save: (params) => {
-			let data, canvas_width, canvas_height, svg = $("svg").clone();
-			let base = svg[0].viewBox.baseVal;
-			let box = WinCont.a4_getsize(params.mode);
-			base = {
-				width: box.width - (box.left + box.right),
-				height: box.height - (box.top + box.bottom),
-				x: base.x + box.left, y: base.y + box.top
-			};
-
-			if (Basic.isSmartPhone()) {
-				base.x = base.x + 36;
-				base.y = base.y + 60;
-			} else {
-				base.x = base.x + 132;
-				base.y = base.y + 76;
-			};
-
-			switch (params.mode) {
-				case "":
-					canvas_width = base.width * 2;
-					canvas_height = base.height * 2;
-					break;
-				case "A4":
-					svg.attr("width", "210mm");
-					svg.attr("height", "297mm");
-					canvas_width = Conf.default.Paper.dpi * 8.27;
-					canvas_height = Conf.default.Paper.dpi * 11.69;
-					break;
-				case "A4_landscape":
-					svg.attr("width", "297mm");
-					svg.attr("height", "210mm");
-					canvas_width = Conf.default.Paper.dpi * 11.69;
-					canvas_height = Conf.default.Paper.dpi * 8.27;
-					break;
-			};
-
-			svg.attr("id", "saveSVG");
-			svg.attr("xmlns:xlink", "http://www.w3.org/1999/xlink");
-			svg.attr("viewBox", [base.x, base.y, base.width, base.height].join(" "));
-
-			if (Layers.background.opacity !== 0) {
-				let rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-				rect.setAttribute("x", base.x);
-				rect.setAttribute("y", base.y);
-				rect.setAttribute("width", base.width);
-				rect.setAttribute("height", base.height);
-				rect.setAttribute("fill", Layers["background"].color);
-				svg[0].insertBefore(rect, svg[0].firstChild);
-			}
-			$("body").append(svg);
-
-			LayerCont.text_write(svg, Object.assign(Conf.default.credit, {
-				"x": base.width + base.x - Conf.default.credit.width, "y": base.height + base.y - Conf.default.credit.size - 2, "no": "copyright",
-				"width": Conf.default.credit.width, "height": Conf.default.credit.height + 2, "type": params.type, "color": Conf.default.Text.color
-			})); // add Copyrigt
-
-			svg.attr("style", "");
-			Marker.conv_svg(svg, params.type);
-			switch (params.type) {
-				case 'png':
-					$("body").append(`<canvas id='download' class='hidden' width="${canvas_width}" height="${canvas_height}"></canvas>`);
-					let canvas = $("#download")[0];
-					var ctx = canvas.getContext('2d');
-					data = new XMLSerializer().serializeToString(svg[0]);
-					let imgsrc = "data:image/svg+xml;charset=utf-8;base64," + btoa(unescape(encodeURIComponent(data)));
-					let image = new Image();
-					image.onload = () => {
-						let scale = canvas_width / base.width;
-						ctx.drawImage(image, 0, 0, base.width * scale, base.height * scale);
-						save_common(svg, canvas.toDataURL("image/png"), 'png');
-					};
-					image.src = imgsrc;
-					break;
-				case 'svg':
-					data = new XMLSerializer().serializeToString(svg[0])
-					save_common(svg, "data:image/svg+xml;charset=utf-8;base64," + btoa(unescape(encodeURIComponent(data))), 'svg');
-					break;
-			};
-		},
-
 		all_clear: () => {
 			console.log("LayerCont: all clear... ");
 			for (let key in Conf.style) if (Layers[key].svg) Layers[key].svg.forEach(svg => map.removeLayer(svg));
 			LayerCont.init();
 		}
-	};
-
-	function save_common(svg, dataURI, ext) {	// save処理のファイル作成&保存部分
-		let blob = Basic.dataURItoBlob(dataURI, Conf.header[ext]);
-		let url = URL.createObjectURL(blob);
-		let a = document.createElement("a");
-		a.setAttribute("type", "hidden");
-		a.setAttribute("id", "download-link");
-		a.download = Conf.default.FileName + '.' + ext;
-		a.href = url;
-		$('body').append(a);
-		a.click();
-		setTimeout(function () {
-			URL.revokeObjectURL(url);
-			$("#download").remove();
-			$("#download-link").remove();
-			svg.remove();
-			map.setView(map.getCenter());
-		}, Math.max(3000, dataURI.length / 512));
-	};
-
-	function svg_style(key) {	// set svg style(no set opacity)
-		let style, weight = 1, nowzoom = map.getZoom();
-		if (nowzoom < 15) {
-			weight = 1 / (15 - nowzoom);
-		} else if (nowzoom > 15) {
-			weight = (nowzoom - 15) * 0.6;
-		};
-		let common = {
-			"stroke": true, "dashArray": Conf.style[key].dashArray, "bubblingMouseEvents": false, "lineJoin": 'round', "lineCap": "butt",
-			"bubblingMouseEvents": false, "weight": Layers[key].width * weight
-		};
-		if (Conf.style[key].type == "area") {
-			style = Object.assign(common, { "color": Layers[key].color_dark, "fillColor": Layers[key].color });
-		} else {
-			style = Object.assign(common, { "color": Layers[key].color, "fillColor": Layers[key].color_dark });
-		};
-		return style;
 	};
 
 	function way_toggle(ev) {					// wayをクリックしたときのイベント（表示/非表示切り替え）
@@ -250,7 +97,7 @@ var LayerCont = (function () {		// for line&area / nodeはMarker
 			options.opacity = 0;
 			ev.target.options.opacity = 0;
 		};
-		let style = svg_style(key);
+		let style = SVGCont.svg_style(key);
 		options.color = style.color;
 		options.fillColor = style.fillColor;
 		options.weight = style.weight;
@@ -265,36 +112,30 @@ var PoiCont = (function () {
 
 	return {
 		pois: () => { return PoiData },
+		latlngs: () => { return latlngs },
 		all_clear: () => { PoiData = { geojson: [], targets: [], enable: [] } },
-		add: (pois) => {      // pois: {geojson: [],targets: []}
+		add_geojson: (pois) => {		// add geojson pois / pois: {geojson: [],targets: []}
 			if (pois.enable == undefined) pois.enable = [];
-			pois.geojson.forEach((val1, idx1) => {	// 既存Poiに追加
-				let poi = { "geojson": pois.geojson[idx1], "targets": pois.targets[idx1], "enable": pois.enable[idx1] };
-				PoiCont.set(poi);
+			pois.geojson.forEach((val1, idx1) => {		// 既存Poiに追加
+				let enable = pois.enable[idx1] == undefined ? true : pois.enable[idx1];
+				let poi = { "geojson": pois.geojson[idx1], "targets": pois.targets[idx1], "enable": enable };
+				PoiCont.set_geojson(poi);
 			});
-
 			PoiData.geojson.forEach((node, node_idx) => {
-				if (node.geometry.type !== "Point") {
-					console.log(node.geometry.coordinates);
-					let lat = 0, lng = 0, counts = node.geometry.coordinates[0].length;
-					for (let key in node.geometry.coordinates[0]) {
-						lat += node.geometry.coordinates[0][key][1];
-						lng += node.geometry.coordinates[0][key][0];
-					};
-					latlngs[node.id] = { "lat": lat / counts, "lng": lng / counts };
-				} else {
-					latlngs[node.id] = { "lat": node.geometry.coordinates[1], "lng": node.geometry.coordinates[0] };
+				if (latlngs[node.id] == undefined) {
+					let ll = GeoCont.flat2single(node.geometry.coordinates, node.geometry.type);
+					latlngs[node.id] = [ll[1], ll[0]];
+					geoidx[node.id] = node_idx;
 				};
-				geoidx[node.id] = node_idx;
 			});
 		},
-		set: (poi) => {
+		set_geojson(poi) {								// add_geojsonのサブ機能
 			let cidx = PoiData.geojson.findIndex((val) => val.id == poi.geojson.id);
-			if (cidx === -1) {                          // 無い時は追加
+			if (cidx === -1) {       	                   	// 無い時は追加
 				PoiData.geojson.push(poi.geojson);
 				cidx = PoiData.geojson.length - 1;
 			};
-			if (PoiData.targets[cidx] == undefined) {  	// targetが無い時は追加
+			if (PoiData.targets[cidx] == undefined) {  		// targetが無い時は追加
 				PoiData.targets[cidx] = poi.targets;
 			} else {
 				PoiData.targets[cidx] = Object.assign(PoiData.targets[cidx], poi.targets);
@@ -350,43 +191,13 @@ var PoiCont = (function () {
 	};
 })();
 
-var Marker = (function () {				// Marker closure
-	var markers = {}, SvgIcon = {};		// SVGアイコン連想配列(filename,svg text)
+var Marker = (function () {		// Marker closure
+	var markers = {};			// SVGアイコン連想配列(filename,svg text)
 
 	return {
-		init: () => {
-			Marker.set_size(Conf.default.Text.size, Conf.default.Text.view);
-			let jqXHRs = [], keys = [];			// SVGファイルをSvgIconへ読み込む
-			Object.keys(Conf.marker_tag).forEach(key1 => {					// main svg icon
-				Object.keys(Conf.marker_tag[key1]).forEach((key2) => {
-					let filename = Conf.marker_tag[key1][key2];
-					if (keys.indexOf(filename) == -1) keys.push(filename);
-				});
-			});
-			Object.keys(Conf.marker_subtag).forEach(key1 => {				// sub svg icon
-				Object.keys(Conf.marker_subtag[key1]).forEach((key2) => {
-					Object.keys(Conf.marker_subtag[key1][key2]).forEach((key3) => {
-						let filename = Conf.marker_subtag[key1][key2][key3];
-						if (keys.indexOf(filename) == -1) keys.push(filename);
-					});
-				});
-			});
-			Object.values(Conf.marker_append_files).forEach(filename => {	// append svg icon
-				if (keys.indexOf(filename) == -1) keys.push(filename);
-			});
-			Object.values(keys).forEach(filename => jqXHRs.push($.get(`./image/${filename}`)));
-
-			$.when.apply($, jqXHRs).always(function () {
-				let xs = new XMLSerializer();
-				for (let key in keys) SvgIcon[keys[key]] = xs.serializeToString(arguments[key][0]);
-			});
-		},
-		images: () => {							// SvgIcon(svgを返す)
-			return SvgIcon;
-		},
 		have: (target) => {						// Markerか確認(true: marker)
-			let keys = Object.keys(Conf.target);
-			let markers = keys.filter(key => Conf.target[key].marker !== undefined);
+			let keys = Object.keys(Conf.osm);
+			let markers = keys.filter(key => Conf.osm[key].marker !== undefined);
 			return markers.some(key => key == target);
 		},
 		set: (target) => {						// Poi表示
@@ -411,11 +222,24 @@ var Marker = (function () {				// Marker closure
 			return marker;
 		},
 
-		qr_add: (target, osmid, url, latlng, text) => {
+		qr_add: (target, osmid, url, latlng, data) => {
+			let wsize = 128, hsize = 128, asize = 640;
 			let idx = markers[target].findIndex(val => val.mapmaker_id == osmid);
-			let qrcode = new QRCode({ content: url, join: true, container: "svg", width: 128, height: 128 });
-			let data = qrcode.svg();
-			let icon = L.divIcon({ "className": "icon", "iconSize": [512, 128], "html": `<div class="d-flex"><div class="flex-row">${data}</div><div class="p-2 bg-light"><span>${text}</span></div></div>` });
+			let qrcode = new QRCode({ content: url, join: true, container: "svg", width: wsize, height: hsize });
+			let svg = qrcode.svg();
+			let icon = L.divIcon({
+				"className": "icon", "iconSize": [asize, hsize],
+				"html":
+					`<div class="d-flex qr_code">
+						<div class="p-1 bg-light flex-row">${svg}</div>
+						<div class="p-2 bg-light">
+							<span>${data[0]}${glot.get("source_wikipedia")}</span>
+						</div>
+						<div class="p-2 bg-light">
+							${data[1] == undefined ? "" : `<img height="${hsize}px" src="${data[1].source}">`}
+						</div>
+					</div>`
+			});
 			let qr_marker = L.marker(new L.LatLng(latlng.lat, latlng.lng), { icon: icon, draggable: true });
 			qr_marker.addTo(map);
 			qr_marker.mapmaker_id = osmid + "-qr";
@@ -462,73 +286,6 @@ var Marker = (function () {				// Marker closure
 			make_popup({ target: target, poi: poi, filename: filename }).then(marker => { markers[target][idx] = marker[0] });
 		},
 
-		conv_svg: (svg, type) => {					// MakerをSVGに追加 理由：leafletがアイコンをIMG扱いするため
-			let marker = $("div.leaflet-marker-pane").children();
-			let parser = new DOMParser(), svgicon, svgtext, text, svgstl;
-			for (let i = 0; i < marker.length; i++) {
-				let pathname = $(marker.eq(i)[0].children).children().attr('src');
-				svgstl = marker.eq(i).css("transform").slice(7, -1).split(",");
-				let offset = [];
-				switch (marker.eq(i).css("margin")) {
-					case "":
-						offset[0] = parseInt(marker.eq(i).css("margin-top"), 10);
-						offset[3] = parseInt(marker.eq(i).css("margin-left"), 10);
-						break;
-					default:
-						marker.eq(i).css("margin").split(" ").forEach((val) => offset.push(parseInt(val, 10)));	// オフセット値を取得
-						break;
-				}
-				svgtext = $(marker.eq(i)[0].children).find("span");
-				switch (pathname) {
-					case undefined:					// not icon(qr etc...)
-						svgicon = $(marker.eq(i)[0].children).find("svg");
-						svg_append(svg, svgicon, marker.eq(i), { x: $(svgicon).width() / 2, y: $(svgicon).height() / 2 }, offset);
-						text = svgtext.text();
-						if (text !== undefined) {	// QRCode Text
-							LayerCont.text_write(svg, {
-								"text": text, "anchor": 'start', "x": Number(svgstl[4]) + offset[3] + $(svgicon).width(), "y": Number(svgstl[5]) + offset[0] + 5, "no": i,
-								"width": svgtext.width(), "height": $(svgicon).height(), "size": parseInt(svgtext.css("font-size")), "color": Conf.effect.text.color, "font": "Helvetica", "type": type
-							});
-						};
-						break;
-					default:
-						let filename = pathname.match(".+/(.+?)([\?#;].*)?$")[1];
-						svgicon = $(marker.eq(i)[0].children).find("img");
-						let svgsize = { x: svgicon.width(), y: svgicon.height() };
-						svgicon = $(parser.parseFromString(SvgIcon[filename], "text/xml")).children();
-						svg_append(svg, svgicon, marker.eq(i), svgsize, offset);
-						text = $(marker.eq(i)[0].children).children().attr('icon-name');
-						if (text !== undefined && text !== "" && Conf.effect.text.view) {					// Marker Text
-							LayerCont.text_write(svg, {
-								"text": text, "anchor": 'start', "x": Number(svgstl[4]) + Math.ceil(svgsize.x / 2) + 4, "y": Number(svgstl[5]) + offset[0] + 5, "no": i,
-								"width": svgtext.width(), "height": svgtext.height(), "size": parseInt(svgtext.css("font-size")), "color": Conf.default.Text.color, "font": "Helvetica", "type": type
-							});
-						};
-						break;
-				};
-			};
-
-			function svg_append(svg, svgicon, marker, size, offset) {
-				let svgvbox;
-				if ($(svgicon).attr('viewBox') == undefined) {
-					svgvbox = [0, 0, size.x, size.y];
-				} else {
-					svgvbox = $(svgicon).attr('viewBox').split(' ');
-				};
-				let scale = Math.ceil((size.x / (svgvbox[2] - svgvbox[0])) * 1000) / 1000;
-				let group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-				for (let key in svgicon[0].childNodes) {
-					let nodeName = svgicon[0].childNodes[key].nodeName;
-					if (nodeName == "path" || nodeName == "g" || nodeName == "defs" || nodeName == "rect" || nodeName == "ellipse" || nodeName == "style") {
-						group.append(svgicon[0].childNodes[key].cloneNode(true));
-					};
-				};
-				let svgstl = marker.css("transform").slice(7, -1).split(",")						// transformのstyleから配列でXとY座標を取得(4と5)
-				$(group).attr("transform", "matrix(1,0,0,1," + (Number(svgstl[4]) + offset[3]) + "," + (Number(svgstl[5]) + offset[0]) + ") scale(" + scale + ")");
-				svg.append(group);
-			};
-		},
-
 		set_size: (size, view) => {
 			let icon_xy = Math.ceil(size * Conf.default.Icon.scale);
 			Conf.effect.text.size = size;		// set font size 
@@ -540,10 +297,8 @@ var Marker = (function () {				// Marker closure
 		center: (osmid) => {
 			Conf.default.Circle.radius = Math.pow(2, 21 - map.getZoom());
 			let latlng = PoiCont.get_osmid(osmid).latlng;
-			if (latlng.lat.length == undefined) {		// latlngが複数ある場合はcircleなし
-				let circle = L.circle(latlng, Conf.default.Circle).addTo(map);
-				setTimeout(() => map.removeLayer(circle), Conf.default.Circle.timer);
-			};
+			let circle = L.circle(latlng, Conf.default.Circle).addTo(map);
+			setTimeout(() => map.removeLayer(circle), Conf.default.Circle.timer);
 		},
 
 		all_clear: () => Object.keys(markers).forEach((target) => Marker.delete(target)),	// all delete
@@ -573,7 +328,7 @@ var Marker = (function () {				// Marker closure
 
 	function make_popup(params) {	// markerは複数返す時がある
 		return new Promise((resolve, reject) => {
-			let categorys = Object.keys(Conf.category), icon_name;
+			let categorys = Object.keys(Conf.category), filename;
 			let tags = params.poi.geojson.properties.tags == undefined ? params.poi.geojson.properties : params.poi.geojson.properties.tags;
 			let name = tags[params.langname] == undefined ? tags.name : tags[params.langname];
 			let step = tags.step_count !== undefined ? tags.step_count + glot.get("step_count") : "";	// step count
@@ -581,49 +336,50 @@ var Marker = (function () {				// Marker closure
 			name = (step !== "" && name !== "") ? name + "(" + step + ")" : (step !== "" ? step : name);
 			switch (params.target) {
 				case "wikipedia":		// wikipedia
-					icon_name = params.filename == undefined ? Conf.target.wikipedia.marker : params.filename;
-					name = tags[Conf.target.wikipedia.tag].split(':')[1];
-					let html = `<div class="d-flex"><img style="width: ${Conf.effect.icon.x}px; height: ${Conf.effect.icon.y}px;" src="./image/${icon_name}" icon-name="${name}">`;
+					filename = params.filename == undefined ? Conf.osm.wikipedia.marker : params.filename;
+					name = tags[Conf.osm.wikipedia.tag].split(':')[1];
+					let html = `<div class="d-flex"><img style="width: ${Conf.effect.icon.x}px; height: ${Conf.effect.icon.y}px;" class="icon_normal" src="${filename}" icon-name="${name}">`;
 					if (name !== "" && Conf.effect.text.view) html = `${html}<span class="icon" style="font-size: ${Conf.effect.text.size}px">${name}</span>`;
-					let icon = L.divIcon({ "className": "", "iconSize": [200 * Conf.default.Icon.scale, Conf.effect.icon.y], "iconAnchor": [Conf.effect.icon.x / 2, Conf.effect.icon.y / 2], "html": html + "</div>" });
-					let marker = L.marker(new L.LatLng(params.poi.latlng.lat, params.poi.latlng.lng), { icon: icon, draggable: true });
+					//let icon = L.divIcon({ "className": "", "iconSize": [200 * Conf.default.Icon.scale, Conf.effect.icon.y], "iconAnchor": [Conf.effect.icon.x / 2, Conf.effect.icon.y / 2], "html": html + "</div>" });
+					let icon = L.divIcon({ "className": "", "iconAnchor": [Conf.effect.icon.x / 2, Conf.effect.icon.y / 2], "html": html + "</div>" });
+					let marker = L.marker(new L.LatLng(params.poi.latlng[0], params.poi.latlng[1]), { icon: icon, draggable: true });
 					marker.addTo(map).on('click', e => { popup_icon(e) });
 					marker.mapmaker_id = params.poi.geojson.id;
 					marker.mapmaker_key = params.target;
-					marker.mapmaker_lang = tags[Conf.target.wikipedia.tag];
-					marker.mapmaker_icon = icon_name;
+					marker.mapmaker_lang = tags[Conf.osm.wikipedia.tag];
+					marker.mapmaker_icon = filename;
 					resolve([marker]);
 					break;
 				default:
 					// get marker icon filename
 					let keyn = categorys.find(key => tags[key] !== undefined);
-					let keyv = (keyn !== undefined) ? Conf.marker_tag[keyn][tags[keyn]] : undefined;
+					let keyv = (keyn !== undefined) ? Conf.marker.tag[keyn][tags[keyn]] : undefined;
 					if (keyn !== undefined && keyv !== undefined) {	// in category
 						if (params.filename == undefined) {
-							icon_name = Conf.marker_tag[keyn][tags[keyn]];
+							filename = Conf.marker.path + "/" + Conf.marker.tag[keyn][tags[keyn]];
 							// get sub marker icon(神社とお寺など)
-							let subtag = Conf.marker_subtag[tags[keyn]];		// ex: subtag = {"religion": {"shinto":"a.svg","buddhist":"b.svg"}}
+							let subtag = Conf.marker.subtag[tags[keyn]];		// ex: subtag = {"religion": {"shinto":"a.svg","buddhist":"b.svg"}}
 							if (subtag !== undefined) {		// サブタグが存在する場合
 								Object.keys(subtag).forEach((sval1) => {		// sval1: ex: religion
 									Object.keys(subtag[sval1]).forEach((sval2) => {			// sval2: ex: shinto
-										if (tags[sval1] == sval2) icon_name = subtag[sval1][sval2];
+										if (tags[sval1] == sval2) filename = Conf.marker.path + "/" + subtag[sval1][sval2];
 									});
 								});
 							};
 						} else {
-							icon_name = params.filename;;
+							filename = params.filename;;
 						};
-						let html = `<div class="d-flex"><img style="width: ${Conf.effect.icon.x}px; height: ${Conf.effect.icon.y}px;" src="./image/${icon_name}" icon-name="${name}">`;
+						let html = `<div class="d-flex"><img class="icon_normal" style="width: ${Conf.effect.icon.x}px; height: ${Conf.effect.icon.y}px;" src="${filename}" icon-name="${name}">`;
 						let span = `<span class="icon" style="font-size: ${Conf.effect.text.size}px">${name}</span>`;
 						if (name !== "" && Conf.effect.text.view) html += span;
 						let span_width = name !== "" ? name.length * Conf.effect.text.size : 0;
 						let icon = L.divIcon({ "className": "", "iconSize": [Conf.effect.icon.x + span_width, Conf.effect.icon.y], "iconAnchor": [Conf.effect.icon.x / 2, Conf.effect.icon.y / 2], "html": html + "</div>" });
-						let marker = L.marker(new L.LatLng(params.poi.latlng.lat, params.poi.latlng.lng), { icon: icon, draggable: true });
+						let marker = L.marker(new L.LatLng(params.poi.latlng[0], params.poi.latlng[1]), { icon: icon, draggable: true });
 						marker.addTo(map).on('click', e => { popup_icon(e) });
 						marker.mapmaker_id = params.poi.geojson.id;
 						marker.mapmaker_key = params.target;
 						marker.mapmaker_lang = params.langname;
-						marker.mapmaker_icon = icon_name;
+						marker.mapmaker_icon = filename;
 						resolve([marker]);
 					};
 					break;
@@ -631,7 +387,7 @@ var Marker = (function () {				// Marker closure
 		});
 	};
 
-	function popup_icon(ev) {	// PopUpを表示
+	function popup_icon(ev) {	// PopUpを表示するイベント
 		let popcont;
 		let id = ev.target.mapmaker_id;
 		let key = ev.target.mapmaker_key;
@@ -639,9 +395,9 @@ var Marker = (function () {				// Marker closure
 		let tags = PoiCont.get_osmid(id).geojson.properties;
 		let chg_mkr = `<button class='btn btn-sm m-2' onclick='Mapmaker.poi_marker_change("${key}","${id}")'>${glot.get("marker_change")}</button>`;
 		let del_btn = `<button class='btn btn-sm m-2' onclick='Mapmaker.poi_del("${key}","${id}")'>${glot.get("marker_delete")}</button>`;
-		if (key == Conf.target.wikipedia.tag) {		// Wikipedia時のPopUp
+		if (key == Conf.osm.wikipedia.tag) {		// Wikipedia時のPopUp
 			let qr_btn = `<button class='btn btn-sm m-2' onclick='Mapmaker.qr_add("wikipedia","${id}")'>${glot.get("qrcode_make")}</button>`;
-			popcont = tags[Conf.target.wikipedia.tag] + "<br>" + chg_mkr + del_btn + "<br>" + qr_btn;
+			popcont = tags[Conf.osm.wikipedia.tag] + "<br>" + chg_mkr + del_btn + "<br>" + qr_btn;
 		} else {									// その他
 			let name = tags.name == undefined ? "" : tags.name;
 			let chg_eng = `<button class='btn btn-sm m-2' onclick='Marker.change_lang("${key}","${id}","name:en")'>${glot.get("marker_to_en")}</button>`;

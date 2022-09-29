@@ -1,0 +1,96 @@
+{
+    "icon": {
+        "path": "maki-icon"
+    },
+    "system": {
+        "OverPassServer": [
+            "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
+            "https://overpass.kumi.systems/api/interpreter",
+            "https://overpass-api.de/api/interpreter"
+        ]
+    },
+    "tile_select": {
+        "Facebook_Builtin": "OSM_Thin",
+        "default": "MapTiler"
+    },
+    "tile": {
+        "MapTiler": {
+            "name": "OpenStreetMap Maptiler",
+            "copyright": "<a href='https://www.maptiler.com/copyright/'>© MapTiler</a> <a href='https://www.openstreetmap.org/copyright'>© OpenStreetMap contributors</a>",
+            "style": "https://api.maptiler.com/maps/c9876a21-f16a-4a84-abc0-950badd4631e/style.json?key=Eq2IyrHsOEGFU1W1fvd7"
+        },
+        "MapTiler(Memories)": {
+            "name": "OpenStreetMap Maptiler(Memories)",
+            "copyright": "<a href='https://www.maptiler.com/copyright/'>© MapTiler</a> <a href='https://www.openstreetmap.org/copyright'>© OpenStreetMap contributors</a>",
+            "style": "https://api.maptiler.com/maps/2e4db38a-b862-444d-bcfe-fefe51429073/style.json?key=Eq2IyrHsOEGFU1W1fvd7"
+        },
+        "OSM_Standard": {
+            "name": "OpenStreetMap Standard",
+            "copyright": "<a href=\"https://openstreetmap.org\">&copy OpenStreetMap contributors</a>",
+            "url": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+            "maxNativeZoom": 18
+        },
+        "OSM_Thin": {
+            "name": "OpenStreetMap Thin",
+            "copyright": "<a href=\"https://openstreetmap.org\">&copy OpenStreetMap contributors</a>",
+            "url": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+            "filter": [
+                "brightness:95%",
+                "grayscale:60%"
+            ],
+            "maxNativeZoom": 18
+        },
+        "OSM_Dark": {
+            "name": "OpenStreetMap Dark",
+            "copyright": "<a href=\"https://openstreetmap.org\">&copy OpenStreetMap contributors</a>",
+            "url": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+            "filter": [
+                "invert:100%",
+                "grayscale:80%"
+            ],
+            "maxNativeZoom": 18
+        },
+        "GSI_pale": {
+            "name": "地理院地図 淡色",
+            "copyright": "<a href='https://www.gsi.go.jp/kikakuchousei/kikakuchousei40182.html'>国土地理院 | &copy OpenStreetMap contributors</a>",
+            "url": "https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png",
+            "maxNativeZoom": 18
+        },
+        "GSI_ort": {
+            "name": "地理院地図 オルソ",
+            "copyright": "<a href='https://www.gsi.go.jp/kikakuchousei/kikakuchousei40182.html'>国土地理院 | &copy OpenStreetMap contributors</a>",
+            "url": "https://cyberjapandata.gsi.go.jp/xyz/ort/{z}/{x}/{y}.jpg",
+            "maxNativeZoom": 18
+        }
+    },
+    "menu_list": {
+        "template": "<a class='dropdown-item'><span></span></a><span class='dropdown-item'></span>",
+        "divider": "<div class='dropdown-divider'></div>"
+    },
+    "effect": {
+        "icon": {
+            "stack": "./image/icon_circle.svg",
+            "x": 0,
+            "y": 0
+        },
+        "text": {
+            "size": 12,
+            "view": true
+        }
+    },
+    "svg": {
+        "circle": {
+            "radius": 8,
+            "color": "#000080",
+            "fillColor": "#0000A0",
+            "Opacity": 0.1,
+            "fillOpacity": 0.1,
+            "timer": 10000000
+        },
+        "text": {
+            "view": true,
+            "size": 14,
+            "color": "black"
+        }
+    }
+}

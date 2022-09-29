@@ -3,7 +3,7 @@
 }
 
 .accordion, .card {
-    width: 164px;
+    width: 196px;
     margin-bottom: 8px;
     display: none;
     overflow: visible !important;
@@ -26,6 +26,13 @@
     width: 68px;
     overflow: hidden;
     white-space: nowrap;
+}
+
+.input-hidden {
+    width: 44px;
+    height: 20px;
+    display: inline-block;
+    margin: 0px;
 }
 
 button, select {
@@ -53,7 +60,7 @@ button:active {
     background-size: 36px 36px;
     background-position: 8px center;
     height: 46px;
-    width: 164px;
+    width: 196px;
     align-items: center;
 }
 
@@ -61,7 +68,7 @@ button:active {
     margin: 0px;
     padding: 0px 0px 0px 24px;
     height: 28px;
-    width: 164px;
+    width: 196px;
     align-items: center;
 }
 
@@ -69,7 +76,7 @@ button:active {
     margin: 0px 4px 6px 0px;
     padding: 0px 6px 0px 12px;
     height: 46px;
-    width: 80px;
+    width: 96px;
     align-items: center;
 }
 
@@ -77,7 +84,7 @@ button:active {
     margin: 0px;
     padding: 0px;
     height: 23px;
-    width: 74px;
+    width: 90px;
     align-items: center;
 }
 
@@ -92,13 +99,24 @@ button:active {
 }
 
 .color_button {
-    margin: 2px 2px 2px 2px;
-    padding: 0px 0px 0px 2px;
-    width: 38px;
-    height: 18px;
-    display: table-cell;
+    margin: 1px;
+    padding: 0px;
+    width: 28px;
+    height: 20px;
     vertical-align: middle;
-    margin-left: 4px;
+    border-style: none;
+}
+
+.line_text {
+    margin: 1px;
+    padding: 0px;
+    width: 42px;
+    height: 20px;
+    vertical-align: middle;
+    border: #999;
+    border-width: 1px;
+    border-style: solid;
+    text-align: right;
 }
 
 .drop_button {
@@ -127,4 +145,19 @@ button:active {
     max-width: inherit !important;
     width: 98% !important;
     margin-left: 8px !important;
+}
+
+img.icon_normal {
+    background: url("./image/icon_circle.svg");
+    background-size: cover;
+    float: left;
+    padding: 4px;
+    height: 32px;
+    width: 32px;
+    object-fit: contain;
+}
+
+.qr_code {
+    border: 1px;
+    border-style: solid;
 }

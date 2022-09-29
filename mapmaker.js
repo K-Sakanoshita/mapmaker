@@ -5,9 +5,10 @@
 var map;				// leaflet map object
 var Layers = {};		// Layer Status,geojson,svglayer
 var Conf = {};			// Config Praams
-const LANG = (window.navigator.userLanguage || window.navigator.language || window.navigator.browserLanguage).substr(0, 2) == "ja" ? "ja" : "en";
-const FILES = ["./basemenu.html", "./modals.html", "./data/config.json", './data/target.json', `./data/category-${LANG}.json`, `data/datatables-${LANG}.json`, `./data/marker.json`];
 const glot = new Glottologist();
+const LANG = (window.navigator.userLanguage || window.navigator.language || window.navigator.browserLanguage).substr(0, 2) == "ja" ? "ja" : "en";
+const FILES = ["./basemenu.html", "./modals.html", "./data/config-system.json", "./data/config-user.jsonc", './data/overpass-system.json',
+	`./data/category-${LANG}.json`, `data/datatables-${LANG}.json`, `./data/marker.json`, `./data/marker-addtional.json`];
 const Mono_Filter = ['grayscale:90%', 'bright:85%', 'contrast:130%', 'sepia:15%'];;
 
 // initialize leaflet
@@ -16,19 +17,16 @@ $(document).ready(function () {
 	let jqXHRs = [];
 	for (let key in FILES) { jqXHRs.push($.get(FILES[key])) };
 	$.when.apply($, jqXHRs).always(function () {
-		let arg = {}, menuhtml = arguments[0][0];								// Get Menu HTML
-		$("#modals").html(arguments[1][0]);										// Make Modal HTML
-		for (let i = 2; i <= 6; i++) arg = Object.assign(arg, arguments[i][0]);	// Make Config Object
-		Object.keys(arg).forEach(key1 => {
-			Conf[key1] = {};
-			Object.keys(arg[key1]).forEach((key2) => Conf[key1][key2] = arg[key1][key2]);
-		});
+		let menuhtml = arguments[0][0];								// Get Menu HTML
+		$("#modals").html(arguments[1][0]);							// Make Modal HTML
+		Conf = Object.assign(arguments[2][0], JSON5.parse(arguments[3][0]));
+		for (let i = 4; i <= 8; i++) Conf = Object.assign(Conf, arguments[i][0]);	// Make Config Object
 
 		glot.import("./data/glot.json").then(() => {	// Multi-language support
 			// document.title = glot.get("title");		// Title(no change / Google検索で日本語表示させたいので)
 			LayerCont.init();							// LayerCont Initialize
 			Mapmaker.init(menuhtml);					// Mapmaker Initialize
-			Marker.init();								// Marker Initialize
+			SVGCont.init();								// Marker Initialize
 			// Google Analytics
 			if (Conf.default.GoogleAnalytics !== "") {
 				$('head').append('<script async src="https://www.googletagmanager.com/gtag/js?id=' + Conf.default.GoogleAnalytics + '"></script>');
@@ -43,7 +41,7 @@ $(document).ready(function () {
 });
 
 var Mapmaker = (function () {
-	var maps, custom_mode = false, init_basemenu, view_license = false, select_mode = "";
+	var maps, custom_mode = false, init_basemenu, init_clearhtml, view_license = false, select_mode = "";
 	var Control = { "locate": "", "maps": "" };		// leaflet control object
 
 	return {
@@ -102,8 +100,8 @@ var Mapmaker = (function () {
 
 		// 基本メニューの作成 menuhtml:指定したHTMLで左上に作成 menuhtmlが空の時は過去のHTMLから復元
 		makemenu: (menuhtml) => {
+			console.log("Start: makemenu.")
 			if (menuhtml !== undefined) {
-				init_basemenu = menuhtml;
 				let basemenu = L.control({ position: "topleft" });			// Add BaseMenu
 				basemenu.onAdd = function () {
 					this.ele = L.DomUtil.create('div');
@@ -111,28 +109,29 @@ var Mapmaker = (function () {
 					return this.ele;
 				};
 				basemenu.addTo(map);
-				$("#basemenu").html(menuhtml);
-				let clearhtml = document.getElementById("clear_map").outerHTML;
-				document.getElementById("clear_map").outerHTML = "";
+				document.getElementById("basemenu").innerHTML = menuhtml;
+				init_clearhtml = document.getElementById("clear_map").outerHTML;	// basemenuから切り離し
+				document.getElementById("clear_map").remove();
+				init_basemenu = document.getElementById("basemenu").outerHTML;
 
-				let clearmenu = L.control({ position: "topright" });			// Add BaseMenu
-				clearmenu.onAdd = function () {
+				let clearbtn = L.control({ position: "topright" });			// Add BaseMenu
+				clearbtn.onAdd = function () {
 					this.ele = L.DomUtil.create('div');
 					this.ele.id = "clearmenu";
+					this.ele.innerHTML = init_clearhtml;
 					return this.ele;
 				};
-				clearmenu.addTo(map);
-				document.getElementById("clearmenu").innerHTML = clearhtml;
+				clearbtn.addTo(map);
 			} else {
 				for (let key in Conf.style) $(`[id^=${key}_]`).off();		// Delete Key_* events
 				$("#basemenu").html(init_basemenu);
 				$("#colors").html("");
 			};
 
-			let keys = Object.keys(Conf.target);							// マーカー追加メニュー作成
+			let keys = Object.keys(Conf.osm);							// マーカー追加メニュー作成
 			keys.forEach(key => {
-				if (Conf.target[key].marker !== undefined) {
-					let html = `<a class="dropdown-item drop_button btn mr-1" style="background-image: url('./image/${Conf.target[key].marker}')" onclick="Mapmaker.poi_add('${key}')">`;
+				if (Conf.osm[key].marker !== undefined) {
+					let html = `<a class="dropdown-item drop_button btn mr-1" style="background-image: url('./${Conf.osm[key].marker}')" onclick="Mapmaker.poi_add('${key}')">`;
 					html += `${glot.get("marker_" + key)}</a>\n`;
 					$("#menu_list").append(html);
 				};
@@ -140,34 +139,41 @@ var Mapmaker = (function () {
 
 			for (let key in Conf.style) {									// make style panel
 				let key_layer = `#${key}_layer`;
-				let key_color = `#${key}_color`;
-				let copyobj = $("#AAA").clone();
-				if (Layers[key].opacity === 0) copyobj.find('#AAA_color').addClass("bg-clear");
+				let key_line = `#${key}_line`;
+				let copyobj = document.getElementById("AAA").cloneNode(true);
 
-				copyobj.attr('id', key);
-				copyobj.find('#AAA_color').css('background-color', Conf.style[key].color);
-				copyobj.find('#AAA_color').attr('id', key + "_color");
-				copyobj.find('#AAA_layer').attr('id', key + "_layer");
-				copyobj.find('label[for="AAA_layer"]').attr('for', key + "_layer");
-				copyobj.find('.custom_label').html(glot.get("menu_" + key));
-				copyobj.appendTo($('#custom_map'));
+				copyobj.getElementsByClassName("custom_label")[0].innerHTML = glot.get("menu_" + key);
+				copyobj.querySelector('#AAA_color').setAttribute('value', Conf.style[key].color);
+				copyobj.querySelector('#AAA_color').setAttribute('id', key + "_color");
+				copyobj.querySelector('#AAA_layer').setAttribute('id', key + "_layer");
+				copyobj.querySelector('#AAA_line').setAttribute('value', Conf.style[key].width);
+				copyobj.querySelector('#AAA_line').setAttribute('id', key + "_line");
+				if (key == "background") copyobj.querySelector(key_line).outerHTML = "<span class='input-hidden'></span>";
+				copyobj.setAttribute('id', key);
+				document.getElementById("custom_map").appendChild(copyobj);
 
-				$(key_color).simpleColorPicker({
-					onChangeColor: function (color, width) {															// 色変更時のイベント定義
-						if (key_layer.indexOf("background") > -1) {
-							$("#mapid").css('background-color', color);
-							$("#mapid").removeClass("bg-clear");
-						};
-						$(`#${key}_color`).css('background-color', color);
-						$(`#${key}_color`).removeClass('bg-clear');
-						Layers[key].opacity = 1;
-						Layers[key].color = color;
-						Layers[key].color_dark = chroma(color).darken(Conf.default.ColorDarken).hex();
-						Layers[key].width = width;
-						Mapmaker.update(key);
-					}
+				// 色変更時のイベント定義
+				$(`#${key}_color`).on('change', (event) => {
+					if (key_layer.indexOf("background") > -1) {
+						$("#mapid").css('background-color', event.target.value);
+						$("#mapid").removeClass("bg-clear");
+					};
+					$(`#${key}_color`).attr('value', event.target.value);
+					$(`#${key}_color`).removeClass('bg-clear');
+					Layers[key].opacity = 1;
+					Layers[key].color = event.target.value;
+					Layers[key].color_dark = chroma(event.target.value).darken(Conf.default.ColorDarken).hex();
+					Layers[key].width = 1; //width;
+					Mapmaker.update(key);
 				});
-				$(key_layer).on('click', function () {																	// 表示変更時のイベント定義
+
+				// 幅変更時のイベント定義
+				$(key_line).on('change', (event) => {
+					Layers[key].width = event.target.value;; //width;
+					Mapmaker.update(key);
+				});
+				// 表示変更時のイベント定義
+				$(`#${key}_layer`).on('click', function () {
 					if (key_layer.indexOf("background") > -1) {
 						$("#mapid").css('background-color', "");
 						$("#mapid").addClass("bg-clear");
@@ -197,7 +203,7 @@ var Mapmaker = (function () {
 			var targets = [];
 			var progress = function (data_length) { WinCont.modal_text(def_msg + "<br>Data Loading... " + data_length + "Bytes.", false) };
 			for (let key in Conf.style) if (Conf.style[key].zoom <= nowzoom) targets.push(key);
-			OvPassCnt.get(targets, false, progress).then((ovasnswer) => {
+			OvPassCnt.get(targets, progress).then((ovasnswer) => {
 				WinCont.modal_text("<br>Data Loading Complate... ", true);
 				targets.forEach(target => {
 					let geojson = OvPassCnt.get_target(ovasnswer, target);
@@ -205,7 +211,7 @@ var Mapmaker = (function () {
 						let fil_geojson = {	// node以外なのにPoint以外だとfalse(削除)
 							"features": geojson.filter((val) => { return (Conf.style[target].type !== "node") ? val.geometry.type !== "Point" : true; })
 						};
-						if (target == "river") fil_geojson = GeoCont.coastline_merge(fil_geojson.features);
+						if (target == "river") fil_geojson = CoastLine.merge(fil_geojson.features);
 						Layers[target].geojson = fil_geojson.features;
 					};
 				});
@@ -249,14 +255,14 @@ var Mapmaker = (function () {
 		poi_add: key => {
 			WinCont.modal_open({ "title": glot.get("loading_title"), "message": glot.get("loading_message"), "mode": "" });
 			WinCont.modal_spinner(true);
-			if (Conf.target[key].file !== undefined) {		// "file"がある場合
-				$.get(Conf.target[key].file).then((csv) => {
+			if (Conf.osm[key].file !== undefined) {		// "file"がある場合
+				$.get(Conf.osm[key].file).then((csv) => {
 					let geojsons = GeoCont.csv2geojson(csv, key);
 					let targets = geojsons.map(() => [key]);
 					poiset(key, { "geojson": geojsons, "targets": targets });
 				});
 			} else {
-				OvPassCnt.get([key], true)
+				OvPassCnt.get([key])
 					.then((ovasnswer) => {
 						if (ovasnswer == undefined) {
 							let modal = { "title": glot.get("nodata_title"), "message": glot.get("nodata_message"), "mode": "close", "callback_close": () => WinCont.modal_close() };
@@ -274,25 +280,26 @@ var Mapmaker = (function () {
 				let geojsons = { geojson: [], targets: [] };
 				answer.geojson.forEach((geojson, idx) => {
 					let geo = geojson.geometry;
-					let cords = geo.coordinates;
-					cords = GeoCont.multi2flat(cords, geo.type);
-					cords = GeoCont.flat2single(cords, geo.type);
-					cords = GeoCont.bboxclip([cords], true);
+					let cords; // = geo.coordinates;
+					cords = GeoCont.multi2flat(geo.coordinates, geo.type);	// ネスト構造のデータをフラット化
+					cords = GeoCont.flat2single(cords, geo.type);			// エリア/ライン => ポイント
+					cords = GeoCont.bboxclip([cords], true);				// 画面外のPOIは無視したgeojsonを作成
 					if (cords.length > 0) {
 						geojson.geometry.type = "Point";
+						if (cords[0][0] == NaN) console.log("NAN");
 						geojson.geometry.coordinates = cords[0];
 						geojsons.geojson.push(geojson);
 						geojsons.targets.push(answer.targets[idx]);
 					};
 				});
-				PoiCont.add(geojsons);
+				PoiCont.add_geojson(geojsons);
 				WinCont.modal_close();
 				WinCont.modal_select(key).then((slanswer) => {
-					PoiCont.add(slanswer);
+					PoiCont.add_geojson(slanswer);
 					Marker.set(key);
 					WinCont.modal_close();
 					console.log(`Mapmaker: Add: ${key} end`);
-				}); // .catch(() => console.log("poi_add: cancel"));
+				}).catch(() => console.log("poi_add: cancel"));
 			};
 		},
 
@@ -301,7 +308,7 @@ var Mapmaker = (function () {
 			let poi = PoiCont.get_osmid(osmid);
 			if (poi !== undefined) {
 				poi.enable = false;
-				PoiCont.set(poi);
+				PoiCont.set_geojson(poi);
 				Marker.delete(target, osmid);
 			};
 		},
@@ -312,16 +319,19 @@ var Mapmaker = (function () {
 				case "":
 				case undefined:
 					let html = "", images = [];
-					Object.keys(Conf.marker_tag).forEach(key1 => {
-						Object.keys(Conf.marker_tag[key1]).forEach((key2) => {
-							let filename = Conf.marker_tag[key1][key2];
+					Object.keys(Conf.marker.tag).forEach(key1 => {
+						Object.keys(Conf.marker.tag[key1]).forEach((key2) => {
+							let filename = Conf.marker.path + "/" + Conf.marker.tag[key1][key2];
 							if (images.indexOf(filename) == -1) { images.push(filename) };
 						});
 					});
-					images = images.concat(Object.values(Conf.marker_append_files));
-					images = images.filter((x, i, self) => { return self.indexOf(x) === i });
+					Object.values(Conf.marker_append.files).forEach(key1 => {
+						let filename = Conf.marker_append.path + "/" + key1;
+						if (images.indexOf(filename) == -1) { images.push(filename) };
+					});
+					images = images.filter((x, i, self) => { return self.indexOf(x) === i });	//重複削除
 					images.sort();
-					Object.keys(images).forEach(fidx => { html += `<a href="#" onclick="Mapmaker.poi_marker_change('${target}','${osmid}','${images[fidx]}')"><img class="iconx2" src="./image/${images[fidx]}"></a>` });
+					Object.keys(images).forEach(fidx => { html += `<a href="#" onclick="Mapmaker.poi_marker_change('${target}','${osmid}','${images[fidx]}')"><img class="iconx2" src="${images[fidx]}"></a>` });
 					WinCont.modal_open({ "title": "", "message": html, "mode": "close", callback_close: WinCont.modal_close });
 					break;
 				default:
@@ -335,10 +345,10 @@ var Mapmaker = (function () {
 			let marker = Marker.get(target, osmid);
 			if (marker !== undefined) {
 				let wiki = marker.mapmaker_lang.split(':');
-				let url = encodeURI(`https://${wiki[0]}.${Conf.target.wikipedia.domain}/wiki/${wiki[1]}`);
+				let url = encodeURI(`https://${wiki[0]}.${Conf.osm.wikipedia.domain}/wiki/${wiki[1]}`);
 				let pix = map.latLngToLayerPoint(marker.getLatLng());
 				let ll2 = map.layerPointToLatLng(pix);
-				Basic.getWikipedia(wiki[0], wiki[1]).then(text => Marker.qr_add(target, osmid, url, ll2, text));
+				Basic.getWikipedia(wiki[0], wiki[1]).then(data => Marker.qr_add(target, osmid, url, ll2, data));
 			};
 		},
 
@@ -395,7 +405,7 @@ var Mapmaker = (function () {
 
 		// save layers&pois
 		save: (type) => {
-			LayerCont.save({ type: type, mode: select_mode });
+			SVGCont.save({ type: type, mode: select_mode });
 		},
 
 		// View Zoom Level & Status Comment
@@ -419,15 +429,16 @@ var Mapmaker = (function () {
 				title: glot.get("restart_title"),
 				message: glot.get("restart_message"),
 				mode: "yesno",
-				callback_yes: () => WinCont.modal_close(),
-				callback_no: () => {
+				callback_yes: () => {
 					Mapmaker.custom(false);
+					OvPassCnt.clear();
 					LayerCont.all_clear();
 					Marker.all_clear();
-					Mapmaker.makemenu();
 					PoiCont.all_clear();
+					Mapmaker.makemenu();
 					WinCont.modal_close();
-				}
+				},
+				callback_no: () => WinCont.modal_close()
 			});
 		}
 	}

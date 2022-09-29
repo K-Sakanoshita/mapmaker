@@ -9,9 +9,7 @@ header {
 	height: 60px;
 	margin: 0px !important;
 	padding: 0px !important;
-	color: #ffffff !important;
-	background-image: url('./image/bg1.png');
-	background-size: inherit;
+	background-color: #2b4429 !important;
 }
 
 body {
@@ -120,6 +118,7 @@ span.subtitle {
 }
 
 span.icon {
+	border-radius: 4px;
 	margin-left: 2px;
 	padding: 0px 2px;
 	white-space: nowrap;

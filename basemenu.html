@@ -16,7 +16,7 @@
 	<div class="card mb-0">
 		<div class="card-header" id="headingOne">
 			<button class="comm_button d-flex" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-				<i class="flex-row fas fa-palette fa-2x mr-4"></i> <span class="flex-row" glot-model="controlmenu"></span>
+				<i class="flex-row fas fa-palette fa-2x mr-4"></i> <span glot-model="controlmenu"></span>
 			</button>
 			<div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
 				<div class="m-0 pl-1 pr-1 pb-2">
@@ -42,7 +42,8 @@
 							<div class="custom_group mx-auto" id="AAA">
 								<label class="custom_label"></label>
 								<button id="AAA_layer" class="del_button mr-1"><i class="fas fa-trash-alt mr-1"></i></button>
-								<button id="AAA_color" class="color_button mr-1"></button>
+								<input type="color" id="AAA_color" class="color_button">
+								<input type="number" id="AAA_line" class="line_text" max="10" min="0" step="0.1">
 							</div>
 						</div>
 					</div>
@@ -55,12 +56,10 @@
 <div class="save_map" id="save_map">
 	<div class="d-flex">
 		<button class="half_button d-flex" onclick="Mapmaker.save('png');">
-			<i class="fas fa-file-download fa-2x mr-2 flex-row"></i>
-			<span class="flex-row">PNG</span>
+			<i class="fas fa-file-download fa-2x mr-3 flex-row"></i><span>PNG</span>
 		</button>
 		<button class="half_button d-flex" onclick="Mapmaker.save('svg');">
-			<i class="fas fa-file-download fa-2x mr-2 flex-row"></i>
-			<span class="flex-row">SVG</span>
+			<i class="fas fa-file-download fa-2x mr-3 flex-row"></i><span>SVG</span>
 		</button>
 	</div>
 </div>

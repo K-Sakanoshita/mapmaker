@@ -44,11 +44,11 @@
 		"en": "(TEST)Acquisition Date: "
 	},
 	"makemap": {
-		"ja": "このエリアで<br />マップを作る",
-		"en": "Make a map<br />within this area"
+		"ja": "ここのマップを作る",
+		"en": "Make a map of this place"
 	},
 	"controlmenu": {
-		"ja": "マップを編集",
+		"ja": "マップを編集する",
 		"en": "Edit the map"
 	},
 	"address": {
@@ -132,8 +132,8 @@
 		"en": "Loading... Please wait a moment."
 	},
 	"restart_title": {
-		"ja": "最初からやり直し",
-		"en": "Start over from the beginning."
+		"ja": "データを消してやり直す",
+		"en": "Clear data and restart."
 	},
 	"location": {
 		"ja": "現在地を表示",
@@ -148,8 +148,8 @@
 		"en": "Failed to retrieve data from the server. Please wait about 2 minutes and try again."
 	},
 	"restart_message": {
-		"ja": "データ削除は行わず、少しの間待ってみますか？",
-		"en": "Would you like to wait for a while without deleting the data?"
+		"ja": "ダウンロードしたデータを消して、最初からやり直しますか？",
+		"en": "Do you want to delete the downloaded data and start over?"
 	},
 	"nodata_title": {
 		"ja": "データが見つかりません",
@@ -160,7 +160,7 @@
 		"en": "The type of data you specified was not found. Please mapping it."
 	},
 	"area_select": {
-		"ja": "範囲選択",
+		"ja": "A4(縦横)サイズ指定",
 		"en": "range selection"
 	},
 	"area_deselect": {
@@ -302,6 +302,10 @@
 	"marker_to_ja": {
 		"ja": "日本語に変更",
 		"en": "Change to Japanese"
+	},
+	"source_wikipedia": {
+		"ja": "(出典: Wikipedia)",
+		"en": "(Source: Wikipedia)"
 	},
 	"marker_noname": {
 		"ja": "(名称無し)",
