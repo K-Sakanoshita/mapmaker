@@ -8,8 +8,8 @@
    height="32"
    viewBox="0 0 32 32"
    xml:space="preserve"
-   sodipodi:docname="icon_circle.svg"
-   inkscape:version="1.2.1 (9c6d41e410, 2022-07-14)"
+   sodipodi:docname="circle.svg"
+   inkscape:version="1.1 (c68e22c387, 2021-05-23)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -32,13 +32,13 @@
    inkscape:pageopacity="0"
    inkscape:pageshadow="2"
    inkscape:window-width="1920"
-   inkscape:window-height="1129"
+   inkscape:window-height="1017"
    id="namedview5"
    showgrid="false"
    inkscape:snap-nodes="false"
-   inkscape:zoom="22.591756"
-   inkscape:cx="24.41156"
-   inkscape:cy="13.190652"
+   inkscape:zoom="15.974784"
+   inkscape:cx="19.499481"
+   inkscape:cy="15.618365"
    inkscape:window-x="-8"
    inkscape:window-y="-8"
    inkscape:window-maximized="1"
@@ -46,15 +46,12 @@
    inkscape:document-rotation="0"
    inkscape:pagecheckerboard="0"
    inkscape:snap-grids="true"
-   inkscape:snap-to-guides="true"
-   inkscape:showpageshadow="2"
-   inkscape:deskcolor="#d1d1d1" />
+   inkscape:snap-to-guides="true" />
 	
-<rect
-   style="fill:#ffffff;stroke:#787878;stroke-width:2.182;stroke-linejoin:round;stroke-opacity:1;paint-order:markers stroke fill;fill-opacity:1"
-   id="rect340"
-   width="29.812607"
-   height="29.828257"
-   x="1.0993888"
-   y="1.0915641"
-   ry="4.691977" /></svg>
+<ellipse
+   style="fill:#ffffff;fill-opacity:1;stroke:#828282;stroke-width:3.3575;stroke-linecap:round;stroke-miterlimit:0;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
+   id="path223"
+   cx="16.087854"
+   cy="16.087854"
+   rx="14.375616"
+   ry="14.344316" /></svg>

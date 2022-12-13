@@ -502,7 +502,7 @@ var DataList = (function () {
 			$('#modal_select_table').css("width", "");
 			DataList.make_select(result);
 			let osmids = result.filter(val => val.enable).map(val => val.osmid);
-			DataList.one_select(osmids);
+			DataList.one_select(osmids);		
 			table.draw();
 			table.off('select');
 			table.on('select', (e, dt, type, indexes) => {

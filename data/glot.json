@@ -180,12 +180,8 @@
 		"en": "Wikipedia article"
 	},
 	"marker_shop": {
-		"ja": "各種店舗",
+		"ja": "各種店舗/施設",
 		"en": "Shop"
-	},
-	"marker_facility": {
-		"ja": "各種施設",
-		"en": "Facility"
 	},
 	"marker_takeaway": {
 		"ja": "テイクアウト/デリバリー",

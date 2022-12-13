@@ -114,11 +114,11 @@ var PoiCont = (function () {
 		pois: () => { return PoiData },
 		latlngs: () => { return latlngs },
 		all_clear: () => { PoiData = { geojson: [], targets: [], enable: [] } },
-		add_geojson: (pois) => {		// add geojson pois / pois: {geojson: [],targets: []}
+		add_geojson: (pois) => {		// add geojson pois / pois: {geojson: [],targets: []} enableが無いのは仕様
 			if (pois.enable == undefined) pois.enable = [];
 			pois.geojson.forEach((val1, idx1) => {		// 既存Poiに追加
-				let enable = pois.enable[idx1] == undefined ? true : pois.enable[idx1];
-				let poi = { "geojson": pois.geojson[idx1], "targets": pois.targets[idx1], "enable": enable };
+				//if (pois.enable[idx1] == undefined) pois.enable[idx1] = false;
+				let poi = { "geojson": pois.geojson[idx1], "targets": pois.targets[idx1], "enable": pois.enable[idx1] };
 				PoiCont.set_geojson(poi);
 			});
 			PoiData.geojson.forEach((node, node_idx) => {
@@ -140,7 +140,11 @@ var PoiCont = (function () {
 			} else {
 				PoiData.targets[cidx] = Object.assign(PoiData.targets[cidx], poi.targets);
 			};
-			if (poi.enable !== undefined) PoiData.enable[cidx] = poi.enable;
+			if (PoiData.enable[cidx] == undefined && poi.enable == undefined) {
+				PoiData.enable[cidx] = false;
+			} else if(poi.enable !== undefined){
+				PoiData.enable[cidx] = poi.enable;
+			}
 		},
 		get_target: (targets) => { return poi_filter(targets) },	// 指定したtargetのgeojsonと緯度経度を返す
 		get_osmid: (osmid) => {           							// osmidを元にgeojsonと緯度経度、targetを返す
@@ -201,6 +205,7 @@ var Marker = (function () {		// Marker closure
 			return markers.some(key => key == target);
 		},
 		set: (target) => {						// Poi表示
+			console.log("Marker.set: " + target);
 			Marker.delete(target);
 			markers[target] = [];
 			let pois = PoiCont.get_target(target);

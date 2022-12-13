@@ -229,15 +229,7 @@
             "overpass": [
                 "node[\"shop\"]",
                 "way[\"shop\"]",
-                "relation[\"shop\"]"
-            ],
-            "tags": [
-                "shop"
-            ]
-        },
-        "facility": {
-            "marker": "maki-icon/social_facility.svg",
-            "overpass": [
+                "relation[\"shop\"]",
                 "node[\"amenity\"]",
                 "way[\"amenity\"]",
                 "relation[\"amenity\"]",
@@ -248,6 +240,7 @@
                 "way[\"office\"]"
             ],
             "tags": [
+                "shop",
                 "amenity",
                 "tourism",
                 "office"
