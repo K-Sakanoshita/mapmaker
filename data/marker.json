@@ -76,6 +76,7 @@
             },
             "building": {
                 "apartments": "home.svg",
+                "commercial": "commercial.svg",
                 "office": "town_hall.svg",
                 "public": "home.svg",
                 "temple": "place-of-worship.svg",

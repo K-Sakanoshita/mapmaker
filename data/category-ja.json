@@ -74,6 +74,7 @@
         },
         "building": {
             "apartments": "アパート",
+            "commercial": "商業施設",
             "office": "事務所",
             "public": "公共建築",
             "temple": "寺院",

@@ -74,6 +74,7 @@
         },
         "building": {
             "apartments": "apartments",
+            "commercial": "commercial",
             "office": "office",
             "public": "public",
             "temple": "temple",
