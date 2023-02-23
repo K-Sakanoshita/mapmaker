@@ -74,13 +74,17 @@
         },
         "forest": {
             "overpass": [
+                "way[\"barrier\"=\"hedge\"]",
                 "way[\"natural\"=\"wood\"]",
                 "way[\"landuse\"=\"forest\"]",
+                "way[\"natural\"=\"tree_row\"]",
                 "relation[\"natural\"=\"wood\"]",
                 "relation[\"landuse\"=\"forest\"]"
             ],
             "tags": [
+                "barrier=hedge",
                 "natural=wood",
+                "natural=tree_row",
                 "landuse=forest"
             ]
         },
@@ -190,7 +194,9 @@
         },
         "barrier": {
             "overpass": [
-                "way[\"barrier\"=\"wall\"][\"barrier\"=\"fence\"][\"barrier\"=\"retaining_wall\"]"
+                "way[\"barrier\"=\"wall\"]",
+                "way[\"barrier\"=\"fence\"]",
+                "way[\"barrier\"=\"retaining_wall\"]"
             ],
             "tags": [
                 "barrier=wall",
@@ -418,7 +424,7 @@
             "zoom": 11,
             "type": "area",
             "color": "#b0e090",
-            "width": 0.8,
+            "width": 1.2,
             "dashArray": null
         },
         "pedestrian": {
@@ -474,7 +480,7 @@
             "zoom": 15,
             "type": "area",
             "color": "#dcd3cd",
-            "width": 0.8,
+            "width": 0.6,
             "dashArray": null
         },
         "barrier": {
