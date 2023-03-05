@@ -262,9 +262,12 @@
         },
         "highway": {
             "bus_stop": "bus stop",
+            "crossing": "crossing",
+            "elevator": "elevator",
+            "milestone": "milestone",
             "traffic_signals": "traffic signals",
-            "street_lamp": "street lamp",
-            "elevator": "elevator"
+            "steps": "steps.svg",
+            "street_lamp": "street lamp"
         },
         "social_facility": {
             "shelter": "temporary sleeping"

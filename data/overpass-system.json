@@ -337,7 +337,6 @@
             "marker": "maki-icon/defibrillator.svg",
             "overpass": [
                 "node[\"highway\"]",
-                "way[\"highway\"]",
                 "node[\"amenity\"=\"social_facility\"]",
                 "way[\"amenity\"=\"social_facility\"]",
                 "node[\"emergency\"]",

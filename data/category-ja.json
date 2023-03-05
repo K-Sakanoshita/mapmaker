@@ -262,9 +262,12 @@
         },
         "highway": {
             "bus_stop": "バス停",
+            "crossing": "横断歩道",
+            "elevator": "エレベーター",
+            "milestone": "距離標",
             "traffic_signals": "信号機",
-            "street_lamp": "街灯",
-            "elevator": "エレベーター"
+            "steps": "steps.svg",
+            "street_lamp": "街灯"
         },
         "social_facility": {
             "shelter": "一時避難所"

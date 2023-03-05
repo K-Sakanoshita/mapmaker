@@ -174,10 +174,12 @@
             },
             "highway": {
                 "bus_stop": "board_bus.svg",
+                "crossing": "crossing_tram_road.svg",
+                "elevator": "elevator.svg",
+                "milestone": "milestone.svg",
                 "traffic_signals": "signal.svg",
                 "steps": "steps.svg",
-                "street_lamp": "street_lamp_arm.svg",
-                "elevator": "elevator.svg"
+                "street_lamp": "street_lamp_arm.svg"
             },
             "social_facility": {
                 "shelter": "shelter.svg"
