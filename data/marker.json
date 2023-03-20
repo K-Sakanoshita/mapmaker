@@ -80,6 +80,7 @@
                 "office": "town_hall.svg",
                 "public": "home.svg",
                 "temple": "place-of-worship.svg",
+                "retail": "shop.svg",
                 "residential": "residential-community.svg",
                 "yes": "home.svg"
             },
@@ -158,10 +159,14 @@
                 "wine": "alcohol-shop.svg"
             },
             "natural": {
-                "tree": "park.svg",
-                "water": "water.svg",
+                "peak": "mountain.svg,noframe",
+                "scrub": "shrub_low.svg,noframe",
+                "stone": "boulder2.svg,noframe",
+                "tree": "park.svg,noframe",
+                "tree_row": "tree_row.svg,noframe",
+                "water": "water.svg,noframe",
                 "wetland": "wetland.svg",
-                "wood": "park-alt1.svg"
+                "wood": "park-alt1.svg,noframe"
             },
             "emergency": {
                 "assembly_point": "assembly_point.svg",
@@ -174,12 +179,12 @@
             },
             "highway": {
                 "bus_stop": "board_bus.svg",
-                "crossing": "crossing_tram_road.svg",
+                "crossing": "crossing_tram_road.svg,noframe",
                 "elevator": "elevator.svg",
                 "milestone": "milestone.svg",
                 "traffic_signals": "signal.svg",
-                "steps": "steps.svg",
-                "street_lamp": "street_lamp_arm.svg"
+                "steps": "steps.svg,noframe",
+                "street_lamp": "street_lamp_arm.svg,noframe"
             },
             "social_facility": {
                 "shelter": "shelter.svg"
@@ -251,6 +256,7 @@
                 "bridge": "bridge.svg",
                 "torii": "shinto.svg",
                 "lamp": "lantern.svg",
+                "manhole": "manhole.svg,noframe",
                 "tower": "Emoji_Black_bell2.svg",
                 "surveillance": "marker-stroked.svg",
                 "works": "factory.svg"
@@ -332,14 +338,14 @@
             },
             "tree": {
                 "species": {
-                    "Cherry blossom": "sakura.svg",
-                    "Cerasus itosakura": "sakura.svg",
-                    "Cerasus × yedoensis": "sakura.svg"
+                    "Cherry blossom": "sakura.svg,noframe",
+                    "Cerasus itosakura": "sakura.svg,noframe",
+                    "Cerasus × yedoensis": "sakura.svg,noframe"
                 },
                 "species:en": {
-                    "Cherry blossom": "sakura.svg",
-                    "Cerasus itosakura": "sakura.svg",
-                    "Cerasus × yedoensis": "sakura.svg"
+                    "Cherry blossom": "sakura.svg,noframe",
+                    "Cerasus itosakura": "sakura.svg,noframe",
+                    "Cerasus × yedoensis": "sakura.svg,noframe"
                 }
             }
         }

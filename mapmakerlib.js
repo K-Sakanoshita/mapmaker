@@ -20,10 +20,10 @@ var LayerCont = (function () {		// for line&area / nodeはMarker
 			WinCont.domAdd("a4_right", "article");
 		},
 
-		layer_make: (key, view) => {						// MakeData内 -> name:コントロール名 / color:SVG色 / width:SVG Line Weight / dashArray:破線
+		layer_make: (key, view) => {
 			let type = Conf.style[key].type, opacity;
 			if (view !== undefined) Layers[key].opacity = view ? 1 : 0;
-			let style = SVGCont.svg_style(key);
+			let style = SVGCont.svg_style(key, false);
 			if (Layers[key].svg) {							// already svg layers
 				Layers[key].svg.forEach(way => {
 					switch (view) {
@@ -32,7 +32,12 @@ var LayerCont = (function () {		// for line&area / nodeはMarker
 						case false: opacity = { "fillOpacity": 0, "opacity": 0 }; break;
 					};
 					if (type !== "area") opacity.fillOpacity = 0; 					// LineがPolygon化された場合の対処
-					way.setStyle(Object.assign(style, opacity));
+					if (way.overstyle !== undefined) {	// overstyleの再描画時
+						let tstyle = SVGCont.svg_style(key, true);
+						way.setStyle(Object.assign(tstyle, opacity));
+					} else {
+						way.setStyle(Object.assign(style, opacity));
+					}
 					way.options = Object.assign(way.options, opacity);
 				});
 			} else if (Layers[key].geojson !== undefined) {		//already geojson
@@ -45,6 +50,18 @@ var LayerCont = (function () {		// for line&area / nodeはMarker
 					ways.push(L.geoJSON(way, style));			// geojsonからSVGレイヤーを作成
 					ways[ways.length - 1].addTo(map).on('click', way_toggle);
 					ways[ways.length - 1].mapmaker = { id: ways.length - 1, "key": key };
+					let svgdom = ways[ways.length - 1].getLayers()[0].getElement();
+					let filter = Conf.style[key].filter;
+					if (filter !== undefined) if (map.getZoom() >= filter.zoom) svgdom.style.filter = filter.value;
+					if (Conf.style[key].overstyle !== undefined) {	// overstyleがある場合
+						let tstyle = SVGCont.svg_style(key, true);
+						tstyle = Object.assign(tstyle, opacity);
+						ways.push(L.geoJSON(way, tstyle));			// geojsonからSVGレイヤーを作成
+
+						ways[ways.length - 1].addTo(map);
+						ways[ways.length - 1].mapmaker = { id: ways.length - 1, "key": key };
+						ways[ways.length - 1].overstyle = true;
+					}
 				});
 				Layers[key].svg = ways;
 			};
@@ -86,6 +103,7 @@ var LayerCont = (function () {		// for line&area / nodeはMarker
 
 	function way_toggle(ev) {					// wayをクリックしたときのイベント（表示/非表示切り替え）
 		let key = ev.target.mapmaker.key;
+		let nextid = ev.target.mapmaker.id + 1;
 		let options = ev.target.options;
 		if (options.opacity == 0) {
 			options.fillOpacity = 1;
@@ -97,11 +115,17 @@ var LayerCont = (function () {		// for line&area / nodeはMarker
 			options.opacity = 0;
 			ev.target.options.opacity = 0;
 		};
-		let style = SVGCont.svg_style(key);
+		let style = SVGCont.svg_style(key, false);
 		options.color = style.color;
 		options.fillColor = style.fillColor;
 		options.weight = style.weight;
 		ev.target.setStyle(options);
+		if (Layers[key].svg[nextid] !== undefined) {
+			if (Layers[key].svg[nextid].overstyle !== undefined) {
+				Layers[key].svg[nextid].options = Object.assign({}, options);
+				Layers[key].svg[nextid].setStyle(Layers[key].svg[nextid].options);
+			}
+		}
 	};
 })();
 
@@ -142,7 +166,7 @@ var PoiCont = (function () {
 			};
 			if (PoiData.enable[cidx] == undefined && poi.enable == undefined) {
 				PoiData.enable[cidx] = false;
-			} else if(poi.enable !== undefined){
+			} else if (poi.enable !== undefined) {
 				PoiData.enable[cidx] = poi.enable;
 			}
 		},
@@ -170,7 +194,7 @@ var PoiCont = (function () {
 				let name = tags.name == undefined ? "-" : tags.name;
 				let category = PoiCont.get_catname(tags);
 				let enable = pois.enable[idx];
-				datas.push({ "osmid": node.id, "name": name, "category": category, "enable": enable });
+				if (category !== "") datas.push({ "osmid": node.id, "name": name, "category": category, "enable": enable });
 			});
 			datas.sort((a, b) => { return (a.between > b.between) ? 1 : -1 });
 			return datas;
@@ -333,7 +357,7 @@ var Marker = (function () {		// Marker closure
 
 	function make_popup(params) {	// markerは複数返す時がある
 		return new Promise((resolve, reject) => {
-			let categorys = Object.keys(Conf.category), filename;
+			let categorys = Object.keys(Conf.category), filename, noframe = false;
 			let tags = params.poi.geojson.properties.tags == undefined ? params.poi.geojson.properties : params.poi.geojson.properties.tags;
 			let name = tags[params.langname] == undefined ? tags.name : tags[params.langname];
 			let step = tags.step_count !== undefined ? tags.step_count + glot.get("step_count") : "";	// step count
@@ -357,8 +381,15 @@ var Marker = (function () {		// Marker closure
 					break;
 				default:
 					// get marker icon filename
-					let keyn = categorys.find(key => tags[key] !== undefined);
-					let keyv = (keyn !== undefined) ? Conf.marker.tag[keyn][tags[keyn]] : undefined;
+					let keyn, keyv;
+					let keyns = categorys.filter(key => tags[key] !== undefined);
+					for (const key of keyns) {
+						if (Conf.marker.tag[key] !== undefined) {		// マーカーがある場合
+							keyn = key;
+							keyv = Conf.marker.tag[keyn][tags[keyn]];
+							break;
+						}
+					};
 					if (keyn !== undefined && keyv !== undefined) {	// in category
 						if (params.filename == undefined) {
 							filename = Conf.marker.path + "/" + Conf.marker.tag[keyn][tags[keyn]];
@@ -374,7 +405,9 @@ var Marker = (function () {		// Marker closure
 						} else {
 							filename = params.filename;;
 						};
-						let html = `<div class="d-flex"><img class="icon_normal" style="width: ${Conf.effect.icon.x}px; height: ${Conf.effect.icon.y}px;" src="${filename}" icon-name="${name}">`;
+						noframe = filename.indexOf(",") > 0 ? true : false;
+						filename = filename.indexOf(",") > 0 ? filename.split(",")[0] : filename;
+						let html = `<div class="d-flex"><img class="${noframe ? "" : "icon_normal"}" style="width: ${Conf.effect.icon.x}px; height: ${Conf.effect.icon.y}px;" src="${filename}" icon-name="${name}">`;
 						let span = `<span class="icon" style="font-size: ${Conf.effect.text.size}px">${name}</span>`;
 						if (name !== "" && Conf.effect.text.view) html += span;
 						let span_width = name !== "" ? name.length * Conf.effect.text.size : 0;

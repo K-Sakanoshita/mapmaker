@@ -164,7 +164,7 @@ var Mapmaker = (function () {
 					Layers[key].opacity = 1;
 					Layers[key].color = event.target.value;
 					Layers[key].color_dark = chroma(event.target.value).darken(Conf.default.ColorDarken).hex();
-					Layers[key].width = 1; //width;
+					if (document.getElementById(key + "_line") !== null) Layers[key].width = document.getElementById(key + "_line").value; //width;
 					Mapmaker.update(key);
 				});
 
@@ -223,10 +223,10 @@ var Mapmaker = (function () {
 				Mapmaker.custom(true);
 				WinCont.modal_close();
 				console.log("Mapmaker: make: end");
-			}).catch(() => {
+			})/*.catch(() => {
 				let modal = { "title": glot.get("sverror_title"), "message": glot.get("sverror_message"), "mode": "close", "callback_close": () => Mapmaker.all_clear() };
 				WinCont.modal_open(modal);
-			});
+			});*/
 			return;
 		},
 
@@ -272,10 +272,10 @@ var Mapmaker = (function () {
 						} else {
 							poiset(key, ovasnswer);
 						};
-					}).catch(() => {
+					})/*.catch(() => {
 						let modal = { "title": glot.get("sverror_title"), "message": glot.get("sverror_message"), "mode": "close", "callback_close": () => Mapmaker.all_clear() };
 						WinCont.modal_open(modal);
-					})
+					})*/
 			};
 
 			function poiset(key, answer) {
@@ -324,6 +324,7 @@ var Mapmaker = (function () {
 					Object.keys(Conf.marker.tag).forEach(key1 => {
 						Object.keys(Conf.marker.tag[key1]).forEach((key2) => {
 							let filename = Conf.marker.path + "/" + Conf.marker.tag[key1][key2];
+							filename = filename.indexOf(",") > 0 ? filename.split(",")[0] : filename;
 							if (images.indexOf(filename) == -1) { images.push(filename) };
 						});
 					});
@@ -502,7 +503,7 @@ var DataList = (function () {
 			$('#modal_select_table').css("width", "");
 			DataList.make_select(result);
 			let osmids = result.filter(val => val.enable).map(val => val.osmid);
-			DataList.one_select(osmids);		
+			DataList.one_select(osmids);
 			table.draw();
 			table.off('select');
 			table.on('select', (e, dt, type, indexes) => {
