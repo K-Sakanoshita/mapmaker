@@ -4,6 +4,7 @@
         "osmbounds": []
     },
     "default": {
+        "HeaderSize": 40,
         "SplashImage": "image/splash.png",
         "DefaultCenter": [
             34.7075,

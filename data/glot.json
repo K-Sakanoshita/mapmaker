@@ -20,7 +20,7 @@
 		"en": "Town Walk Map Maker"
 	},
 	"subtitle": {
-		"ja": "自由に編集＆何にでも使える地図",
+		"ja": "自由に加工＆使える地図画像を作るサイト",
 		"en": "Free to edit & use the map for anything"
 	},
 	"licence_title": {
@@ -180,19 +180,19 @@
 		"en": "Wikipedia article"
 	},
 	"marker_shop": {
-		"ja": "各種店舗/施設",
+		"ja": "店舗・施設",
 		"en": "Shop"
 	},
 	"marker_takeaway": {
-		"ja": "テイクアウト/デリバリー",
+		"ja": "持ち帰り・宅配",
 		"en": "Take-out/delivery"
 	},
 	"marker_viewpoint": {
-		"ja": "歴史・文化・アートなど",
+		"ja": "歴史・文化・アート",
 		"en": "viewpoint"
 	},
-	"marker_Animals&plant": {
-		"ja": "動物の檻・樹木",
+	"marker_natural": {
+		"ja": "自然・動物",
 		"en": "tree"
 	},
 	"marker_disaster&move": {
@@ -254,6 +254,10 @@
 	"menu_highway_step": {
 		"ja": "階段",
 		"en": "Step"
+	},
+	"menu_highway_substandard": {
+		"ja": "生活道路",
+		"en": "SubStd road"
 	},
 	"menu_highway_standard": {
 		"ja": "一般道路",

@@ -91,7 +91,7 @@
         "pedestrian": {
             "overpass": [
                 "relation[\"highway\"=\"pedestrian\"]",
-                "way[\"highway\"=\"pedestrian\"][\"area\"]",
+                "way[\"highway\"=\"pedestrian\"][\"area\"=\"yes\"]",
                 "way[\"man_made\"=\"bridge\"]"
             ],
             "tags": [
@@ -101,7 +101,7 @@
         },
         "railway": {
             "overpass": [
-                "way[\"railway\"]"
+                "way[\"railway\"=\"rail\"]"
             ],
             "tags": [
                 "railway=funicular",
@@ -110,7 +110,7 @@
                 "railway=monorail",
                 "railway=narrow_gauge",
                 "railway=rail",
-                "railway=subway",
+                "railway!=subway",
                 "railway=tram"
             ]
         },
@@ -134,24 +134,34 @@
                 "highway=steps"
             ]
         },
-        "highway_standard": {
+        "highway_substandard": {
             "overpass": [
                 "way[\"highway\"~\"unclassified\"]",
                 "way[\"highway\"~\"residential\"]",
                 "way[\"highway\"=\"living_street\"]",
-                "way[\"highway\"=\"pedestrian\"][!\"area\"]",
-                "way[\"highway\"=\"service\"]",
-                "way[\"highway\"~\"tertiary\"]",
-                "way[\"highway\"~\"tertiary_link\"]"
+                "way[\"highway\"=\"pedestrian\"]",
+                "way[\"highway\"=\"service\"]"
             ],
             "tags": [
                 "highway=unclassified",
                 "highway=residential",
                 "highway=living_street",
-                "highway=pedestrian",
-                "highway=service",
+                "highway=pedestrian&&noarea",
+                "highway=service"
+            ]
+        },
+        "highway_standard": {
+            "overpass": [
+                "way[\"highway\"~\"secondary\"]",
+                "way[\"highway\"~\"secondary_link\"]",
+                "way[\"highway\"~\"tertiary\"]",
+                "way[\"highway\"~\"tertiary_link\"]"
+            ],
+            "tags": [
                 "highway=tertiary",
-                "highway=tertiary_link"
+                "highway=tertiary_link",
+                "highway=secondary",
+                "highway=secondary_link"
             ]
         },
         "highway_primary": {
@@ -159,17 +169,13 @@
                 "way[\"highway\"~\"trunk\"]",
                 "way[\"highway\"~\"trunk_link\"]",
                 "way[\"highway\"~\"primary\"]",
-                "way[\"highway\"~\"primary_link\"]",
-                "way[\"highway\"~\"secondary\"]",
-                "way[\"highway\"~\"secondary_link\"]"
+                "way[\"highway\"~\"primary_link\"]"
             ],
             "tags": [
                 "highway=trunk",
                 "highway=trunk_link",
                 "highway=primary",
-                "highway=primary_link",
-                "highway=secondary",
-                "highway=secondary_link"
+                "highway=primary_link"
             ]
         },
         "highway_motorway": {
@@ -309,10 +315,11 @@
                 "playground"
             ]
         },
-        "Animals&plant": {
+        "natural": {
             "marker": "maki-icon/animal-shelter.svg",
             "overpass": [
-                "node[\"natural\"=\"tree\"]",
+                "node[\"natural\"]",
+                "way[\"natural\"]",
                 "node[\"species\"=\"Cherry blossom\"]",
                 "node[\"species:en\"=\"Cherry blossom\"]",
                 "node[\"species\"=\"Cerasus itosakura\"]",
@@ -323,7 +330,7 @@
                 "way[\"attraction\"=\"animal\"]"
             ],
             "tags": [
-                "natural=tree",
+                "natural",
                 "species=Cherry blossom",
                 "species:en=Cherry blossom",
                 "species=Cerasus itosakura",
@@ -337,16 +344,18 @@
             "marker": "maki-icon/defibrillator.svg",
             "overpass": [
                 "node[\"highway\"]",
-                "way[\"highway\"]",
+                "way[\"highway\"=\"steps\"]",
                 "node[\"amenity\"=\"social_facility\"]",
                 "way[\"amenity\"=\"social_facility\"]",
                 "node[\"emergency\"]",
-                "way[\"emergency\"]"
+                "way[\"emergency\"]",
+                "node[\"man_made\"=\"manhole\"]"
             ],
             "tags": [
                 "highway",
                 "amenity=social_facility",
-                "emergency"
+                "emergency",
+                "man_made=manhole"
             ]
         },
         "shelter_temporary": {
@@ -397,105 +406,156 @@
             "type": "area",
             "color": "#f0ffd8",
             "width": 0.8,
-            "dashArray": null
+            "dashArray": null,
+            "linecap": "round"
         },
         "garden": {
             "zoom": 16,
             "type": "area",
             "color": "#d8ffb8",
             "width": 0.3,
-            "dashArray": null
+            "dashArray": null,
+            "linecap": "round"
         },
         "river": {
             "zoom": 11,
             "type": "area",
             "color": "#d0e8ff",
             "width": 0.5,
-            "dashArray": null
+            "dashArray": null,
+            "linecap": "round"
         },
         "parking": {
             "zoom": 15.5,
             "type": "area",
             "color": "#ffffe8",
             "width": 0.8,
-            "dashArray": null
+            "dashArray": null,
+            "linecap": "round"
         },
         "forest": {
             "zoom": 11,
             "type": "area",
             "color": "#b0e090",
             "width": 1.2,
-            "dashArray": null
+            "dashArray": null,
+            "linecap": "round"
         },
         "pedestrian": {
             "zoom": 15,
             "type": "area",
             "color": "#ede9e7",
             "width": 0.5,
-            "dashArray": null
+            "dashArray": null,
+            "linecap": "round"
         },
         "railway": {
             "zoom": 11,
             "type": "line",
             "color": "#909090",
-            "width": 2,
-            "dashArray": "18 4"
+            "width": 1.4,
+            "dashArray": "0",
+            "linecap": "butt",
+            "overstyle": {
+                "color": "#909090",
+                "width": 3,
+                "dashArray": "1 4",
+                "linecap": "butt"
+            }
         },
         "highway_alley": {
             "zoom": 16,
             "type": "line",
-            "color": "#b9a89b",
-            "width": 0.5,
-            "dashArray": "4 2"
+            "color": "#e0b0b0",
+            "width": 0.8,
+            "dashArray": "4 2",
+            "linecap": "butt"
         },
         "highway_step": {
             "zoom": 16,
             "type": "line",
             "color": "#b9a89b",
             "width": 2,
-            "dashArray": "2 4"
+            "dashArray": "2 3",
+            "linecap": "butt"
+        },
+        "highway_substandard": {
+            "zoom": 14,
+            "type": "line",
+            "color": "#e0e0e0",
+            "width": 5.0,
+            "dashArray": null,
+            "linecap": "round"
         },
         "highway_standard": {
             "zoom": 14,
             "type": "line",
-            "color": "#e0e0e0",
-            "width": 2.0,
-            "dashArray": null
+            "color": "#d0d0d0",
+            "width": 7.0,
+            "dashArray": null,
+            "linecap": "round",
+            "overstyle": {
+                "color": "#ffffff",
+                "width": 0.7,
+                "dashArray": "6 6",
+                "linecap": "butt"
+            }
         },
         "highway_primary": {
             "zoom": 12,
             "type": "line",
-            "color": "#f8e0c0",
-            "width": 3.0,
-            "dashArray": null
+            "color": "#f8c0a0",
+            "width": 8.0,
+            "dashArray": null,
+            "linecap": "round",
+            "overstyle": {
+                "color": "#ffffff",
+                "width": 1,
+                "dashArray": "8 8",
+                "linecap": "butt"
+            }
         },
         "highway_motorway": {
             "zoom": 11,
             "type": "line",
-            "color": "#f8d0a0",
-            "width": 4.0,
-            "dashArray": null
+            "color": "#E892A2",
+            "width": 10,
+            "dashArray": null,
+            "linecap": "round",
+            "overstyle": {
+                "color": "#ffffff",
+                "width": 1,
+                "dashArray": "8 8",
+                "linecap": "butt"
+            }
         },
         "building": {
             "zoom": 15,
             "type": "area",
             "color": "#dcd3cd",
             "width": 0.6,
-            "dashArray": null
+            "dashArray": null,
+            "linecap": "round",
+            "filter": {
+                "zoom": 18,
+                "value":"drop-shadow(1px 1px 1px #80808080)"
+            }
         },
         "barrier": {
             "zoom": 17,
             "type": "line",
             "color": "#b0b0b0",
             "width": 0.5,
-            "dashArray": null
+            "dashArray": null,
+            "linecap": "round"
         },
         "station": {
             "zoom": 14,
             "type": "area",
             "color": "#f8d8d8",
             "width": 1,
-            "dashArray": null
+            "dashArray": null,
+            "linecap": "round"
         }
     }
 }
