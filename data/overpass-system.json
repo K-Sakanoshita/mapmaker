@@ -111,7 +111,6 @@
                 "railway=monorail",
                 "railway=narrow_gauge",
                 "railway=rail",
-                "railway!=subway",
                 "railway=tram"
             ]
         },
@@ -195,8 +194,7 @@
                 "relation[\"building\"!=\"train_station\"][\"building\"]"
             ],
             "tags": [
-                "building",
-                "building!=train_station"
+                "building"
             ]
         },
         "barrier": {
