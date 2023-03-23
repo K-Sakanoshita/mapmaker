@@ -104,6 +104,7 @@
                 "way[\"railway\"=\"rail\"]"
             ],
             "tags": [
+                "railway=construction",
                 "railway=funicular",
                 "railway=light_rail",
                 "railway=miniature",
