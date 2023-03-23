@@ -111,7 +111,6 @@
                 "railway=monorail",
                 "railway=narrow_gauge",
                 "railway=rail",
-                "railway!=subway",
                 "railway=tram"
             ]
         },
@@ -195,8 +194,7 @@
                 "relation[\"building\"!=\"train_station\"][\"building\"]"
             ],
             "tags": [
-                "building",
-                "building!=train_station"
+                "building"
             ]
         },
         "barrier": {
@@ -538,7 +536,7 @@
             "dashArray": null,
             "linecap": "round",
             "filter": {
-                "zoom": 18,
+                "zoom": 22,
                 "value":"drop-shadow(1px 1px 1px #80808080)"
             }
         },
