@@ -101,7 +101,7 @@
         },
         "railway": {
             "overpass": [
-                "way[\"railway\"=\"rail\"]"
+                "way[\"railway\"]"
             ],
             "tags": [
                 "railway=construction",
