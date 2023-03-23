@@ -536,7 +536,7 @@
             "dashArray": null,
             "linecap": "round",
             "filter": {
-                "zoom": 18,
+                "zoom": 22,
                 "value":"drop-shadow(1px 1px 1px #80808080)"
             }
         },
