@@ -128,3 +128,5 @@ var LayerCont = (function () {		// for line&area / nodeはMarker
 		}
 	};
 })();
+
+"use strict";
