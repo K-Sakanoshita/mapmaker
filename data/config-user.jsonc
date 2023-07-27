@@ -21,8 +21,7 @@
         "_OverPassServer": "https://overpass.kumi.systems/api/interpreter",
         "__OverPassServer": "https://overpass-api.de/api/interpreter",
         "OverPassParams": "?data=[out:json][timeout:300]",
-        "Attribution": "<a href=\"https://www.maptiler.com/copyright/\" target=\"_blank\">© MapTiler</a> <a href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\">© OpenStreetMap contributors</a>",
-        "MapStyle": "https://api.maptiler.com/maps/371812ac-52d8-4ace-a720-a027cec01eac/style.json?key=Eq2IyrHsOEGFU1W1fvd7",
+        "Palette": "color",         // 初期のカラーパレット
         "ColorDarken": 0.5,
         "Circle": {
             "radius": 8,

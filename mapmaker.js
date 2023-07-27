@@ -9,10 +9,9 @@ const glot = new Glottologist();
 const LANG = (window.navigator.userLanguage || window.navigator.language || window.navigator.browserLanguage).substr(0, 2) == "ja" ? "ja" : "en";
 const FILES = ["./basemenu.html", "./modals.html", "./data/config-system.json", "./data/config-user.jsonc", './data/overpass-system.json',
 	`./data/category-${LANG}.json`, `data/datatables-${LANG}.json`, `./data/marker.json`, `./data/marker-addtional.json`];
-const Mono_Filter = ['grayscale:90%', 'bright:85%', 'contrast:130%', 'sepia:15%'];;
 
 // initialize leaflet
-$(document).ready(function () {
+window.addEventListener("DOMContentLoaded", function () {
 	console.log("Welcome to MapMaker.");
 	let jqXHRs = [];
 	for (let key in FILES) { jqXHRs.push($.get(FILES[key])) };
@@ -41,29 +40,29 @@ $(document).ready(function () {
 });
 
 var Mapmaker = (function () {
-	var maps, custom_mode = false, init_basemenu, init_clearhtml, view_license = false, select_mode = "";
+	var maps = [], custom_mode = false, init_basemenu, init_clearhtml, view_license = false, select_mode = "";
 	var Control = { "locate": "", "maps": "" };		// leaflet control object
 
 	return {
 		// Initialize
 		init: (menuhtml) => {
+			let def = Conf.default, defMap;
 
 			// set map layer
-			let osm_mono = L.tileLayer.colorFilter('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxNativeZoom: 19, maxZoom: 21, attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors', filter: Mono_Filter });
-			let osm_std = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxNativeZoom: 19, maxZoom: 21, attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors' });
-			let osm_tiler = L.mapboxGL({ attribution: Conf.default.Attribution, accessToken: '', style: Conf.default.MapStyle });
-			let t_pale = L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png', { attribution: "<a href='https://www.gsi.go.jp/kikakuchousei/kikakuchousei40182.html' target='_blank'>国土地理院</a>" });
-			let t_ort = L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/ort/{z}/{x}/{y}.jpg', { attribution: "<a href='https://www.gsi.go.jp/kikakuchousei/kikakuchousei40182.html' target='_blank'>国土地理院</a>" });
-
-			let def = Conf.default;
-			map = L.map('mapid', { center: def.DefaultCenter, zoom: def.DefaultZoom, zoomSnap: def.ZoomSnap, zoomDelta: def.ZoomSnap, maxZoom: def.maxZoomLevel, layers: [osm_mono] });
-			maps = {
-				"OpenStreetMap Mono": osm_mono,
-				"OpenStreetMap Standard": osm_std,
-				"OpenStreetMap Maptiler": osm_tiler,
-				"地理院地図 オルソ": t_ort,
-				"地理院地図 淡色": t_pale
-			};
+			Object.keys(Conf.tile).forEach(key => {
+				let tl = {}, tConf = Conf.tile[key];
+				tl = { maxNativeZoom: tConf.maxNativeZoom, maxZoom: 21, attribution: tConf.copyright };
+				if (tConf.filter !== undefined) {
+					maps[tConf.name] = L.tileLayer.colorFilter(tConf.url, Object.assign(tl, { filter: tConf.filter }));
+				} else {
+					maps[tConf.name] = L.tileLayer(tConf.url, tl);
+				}
+				if (Conf.tile_select.default == key) defMap = maps[tConf.name];
+			});
+			map = L.map('mapid', {
+				center: def.DefaultCenter, zoom: def.DefaultZoom, zoomSnap: def.ZoomSnap,
+				zoomDelta: def.ZoomSnap, layers: [defMap]
+			});
 			Control["maps"] = L.control.layers(maps, null, null).addTo(map);
 
 			// leaflet panel
@@ -87,15 +86,6 @@ var Mapmaker = (function () {
 			$("#search_input").attr('placeholder', glot.get("address"))							// set placeholder
 			$("#search_input").next().html(glot.get("search"))									// set button name
 			$("#search_input").on('change', (e) => { Mapmaker.poi_search(e.target.value) });	// Address Search
-		},
-
-		// About Street Map Maker's license
-		licence: (once) => {
-			if ((once == 'once' && view_license == false) || once == undefined) {
-				let msg = { msg: glot.get("licence_message") + glot.get("more_message"), ttl: glot.get("licence_title") };
-				WinCont.modal_open({ "title": msg.ttl, "message": msg.msg, "mode": "close", callback_close: WinCont.modal_close });
-				view_license = true;
-			};
 		},
 
 		// 基本メニューの作成 menuhtml:指定したHTMLで左上に作成 menuhtmlが空の時は過去のHTMLから復元
@@ -123,7 +113,7 @@ var Mapmaker = (function () {
 				};
 				clearbtn.addTo(map);
 			} else {
-				for (let key in Conf.style) $(`[id^=${key}_]`).off();		// Delete Key_* events
+				for (let key of LayerCont.styles) $(`[id^=${key}_]`).off();		// Delete Key_* events
 				$("#basemenu").html(init_basemenu);
 			};
 
@@ -138,17 +128,16 @@ var Mapmaker = (function () {
 			});
 
 			console.log("Start: make custom panel.")
-			for (let key in Conf.style) {									// make style panel
+			for (let key of LayerCont.styles) {									// make style panel
 				let key_layer = `#${key}_layer`;
 				let key_line = `#${key}_line`;
 				let copyobj = document.getElementById("AAA").cloneNode(true);
-
 				copyobj.getElementsByClassName("custom_label")[0].innerHTML = glot.get("menu_" + key);
-				copyobj.querySelector('#AAA_color').setAttribute('value', Conf.style[key].color);
+				copyobj.querySelector('#AAA_color').setAttribute('value', Layers[key].color);
 				copyobj.querySelector('#AAA_color').setAttribute('id', key + "_color");
-				copyobj.querySelector('#AAA_layer').setAttribute('id', key + "_layer");
-				copyobj.querySelector('#AAA_line').setAttribute('value', Conf.style[key].width);
+				copyobj.querySelector('#AAA_line').setAttribute('value', Layers[key].width);
 				copyobj.querySelector('#AAA_line').setAttribute('id', key + "_line");
+				copyobj.querySelector('#AAA_layer').setAttribute('id', key + "_layer");
 				if (key == "background") copyobj.querySelector(key_line).outerHTML = "<span class='input-hidden'></span>";
 				copyobj.setAttribute('id', key);
 				document.getElementById("custom_map").appendChild(copyobj);
@@ -165,13 +154,13 @@ var Mapmaker = (function () {
 					Layers[key].color = event.target.value;
 					Layers[key].color_dark = chroma(event.target.value).darken(Conf.default.ColorDarken).hex();
 					if (document.getElementById(key + "_line") !== null) Layers[key].width = document.getElementById(key + "_line").value; //width;
-					Mapmaker.update(key);
+					LayerCont.updateLayer(key);
 				});
 
 				// 幅変更時のイベント定義
 				$(key_line).on('change', (event) => {
 					Layers[key].width = event.target.value;; //width;
-					Mapmaker.update(key);
+					LayerCont.updateLayer(key);
 				});
 				// 表示変更時のイベント定義
 				$(`#${key}_layer`).on('click', function () {
@@ -184,13 +173,22 @@ var Mapmaker = (function () {
 					} else {
 						let view = $(key_layer).children().attr("class").indexOf("fa-trash-alt") > 0 ? false : true;
 						$(key_layer).children().toggleClass("fa-trash-alt fa-undo");
-						LayerCont.layer_make(key, view);
+						LayerCont.makeLayer(key, view);
 					}
 				});
 			};
 			$("#AAA").remove();
 			console.log("Start: make glot render.")
 			glot.render();
+		},
+
+		// About Street Map Maker's license
+		licence: (once) => {
+			if ((once == 'once' && view_license == false) || once == undefined) {
+				let msg = { msg: glot.get("licence_message") + glot.get("more_message"), ttl: glot.get("licence_title") };
+				WinCont.modal_open({ "title": msg.ttl, "message": msg.msg, "mode": "close", callback_close: WinCont.modal_close });
+				view_license = true;
+			};
 		},
 
 		// make custom map
@@ -208,21 +206,21 @@ var Mapmaker = (function () {
 
 			var targets = [];
 			var progress = function (data_length) { WinCont.modal_text(def_msg + "<br>Data Loading... " + data_length + "Bytes.", false) };
-			for (let key in Conf.style) if (Conf.style[key].zoom <= nowzoom) targets.push(key);
+			for (let key of LayerCont.styles) if (Conf.style[LayerCont.palette][key].zoom <= nowzoom) targets.push(key);
 			OvPassCnt.get(targets, progress).then((ovasnswer) => {
 				WinCont.modal_text("<br>Data Loading Complate... ", true);
 				targets.forEach(target => {
 					let geojson = OvPassCnt.get_target(ovasnswer, target);
 					if (geojson.length > 0) {
 						let fil_geojson = {	// node以外なのにPoint以外だとfalse(削除)
-							"features": geojson.filter((val) => { return (Conf.style[target].type !== "node") ? val.geometry.type !== "Point" : true; })
+							"features": geojson.filter((val) => { return (Conf.style[LayerCont.palette][target].type !== "node") ? val.geometry.type !== "Point" : true; })
 						};
 						if (target == "river") fil_geojson = CoastLine.merge(fil_geojson.features);
 						Layers[target].geojson = fil_geojson.features;
 					};
 				});
-				for (let key in Conf.style) {
-					if (Layers[key].geojson) { WinCont.modal_text(`<br>Map Writeing... ${key}`, true); LayerCont.layer_make(key); };
+				for (let key of LayerCont.styles) {
+					if (Layers[key].geojson) { WinCont.modal_text(`<br>Map Writeing... ${key}`, true); LayerCont.makeLayer(key); };
 				};
 				Mapmaker.custom(true);
 				WinCont.modal_close();
@@ -232,16 +230,6 @@ var Mapmaker = (function () {
 				WinCont.modal_open(modal);
 			});*/
 			return;
-		},
-
-		// Update layers(color/lime weight change)
-		update: targetkey => {
-			if (targetkey == "" || typeof (targetkey) == "undefined") {		// no targetkey then update all layer
-				for (let key in Conf.style) if (Layers[key].geojson) LayerCont.layer_make(key);
-			} else {
-				if (Layers[targetkey].geojson) LayerCont.layer_make(targetkey);
-			};
-			console.log("Mapmaker: update... end ");
 		},
 
 		// Search Address(Japan Only)
@@ -305,7 +293,7 @@ var Mapmaker = (function () {
 					Marker.set(key);
 					WinCont.modal_close();
 					console.log(`Mapmaker: Add: ${key} end`);
-				}).catch(() => console.log("poi_add: cancel"));
+				})//.catch(() => console.log("poi_add: cancel"));
 			};
 		},
 
@@ -334,6 +322,7 @@ var Mapmaker = (function () {
 					});
 					Object.values(Conf.marker_append.files).forEach(key1 => {
 						let filename = Conf.marker_append.path + "/" + key1;
+						filename = filename.indexOf(",") > 0 ? filename.split(",")[0] : filename;
 						if (images.indexOf(filename) == -1) { images.push(filename) };
 					});
 					images = images.filter((x, i, self) => { return self.indexOf(x) === i });	//重複削除
@@ -364,9 +353,9 @@ var Mapmaker = (function () {
 			switch (mode) {
 				case true:
 					map.doubleClickZoom.disable();
-					for (let key in Conf.style) {		// Show control if key is present
+					for (let key of LayerCont.styles) {		// Show control if key is present
 						$('#' + key).hide();
-						let zoom = Conf.style[key].zoom == undefined ? 0 : Conf.style[key].zoom;
+						let zoom = Conf.style[LayerCont.palette][key].zoom == undefined ? 0 : Conf.style[LayerCont.palette][key].zoom;
 						if (zoom <= map.getZoom()) $('#' + key).show();
 					};
 					$("#make_map").hide();
@@ -442,7 +431,7 @@ var Mapmaker = (function () {
 					LayerCont.all_clear();
 					Marker.all_clear();
 					PoiCont.all_clear();
-					Mapmaker.makemenu();
+					//Mapmaker.makemenu();
 					WinCont.modal_close();
 				},
 				callback_no: () => WinCont.modal_close()

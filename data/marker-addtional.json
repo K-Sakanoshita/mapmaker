@@ -2,7 +2,8 @@
     "marker_append": {
         "path": "add-icon",
         "files": [
-            "aed.svg",
+            "aed.svg,noframe",
+            "animal.svg",
             "Archaeological-site-16.svg",
             "artwork.svg",
             "attention.svg",

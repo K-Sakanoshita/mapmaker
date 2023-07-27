@@ -30,7 +30,7 @@
                 "hospital": "hospital.svg",
                 "ice_cream": "ice-cream.svg",
                 "internet_cafe": "internet_cafe.svg",
-                "kindergarten": "marker-stroked.svg",
+                "kindergarten": "school.svg",
                 "library": "library.svg",
                 "nightclub": "music.svg",
                 "marketplace": "shopping-basket.svg",
@@ -66,7 +66,7 @@
                 "yes": "shelter.svg"
             },
             "attraction": {
-                "animal": "animal.svg"
+                "animal": "animal-shelter.svg"
             },
             "barrier": {
                 "gate": "gate.svg"
@@ -95,7 +95,7 @@
                 "alcohol": "alcohol-shop.svg",
                 "appliance": "laundry.svg",
                 "art": "art-gallery.svg",
-                "baby_goods": "marker-stroked.svg",
+                "baby_goods": "baby_goods.svg",
                 "bakery": "bakery.svg",
                 "beauty": "beauty_salon.svg",
                 "beverages": "bottles.svg",

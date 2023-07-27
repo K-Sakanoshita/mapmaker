@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    id="svg2"
    viewBox="0 0 14 14"
    height="14"
    width="14"
    version="1.1"
    sodipodi:docname="community_center_orange.svg"
-   inkscape:version="1.0.2-2 (e86c870879, 2021-01-15)">
+   inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
   <sodipodi:namedview
      pagecolor="#ffffff"
      bordercolor="#666666"
@@ -24,17 +24,20 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:window-width="1920"
-     inkscape:window-height="1017"
+     inkscape:window-height="1129"
      id="namedview7"
      showgrid="false"
      inkscape:zoom="30.357143"
-     inkscape:cx="2.0373498"
-     inkscape:cy="8.1442725"
+     inkscape:cx="-0.24705882"
+     inkscape:cy="8.1694117"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
      inkscape:current-layer="svg2"
-     inkscape:document-rotation="0" />
+     inkscape:document-rotation="0"
+     inkscape:showpageshadow="2"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1" />
   <metadata
      id="metadata8">
     <rdf:RDF>
@@ -66,15 +69,8 @@
      x="0"
      height="14"
      width="14" />
-  <text
-     xml:space="preserve"
-     style="font-style:normal;font-weight:normal;font-size:12.437px;line-height:1.25;font-family:sans-serif;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1"
-     x="0.8320322"
-     y="11.729523"
-     id="text834"><tspan
-       sodipodi:role="line"
-       id="tspan832"
-       x="0.8320322"
-       y="11.729523"
-       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:12.437px;font-family:'Meiryo UI';-inkscape-font-specification:'Meiryo UI Bold';fill:#ffffff;fill-opacity:1;stroke-width:1">公</tspan></text>
+  <path
+     d="M 13.196159,6.2822623 11.951245,7.5636134 Q 10.487711,6.3794264 9.230651,4.7822921 7.9796637,3.179085 7.4088248,1.8066426 L 8.9877409,1.2358037 q 0.7590942,1.6457164 1.9068451,2.9452857 1.14775,1.2995694 2.301573,2.1011729 z M 6.4311114,1.7459151 Q 5.8967091,3.2458853 4.66394,4.8733834 3.4311709,6.5008815 2.0283647,7.5514679 L 0.92919627,6.4583722 Q 3.2186245,4.7154918 4.7853951,1.3329678 Z M 10.39662,11.523049 Q 7.4270431,11.923851 1.603272,12.342871 L 1.3542891,10.697155 q 0.6133481,0 1.6942983,-0.05466 Q 3.8319727,9.3004211 4.6457217,7.4846676 5.4655435,5.6628414 5.7813267,4.5090182 L 7.5727892,4.8916017 Q 7.1962784,6.0211339 6.467548,7.6547047 5.7388175,9.2882756 4.9979415,10.521045 7.9310817,10.314571 9.6132345,10.083806 8.6719577,8.3834352 8.3075924,7.8247419 l 1.530334,-0.668003 q 0.4918936,0.668003 1.5242616,2.4291016 1.032368,1.7550255 1.263133,2.3926655 l -1.767172,0.461529 Q 10.760985,12.20927 10.39662,11.523049 Z"
+     style="font-weight:bold;font-size:12.437px;line-height:1.25;font-family:'Meiryo UI';-inkscape-font-specification:'Meiryo UI Bold';fill:#ffffff"
+     id="path786" />
 </svg>
