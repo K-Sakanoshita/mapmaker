@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    id="svg2"
    viewBox="0 0 14 14"
    height="14"
    width="14"
    version="1.1"
    sodipodi:docname="university_black1.svg"
-   inkscape:version="1.0.2-2 (e86c870879, 2021-01-15)">
+   inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
   <sodipodi:namedview
      pagecolor="#ffffff"
      bordercolor="#666666"
@@ -24,17 +24,20 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:window-width="1920"
-     inkscape:window-height="1017"
+     inkscape:window-height="1129"
      id="namedview7"
      showgrid="false"
      inkscape:zoom="42.931483"
-     inkscape:cx="4.9031943"
-     inkscape:cy="7.8350913"
+     inkscape:cx="3.2959495"
+     inkscape:cy="7.8497172"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
      inkscape:current-layer="svg2"
-     inkscape:document-rotation="0" />
+     inkscape:document-rotation="0"
+     inkscape:showpageshadow="2"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1" />
   <metadata
      id="metadata8">
     <rdf:RDF>
@@ -43,7 +46,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -56,17 +59,10 @@
      x="0"
      height="14"
      width="14" />
-  <text
-     xml:space="preserve"
-     style="font-style:normal;font-weight:normal;font-size:10.1464px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.999999"
-     x="2.0547707"
-     y="10.604011"
-     id="text834"><tspan
-       sodipodi:role="line"
-       id="tspan832"
-       x="2.0547707"
-       y="10.604011"
-       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:10.1464px;font-family:'Meiryo UI';-inkscape-font-specification:'Meiryo UI Bold';stroke-width:0.999999">大</tspan></text>
+  <path
+     d="M 7.261737,7.1211397 Q 6.1172943,9.9797691 2.8177325,11.104395 L 2.2281711,9.9847234 Q 3.843272,9.4447051 4.8836743,8.3299882 5.9240767,7.2152714 6.211426,5.7884338 H 2.6245149 V 4.5994025 H 6.3749178 V 2.3352887 H 7.8067096 V 4.5994025 H 11.581884 V 5.7884338 H 8.0544245 q 0.4706582,1.283163 1.501152,2.3631997 1.0354485,1.0750825 2.4127425,1.734004 L 11.066637,11.074669 Q 9.5753937,10.212621 8.6935288,9.2861676 7.8166182,8.3547597 7.261737,7.1211397 Z"
+     style="font-weight:bold;font-size:10.1464px;line-height:1.25;font-family:'Meiryo UI';-inkscape-font-specification:'Meiryo UI Bold';stroke-width:0.999999"
+     id="path923" />
   <ellipse
      style="fill:none;stroke:#000003;stroke-width:0.999995;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
      id="path832"

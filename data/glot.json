@@ -175,6 +175,14 @@
 		"ja": "A4横サイズ",
 		"en": "A4 landscape size"
 	},
+	"color_palette":{
+		"ja":"カラーパレット",
+		"en":"color palette"
+	},
+	"mono_palette":{
+		"ja":"モノクロパレット",
+		"en":"mono palette"
+	},
 	"marker_wikipedia": {
 		"ja": "Wikipedia記事",
 		"en": "Wikipedia article"

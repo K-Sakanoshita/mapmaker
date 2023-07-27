@@ -10,44 +10,26 @@
         ]
     },
     "tile_select": {
-        "Facebook_Builtin": "OSM_Thin",
-        "default": "MapTiler"
+        "Facebook_Builtin": "OSM_Mono",
+        "default": "OSM_Mono"
     },
     "tile": {
-        "MapTiler": {
-            "name": "OpenStreetMap Maptiler",
-            "copyright": "<a href='https://www.maptiler.com/copyright/'>© MapTiler</a> <a href='https://www.openstreetmap.org/copyright'>© OpenStreetMap contributors</a>",
-            "style": "https://api.maptiler.com/maps/c9876a21-f16a-4a84-abc0-950badd4631e/style.json?key=Eq2IyrHsOEGFU1W1fvd7"
-        },
-        "MapTiler(Memories)": {
-            "name": "OpenStreetMap Maptiler(Memories)",
-            "copyright": "<a href='https://www.maptiler.com/copyright/'>© MapTiler</a> <a href='https://www.openstreetmap.org/copyright'>© OpenStreetMap contributors</a>",
-            "style": "https://api.maptiler.com/maps/2e4db38a-b862-444d-bcfe-fefe51429073/style.json?key=Eq2IyrHsOEGFU1W1fvd7"
+        "OSM_Mono": {
+            "name": "OpenStreetMap Mono",
+            "copyright": "<a href=\"https://openstreetmap.org\">&copy OpenStreetMap contributors</a>",
+            "url": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+            "filter": [
+                "grayscale:90%",
+                "bright:80%",
+                "contrast: 150%",
+                "sepia: 0%"
+            ],
+            "maxNativeZoom": 18
         },
         "OSM_Standard": {
             "name": "OpenStreetMap Standard",
             "copyright": "<a href=\"https://openstreetmap.org\">&copy OpenStreetMap contributors</a>",
             "url": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-            "maxNativeZoom": 18
-        },
-        "OSM_Thin": {
-            "name": "OpenStreetMap Thin",
-            "copyright": "<a href=\"https://openstreetmap.org\">&copy OpenStreetMap contributors</a>",
-            "url": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-            "filter": [
-                "brightness:95%",
-                "grayscale:60%"
-            ],
-            "maxNativeZoom": 18
-        },
-        "OSM_Dark": {
-            "name": "OpenStreetMap Dark",
-            "copyright": "<a href=\"https://openstreetmap.org\">&copy OpenStreetMap contributors</a>",
-            "url": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-            "filter": [
-                "invert:100%",
-                "grayscale:80%"
-            ],
             "maxNativeZoom": 18
         },
         "GSI_pale": {

@@ -395,166 +395,334 @@
         }
     },
     "style": {
-        "background": {
-            "type": "background",
-            "color": "#000000",
-            "opacity": 0
-        },
-        "park": {
-            "zoom": 15,
-            "type": "area",
-            "color": "#f0ffd8",
-            "width": 0.8,
-            "dashArray": null,
-            "linecap": "round"
-        },
-        "garden": {
-            "zoom": 16,
-            "type": "area",
-            "color": "#d8ffb8",
-            "width": 0.3,
-            "dashArray": null,
-            "linecap": "round"
-        },
-        "river": {
-            "zoom": 11,
-            "type": "area",
-            "color": "#d0e8ff",
-            "width": 0.5,
-            "dashArray": null,
-            "linecap": "round"
-        },
-        "parking": {
-            "zoom": 15.5,
-            "type": "area",
-            "color": "#ffffe8",
-            "width": 0.8,
-            "dashArray": null,
-            "linecap": "round"
-        },
-        "forest": {
-            "zoom": 11,
-            "type": "area",
-            "color": "#b0e090",
-            "width": 1.2,
-            "dashArray": null,
-            "linecap": "round"
-        },
-        "pedestrian": {
-            "zoom": 15,
-            "type": "area",
-            "color": "#ede9e7",
-            "width": 0.5,
-            "dashArray": null,
-            "linecap": "round"
-        },
-        "railway": {
-            "zoom": 11,
-            "type": "line",
-            "color": "#909090",
-            "width": 1.4,
-            "dashArray": "0",
-            "linecap": "butt",
-            "overstyle": {
+        "color": {
+            "background": {
+                "type": "background",
+                "color": "#000000",
+                "opacity": 0
+            },
+            "park": {
+                "zoom": 15,
+                "type": "area",
+                "color": "#f0ffd8",
+                "width": 0.8,
+                "dashArray": null,
+                "linecap": "round"
+            },
+            "garden": {
+                "zoom": 16,
+                "type": "area",
+                "color": "#d8ffb8",
+                "width": 0.3,
+                "dashArray": null,
+                "linecap": "round"
+            },
+            "river": {
+                "zoom": 11,
+                "type": "area",
+                "color": "#d0e8ff",
+                "width": 0.5,
+                "dashArray": null,
+                "linecap": "round"
+            },
+            "parking": {
+                "zoom": 15.5,
+                "type": "area",
+                "color": "#ffffe8",
+                "width": 0.8,
+                "dashArray": null,
+                "linecap": "round"
+            },
+            "forest": {
+                "zoom": 11,
+                "type": "area",
+                "color": "#b0e090",
+                "width": 1.2,
+                "dashArray": null,
+                "linecap": "round"
+            },
+            "pedestrian": {
+                "zoom": 15,
+                "type": "area",
+                "color": "#ede9e7",
+                "width": 0.5,
+                "dashArray": null,
+                "linecap": "round"
+            },
+            "railway": {
+                "zoom": 11,
+                "type": "line",
                 "color": "#909090",
-                "width": 3,
-                "dashArray": "1 4",
+                "width": 1.4,
+                "dashArray": "0",
+                "linecap": "butt",
+                "overstyle": {
+                    "color": "#909090",
+                    "width": 3,
+                    "dashArray": "1 4",
+                    "linecap": "butt"
+                }
+            },
+            "highway_alley": {
+                "zoom": 16,
+                "type": "line",
+                "color": "#e0b0b0",
+                "width": 0.8,
+                "dashArray": "4 2",
                 "linecap": "butt"
-            }
-        },
-        "highway_alley": {
-            "zoom": 16,
-            "type": "line",
-            "color": "#e0b0b0",
-            "width": 0.8,
-            "dashArray": "4 2",
-            "linecap": "butt"
-        },
-        "highway_step": {
-            "zoom": 16,
-            "type": "line",
-            "color": "#b9a89b",
-            "width": 2,
-            "dashArray": "2 3",
-            "linecap": "butt"
-        },
-        "highway_substandard": {
-            "zoom": 14,
-            "type": "line",
-            "color": "#e0e0e0",
-            "width": 5.0,
-            "dashArray": null,
-            "linecap": "round"
-        },
-        "highway_standard": {
-            "zoom": 14,
-            "type": "line",
-            "color": "#d0d0d0",
-            "width": 7.0,
-            "dashArray": null,
-            "linecap": "round",
-            "overstyle": {
-                "color": "#ffffff",
-                "width": 0.7,
-                "dashArray": "6 6",
+            },
+            "highway_step": {
+                "zoom": 16,
+                "type": "line",
+                "color": "#b9a89b",
+                "width": 2,
+                "dashArray": "2 3",
                 "linecap": "butt"
-            }
-        },
-        "highway_primary": {
-            "zoom": 12,
-            "type": "line",
-            "color": "#f8c0a0",
-            "width": 8.0,
-            "dashArray": null,
-            "linecap": "round",
-            "overstyle": {
-                "color": "#ffffff",
+            },
+            "highway_substandard": {
+                "zoom": 14,
+                "type": "line",
+                "color": "#e0e0e0",
+                "width": 5.0,
+                "dashArray": null,
+                "linecap": "round"
+            },
+            "highway_standard": {
+                "zoom": 14,
+                "type": "line",
+                "color": "#d0d0d0",
+                "width": 7.0,
+                "dashArray": null,
+                "linecap": "round",
+                "overstyle": {
+                    "color": "#ffffff",
+                    "width": 0.7,
+                    "dashArray": "6 6",
+                    "linecap": "butt"
+                }
+            },
+            "highway_primary": {
+                "zoom": 12,
+                "type": "line",
+                "color": "#f8c0a0",
+                "width": 8.0,
+                "dashArray": null,
+                "linecap": "round",
+                "overstyle": {
+                    "color": "#ffffff",
+                    "width": 1,
+                    "dashArray": "8 8",
+                    "linecap": "butt"
+                }
+            },
+            "highway_motorway": {
+                "zoom": 11,
+                "type": "line",
+                "color": "#E892A2",
+                "width": 10,
+                "dashArray": null,
+                "linecap": "round",
+                "overstyle": {
+                    "color": "#ffffff",
+                    "width": 1,
+                    "dashArray": "8 8",
+                    "linecap": "butt"
+                }
+            },
+            "building": {
+                "zoom": 15,
+                "type": "area",
+                "color": "#dcd3cd",
+                "width": 0.6,
+                "dashArray": null,
+                "linecap": "round",
+                "filter": {
+                    "zoom": 22,
+                    "value": "drop-shadow(1px 1px 1px #80808080)"
+                }
+            },
+            "barrier": {
+                "zoom": 17,
+                "type": "line",
+                "color": "#b0b0b0",
+                "width": 0.5,
+                "dashArray": null,
+                "linecap": "round"
+            },
+            "station": {
+                "zoom": 14,
+                "type": "area",
+                "color": "#f8d8d8",
                 "width": 1,
-                "dashArray": "8 8",
-                "linecap": "butt"
+                "dashArray": null,
+                "linecap": "round"
             }
         },
-        "highway_motorway": {
-            "zoom": 11,
-            "type": "line",
-            "color": "#E892A2",
-            "width": 10,
-            "dashArray": null,
-            "linecap": "round",
-            "overstyle": {
-                "color": "#ffffff",
+        "mono": {
+            "background": {
+                "type": "background",
+                "color": "#000000",
+                "opacity": 0
+            },
+            "park": {
+                "zoom": 15,
+                "type": "line",
+                "color": "#d0d0d0",
+                "width": 2,
+                "dashArray": null,
+                "linecap": "round"
+            },
+            "garden": {
+                "zoom": 16,
+                "type": "line",
+                "color": "#c0c0c0",
+                "width": 2,
+                "dashArray": null,
+                "linecap": "round"
+            },
+            "river": {
+                "zoom": 11,
+                "type": "line",
+                "color": "#c0c0c0",
+                "width": 2,
+                "dashArray": null,
+                "linecap": "round"
+            },
+            "parking": {
+                "zoom": 15.5,
+                "type": "line",
+                "color": "#c0c0c0",
+                "width": 2,
+                "dashArray": null,
+                "linecap": "round"
+            },
+            "forest": {
+                "zoom": 11,
+                "type": "line",
+                "color": "#a0a0a0",
+                "width": 2,
+                "dashArray": null,
+                "linecap": "round"
+            },
+            "pedestrian": {
+                "zoom": 15,
+                "type": "line",
+                "color": "#c0c0c0",
                 "width": 1,
-                "dashArray": "8 8",
+                "dashArray": null,
+                "linecap": "round"
+            },
+            "railway": {
+                "zoom": 11,
+                "type": "line",
+                "color": "#808080",
+                "width": 2,
+                "dashArray": "0",
+                "linecap": "butt",
+                "overstyle": {
+                    "color": "#808080",
+                    "width": 4,
+                    "dashArray": "1 4",
+                    "linecap": "butt"
+                }
+            },
+            "highway_alley": {
+                "zoom": 16,
+                "type": "line",
+                "color": "#c0c0c0",
+                "width": 1,
+                "dashArray": "4 2",
                 "linecap": "butt"
+            },
+            "highway_step": {
+                "zoom": 16,
+                "type": "line",
+                "color": "#a0a0a0",
+                "width": 1.5,
+                "dashArray": "2 3",
+                "linecap": "butt"
+            },
+            "highway_substandard": {
+                "zoom": 14,
+                "type": "line",
+                "color": "#a0a0a0",
+                "width": 6.0,
+                "dashArray": null,
+                "linecap": "round",
+                "overstyle": {
+                    "color": "#ffffff",
+                    "width": 3.0,
+                    "dashArray": "0 0",
+                    "linecap": "round",
+                    "opacity": 1
+                }
+            },
+            "highway_standard": {
+                "zoom": 14,
+                "type": "line",
+                "color": "#a0a0a0",
+                "width": 7.0,
+                "dashArray": null,
+                "linecap": "round",
+                "overstyle": {
+                    "color": "#ffffff",
+                    "width": 4,
+                    "dashArray": "0 0",
+                    "linecap": "butt"
+                }
+            },
+            "highway_primary": {
+                "zoom": 12,
+                "type": "line",
+                "color": "#a0a0a0",
+                "width": 8.0,
+                "dashArray": null,
+                "linecap": "round",
+                "overstyle": {
+                    "color": "#ffffff",
+                    "width": 6,
+                    "dashArray": "0 0",
+                    "linecap": "butt"
+                }
+            },
+            "highway_motorway": {
+                "zoom": 11,
+                "type": "line",
+                "color": "#808080",
+                "width": 10,
+                "dashArray": null,
+                "linecap": "round",
+                "overstyle": {
+                    "color": "#ffffff",
+                    "width": 7,
+                    "dashArray": "0 0",
+                    "linecap": "butt"
+                }
+            },
+            "building": {
+                "zoom": 15,
+                "type": "line",
+                "color": "#a0a0a0",
+                "width": 2,
+                "dashArray": null,
+                "linecap": "round"
+            },
+            "barrier": {
+                "zoom": 17,
+                "type": "line",
+                "color": "#909090",
+                "width": 0.5,
+                "dashArray": null,
+                "linecap": "round"
+            },
+            "station": {
+                "zoom": 14,
+                "type": "line",
+                "color": "#c0c0c0",
+                "width": 2,
+                "dashArray": null,
+                "linecap": "round"
             }
-        },
-        "building": {
-            "zoom": 15,
-            "type": "area",
-            "color": "#dcd3cd",
-            "width": 0.6,
-            "dashArray": null,
-            "linecap": "round",
-            "filter": {
-                "zoom": 22,
-                "value":"drop-shadow(1px 1px 1px #80808080)"
-            }
-        },
-        "barrier": {
-            "zoom": 17,
-            "type": "line",
-            "color": "#b0b0b0",
-            "width": 0.5,
-            "dashArray": null,
-            "linecap": "round"
-        },
-        "station": {
-            "zoom": 14,
-            "type": "area",
-            "color": "#f8d8d8",
-            "width": 1,
-            "dashArray": null,
-            "linecap": "round"
         }
     }
 }
