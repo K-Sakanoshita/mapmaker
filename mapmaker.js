@@ -10,7 +10,15 @@ const LANG = (window.navigator.userLanguage || window.navigator.language || wind
 const FILES = ["./basemenu.html", "./modals.html", "./data/config-system.json", "./data/config-user.jsonc", './data/overpass-system.json',
 	`./data/category-${LANG}.json`, `data/datatables-${LANG}.json`, `./data/marker.json`, `./data/marker-addtional.json`];
 
-// initialize leaflet
+// initialize class object
+const PoiCont = new PoiControl();
+const Marker = new MarkerControl();
+const LayerCont = new layerCont();
+const SVGCont = new SVGControl();
+var OvPassCnt = new OverPassControl();
+const CoastLine = new coastline();
+
+// initialize MapMaker
 window.addEventListener("DOMContentLoaded", function () {
 	console.log("Welcome to MapMaker.");
 	let jqXHRs = [];
@@ -226,7 +234,7 @@ var Mapmaker = (function () {
 				WinCont.modal_close();
 				console.log("Mapmaker: make: end");
 			})/*.catch(() => {
-				let modal = { "title": glot.get("sverror_title"), "message": glot.get("sverror_message"), "mode": "close", "callback_close": () => Mapmaker.all_clear() };
+				let modal = { "title": glot.get("sverror_title"), "message": glot.get("sverror_message"), "mode": "close", "callback_close": () => Mapmaker.clearAll() };
 				WinCont.modal_open(modal);
 			});*/
 			return;
@@ -265,7 +273,7 @@ var Mapmaker = (function () {
 							poiset(key, ovasnswer);
 						};
 					})/*.catch(() => {
-						let modal = { "title": glot.get("sverror_title"), "message": glot.get("sverror_message"), "mode": "close", "callback_close": () => Mapmaker.all_clear() };
+						let modal = { "title": glot.get("sverror_title"), "message": glot.get("sverror_message"), "mode": "close", "callback_close": () => Mapmaker.clearAll() };
 						WinCont.modal_open(modal);
 					})*/
 			};
@@ -286,10 +294,10 @@ var Mapmaker = (function () {
 						geojsons.targets.push(answer.targets[idx]);
 					};
 				});
-				PoiCont.add_geojson(geojsons);
+				PoiCont.addGeoJSON(geojsons);
 				WinCont.modal_close();
 				WinCont.modal_select(key).then((slanswer) => {
-					PoiCont.add_geojson(slanswer);
+					PoiCont.addGeoJSON(slanswer);
 					Marker.set(key);
 					WinCont.modal_close();
 					console.log(`Mapmaker: Add: ${key} end`);
@@ -420,7 +428,7 @@ var Mapmaker = (function () {
 		},
 
 		// Try Again
-		all_clear: () => {
+		clearAll: () => {
 			WinCont.modal_open({
 				title: glot.get("restart_title"),
 				message: glot.get("restart_message"),
@@ -428,9 +436,9 @@ var Mapmaker = (function () {
 				callback_yes: () => {
 					Mapmaker.custom(false);
 					OvPassCnt.clear();
-					LayerCont.all_clear();
-					Marker.all_clear();
-					PoiCont.all_clear();
+					LayerCont.clearAll();
+					Marker.clearAll();
+					PoiCont.clearAll();
 					//Mapmaker.makemenu();
 					WinCont.modal_close();
 				},
