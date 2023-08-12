@@ -138,7 +138,7 @@ button:active {
 }
 
 .bg-clear {
-    background: transparent url("./image/transparent.png") !important;
+    background: transparent url("../image/transparent.png") !important;
 }
 
 .modal-dialog-fluid {
@@ -148,7 +148,7 @@ button:active {
 }
 
 img.icon_normal {
-    background: url("./image/icon_circle.svg");
+    background: url("../image/icon_circle.svg");
     background-size: cover;
     float: left;
     padding: 4px;
