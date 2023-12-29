@@ -285,11 +285,9 @@
                 "shop=alcohol"
             ]
         },
-        "viewpoint": {
-            "marker": "maki-icon/star.svg",
+        "history": {
+            "marker": "maki-icon/monument.svg",
             "overpass": [
-                "node[\"amenity\"=\"bench\"]",
-                "way[\"amenity\"=\"bench\"]",
                 "node[\"historic\"]",
                 "way[\"historic\"]",
                 "node[\"tourism\"=\"artwork\"]",
@@ -298,20 +296,32 @@
                 "node[\"man_made\"=\"torii\"]",
                 "way[\"man_made\"=\"torii\"]",
                 "node[\"man_made\"=\"lamp\"]",
-                "node[\"information\"]",
-                "node[\"playground\"]",
-                "way[\"playground\"]"
+                "node[\"information\"]"
             ],
             "tags": [
-                "amenity=bench",
                 "historic",
+                "tourism=information",
                 "tourism=artwork",
                 "tourism=viewpoint",
-                "tourism=information",
                 "information",
                 "man_made=torii",
-                "man_made=lamp",
-                "playground"
+                "man_made=lamp"
+            ]
+        },
+        "artwork": {
+            "marker": "maki-icon/star.svg",
+            "overpass": [
+                "node[\"tourism\"=\"artwork\"]",
+                "way[\"tourism\"=\"artwork\"]",
+                "node[\"tourism\"=\"gallery\"]",
+                "way[\"tourism\"=\"gallery\"]",
+                "node[\"shop\"=\"art\"]",
+                "way[\"shop\"=\"art\"]"
+            ],
+            "tags": [
+                "tourism=artwork",
+                "tourism=gallery",
+                "shop=art"
             ]
         },
         "natural": {
@@ -358,6 +368,7 @@
             ]
         },
         "shelter_temporary": {
+            "copyright": "大阪市オープンデータ",
             "marker": "maki-icon/shelter.svg",
             "file": "./data/opendata_2015.csv",
             "columns": {
@@ -376,6 +387,7 @@
             }
         },
         "shelter_tsunami": {
+            "copyright": "大阪市オープンデータ",
             "marker": "maki-icon/shelter.svg",
             "file": "./data/opendata_2016.csv",
             "columns": {
@@ -504,7 +516,7 @@
             "highway_primary": {
                 "zoom": 12,
                 "type": "line",
-                "color": "#f8c0a0",
+                "color": "#f0c0a0",
                 "width": 8.0,
                 "dashArray": null,
                 "linecap": "round",
@@ -533,7 +545,7 @@
                 "zoom": 15,
                 "type": "area",
                 "color": "#dcd3cd",
-                "width": 0.6,
+                "width": 0.7,
                 "dashArray": null,
                 "linecap": "round",
                 "filter": {

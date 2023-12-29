@@ -195,9 +195,13 @@
 		"ja": "持ち帰り・宅配",
 		"en": "Take-out/delivery"
 	},
-	"marker_viewpoint": {
-		"ja": "歴史・文化・アート",
-		"en": "viewpoint"
+	"marker_history": {
+		"ja": "歴史・遺跡",
+		"en": "history"
+	},
+	"marker_artwork": {
+		"ja": "文化・アート",
+		"en": "artwork"
 	},
 	"marker_natural": {
 		"ja": "自然・動物",
