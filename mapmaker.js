@@ -1,93 +1,17 @@
 /*	Main Process */
 "use strict";
 
-// Global Variable
-var map;				// leaflet map object
-var Layers = {};		// Layer Status,geojson,svglayer
-var Conf = {};			// Config Praams
-const glot = new Glottologist();
-const LANG = (window.navigator.userLanguage || window.navigator.language || window.navigator.browserLanguage).substr(0, 2) == "ja" ? "ja" : "en";
-const FILES = ["./basemenu.html", "./modals.html", "./data/config-system.json", "./data/config-user.jsonc", './data/overpass-system.json',
-	`./data/category-${LANG}.json`, `data/datatables-${LANG}.json`, `./data/marker.json`, `./data/marker-addtional.json`];
-
-// initialize class object
-const PoiCont = new PoiControl();
-const Marker = new MarkerControl();
-const LayerCont = new layerCont();
-const SVGCont = new SVGControl();
-var OvPassCnt = new OverPassControl();
-const CoastLine = new coastline();
-
-// initialize MapMaker
-window.addEventListener("DOMContentLoaded", function () {
-	console.log("Welcome to MapMaker.");
-	let jqXHRs = [];
-	for (let key in FILES) { jqXHRs.push($.get(FILES[key])) };
-	$.when.apply($, jqXHRs).always(function () {
-		let menuhtml = arguments[0][0];								// Get Menu HTML
-		$("#modals").html(arguments[1][0]);							// Make Modal HTML
-		Conf = Object.assign(arguments[2][0], JSON5.parse(arguments[3][0]));
-		for (let i = 4; i <= 8; i++) Conf = Object.assign(Conf, arguments[i][0]);	// Make Config Object
-
-		glot.import("./data/glot.json").then(() => {	// Multi-language support
-			// document.title = glot.get("title");		// Title(no change / Google検索で日本語表示させたいので)
-			LayerCont.init();							// LayerCont Initialize
-			Mapmaker.init(menuhtml);					// Mapmaker Initialize
-			SVGCont.init();								// Marker Initialize
-			// Google Analytics
-			if (Conf.default.GoogleAnalytics !== "") {
-				$('head').append('<script async src="https://www.googletagmanager.com/gtag/js?id=' + Conf.default.GoogleAnalytics + '"></script>');
-				window.dataLayer = window.dataLayer || [];
-				function gtag() { dataLayer.push(arguments); };
-				gtag('js', new Date());
-				gtag('config', Conf.default.GoogleAnalytics);
-			};
-			glot.render();
-		});
-	});
-});
-
 var Mapmaker = (function () {
 	var maps = [], custom_mode = false, init_basemenu, init_clearhtml, view_license = false, select_mode = "";
-	var Control = { "locate": "", "maps": "" };		// leaflet control object
+	var copyrights = [];
 
 	return {
 		// Initialize
 		init: (menuhtml) => {
-			let def = Conf.default, defMap;
-
-			// set map layer
-			Object.keys(Conf.tile).forEach(key => {
-				let tl = {}, tConf = Conf.tile[key];
-				tl = { maxNativeZoom: tConf.maxNativeZoom, maxZoom: 21, attribution: tConf.copyright };
-				if (tConf.filter !== undefined) {
-					maps[tConf.name] = L.tileLayer.colorFilter(tConf.url, Object.assign(tl, { filter: tConf.filter }));
-				} else {
-					maps[tConf.name] = L.tileLayer(tConf.url, tl);
-				}
-				if (Conf.tile_select.default == key) defMap = maps[tConf.name];
-			});
-			map = L.map('mapid', {
-				center: def.DefaultCenter, zoom: def.DefaultZoom, zoomSnap: def.ZoomSnap,
-				zoomDelta: def.ZoomSnap, layers: [defMap]
-			});
-			Control["maps"] = L.control.layers(maps, null, null).addTo(map);
-
-			// leaflet panel
-			map.zoomControl.setPosition("bottomright");
-			new L.Hash(map);
-
-			let zoomlevel = L.control({ position: "bottomleft" });				// make: zoom level
-			zoomlevel.onAdd = function () {
-				this.ele = L.DomUtil.create('div');
-				this.ele.id = "zoomlevel";
-				return this.ele;
-			};
-			zoomlevel.addTo(map);
-
+			MapCont.init();
+			MapCont.locateAdd();
+			MapCont.controlAdd("bottomleft", "zoomlevel", "<div><.div>", "");
 			Mapmaker.makemenu(menuhtml);										// Make edit menu
-
-			Control["locate"] = L.control.locate({ position: 'bottomright', strings: { title: glot.get("location") }, locateOptions: { maxZoom: 16 } }).addTo(map);
 			WinCont.menulist_make();
 			Mapmaker.zoom_view();																// Zoom 
 			map.on('zoomend', () => Mapmaker.zoom_view());										// ズーム終了時に表示更新
@@ -95,6 +19,12 @@ var Mapmaker = (function () {
 			$("#search_input").next().html(glot.get("search"))									// set button name
 			$("#search_input").on('change', (e) => { Mapmaker.poi_search(e.target.value) });	// Address Search
 		},
+
+		// 利用しているデータセットをCopyrightに反映
+		addCopyright: (text) => { copyrights = [...new Set([...copyrights, text])] },
+
+		// 利用しているデータセットをCopyright表示用に返す
+		getCopyright: () => { return copyrights.length > 0 ? " | " + copyrights.join(' ') : "" },
 
 		// 基本メニューの作成 menuhtml:指定したHTMLで左上に作成 menuhtmlが空の時は過去のHTMLから復元
 		makemenu: (menuhtml) => {
@@ -257,10 +187,12 @@ var Mapmaker = (function () {
 		poi_add: key => {
 			WinCont.modal_open({ "title": glot.get("loading_title"), "message": glot.get("loading_message"), "mode": "" });
 			WinCont.modal_spinner(true);
-			if (Conf.osm[key].file !== undefined) {		// "file"がある場合
+			if (Conf.osm[key].file !== undefined) {		// "file"がある場合(CSVなど)
 				$.get(Conf.osm[key].file).then((csv) => {
 					let geojsons = GeoCont.csv2geojson(csv, key);
 					let targets = geojsons.map(() => [key]);
+					let copyright = Conf.osm[key].copyright;
+					Mapmaker.addCopyright(copyright);
 					poiset(key, { "geojson": geojsons, "targets": targets });
 				});
 			} else {
@@ -310,7 +242,7 @@ var Mapmaker = (function () {
 			let poi = PoiCont.get_osmid(osmid);
 			if (poi !== undefined) {
 				poi.enable = false;
-				PoiCont.set_geojson(poi);
+				PoiCont.setPoiData(poi);
 				Marker.delete(target, osmid);
 			};
 		},
@@ -370,8 +302,7 @@ var Mapmaker = (function () {
 					["#accordion", "#custom_map", "#save_map", "#clear_map"].forEach(key => $(key).show());
 					["dragging", "zoomControl", "scrollWheelZoom", "touchZoom"].forEach(key => map[key].disable());
 					$("#search_input").attr('disabled', 'disabled');
-					Control["locate"].remove(map);
-					Control["maps"].remove(map);
+					MapCont.stop();
 					Object.keys(maps).forEach(key => { if (map.hasLayer(maps[key])) { Layers["MAP"] = maps[key]; map.removeLayer(maps[key]) } });	// remove select layer
 					if (Layers.background.opacity === 0) {		// set background
 						$("#mapid").addClass("bg-clear");
@@ -385,16 +316,15 @@ var Mapmaker = (function () {
 				case false:
 					map.doubleClickZoom.enable();
 					$("#make_map").show();
+					MapCont.start();
 					["#accordion", "#custom_map", "#save_map", "#clear_map"].forEach(key => $(key).hide());
 					["dragging", "zoomControl", "scrollWheelZoom", "touchZoom"].forEach(key => map[key].enable());
 					$("#search_input").attr('disabled', false);
-					Control["locate"].addTo(map);
-					Control["maps"].addTo(map);
-					Layers.MAP.addTo(map);
 					$("#mapid").removeClass("bg-clear");
 					$("#background_color").css('background-color', "");
 					custom_mode = mode;
 					Mapmaker.zoom_view();
+					copyrights = [];
 					break;
 			}
 			return custom_mode;
@@ -445,89 +375,5 @@ var Mapmaker = (function () {
 				callback_no: () => WinCont.modal_close()
 			});
 		}
-	}
-})();
-
-// PoiDatalist管理
-var DataList = (function () {
-	var table, _status = "", _lock = false, timeout = 0, MS = "modal_select";
-
-	return {
-		status: () => { return _status },   // statusを返す
-		table: () => { return table },      // tableを返す
-		lock: mode => { _lock = mode },     // DataListをロック(true) or 解除(false)とする
-		init: () => { // DataListに必要な初期化
-			$(`#${MS}_keyword`).off();
-			$(`#${MS}_keyword`).on('change', () => {        // キーワード検索
-				if (timeout > 0) {
-					window.clearTimeout(timeout);
-					timeout = 0;
-				};
-				timeout = window.setTimeout(() => DataList.filter($(`#${MS}_keyword`).val(), 500));
-			});
-
-			$(`#${MS}_category`).off();
-			$(`#${MS}_category`).on('change', () => {        // カテゴリ名でキーワード検索
-				let category = $(`#${MS}_category`).val();
-				DataList.filter(category == "-" ? "" : category);
-			});
-		},
-		make_select: result => {    		// 店舗種別リストを作成
-			WinCont.select_clear(`${MS}_category`);
-			let pois = result.map(data => { return data.category });
-			pois = pois.filter((x, i, self) => { return self.indexOf(x) === i });
-			pois.sort((x, y) => x.localeCompare(y, 'ja'));
-			pois.map(poi => WinCont.select_add(`${MS}_category`, poi, poi));
-		},
-		view_select: function (targets) {  	// PoiDataのリスト表示
-			DataList.lock(true);
-			if (table !== undefined) table.destroy();
-			let result = PoiCont.list(targets);
-			table = $('#modal_select_table').DataTable({
-				"columns": Object.keys(Conf.datatables_columns).map(function (key) { return Conf.datatables_columns[key] }),
-				"data": result,
-				"processing": true,
-				"filter": true,
-				"destroy": true,
-				"deferRender": true,
-				"dom": 't',
-				"language": Conf.datatables_lang,
-				"order": [],    // ソート禁止(行選択時にズレが生じる)
-				"ordering": true,
-				"orderClasses": false,
-				"paging": true,
-				"processing": false,
-				"pageLength": 100000,
-				"select": 'multi',
-				"scrollCollapse": true,
-			});
-			$('#modal_select_table').css("width", "");
-			DataList.make_select(result);
-			let osmids = result.filter(val => val.enable).map(val => val.osmid);
-			DataList.one_select(osmids);
-			table.draw();
-			table.off('select');
-			table.on('select', (e, dt, type, indexes) => {
-				if (type === 'row') {
-					var data = table.rows(indexes).data().pluck('osmid');
-					Marker.center(data[0]);
-				}
-			});
-			DataList.lock(false);
-		},
-		one_select: osmids => {
-			let alldata = table.rows().data().toArray();
-			let join_ids = osmids.join('|');
-			alldata.forEach((val, idx) => { if (join_ids.indexOf(val.osmid) > -1) table.row(idx).select() });
-		},
-		indexes: () => { // アイコンをクリックした時にデータを選択
-			let selects = table.rows('.selected').indexes();
-			selects = table.rows(selects).data();
-			return selects.toArray();
-		},
-		filter: keyword => { table.search(keyword).draw() },                // キーワード検索
-		filtered: () => table.rows({ filter: 'applied' }).data().toArray(), // 現在の検索結果リスト
-		filtered_select: () => table.rows({ filter: 'applied' }).select(),
-		filtered_deselect: () => table.rows({ filter: 'applied' }).deselect()
 	}
 })();
