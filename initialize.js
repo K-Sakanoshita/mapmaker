@@ -11,7 +11,7 @@ const PoiCont = new PoiControl();
 const Marker = new MarkerControl();
 const LayerCont = new LayerControl();
 const SVGCont = new SVGControl();
-const OvPassCnt = new OverPassControl();
+const overPassCont = new OverPassControl();
 const CoastLine = new GeoCoastline();
 const GeoCont = new GeoControl();
 
@@ -21,14 +21,16 @@ window.addEventListener("DOMContentLoaded", function () {
 	let jqXHRs = [];
 	const FILES = [
 		"./basemenu.html", "./modals.html", "./data/config-system.json", "./data/config-user.jsonc",
-		'./data/overpass-system.json', `./data/category-${LANG}.json`, `data/datatables-${LANG}.json`,
-		`./data/marker.json`, `./data/marker-addtional.json`];
+		`./data/category-${LANG}.jsonc`, `./data/marker.jsonc`, './data/overpass-system.json',
+		`./data/datatables-${LANG}.json`, `./data/marker-addtional.json`];
 	for (let key in FILES) { jqXHRs.push($.get(FILES[key])) };
 	$.when.apply($, jqXHRs).always(function () {
 		let menuhtml = arguments[0][0];								// Get Menu HTML
 		$("#modals").html(arguments[1][0]);							// Make Modal HTML
 		Conf = Object.assign(arguments[2][0], JSON5.parse(arguments[3][0]));
-		for (let i = 4; i <= 8; i++) Conf = Object.assign(Conf, arguments[i][0]);	// Make Config Object
+		Conf = Object.assign(Conf, JSON5.parse(arguments[4][0]));
+		Conf = Object.assign(Conf, JSON5.parse(arguments[5][0]));
+		for (let i = 6; i <= 8; i++) Conf = Object.assign(Conf, arguments[i][0]);	// Make Config Object
 
 		glot.import("./data/glot.json").then(() => {	// Multi-language support
 			// document.title = glot.get("title");		// Title(no change / Google検索で日本語表示させたいので)

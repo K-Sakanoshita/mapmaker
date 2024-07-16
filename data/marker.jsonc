@@ -8,9 +8,11 @@
             "amenity": {
                 "arts_centre": "arts_centre.svg",
                 "bar": "bar.svg",
+                "bank": "bank-JP.svg",
                 "bbq": "bbq.svg",
                 "bench": "bench.svg",
                 "bicycle_parking": "parking-bicycle.svg",
+                "bicycle_rental": "bicycle_rental.svg",
                 "bus_station": "board_bus.svg",
                 "cafe": "cafe.svg",
                 "clinic": "doctor.svg",
@@ -18,7 +20,10 @@
                 "college": "college.svg",
                 "community_centre": "town-hall.svg",
                 "courthouse": "courthouse.svg",
+                "coworking_space": "commercial.svg",
                 "crematorium": "marker-stroked.svg",
+                "cinema": "cinema.svg",
+                "dentist": "dentist.svg",
                 "doctors": "doctor.svg",
                 "drinking_water": "drinking-water.svg",
                 "fast_food": "fast-food.svg",
@@ -26,11 +31,14 @@
                 "fire_station": "fire-station.svg",
                 "food_court": "restaurant.svg",
                 "fountain": "fountain.svg",
+                "gambling": "coins-solid.svg",
                 "grave_yard": "marker-stroked.svg",
                 "hospital": "hospital.svg",
                 "ice_cream": "ice-cream.svg",
                 "internet_cafe": "internet_cafe.svg",
-                "kindergarten": "school.svg",
+                "karaoke_box": "karaoke.svg",
+                "kindergarten": "marker-stroked.svg",
+                "language_school": "temaki_school.svg",
                 "library": "library.svg",
                 "nightclub": "music.svg",
                 "marketplace": "shopping-basket.svg",
@@ -66,7 +74,7 @@
                 "yes": "shelter.svg"
             },
             "attraction": {
-                "animal": "animal-shelter.svg"
+                "animal": "zoo.svg"
             },
             "barrier": {
                 "gate": "gate.svg"
@@ -76,18 +84,36 @@
             },
             "building": {
                 "apartments": "home.svg",
-                "commercial": "commercial.svg",
+                "detached": "home.svg",
+                "museum": "museum.svg",
                 "office": "town_hall.svg",
                 "public": "home.svg",
                 "temple": "place-of-worship.svg",
-                "retail": "shop.svg",
                 "residential": "residential-community.svg",
+                "retail": "shop.svg",
                 "yes": "home.svg"
+            },
+            "craft": {
+                "brewery": "storage_fermenter.svg",
+                "carpenter": "anvil_and_hammer.svg",
+                "confectionery": "confectionery.svg",
+                "lighting": "bulb-light.svg",
+                "photographer": "attraction.svg"
             },
             "diplomatic": {
                 "embassy": "diplomatic.svg"
             },
+            "disused:amenity": {
+                "school": "ruins.svg"
+            },
+            "healthcare": {
+                "alternative": "house-medical-solid.svg"
+            },
             "office": {
+                "company": "briefcase.svg",
+                "coworking": "suitcase.svg",
+                "estate_agent": "real_estate_agency.svg",
+                "foundation": "briefcase.svg",
                 "government": "town_hall.svg"
             },
             "shop": {
@@ -95,7 +121,7 @@
                 "alcohol": "alcohol-shop.svg",
                 "appliance": "laundry.svg",
                 "art": "art-gallery.svg",
-                "baby_goods": "baby_goods.svg",
+                "baby_goods": "marker-stroked.svg",
                 "bakery": "bakery.svg",
                 "beauty": "beauty_salon.svg",
                 "beverages": "bottles.svg",
@@ -116,7 +142,7 @@
                 "convenience": "shopping-basket.svg",
                 "cosmetics": "beauty_salon.svg",
                 "dairy": "cheese.svg",
-                "deli": "meat.svg",
+                "deli": "deli.svg",
                 "department_store": "shop.svg",
                 "doityourself": "tools.svg",
                 "dry_cleaning": "clothes_hanger.svg",
@@ -127,6 +153,7 @@
                 "funeral_directors": "cemetery.svg",
                 "furniture": "furniture.svg",
                 "garden_centre": "garden_centre.svg",
+                "general": "shop.svg",
                 "gift": "gift.svg",
                 "greengrocer": "carrot.svg",
                 "hairdresser": "hairdresser.svg",
@@ -134,6 +161,7 @@
                 "health_food": "shop.svg",
                 "ice_cream": "ice-cream.svg",
                 "interior_decoration": "interior_decoration.svg",
+                "jewelry": "jewelry-store.svg",
                 "kiosk": "store.svg",
                 "laundry": "laundry.svg",
                 "mall": "shopping_mall.svg",
@@ -143,30 +171,31 @@
                 "optician": "optician.svg",
                 "pasta": "restaurant.svg",
                 "pastry": "bakery.svg",
-                "pawnbroker": "marker-stroked.svg",
-                "rice": "marker-stroked.svg",
+                "pawnbroker": "money_hand.svg",
+                "photo": "photo.svg",
+                "rice": "shop.svg",
                 "seafood": "restaurant-seafood.svg",
                 "second_hand": "second_hand.svg",
                 "shoes": "shoe.svg",
                 "spices": "spice_bottle.svg",
+                "stationery": "school.svg",
                 "supermarket": "grocery.svg",
+                "tailor": "needle_and_spool.svg",
                 "tea": "teahouse.svg",
                 "ticket": "ticket.svg",
                 "tobacco": "pipe.svg",
                 "travel_agency": "briefcase.svg",
                 "variety_store": "shop.svg",
                 "water": "water.svg",
+                "watches": "watch.svg",
                 "wine": "alcohol-shop.svg"
             },
             "natural": {
-                "peak": "mountain.svg,noframe",
-                "scrub": "shrub_low.svg,noframe",
-                "stone": "boulder2.svg,noframe",
-                "tree": "park.svg,noframe",
-                "tree_row": "tree_row.svg,noframe",
-                "water": "water.svg,noframe",
+                "peak": "mountain.svg",
+                "tree": "park.svg",
+                "water": "water.svg",
                 "wetland": "wetland.svg",
-                "wood": "park-alt1.svg,noframe"
+                "wood": "park-alt1.svg"
             },
             "emergency": {
                 "assembly_point": "assembly_point.svg",
@@ -179,12 +208,10 @@
             },
             "highway": {
                 "bus_stop": "board_bus.svg",
-                "crossing": "crossing_tram_road.svg,noframe",
-                "elevator": "elevator.svg",
-                "milestone": "milestone.svg",
                 "traffic_signals": "signal.svg",
-                "steps": "steps.svg,noframe",
-                "street_lamp": "street_lamp_arm.svg,noframe"
+                "steps": "steps.svg",
+                "street_lamp": "street_lamp_arm.svg",
+                "elevator": "elevator.svg"
             },
             "social_facility": {
                 "shelter": "shelter.svg"
@@ -192,33 +219,49 @@
             "playground": {
                 "activitypanel": "playground.svg",
                 "aerialrotator": "playground.svg",
-                "balancebeam": "playground.svg",
+                "balancebeam": "balance_beam.svg",
                 "basketrotator": "playground.svg",
                 "basketswing": "playground.svg",
-                "climbingframe": "playground.svg",
+                "climbingframe": "jungle_gym.svg",
                 "climbingwall": "playground.svg",
                 "cushion": "playground.svg",
+                "dome": "dome.svg",
                 "exercise": "playground.svg",
+                "hamster_wheel": "wheel.svg",
                 "hopscotch": "playground.svg",
-                "horizontal_bar": "playground.svg",
-                "map": "playground.svg",
+                "horizontal_bar": "horizontal_bar.svg",
+                "ladder": "playground.svg",
+                "map": "compass.svg",
+                "monkey_bars": "monkey_bars.svg",
+                "mound": "circle-stroked.svg",
                 "playhouse": "play_structure.svg",
-                "roundabout": "playground.svg",
+                "play_sculpture": "sculpture.svg",
+                "roundabout": "stadium.svg",
+                "rope_swing": "rope_fence.svg",
+                "ride_on": "playground.svg",
                 "sandpit": "sandbox.svg",
-                "seesaw": "playground.svg",
-                "sledding": "playground.svg",
+                "seesaw": "seesaw.svg",
+                "sledding": "sledding.svg",
+                "sieve": "playground.svg",
                 "slide": "slide.svg",
-                "splash_pad": "playground.svg",
-                "springy": "playground.svg",
+                "splash_pad": "fountain.svg",
+                "springy": "spring_rider.svg",
+                "stepping_post": "playground.svg",
+                "stepping_stones": "boulder2.svg",
+                "stepping_tires": "tire.svg",
                 "structure": "play_structure.svg",
                 "swing": "playground.svg",
-                "teenshelter": "playground.svg",
+                "teenshelter": "shelter.svg",
+                "tire": "tire.svg",
                 "trampoline": "playground.svg",
-                "water": "playground.svg",
+                "tunnel_tube": "tunnel.svg",
+                "water": "water.svg",
+                "water_channel": "water.svg",
                 "youth_bench": "bench.svg",
-                "zipwire": "playground.svg"
+                "zipwire": "j_bar_lift.svg"
             },
             "tourism": {
+                "apartment": "lodging.svg",
                 "attraction": "star.svg",
                 "artwork": "art-gallery.svg",
                 "gallery": "art-gallery2.svg",
@@ -226,11 +269,13 @@
                 "information": "information.svg",
                 "museum": "museum.svg",
                 "picnic_site": "picnic-site.svg",
-                "viewpoint": "spotting_scope.svg"
+                "viewpoint": "spotting_scope.svg",
+                "zoo": "zoo.svg"
             },
             "historic": {
                 "aircraft": "airfield.svg",
                 "archaeological_site": "archaeological-site.svg",
+                "battlefield": "ruins.svg",
                 "boundary_stone": "milestone.svg",
                 "castle": "castle-JP.svg",
                 "cannon": "cannon.svg",
@@ -256,7 +301,6 @@
                 "bridge": "bridge.svg",
                 "torii": "shinto.svg",
                 "lamp": "lantern.svg",
-                "manhole": "manhole.svg,noframe",
                 "tower": "Emoji_Black_bell2.svg",
                 "surveillance": "marker-stroked.svg",
                 "works": "factory.svg"
@@ -269,11 +313,15 @@
                 "orchard": "park.svg",
                 "aquaculture": "aquarium.svg",
                 "reservoir": "water.svg",
+                "retail": "shop.svg",
                 "grass": "lawn.svg",
                 "recreation_ground": "pitch.svg"
             },
             "leisure": {
+                "adult_gaming_centre":"coins-solid.svg",
                 "amusement_arcade": "gaming.svg",
+                "dance": "music.svg",
+                "fitness_centre": "gym.svg",
                 "garden": "garden-centre.svg",
                 "pitch": "pitch.svg",
                 "park": "tree_and_bench.svg",
@@ -338,14 +386,14 @@
             },
             "tree": {
                 "species": {
-                    "Cherry blossom": "sakura.svg,noframe",
-                    "Cerasus itosakura": "sakura.svg,noframe",
-                    "Cerasus × yedoensis": "sakura.svg,noframe"
+                    "Cherry blossom": "sakura.svg",
+                    "Cerasus itosakura": "sakura.svg",
+                    "Cerasus × yedoensis": "sakura.svg"
                 },
                 "species:en": {
-                    "Cherry blossom": "sakura.svg,noframe",
-                    "Cerasus itosakura": "sakura.svg,noframe",
-                    "Cerasus × yedoensis": "sakura.svg,noframe"
+                    "Cherry blossom": "sakura.svg",
+                    "Cerasus itosakura": "sakura.svg",
+                    "Cerasus × yedoensis": "sakura.svg"
                 }
             }
         }
