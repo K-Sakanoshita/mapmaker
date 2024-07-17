@@ -145,10 +145,10 @@ var Mapmaker = (function () {
 			var targets = [];
 			var progress = function (data_length) { WinCont.modal_text(def_msg + "<br>Data Loading... " + data_length + "Bytes.", false) };
 			for (let key of LayerCont.styles) if (Conf.style[LayerCont.palette][key].zoom <= nowzoom) targets.push(key);
-			OvPassCnt.get(targets, progress).then((ovasnswer) => {
+			Basic.retry(() => overPassCont.get(targets, progress), 5).then((ovasnswer) => {
 				WinCont.modal_text("<br>Data Loading Complate... ", true);
 				targets.forEach(target => {
-					let geojson = OvPassCnt.get_target(ovasnswer, target);
+					let geojson = overPassCont.get_target(ovasnswer, target);
 					if (geojson.length > 0) {
 						let fil_geojson = {	// node以外なのにPoint以外だとfalse(削除)
 							"features": geojson.filter((val) => { return (Conf.style[LayerCont.palette][target].type !== "node") ? val.geometry.type !== "Point" : true; })
@@ -196,7 +196,7 @@ var Mapmaker = (function () {
 					poiset(key, { "geojson": geojsons, "targets": targets });
 				});
 			} else {
-				OvPassCnt.get([key])
+				overPassCont.get([key])
 					.then((ovasnswer) => {
 						if (ovasnswer == undefined) {
 							let modal = { "title": glot.get("nodata_title"), "message": glot.get("nodata_message"), "mode": "close", "callback_close": () => WinCont.modal_close() };
@@ -365,7 +365,7 @@ var Mapmaker = (function () {
 				mode: "yesno",
 				callback_yes: () => {
 					Mapmaker.custom(false);
-					OvPassCnt.clear();
+					overPassCont.clear();
 					LayerCont.clearAll();
 					Marker.clearAll();
 					PoiCont.clearAll();
