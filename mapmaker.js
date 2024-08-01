@@ -132,7 +132,7 @@ var Mapmaker = (function () {
 		// make custom map
 		make: query_date => {
 			let latlng = map.getCenter();
-			while (latlng.lng >= 180) latlng.lng -= 180;
+			while (latlng.lng >= 180) latlng.lng -= 360;
 			while (latlng.lng <= -180) latlng.lng += 360;
 			map.setView(latlng);
 			let nowzoom = map.getZoom(), def_msg;
