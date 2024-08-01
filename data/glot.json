@@ -199,6 +199,10 @@
 		"ja": "歴史・遺跡",
 		"en": "history"
 	},
+	"marker_playground": {
+		"ja": "公園・遊具",
+		"en": "Playground"
+	},
 	"marker_artwork": {
 		"ja": "文化・アート",
 		"en": "artwork"
@@ -222,10 +226,6 @@
 	"marker_animal": {
 		"ja": "動物",
 		"en": "Animal"
-	},
-	"marker_playground": {
-		"ja": "遊具",
-		"en": "Playground"
 	},
 	"menu_background": {
 		"ja": "背景色",

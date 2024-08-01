@@ -2,16 +2,9 @@
     "osm": {
         "park": {
             "overpass": [
-                "node[\"amenity\"=\"shelter\"]",
-                "node[\"leisure\"=\"park\"]",
-                "node[\"leisure\"=\"playground\"]",
-                "node[\"man_made\"=\"tower\"]",
-                "node[\"man_made\"=\"drinking_water\"]",
-                "way[\"amenity\"=\"shelter\"]",
-                "way[\"leisure\"=\"park\"]",
-                "way[\"leisure\"=\"playground\"]",
-                "way[\"man_made\"=\"tower\"]",
-                "way[\"landuse\"=\"recreation_ground\"]"
+                "wr[\"amenity\"]",
+                "wr[\"leisure\"]",
+                "wr[\"man_made\"]"
             ],
             "tags": [
                 "leisure=park",
@@ -28,12 +21,8 @@
         },
         "garden": {
             "overpass": [
-                "way[\"leisure\"=\"garden\"]",
-                "way[\"landuse\"=\"farmland\"]",
-                "way[\"landuse\"=\"allotments\"]",
-                "way[\"landuse\"=\"orchard\"]",
-                "way[\"landuse\"=\"grass\"]",
-                "way[\"landuse\"=\"aquaculture\"]"
+                "wr[\"leisure\"]",
+                "wr[\"landuse\"]"
             ],
             "tags": [
                 "leisure=garden",
@@ -46,26 +35,21 @@
         },
         "river": {
             "overpass": [
-                "relation[\"waterway\"]",
-                "way[\"waterway\"]",
-                "way[\"landuse\"=\"reservoir\"]",
-                "relation[\"natural\"=\"water\"]",
-                "way[\"natural\"=\"water\"]",
-                "way[\"natural\"=\"coastline\"]",
-                "relation[\"landuse\"=\"basin\"]"
+                "wr[\"waterway\"]",
+                "wr[\"landuse\"]",
+                "wr[\"natural\"]"
             ],
             "tags": [
                 "waterway",
+                "landuse=basin",
                 "landuse=reservoir",
                 "natural=water",
-                "natural=coastline",
-                "landuse=basin"
+                "natural=coastline"
             ]
         },
         "parking": {
             "overpass": [
-                "way[\"amenity\"=\"parking\"]",
-                "way[\"amenity\"=\"bicycle_parking\"]"
+                "wr[\"amenity\"]"
             ],
             "tags": [
                 "amenity=parking",
@@ -74,12 +58,9 @@
         },
         "forest": {
             "overpass": [
-                "way[\"barrier\"=\"hedge\"]",
-                "way[\"natural\"=\"wood\"]",
-                "way[\"landuse\"=\"forest\"]",
-                "way[\"natural\"=\"tree_row\"]",
-                "relation[\"natural\"=\"wood\"]",
-                "relation[\"landuse\"=\"forest\"]"
+                "wr[\"barrier\"]",
+                "wr[\"natural\"]",
+                "wr[\"landuse\"]"
             ],
             "tags": [
                 "barrier=hedge",
@@ -90,9 +71,8 @@
         },
         "pedestrian": {
             "overpass": [
-                "relation[\"highway\"=\"pedestrian\"]",
-                "way[\"highway\"=\"pedestrian\"][\"area\"=\"yes\"]",
-                "way[\"man_made\"=\"bridge\"]"
+                "wr[\"highway\"]",
+                "wr[\"man_made\"]"
             ],
             "tags": [
                 "highway=pedestrian",
@@ -101,7 +81,7 @@
         },
         "railway": {
             "overpass": [
-                "way[\"railway\"]"
+                "wr[\"railway\"]"
             ],
             "tags": [
                 "railway=construction",
@@ -116,9 +96,7 @@
         },
         "highway_alley": {
             "overpass": [
-                "way[\"highway\"=\"footway\"]",
-                "way[\"highway\"=\"path\"]",
-                "way[\"highway\"=\"track\"]"
+                "wr[\"highway\"]"
             ],
             "tags": [
                 "highway=footway",
@@ -128,7 +106,7 @@
         },
         "highway_step": {
             "overpass": [
-                "way[\"highway\"=\"steps\"]"
+                "wr[\"highway\"]"
             ],
             "tags": [
                 "highway=steps"
@@ -136,11 +114,7 @@
         },
         "highway_substandard": {
             "overpass": [
-                "way[\"highway\"~\"unclassified\"]",
-                "way[\"highway\"~\"residential\"]",
-                "way[\"highway\"=\"living_street\"]",
-                "way[\"highway\"=\"pedestrian\"]",
-                "way[\"highway\"=\"service\"]"
+                "wr[\"highway\"]"
             ],
             "tags": [
                 "highway=unclassified",
@@ -152,10 +126,7 @@
         },
         "highway_standard": {
             "overpass": [
-                "way[\"highway\"~\"secondary\"]",
-                "way[\"highway\"~\"secondary_link\"]",
-                "way[\"highway\"~\"tertiary\"]",
-                "way[\"highway\"~\"tertiary_link\"]"
+                "wr[\"highway\"]"
             ],
             "tags": [
                 "highway=tertiary",
@@ -166,10 +137,7 @@
         },
         "highway_primary": {
             "overpass": [
-                "way[\"highway\"~\"trunk\"]",
-                "way[\"highway\"~\"trunk_link\"]",
-                "way[\"highway\"~\"primary\"]",
-                "way[\"highway\"~\"primary_link\"]"
+                "wr[\"highway\"]"
             ],
             "tags": [
                 "highway=trunk",
@@ -180,8 +148,7 @@
         },
         "highway_motorway": {
             "overpass": [
-                "way[\"highway\"~\"motorway\"]",
-                "way[\"highway\"~\"motorway_link\"]"
+                "wr[\"highway\"]"
             ],
             "tags": [
                 "highway=motorway",
@@ -190,8 +157,7 @@
         },
         "building": {
             "overpass": [
-                "way[\"building\"!=\"train_station\"][\"building\"]",
-                "relation[\"building\"!=\"train_station\"][\"building\"]"
+                "wr[\"building\"]"
             ],
             "tags": [
                 "building"
@@ -199,9 +165,7 @@
         },
         "barrier": {
             "overpass": [
-                "way[\"barrier\"=\"wall\"]",
-                "way[\"barrier\"=\"fence\"]",
-                "way[\"barrier\"=\"retaining_wall\"]"
+                "wr[\"barrier\"]"
             ],
             "tags": [
                 "barrier=wall",
@@ -211,9 +175,8 @@
         },
         "station": {
             "overpass": [
-                "relation[\"building\"=\"train_station\"]",
-                "way[\"building\"=\"train_station\"]",
-                "way[\"railway\"=\"platform\"]"
+                "wr[\"building\"]",
+                "wr[\"railway\"]"
             ],
             "tags": [
                 "building=train_station",
@@ -238,17 +201,10 @@
         "shop": {
             "marker": "maki-icon/shop.svg",
             "overpass": [
-                "node[\"shop\"]",
-                "way[\"shop\"]",
-                "relation[\"shop\"]",
-                "node[\"amenity\"]",
-                "way[\"amenity\"]",
-                "relation[\"amenity\"]",
-                "node[\"tourism\"]",
-                "way[\"tourism\"]",
-                "relation[\"tourism\"]",
-                "node[\"office\"]",
-                "way[\"office\"]"
+                "nwr[\"shop\"]",
+                "nwr[\"amenity\"]",
+                "nwr[\"tourism\"]",
+                "nw[\"office\"]"
             ],
             "tags": [
                 "shop",
@@ -260,20 +216,13 @@
         "takeaway": {
             "marker": "maki-icon/fast-food.svg",
             "overpass": [
-                "node[\"takeaway\"]",
-                "way[\"takeaway\"]",
-                "node[\"takeaway:covid19\"]",
-                "way[\"takeaway:covid19\"]",
-                "node[\"delivery\"]",
-                "way[\"delivery\"]",
-                "node[\"delivery:covid19\"]",
-                "way[\"delivery:covid19\"]",
-                "node[\"shop\"=\"bakery\"]",
-                "way[\"shop\"=\"bakery\"]",
-                "node[\"shop\"=\"deli\"]",
-                "way[\"shop\"=\"deli\"]",
-                "node[\"shop\"=\"alcohol\"]",
-                "way[\"shop\"=\"alcohol\"]"
+                "nw[\"takeaway\"]",
+                "nw[\"takeaway:covid19\"]",
+                "nw[\"delivery\"]",
+                "nw[\"delivery:covid19\"]",
+                "nw[\"shop\"=\"bakery\"]",
+                "nw[\"shop\"=\"deli\"]",
+                "nw[\"shop\"=\"alcohol\"]"
             ],
             "tags": [
                 "takeaway",
@@ -288,15 +237,10 @@
         "history": {
             "marker": "maki-icon/monument.svg",
             "overpass": [
-                "node[\"historic\"]",
-                "way[\"historic\"]",
-                "node[\"tourism\"=\"artwork\"]",
-                "way[\"tourism\"=\"artwork\"]",
-                "node[\"tourism\"=\"viewpoint\"]",
-                "node[\"man_made\"=\"torii\"]",
-                "way[\"man_made\"=\"torii\"]",
-                "node[\"man_made\"=\"lamp\"]",
-                "node[\"information\"]"
+                "nw[\"historic\"]",
+                "nw[\"tourism\"]",
+                "nw[\"man_made\"]",
+                "n[\"information\"]"
             ],
             "tags": [
                 "historic",
@@ -308,15 +252,27 @@
                 "man_made=lamp"
             ]
         },
+        "playground": {
+            "marker": "maki-icon/playground.svg",
+            "overpass": [
+                "nwr[\"amenity\"]",
+                "nwr[\"natural\"]",
+                "nwr[\"leisure\"]",
+                "nw[\"playground\"]"
+            ],
+            "tags": [
+                "amenity=bench",
+                "natura=tree",
+                "amenity=toilets",
+                "leisure=playground",
+                "playground"
+            ]
+        },
         "artwork": {
             "marker": "maki-icon/star.svg",
             "overpass": [
-                "node[\"tourism\"=\"artwork\"]",
-                "way[\"tourism\"=\"artwork\"]",
-                "node[\"tourism\"=\"gallery\"]",
-                "way[\"tourism\"=\"gallery\"]",
-                "node[\"shop\"=\"art\"]",
-                "way[\"shop\"=\"art\"]"
+                "nw[\"tourism\"]",
+                "nw[\"shop\"]"
             ],
             "tags": [
                 "tourism=artwork",
@@ -327,16 +283,10 @@
         "natural": {
             "marker": "maki-icon/animal-shelter.svg",
             "overpass": [
-                "node[\"natural\"]",
-                "way[\"natural\"]",
-                "node[\"species\"=\"Cherry blossom\"]",
-                "node[\"species:en\"=\"Cherry blossom\"]",
-                "node[\"species\"=\"Cerasus itosakura\"]",
-                "node[\"species:en\"=\"Cerasus itosakura\"]",
-                "node[\"species\"=\"Cerasus × yedoensis\"]",
-                "node[\"species:en\"=\"Cerasus × yedoensis\"]",
-                "node[\"attraction\"=\"animal\"]",
-                "way[\"attraction\"=\"animal\"]"
+                "nw[\"natural\"]",
+                "nw[\"species\"]",
+                "nw[\"species:en\"]",
+                "nw[\"attraction\"]"
             ],
             "tags": [
                 "natural",
@@ -352,13 +302,10 @@
         "disaster&move": {
             "marker": "maki-icon/defibrillator.svg",
             "overpass": [
-                "node[\"highway\"]",
-                "way[\"highway\"=\"steps\"]",
-                "node[\"amenity\"=\"social_facility\"]",
-                "way[\"amenity\"=\"social_facility\"]",
-                "node[\"emergency\"]",
-                "way[\"emergency\"]",
-                "node[\"man_made\"=\"manhole\"]"
+                "nw[\"highway\"]",
+                "nw[\"amenity\"]",
+                "nw[\"emergency\"]",
+                "nw[\"man_made\"]"
             ],
             "tags": [
                 "highway",
