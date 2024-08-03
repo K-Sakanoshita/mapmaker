@@ -240,7 +240,7 @@
                 "nw[\"historic\"]",
                 "nw[\"tourism\"]",
                 "nw[\"man_made\"]",
-                "n[\"information\"]"
+                "nw[\"information\"]"
             ],
             "tags": [
                 "historic",
