@@ -1,163 +1,174 @@
-.card-header, .card-body {
-	padding: 0px !important;
+.card-header,
+.card-body {
+    padding: 0px !important;
 }
 
-.accordion, .card {
-	width: 196px;
-	margin-bottom: 8px;
-	display: none;
-	overflow: visible !important;
+.accordion,
+.card {
+    width: 196px;
+    margin-bottom: 8px;
+    display: none;
+    overflow: visible !important;
 }
 
 .custom_map {
-	margin: 8px 0px 0px 0px;
-	background-color: #ffffff;
-	display: none;
+    margin: 8px 0px 0px 0px;
+    background-color: #ffffff;
+    display: none;
 }
 
 .custom_group {
-	display: table;
+    display: table;
 }
 
 .custom_label {
-	display: table-cell;
-	vertical-align: middle;
-	height: 18px;
-	width: 68px;
-	overflow: hidden;
-	white-space: nowrap;
+    width: 68px;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 .input-hidden {
-	width: 44px;
-	height: 20px;
-	display: inline-block;
-	margin: 0px;
+    width: 50px;
+    height: 20px;
+    display: inline-block;
+    margin: 0px;
 }
 
-button, select {
-	display: inline-block;
-	cursor: pointer;
-	color: #000000;
-	text-decoration: none;
-	background-color: #FFFFFF;
-	outline: none;
-	border: none;
-	border-radius: 2px;
-	box-shadow: 0px 1px 2px #999;
+.colorPalette {
+    width: 22px !important;
+    height: 18px !important;
+    margin: 1px !important;
+    padding: 0px !important;
+    border: 1px #FFFFFF !important;
+    border-radius: 0px !important;
+}
+
+/* Color Pickerのサイズ指定 */
+.alwan__swatches {
+    max-height: 280px !important;
+    padding: 10px 5px 0 5px !important;
+}
+
+.alwan__swatch {
+    margin: 0 2px 5px 2px !important;
+
+}
+
+button,
+select {
+    display: inline-block;
+    cursor: pointer;
+    color: #000000;
+    text-decoration: none;
+    background-color: #FFFFFF;
+    outline: none;
+    border: none;
+    border-radius: 2px;
+    box-shadow: 0px 1px 2px #999;
 }
 
 button:active {
-	box-shadow: none;
-	position: relative;
-	top: 4px;
+    box-shadow: none;
+    position: relative;
+    top: 4px;
 }
 
 .comm_button {
-	margin: 0px 0px 6px 0px;
-	padding: 0px 6px 0px 16px;
-	background-repeat: no-repeat;
-	background-size: 36px 36px;
-	background-position: 8px center;
-	height: 46px;
-	width: 196px;
-	align-items: center;
+    margin: 0px 0px 6px 0px;
+    padding: 0px 6px 0px 16px;
+    background-repeat: no-repeat;
+    background-size: 36px 36px;
+    background-position: 8px center;
+    height: 46px;
+    width: 196px;
+    align-items: center;
 }
 
 .mini_button {
-	margin: 0px;
-	padding: 0px 0px 0px 24px;
-	height: 28px;
-	width: 196px;
-	align-items: center;
+    margin: 0px;
+    padding: 0px 0px 0px 24px;
+    height: 28px;
+    width: 196px;
+    align-items: center;
 }
 
 .half_button {
-	margin: 0px 4px 6px 0px;
-	padding: 0px 6px 0px 12px;
-	height: 46px;
-	width: 96px;
-	align-items: center;
+    margin: 0px 4px 6px 0px;
+    padding: 0px 6px 0px 12px;
+    height: 46px;
+    width: 96px;
+    align-items: center;
 }
 
 .onethird_button {
-	margin: 0px;
-	padding: 0px;
-	height: 23px;
-	width: 59px;
-	align-items: center;
+    margin: 0px;
+    padding: 0px;
+    height: 23px;
+    width: 59px;
+    align-items: center;
 }
 
 .del_button {
-	margin: 2px 2px 2px 2px;
-	padding: 0px 0px 0px 2px;
-	width: 28px;
-	height: 18px;
-	display: table-cell;
-	vertical-align: middle;
-	margin-left: 4px;
-}
-
-.color_button {
-	margin: 1px;
-	padding: 0px;
-	width: 28px;
-	height: 20px;
-	vertical-align: middle;
-	border-style: none;
+    margin: 2px 2px 2px 2px;
+    padding: 0px 0px 0px 2px;
+    width: 28px;
+    height: 22px;
+    display: table-cell;
+    vertical-align: middle;
+    margin-left: 4px;
 }
 
 .line_text {
-	margin: 1px;
-	padding: 0px;
-	width: 42px;
-	height: 20px;
-	vertical-align: middle;
-	border: #999;
-	border-width: 1px;
-	border-style: solid;
-	text-align: right;
+    margin: 1px;
+    padding: 0px;
+    width: 42px;
+    height: 20px;
+    vertical-align: middle;
+    border: #999;
+    border-width: 1px;
+    border-style: solid;
+    text-align: right;
 }
 
 .drop_button {
-	background-repeat: no-repeat;
-	background-position: 8px center;
-	padding: 4px 4px 4px 38px !important;
-	margin: 2px 0px 2px 0px;
-	background-repeat: no-repeat;
-	background-size: 24px;
+    background-repeat: no-repeat;
+    background-position: 8px center;
+    padding: 4px 4px 4px 38px !important;
+    margin: 2px 0px 2px 0px;
+    background-repeat: no-repeat;
+    background-size: 24px;
 }
 
 .bg-clear-old {
-	width: 38px;
-	height: 18px;
-	background-position: 0px 0px, 8px 8px;
-	background-size: 16px 16px;
-	background-image: -webkit-linear-gradient(45deg, #eee 25%, transparent 25%, transparent 75%, #ccc 75%, #ccc 100%), -webkit-linear-gradient(45deg, #ccc 25%, white 25%, white 75%, #ccc 75%, #eee 100%);
-	background-image: linear-gradient(45deg, #ccc 25%, transparent 25%, transparent 75%, #ccc 75%, #ccc 100%), linear-gradient(45deg, #ccc 25%, white 25%, white 75%, #ccc 75%, #ccc 100%);
+    width: 38px;
+    height: 18px;
+    background-position: 0px 0px, 8px 8px;
+    background-size: 16px 16px;
+    background-image: -webkit-linear-gradient(45deg, #eee 25%, transparent 25%, transparent 75%, #ccc 75%, #ccc 100%), -webkit-linear-gradient(45deg, #ccc 25%, white 25%, white 75%, #ccc 75%, #eee 100%);
+    background-image: linear-gradient(45deg, #ccc 25%, transparent 25%, transparent 75%, #ccc 75%, #ccc 100%), linear-gradient(45deg, #ccc 25%, white 25%, white 75%, #ccc 75%, #ccc 100%);
 }
 
 .bg-clear {
-	background: transparent url("../image/transparent.png") !important;
+    background: transparent url("../image/transparent.png") !important;
 }
 
 .modal-dialog-fluid {
-	max-width: inherit !important;
-	width: 98% !important;
-	margin-left: 8px !important;
+    max-width: inherit !important;
+    width: 98% !important;
+    margin-left: 8px !important;
 }
 
 img.icon_normal {
-	background: url("../image/icon_circle.svg");
-	background-size: cover;
-	float: left;
-	padding: 4px;
-	height: 32px;
-	width: 32px;
-	object-fit: contain;
+    background: url("../image/icon_circle.svg");
+    background-size: cover;
+    float: left;
+    padding: 4px;
+    height: 32px;
+    width: 32px;
+    object-fit: contain;
 }
 
 .qr_code {
-	border: 1px;
-	border-style: solid;
+    border: 1px;
+    border-style: solid;
 }

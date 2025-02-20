@@ -5,6 +5,7 @@
             "*": "-"
         },
         "amenity": {
+            "atm": "ATM",
             "arts_centre": "アートセンター",
             "bar": "バー/酒場",
             "bank": "銀行",
@@ -12,11 +13,14 @@
             "bench": "ベンチ",
             "bicycle_parking": "駐輪場(バイク)",
             "bicycle_rental": "レンタサイクル",
+            "biergarten": "ビアガーデン",
             "bus_station": "バスターミナル",
             "cafe": "カフェ/喫茶店",
+            "car_sharing": "カーシェア",
+            "childcare": "保育所",
             "clinic": "クリニック",
             "clock": "時計",
-            "college": "大学",
+            "college": "専門学校/短大/大学",
             "community_centre": "コミュニティセンター・スペース",
             "courthouse": "裁判所",
             "coworking_space": "コワーキングスペース",
@@ -24,12 +28,14 @@
             "cinema": "映画館",
             "dentist": "歯医者",
             "doctors": "医者",
+            "dojo": "道場",
             "drinking_water": "水飲み場",
             "fast_food": "ファーストフード",
             "ferry_terminal": "フェリーターミナル",
             "fire_station": "消防署",
             "food_court": "フードコート",
             "fountain": "噴水",
+            "fuel": "給油所",
             "gambling": "娯楽",
             "grave_yard": "墓地",
             "hospital": "病院",
@@ -41,9 +47,11 @@
             "library": "図書館",
             "nightclub": "クラブ/ライブハウス",
             "marketplace": "市場",
+            "motorcycle_parking": "バイク駐車場",
             "parking": "駐車場",
             "pharmacy": "薬局",
             "photo_booth": "フォトブース",
+            "prep_school": "塾/予備校",
             "place_of_worship": "宗教施設",
             "police": "警察署",
             "post_box": "郵便ポスト",
@@ -76,7 +84,8 @@
             "animal": "動物"
         },
         "barrier": {
-            "gate": "門"
+            "gate": "門",
+            "hedge": "生垣"
         },
         "bridge": {
             "yes": "橋"
@@ -97,13 +106,24 @@
             "carpenter": "工務店",
             "confectionery": "菓子工房",
             "lighting": "照明工房",
-            "photographer": "写真館"
+            "photographer": "写真館",
+            "yes": "工房"
         },
         "diplomatic": {
             "embassy": "大使館"
         },
         "disused:amenity": {
             "school": "廃校"
+        },
+        "emergency": {
+            "assembly_point": "避難場所",
+            "fire_extinguisher": "消火器",
+            "fire_hydrant": "消火栓",
+            "fire_hose": "消火ホース",
+            "fire_lookout": "火の見櫓",
+            "defibrillator": "AED",
+            "siren": "サイレン",
+            "water_tank": "防火水槽"
         },
         "healthcare": {
             "alternative": "治療院"
@@ -119,12 +139,12 @@
             "agrarian": "農協/農業用品店",
             "alcohol": "酒屋",
             "appliance": "家電量販店",
-            "art": "美術品店",
-            "baby_goods": "幼児用店舗",
+            "art": "アート",
+            "baby_goods": "ベビー用品",
             "bakery": "パン屋",
-            "beauty": "美容室",
-            "beverages": "飲料店",
-            "bicycle": "自転車屋",
+            "beauty": "美容院",
+            "beverages": "飲料",
+            "bicycle": "バイク店",
             "books": "本屋",
             "boutique": "ブティック",
             "brewing_supplies": "醸造所",
@@ -158,6 +178,7 @@
             "hairdresser": "美容院",
             "hardware": "金物店",
             "health_food": "健康食品店",
+            "houseware": "家庭用品店",
             "ice_cream": "アイスクリーム店",
             "interior_decoration": "内装用品",
             "jewelry": "宝飾店",
@@ -167,6 +188,7 @@
             "massage": "マッサージ店",
             "medical_supply": "医療用品店",
             "motorcycle": "自転車屋",
+            "newsagent": "新聞販売店",
             "optician": "メガネ店",
             "pasta": "パスタ専門店",
             "pastry": "お菓子店(焼き菓子)",
@@ -185,27 +207,19 @@
             "tobacco": "タバコ屋",
             "travel_agency": "旅行代理店",
             "variety_store": "雑貨店",
+            "video_games": "ビデオゲーム店",
             "water": "飲料水専門店",
-            "watches":"時計店",
+            "watches": "時計店",
             "wine": "ワイン専門店"
         },
         "natural": {
             "peak": "頂上",
             "stone": "石",
             "tree": "樹木",
+            "tree_row": "並木",
             "water": "池",
             "wetland": "湿地帯",
             "wood": "森"
-        },
-        "emergency": {
-            "assembly_point": "待ち合わせスポット",
-            "fire_extinguisher": "消火器",
-            "fire_hydrant": "消火栓",
-            "fire_hose": "消火ホース",
-            "fire_lookout": "火の見櫓",
-            "defibrillator": "AED",
-            "siren": "サイレン",
-            "water_tank": "防火水槽"
         },
         "highway": {
             "bus_stop": "バス停",
@@ -216,9 +230,12 @@
         "playground": {
             "activitypanel": "パネル遊具",
             "aerialrotator": "回旋塔",
+            "agility_trail": "アスレチックコース",
             "balancebeam": "平均台",
             "basketrotator": "旋回カゴ",
             "basketswing": "カゴブランコ",
+            "bridge": "橋",
+            "climbing": "クライミング",
             "climbingframe": "ジャングルジム",
             "climbingwall": "クライミングウォール",
             "cushion": "ふわふわドーム",
@@ -235,7 +252,7 @@
             "play_sculpture": "遊具彫刻",
             "roundabout": "メリーゴーランド",
             "rope_swing": "ロープスイング",
-            "ride_on": "乗馬",
+            "ride_on": "乗り物",
             "sandpit": "砂場",
             "seesaw": "シーソー",
             "sledding": "小さな丘",
@@ -248,6 +265,7 @@
             "stepping_tires": "並んだタイヤ",
             "structure": "複合遊具",
             "swing": "ブランコ",
+            "swing_carousel": "回転遊具",
             "teenshelter": "子ども用東屋",
             "tire": "タイヤ",
             "trampoline": "トランポリン",
@@ -263,6 +281,8 @@
             "artwork": "アート作品",
             "gallery": "ギャラリー",
             "guest_house": "ゲストハウス",
+            "hotel": "ホテル",
+            "hostel": "簡易宿泊所",
             "information": "案内",
             "museum": "美術館",
             "viewpoint": "ビューポイント",
@@ -273,6 +293,7 @@
             "archaeological_site": "遺跡・古墳",
             "battlefield": "古戦場",
             "boundary_stone": "境界石",
+            "building": "歴史的建築物",
             "castle": "お城",
             "cannon": "大砲(展示)",
             "memorial": "石碑",
@@ -281,6 +302,7 @@
             "heritage": "遺産",
             "tomb": "墓",
             "locomotive": "機関車(引退済み)",
+            "street_lamp": "照明（保存）",
             "wayside_shrine": "地蔵・道祖神",
             "wayside_cross": "十字架",
             "vehicle": "車両(展示)"
@@ -302,7 +324,7 @@
             "works": "工場"
         },
         "leisure": {
-            "adult_gaming_centre":"パチンコ/パチスロ",
+            "adult_gaming_centre": "パチンコ/パチスロ",
             "amusement_arcade": "ゲームセンター",
             "garden": "庭",
             "dance": "ダンスホール",
@@ -351,6 +373,9 @@
         "amenity": {
             "gambling": {
                 "mahjong": "麻雀"
+            },
+            "social_facility": {
+                "shelter": "一時避難所"
             }
         },
         "artwork": {
@@ -508,6 +533,6 @@
         "Su": "日",
         "PH": "祝日",
         "off": "休業",
-        "24\/7": "24時間営業"
+        "24/7": "24時間営業"
     }
 }

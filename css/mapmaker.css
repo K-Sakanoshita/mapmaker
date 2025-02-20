@@ -1,174 +1,180 @@
 html {
-	font-size: 16px;
-	padding: 0px;
-	margin: 0px;
-	height: 100%;
+    font-size: 16px;
+    padding: 0px;
+    margin: 0px;
+    height: 100%;
 }
 
 header {
-	width: 100%;
-	height: 40px;
-	margin: 0px !important;
-	padding: 0px !important;
+    width: 100%;
+    height: 40px;
+    margin: 0px !important;
+    padding: 0px !important;
 }
 
 body {
-	font-family: "Tahoma";
-	height: 100%;
-	background-color: #FFFFFF;
-	padding: 0px;
-	margin: 0px;
-	overflow: hidden;
+    font-family: "Tahoma";
+    height: 100%;
+    background-color: #FFFFFF;
+    padding: 0px;
+    margin: 0px;
+    overflow: hidden;
 }
 
 #container {
-	flex-direction: column;
-	width: 100%;
-	height: 100%;
-	margin: 0px;
-	padding: 0px;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
 }
 
 #article {
-	float: none;
-	clear: both;
-	width: 100%;
-	height: calc(100% - 40px);
-	overflow: auto;
-	position: relative;
-	margin: 0px 0px 0px 0px;
+    float: none;
+    clear: both;
+    width: 100%;
+    height: calc(100% - 40px);
+    overflow: auto;
+    position: relative;
+    margin: 0px 0px 0px 0px;
 }
 
 /* OSM Map area */
 
 #mapid {
-	height: 100%;
+    height: 100%;
 }
 
 /* fade out */
 
 #fadeLayer {
-	position: absolute;
-	top: 0px;
-	left: 0px;
-	width: 100%;
-	height: 100%;
-	background-color: #000000;
-	opacity: 0.5;
-	display: none;
-	z-index: 3000;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    background-color: #000000;
+    opacity: 0.5;
+    display: none;
+    z-index: 3000;
 }
 
 img {
-	float: left;
-	margin: 0px;
+    float: left;
+    margin: 0px;
 }
 
 img.h1 {
-	width: 30px;
-	height: 30px;
-	margin: 5px 5px 5px 5px;
+    width: 30px;
+    height: 30px;
+    margin: 5px 5px 5px 5px;
 }
 
 img.iconx2 {
-	width: 40px;
-	height: 40px;
-	margin: 2px;
+    width: 40px;
+    height: 40px;
+    margin: 2px;
 }
 
 h2.zoom {
-	font-size: 16px;
-	background-color: #ffffff80;
-	padding: 10px;
+    font-size: 16px;
+    background-color: #ffffff80;
+    padding: 10px;
 }
 
 div.search {
-	height: 44px;
-	border: 0px;
+    height: 44px;
+    border: 0px;
 }
 
 .menu {
-	height: 30px;
-	margin: 5px 0px;
-	border: 0px;
-	width: initial !important;
+    height: 30px;
+    margin: 5px 0px;
+    border: 0px;
+    width: initial !important;
 }
 
 p {
-	line-height: 1.5;
+    line-height: 1.5;
 }
 
 a.title {
-	color: #213502;
+    color: #213502;
 
 }
 
 a.title:hover {
-	color: #20525C;
+    color: #20525C;
 }
 
 span.title {
-	display: inline-block;
-	font-size: 18px !important;
-	font-weight: bold;
-	padding: 0px 8px 0px 0px;
-	margin: 0px 0px 0px 0px;
+    display: inline-block;
+    font-size: 18px !important;
+    font-weight: bold;
+    padding: 0px 8px 0px 0px;
+    margin: 0px 0px 0px 0px;
 }
 
 span.subtitle {
-	display: inline-block;
-	font-size: 12px !important;
-	font-weight: bold;
-	padding: 0px 4px 4px 0px;
+    display: inline-block;
+    font-size: 12px !important;
+    font-weight: bold;
+    padding: 0px 4px 4px 0px;
 }
 
 span.icon {
-	border-radius: 4px;
-	margin-left: 2px;
-	padding: 0px 2px;
-	white-space: nowrap;
-	background: rgba(255, 255, 255, 0.5);
+    border-radius: 4px;
+    margin-left: 2px;
+    padding: 0px 2px;
+    white-space: nowrap;
+    background: rgba(255, 255, 255, 0.5);
 }
 
 /* button for select way color */
 
 .modal-dialog-fluid {
-	max-width: inherit !important;
-	max-height: 50% !important;
-	width: 80% !important;
+    max-width: inherit !important;
+    max-height: 50% !important;
+    width: 80% !important;
 }
 
 .modal-body {
-	font-size: 14px !important;
-	overflow-x: hidden;
+    font-size: 14px !important;
+    overflow-x: hidden;
 }
 
 .save_map {
-	display: none;
+    display: none;
 }
 
 .leaflet-div-icon {
-	border: 0px !important;
+    border: 0px !important;
 }
 
 input[type="search"] {
-	font-size: 14px;
-	display: inline-block;
-	width: calc(180px - 4em);
+    font-size: 14px;
+    display: inline-block;
+    width: calc(180px - 4em);
 }
 
-table.dataTable tbody>tr.selected, table.dataTable tbody>tr>.selected {
-	background-color: #0274d880 !important;
+table.dataTable tbody>tr.selected,
+table.dataTable tbody>tr>.selected {
+    background-color: #0274d880 !important;
 }
 
 .area_mask {
-	padding: 0px;
-	margin: 0px;
-	position: absolute;
-	background: rgba(0, 0, 0, 0.4);
-	z-index: 799;
+    padding: 0px;
+    margin: 0px;
+    position: absolute;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 799;
 }
 
 .dropshadow {
-	filter: drop-shadow(3px 3px 5px cyan);
+    filter: drop-shadow(3px 3px 5px cyan);
+}
+
+.icon-red {
+    /* icon-redは最初に指定したクラス名 */
+    filter: hue-rotate(150deg);
 }
