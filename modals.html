@@ -2,16 +2,26 @@
     <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <div class="modal-header">
+                <div class="dropdown">
+                    <button type="button" class="btn btn-sm float-right menu me-2" data-bs-toggle="dropdown"
+                        aria-expanded="true" id="modal_window_menu">
+                        <i class="fas fa-bars text-black"></i>
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="modal_menu" style="z-index: 1090" id="modal_menu">
+                    </div>
+                </div>
                 <h4 class="modal-title" id="modal_window_title"></h4>
-                <div class="spinner-border text-primary" id="modal_window_spinner" role="status"><span class="sr-only"></div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> </button>
             </div>
             <div class="modal-body">
                 <div id="modal_window_message"></div>
-                <div class="progress mt-3">
-                    <div id="modal_window_progress" class="progress-bar progress-bar-striped progress-bar-animated"></div>
-                </div>
             </div>
             <div class="modal-footer">
+                <div class="col-12 p-0 m-0">
+                    <div id="modal_window_progress" class="progress-bar progress-bar-striped progress-bar-animated mb-2"
+                        style="height: 2px" role="progressbar"></div>
+                </div>
+                <div id="modal_footer"></div>
                 <button id="modal_window_yes" class="btn btn-primary"></button>
                 <button id="modal_window_no" class="btn btn-secondary"></button>
                 <button id="modal_window_close" class="btn btn-secondary"></button>
@@ -21,27 +31,31 @@
 </div>
 
 <div id="modal_select" class="modal fade" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-dialog-fluid modal-dialog-scrollable" role="document">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
         <div class="modal-content" style="background: #ffffff;">
             <div class="p-3">
                 <div class="row">
-                    <div class="col-3 pr-1">
-                        <select class="form-control mt-1 ml-1" id="modal_select_category">
+                    <div class="col-3 pe-1">
+                        <select class="form-control mt-1 ms-1" id="modal_select_category">
                             <option value="-">---</option>
                         </select>
                     </div>
-                    <div class="col-4 pl-1 pr-1">
-                        <input type="search" class="form-control mt-1" style="width: calc(100% - 8px);" id="modal_select_keyword">
+                    <div class="col-4 ps-1 pe-1">
+                        <input type="search" class="form-control mt-1" style="width: calc(100% - 8px);"
+                            id="modal_select_keyword">
                     </div>
                     <div class="col-2 d-flex flex-row-reverse align-items-center p-0">
-                        <div class="custom-control custom-checkbox pl-1">
+                        <div class="custom-control custom-checkbox ps-1">
                             <input class="custom-control-input" type="checkbox" id="modal_select_facility">
-                            <label class="custom-control-label" for="modal_select_facility" id="modal_select_facilityname"></label>
+                            <label class="custom-control-label" for="modal_select_facility"
+                                id="modal_select_facilityname"></label>
                         </div>
                     </div>
-                    <div class="col-3 d-flex flex-row-reverse align-items-center pr-1">
-                        <button class="btn btn-light mr-2 ml-2" onclick="DataList.filtered_deselect()"><i class="far fa-square"></i></button>
-                        <button class="btn btn-light ml-2" onclick="DataList.filtered_select()"><i class="fas fa-check-double"></i></button>
+                    <div class="col-3 d-flex flex-row-reverse align-items-center pe-1">
+                        <button class="btn btn-light ms-2 ms-2" onclick="DataList.filtered_deselect()"><i
+                                class="far fa-square"></i></button>
+                        <button class="btn btn-light ms-2" onclick="DataList.filtered_select()"><i
+                                class="fas fa-check-double"></i></button>
                         <select class="form-control p-0" id="modal_select_size">
                             <option value="9">9</option>
                             <option value="10">10</option>

@@ -2,84 +2,98 @@
 <html>
 
 <head>
-	<meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1, maximum-scale=1, minimum-scale=1" />
-	<meta charset="utf-8" />
-	<meta name=“keywords” content=“Mapmaker,まち歩き,マップメーカー,OpenStreetMap” />
-	<title>まち歩きマップメーカー(ver 2024/03/09)</title>
-	<meta property="og:url" content="https://armd-02.github.io/mapmaker/" />
-	<meta property="og:type" content="website" />
-	<meta property="og:title" content="まち歩きマップメーカー" />
-	<meta property="og:description" content="自由に加工＆使える地図画像を作るサイト" />
-	<meta property="og:image" content="https://armd-02.github.io/mapmaker/image/thumbnail2.png" />
-	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:site" content="@K_Sakanoshita" />
-	<meta name="twitter:title" content="まち歩きマップメーカー" />
-	<meta name="twitter:description" content="自由に加工＆使える地図画像を作るサイト" />
-	<meta name="twitter:image" content="https://armd-02.github.io/mapmaker/image/thumbnail2.png" />
-	<link rel="shortcut icon" href="favicon.ico" />
-	<link rel="stylesheet" href="./css/mapmaker.css" />
-	<link rel="stylesheet" href="./css/basemenu.css" />
-	<link rel="stylesheet" href="./css/leaflet.responsive.popup.css" />
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.65.2/dist/L.Control.Locate.min.css" />
-	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css">
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-	<link rel="stylesheet" href="https://cdn.datatables.net/v/bs4/dt-1.10.21/sl-1.3.1/datatables.min.css" />
-	<script src="https://unpkg.com/json5@^2.0.0/dist/index.min.js"></script>
-	<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.1.0/chroma.min.js"></script>
-	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
-	<script src="https://cdn.datatables.net/v/bs4/dt-1.10.21/sl-1.3.1/datatables.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet-src.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.65.2/src/L.Control.Locate.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/qrcode-svg@1.1.0/lib/qrcode.min.js"></script>
-	<!-- script src="https://cdn.jsdelivr.net/npm/@turf/turf@7.0.0/turf.min.js"></script -->
-	<script src="https://community-geocoder.geolonia.com/api.js"></script>
-	<script src="https://unpkg.com/glottologist@2.0.3/dist/glottologist.min.js"></script>
-	<script src="./lib/leaflet.responsive.popup.js"></script>
-	<script src="./lib/leaflet-tilelayer-colorfilter.min.js"></script>
-	<script src="./lib/osmtogeojson.js"></script>
-	<script src="./lib/leaflet-hash.js"></script>
-	<script src="./lib/basiclib.js"></script>
-	<script src="./lib/svglib.js"></script>
-	<script src="./lib/geolib.js"></script>
-	<script src="./lib/geolib_coastline.js"></script>
-	<script src="./lib/overpasslib.js"></script>
-	<script src="./lib/poislib.js"></script>
-	<script src="./lib/layerlib.js"></script>
-	<script src="./lib/listtable.js"></script>
-	<script src="./mapmaker.js"></script>
-	<script src="./initialize.js"></script>
+    <!--- meta name="viewport"
+        content="width=device-width, user-scalable=yes, initial-scale=1, maximum-scale=1, minimum-scale=1" / --->
+    <meta charset="utf-8" />
+    <meta name=“keywords” content=“Mapmaker,まち歩き,マップメーカー,OpenStreetMap” />
+    <title>まち歩きマップメーカー(ver 2025/02/21)</title>
+    <meta property="og:url" content="https://armd-02.github.io/mapmaker/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="まち歩きマップメーカー" />
+    <meta property="og:description" content="自由に加工＆使える地図画像を作るサイト" />
+    <meta property="og:image" content="https://armd-02.github.io/mapmaker/image/mapmaker.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@K_Sakanoshita" />
+    <meta name="twitter:title" content="まち歩きマップメーカー" />
+    <meta name="twitter:description" content="自由に加工＆使える地図画像を作るサイト" />
+    <meta name="twitter:image" content="https://armd-02.github.io/mapmaker/image/mapmaker.png" />
+    <link rel="shortcut icon" href="favicon.ico" />
+    <link rel="stylesheet" href="./css/mapmaker.css" />
+    <link rel="stylesheet" href="./css/basemenu.css" />
+    <link rel="stylesheet" href="./css/leaflet.responsive.popup.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/v/bs5/dt-2.2.1/sl-3.0.0/datatables.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alwan/dist/css/alwan.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alwan/dist/js/alwan.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.1.0/chroma.min.js" defer></script>
+    <script src="https://cdn.datatables.net/v/bs5/dt-2.2.1/sl-3.0.0/datatables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet-src.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-svg@1.1.0/lib/qrcode.min.js" defer></script>
+    <script src="https://community-geocoder.geolonia.com/api.js" defer></script>
+    <script src="https://unpkg.com/glottologist@2.0.3/dist/glottologist.min.js" defer></script>
+    <script src="https://unpkg.com/@turf/turf/turf.min.js"></script>
+    <script src="./lib/leaflet.responsive.popup.js" defer></script>
+    <script src="./lib/leaflet-tilelayer-colorfilter.min.js" defer></script>
+    <script src="./lib/osmtogeojson.js" defer></script>
+    <script src="./lib/leaflet-hash.js" defer></script>
+    <script src="./lib/basiclib.js" defer></script>
+    <script src="./lib/winlib.js" defer></script>
+    <script src="./lib/svglib.js" defer></script>
+    <script src="./lib/geolib.js" defer></script>
+    <script src="./lib/geolib_coastline.js" defer></script>
+    <script src="./lib/overpasslib.js" defer></script>
+    <script src="./lib/poislib.js" defer></script>
+    <script src="./lib/layerlib.js" defer></script>
+    <script src="./lib/listtable.js" defer></script>
+    <script src="./mapmaker.js" defer></script>
+    <script src="./initialize.js" defer></script>
+    <script type="module">
+        import JSON5 from 'https://unpkg.com/json5@2/dist/index.min.mjs'
+        window.JSON5 = JSON5;
+        initialize.init();
+    </script>
 </head>
 
 <body ontouchstart="">
-	<header class="row">
-		<div class="col-10 p-0">
-			<div class="d-flex align-items-center">
-				<img class="h1" src="image/mapmaker.svg" />
-				<a class="title" href="javascript:Mapmaker.licence()">
-					<span class="title" glot-model="title"></span> <span class="subtitle" glot-model="subtitle"></span>
-				</a>
-			</div>
-		</div>
-		<div class="col-2 p-0 pr-1 d-flex flex-row-reverse">
-			<button type="button" class="btn btn-sm float-right menu" data-toggle="dropdown" aria-expanded="true">
-				<i class="fas fa-bars fa"></i></button>
-			<div class="dropdown-menu dropdown-menu-right" style="z-index: 1020;" id="temp_menu">
-				<a class="dropdown-item"><span></span></a>
-				<span class="dropdown-item"></span>
-				<div class="dropdown-divider"></div>
-			</div>
-		</div>
-	</header>
-	<div id="container">
-		<article id="article">
-			<div id="mapid"></div>
-		</article>
-	</div>
-	<div id="modals"></div>
-	<div id="colors"></div>
+    <header class="row">
+        <div class="col-7 p-0 h-100">
+            <div class="d-flex align-items-center">
+                <img class="h1" src="image/mapmaker.svg" />
+                <a class="title" href="javascript:Mapmaker.licence()">
+                    <span class="title" glot-model="title"></span><span class="subtitle" glot-model="subtitle"></span>
+                </a>
+            </div>
+            <div>
+            </div>
+        </div>
+        <div class="col-5 p-0 pe-1 d-flex flex-row-reverse h-100 align-items-center">
+            <button type="button" class="btn btn-sm float-right menu ms-2" data-bs-toggle="dropdown"
+                aria-expanded="true">
+                <i class="fas fa-bars fa"></i></button>
+            <div class="dropdown-menu dropdown-menu-right" style="z-index: 1020;" id="temp_menu">
+                <a class="dropdown-item"><span></span></a>
+                <span class="dropdown-item"></span>
+                <div class="dropdown-divider"></div>
+            </div>
+            <button class='btn btn-primary ps-2 pe-2 pt-1 pb-1'
+                onclick='Mapmaker.searchPoi(search_input.value)'></button>
+            <input type='search' id='search_input' class='form-control w-75 h-75 me-2'></input>
+        </div>
+
+    </header>
+    <div id="container">
+        <article id="article">
+            <div id="mapid"></div>
+        </article>
+    </div>
+
+    <div id="modals"></div>
+    <div id="colors"></div>
 </body>
 
 </html>

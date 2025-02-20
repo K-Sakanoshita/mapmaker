@@ -6,8 +6,7 @@ const glot = new Glottologist();
 const LANG = (window.navigator.userLanguage || window.navigator.language || window.navigator.browserLanguage).substr(0, 2) == "ja" ? "ja" : "en";
 
 // initialize class object
-const MapCont = new LeafletCont();
-const PoiCont = new PoiControl();
+const poiCont = new poiControl();
 const Marker = new MarkerControl();
 const LayerCont = new LayerControl();
 const SVGCont = new SVGControl();
@@ -16,36 +15,42 @@ const CoastLine = new GeoCoastline();
 const GeoCont = new GeoControl();
 
 // initialize MapMaker
-window.addEventListener("DOMContentLoaded", function () {
-	console.log("Welcome to MapMaker.");
-	let jqXHRs = [];
-	const FILES = [
-		"./basemenu.html", "./modals.html", "./data/config-system.json", "./data/config-user.jsonc",
-		`./data/category-${LANG}.jsonc`, `./data/marker.jsonc`, './data/overpass-system.json',
-		`./data/datatables-${LANG}.json`, `./data/marker-addtional.json`];
-	for (let key in FILES) { jqXHRs.push($.get(FILES[key])) };
-	$.when.apply($, jqXHRs).always(function () {
-		let menuhtml = arguments[0][0];								// Get Menu HTML
-		$("#modals").html(arguments[1][0]);							// Make Modal HTML
-		Conf = Object.assign(arguments[2][0], JSON5.parse(arguments[3][0]));
-		Conf = Object.assign(Conf, JSON5.parse(arguments[4][0]));
-		Conf = Object.assign(Conf, JSON5.parse(arguments[5][0]));
-		for (let i = 6; i <= 8; i++) Conf = Object.assign(Conf, arguments[i][0]);	// Make Config Object
+class initialize {
+    static init() {
+        window.addEventListener("DOMContentLoaded", function () {
+            console.log("Welcome to MapMaker.");
+            let jqXHRs = [];
+            const FILES = [
+                "./basemenu.html", "./modals.html", "./data/config-system.json", "./data/config-user.jsonc",
+                `./data/category-${LANG}.jsonc`, `./data/marker.jsonc`, './data/overpass-system.json', "./data/leyer-style.json",
+                `./data/datatables-${LANG}.json`, `./data/marker-addtional.json`, `./data/prefecture.json`, `./data/prefecture-all.json`];
+            for (let key in FILES) { jqXHRs.push($.get(FILES[key])) };
+            $.when.apply($, jqXHRs).always(function () {
+                let menuhtml = arguments[0][0];								// Get Menu HTML
+                $("#modals").html(arguments[1][0]);							// Make Modal HTML
+                Conf = Object.assign(arguments[2][0], JSON5.parse(arguments[3][0]));
+                Conf = Object.assign(Conf, JSON5.parse(arguments[4][0]));
+                Conf = Object.assign(Conf, JSON5.parse(arguments[5][0]));
+                for (let i = 6; i <= 11; i++) Conf = Object.assign(Conf, arguments[i][0]);	// Make Config Object
+                Conf.category_keys = Object.keys(Conf.category); // Make Conf.category_keys
 
-		glot.import("./data/glot.json").then(() => {	// Multi-language support
-			// document.title = glot.get("title");		// Title(no change / Google検索で日本語表示させたいので)
-			LayerCont.init();							// LayerCont Initialize
-			Mapmaker.init(menuhtml);					// Mapmaker Initialize
-			SVGCont.init();								// Marker Initialize
-			// Google Analytics
-			if (Conf.default.GoogleAnalytics !== "") {
-				$('head').append('<script async src="https://www.googletagmanager.com/gtag/js?id=' + Conf.default.GoogleAnalytics + '"></script>');
-				window.dataLayer = window.dataLayer || [];
-				function gtag() { dataLayer.push(arguments); };
-				gtag('js', new Date());
-				gtag('config', Conf.default.GoogleAnalytics);
-			};
-			glot.render();
-		});
-	});
-});
+                glot.import("./data/glot.json").then(() => {	// Multi-language support
+                    // document.title = glot.get("title");		// Title(no change / Google検索で日本語表示させたいので)
+                    LayerCont.init();							// LayerCont Initialize
+                    Mapmaker.init(menuhtml);					// Mapmaker Initialize
+                    SVGCont.init();								// Marker Initialize
+                    // Google Analytics
+                    if (Conf.default.GoogleAnalytics !== "") {
+                        $('head').append('<script async src="https://www.googletagmanager.com/gtag/js?id=' + Conf.default.GoogleAnalytics + '"></script>');
+                        window.dataLayer = window.dataLayer || [];
+                        function gtag() { dataLayer.push(arguments); };
+                        gtag('js', new Date());
+                        gtag('config', Conf.default.GoogleAnalytics);
+                    };
+                    glot.render();
+                });
+            });
+        });
+    }
+}
+

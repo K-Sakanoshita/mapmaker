@@ -1,330 +1,334 @@
 {
-	"about": {
-		"ja": "まち歩きマップメーカーについて",
-		"en": "about Town Walk Map Maker"
-	},
-	"about-bg": {
-		"ja": "ヘッダー部の背景画像について",
-		"en": "about background image of header"
-	},
-	"owner": {
-		"ja": "開発サイト",
-		"en": "development site"
-	},
-	"openstreetmap": {
-		"ja": "OpenStreetMapについて",
-		"en": "about OpenStreetMap"
-	},
-	"title": {
-		"ja": "まち歩きマップメーカー",
-		"en": "Town Walk Map Maker"
-	},
-	"subtitle": {
-		"ja": "自由に加工＆使える地図画像を作るサイト",
-		"en": "Free to edit & use the map for anything"
-	},
-	"licence_title": {
-		"ja": "地図の利用規約",
-		"en": "Terms of Use for Maps"
-	},
-	"licence_message": {
-		"ja": "地図は <a href=\"https://creativecommons.org/licenses/by/4.0/deed.ja\" target='_blank'>CC BY 4.0</a> ライセンスで提供します。<br>簡単に書くと、以下の条件を守る限り商用も含めて自由に使えます。<br><ul class='mt-3'><li>表示:「© OpenStreetMap contributors」を地図の何処かに表示すること</li></li></ul>上記の条件を守れば、商用利用も含めて自由に使えます。",
-		"en": "Maps are provided under a <a href=\"https://creativecommons.org/licenses/by/4.0/\" target='_blank'>CC BY 4.0</a> license.<br>In brief, you can use it freely, including for commercial purposes, as long as you keep the following conditions.<br><ul class='mt-3'><li>View: place \"© OpenStreetMap contributors\" somewhere on the map crisis</li></ul>You can use it freely, including commercial use, as long as you comply with the above conditions."
-	},
-	"more_message": {
-		"ja": "<hr>道路や建物が無い時は<a href=\"https://wiki.openstreetmap.org/wiki/JA:%E5%88%9D%E5%BF%83%E8%80%85%E3%82%AC%E3%82%A4%E3%83%89\" target='_blank'>OpenStreetMapを編集</a>してみてください。<br>描いた地図は様々に活用され将来に残ります。",
-		"en": "<hr>If you don't have a road or a building, <a href=\"https://wiki.openstreetmap.org/wiki/Beginners%27_guide\" target='_blank'>you can edit OpenStreetMap</a>.<br>Your edited map will be used for many activities and will be preserved for future use."
-	},
-	"zoomlevel": {
-		"ja": "ズームレベル：",
-		"en": "Zoom Level: "
-	},
-	"selectdate": {
-		"ja": "（実験）日付指定：",
-		"en": "(TEST)Acquisition Date: "
-	},
-	"makemap": {
-		"ja": "ここのマップを作る",
-		"en": "Make a map of this place"
-	},
-	"controlmenu": {
-		"ja": "マップを編集する",
-		"en": "Edit the map"
-	},
-	"address": {
-		"ja": "住所",
-		"en": "Address"
-	},
-	"search": {
-		"ja": "検索",
-		"en": "Search"
-	},
-	"addressnotfound_title": {
-		"ja": "住所が見つかりません",
-		"en": "Address not found"
-	},
-	"addressnotfound_body": {
-		"ja": "都道府県から町名まで正確に入力ください（町名まで必要）",
-		"en": "Please enter the exact name of the town from the state to the town."
-	},
-	"morezoom": {
-		"ja": "地図を作るにはズームしてください。",
-		"en": "Zoom in to create a map."
-	},
-	"morezoom2": {
-		"ja": "ズームすると<br />地物が増えます。",
-		"en": "When you zoom in,<br />will see more objects."
-	},
-	"custommode": {
-		"ja": "編集中（ロック）",
-		"en": "Editing(locked)"
-	},
-	"line_weight": {
-		"ja": "輪郭線の太さ",
-		"en": "line weight"
-	},
-	"all_select": {
-		"ja": "全て選択",
-		"en": "All select"
-	},
-	"all_deselect": {
-		"ja": "全て解除",
-		"en": "All deselect"
-	},
-	"facilityname": {
-		"ja": "施設名",
-		"en": "Facility Name"
-	},
-	"button_ok": {
-		"ja": "決定",
-		"en": "OK"
-	},
-	"button_cancel": {
-		"ja": "キャンセル",
-		"en": "Cancel"
-	},
-	"button_close": {
-		"ja": "閉じる",
-		"en": "close"
-	},
-	"button_yes": {
-		"ja": "はい",
-		"en": "YES"
-	},
-	"button_no": {
-		"ja": "いいえ",
-		"en": "NO"
-	},
-	"change_lang_error_title": {
-		"ja": "言語切り替えエラー",
-		"en": "language switching error"
-	},
-	"change_lang_error_message": {
-		"ja": "切り替え先の言語がありません。",
-		"en": "There is no language to switch to."
-	},
-	"loading_title": {
-		"ja": "マップデータのロード中",
-		"en": "Loading map data"
-	},
-	"loading_message": {
-		"ja": "サーバーからダウンロード中です。しばらくお待ちください。",
-		"en": "Loading... Please wait a moment."
-	},
-	"restart_title": {
-		"ja": "データを消してやり直す",
-		"en": "Clear data and restart."
-	},
-	"location": {
-		"ja": "現在地を表示",
-		"en": "Show current location."
-	},
-	"sverror_title": {
-		"ja": "データ取得に失敗",
-		"en": "Failed to retrieve data."
-	},
-	"sverror_message": {
-		"ja": "サーバーからのデータ取得に失敗しました。2分程待ってからやり直してください。",
-		"en": "Failed to retrieve data from the server. Please wait about 2 minutes and try again."
-	},
-	"restart_message": {
-		"ja": "ダウンロードしたデータを消して、最初からやり直しますか？",
-		"en": "Do you want to delete the downloaded data and start over?"
-	},
-	"nodata_title": {
-		"ja": "データが見つかりません",
-		"en": "Data not found."
-	},
-	"nodata_message": {
-		"ja": "指定した種類のデータは見つかりません。マッピングしてください。",
-		"en": "The type of data you specified was not found. Please mapping it."
-	},
-	"area_select": {
-		"ja": "A4(縦横)サイズ指定",
-		"en": "range selection"
-	},
-	"area_deselect": {
-		"ja": "選択解除",
-		"en": "deselection"
-	},
-	"area_A4": {
-		"ja": "A4縦サイズ",
-		"en": "A4 portrait size"
-	},
-	"area_A4_landscape": {
-		"ja": "A4横サイズ",
-		"en": "A4 landscape size"
-	},
-	"color_palette":{
-		"ja":"カラーパレット",
-		"en":"color palette"
-	},
-	"mono_palette":{
-		"ja":"モノクロパレット",
-		"en":"mono palette"
-	},
-	"marker_wikipedia": {
-		"ja": "Wikipedia記事",
-		"en": "Wikipedia article"
-	},
-	"marker_shop": {
-		"ja": "店舗・施設",
-		"en": "Shop"
-	},
-	"marker_takeaway": {
-		"ja": "持ち帰り・宅配",
-		"en": "Take-out/delivery"
-	},
-	"marker_history": {
-		"ja": "歴史・遺跡",
-		"en": "history"
-	},
-	"marker_playground": {
-		"ja": "公園・遊具",
-		"en": "Playground"
-	},
-	"marker_artwork": {
-		"ja": "文化・アート",
-		"en": "artwork"
-	},
-	"marker_natural": {
-		"ja": "自然・動物",
-		"en": "tree"
-	},
-	"marker_disaster&move": {
-		"ja": "防災・防犯・移動",
-		"en": "Disaster Prevention"
-	},
-	"marker_shelter_temporary": {
-		"ja": "一時避難所(大阪市)",
-		"en": "temporary shelter(OSAKA)"
-	},
-	"marker_shelter_tsunami": {
-		"ja": "津波・洪水避難所(大阪市)",
-		"en": "Tsunami and flood shelters(OSAKA)"
-	},
-	"marker_animal": {
-		"ja": "動物",
-		"en": "Animal"
-	},
-	"menu_background": {
-		"ja": "背景色",
-		"en": "Background"
-	},
-	"menu_park": {
-		"ja": "各種公園",
-		"en": "Park"
-	},
-	"menu_pedestrian": {
-		"ja": "各種広場",
-		"en": "Piazza"
-	},
-	"menu_parking": {
-		"ja": "駐車場",
-		"en": "Parking"
-	},
-	"menu_garden": {
-		"ja": "庭・草原",
-		"en": "Garden"
-	},
-	"menu_river": {
-		"ja": "水路・川",
-		"en": "Waterway"
-	},
-	"menu_forest": {
-		"ja": "森・田畑",
-		"en": "Wood/Crop"
-	},
-	"menu_railway": {
-		"ja": "レール類",
-		"en": "Railway"
-	},
-	"menu_highway_alley": {
-		"ja": "路地小道",
-		"en": "Pathway"
-	},
-	"menu_highway_step": {
-		"ja": "階段",
-		"en": "Step"
-	},
-	"menu_highway_substandard": {
-		"ja": "生活道路",
-		"en": "SubStd road"
-	},
-	"menu_highway_standard": {
-		"ja": "一般道路",
-		"en": "Std road"
-	},
-	"menu_highway_primary": {
-		"ja": "主要道路",
-		"en": "Pri road"
-	},
-	"menu_highway_motorway": {
-		"ja": "高速道路",
-		"en": "Highway"
-	},
-	"menu_building": {
-		"ja": "建物・家",
-		"en": "Building"
-	},
-	"menu_barrier": {
-		"ja": "壁・擁壁",
-		"en": "Wall"
-	},
-	"menu_station": {
-		"ja": "駅施設等",
-		"en": "Station"
-	},
-	"qrcode_make": {
-		"ja": "QRコード生成",
-		"en": "QR-code generatie"
-	},
-	"marker_delete": {
-		"ja": "アイコンを削除",
-		"en": "Remove Icon"
-	},
-	"marker_change": {
-		"ja": "アイコンを変更",
-		"en": "Change Icon"
-	},
-	"marker_to_en": {
-		"ja": "英語に変更",
-		"en": "Change to English"
-	},
-	"marker_to_ja": {
-		"ja": "日本語に変更",
-		"en": "Change to Japanese"
-	},
-	"source_wikipedia": {
-		"ja": "(出典: Wikipedia)",
-		"en": "(Source: Wikipedia)"
-	},
-	"marker_noname": {
-		"ja": "(名称無し)",
-		"en": "(no name)"
-	},
-	"step_count":{
-		"ja": "段",
-		"en": "steps"
-	}
+    "about": {
+        "ja": "まち歩きマップメーカーについて",
+        "en": "about Town Walk Map Maker"
+    },
+    "about-bg": {
+        "ja": "ヘッダー部の背景画像について",
+        "en": "about background image of header"
+    },
+    "owner": {
+        "ja": "開発サイト",
+        "en": "development site"
+    },
+    "openstreetmap": {
+        "ja": "OpenStreetMapについて",
+        "en": "about OpenStreetMap"
+    },
+    "title": {
+        "ja": "まち歩きマップメーカー",
+        "en": "Town Walk Map Maker"
+    },
+    "subtitle": {
+        "ja": "自由に加工＆使える地図画像を作るサイト",
+        "en": "Free to edit & use the map for anything"
+    },
+    "licence_title": {
+        "ja": "地図の利用規約",
+        "en": "Terms of Use for Maps"
+    },
+    "licence_message": {
+        "ja": "地図は <a href=\"https://creativecommons.org/licenses/by/4.0/deed.ja\" target='_blank'>CC BY 4.0</a> ライセンスで提供します。<br>簡単に書くと、以下の条件を守る限り商用も含めて自由に使えます。<br><ul class='mt-3'><li>表示:「© OpenStreetMap contributors」を地図の何処かに表示すること</li></li></ul>上記の条件を守れば、商用利用も含めて自由に使えます。<br>なお、マップ作成時のURLのみをログに記録しています。",
+        "en": "Maps are provided under a <a href=\"https://creativecommons.org/licenses/by/4.0/\" target='_blank'>CC BY 4.0</a> license.<br>In brief, you can use it freely, including for commercial purposes, as long as you keep the following conditions.<br><ul class='mt-3'><li>View: place \"© OpenStreetMap contributors\" somewhere on the map crisis</li></ul>You can use it freely, including commercial use, as long as you comply with the above conditions.<br>Only the URL at the time of map creation is logged."
+    },
+    "more_message": {
+        "ja": "<hr>道路や建物が無い時は<a href=\"https://wiki.openstreetmap.org/wiki/JA:%E5%88%9D%E5%BF%83%E8%80%85%E3%82%AC%E3%82%A4%E3%83%89\" target='_blank'>OpenStreetMapを編集</a>してみてください。<br>描いた地図は様々に活用され将来に残ります。",
+        "en": "<hr>If you don't have a road or a building, <a href=\"https://wiki.openstreetmap.org/wiki/Beginners%27_guide\" target='_blank'>you can edit OpenStreetMap</a>.<br>Your edited map will be used for many activities and will be preserved for future use."
+    },
+    "zoomlevel": {
+        "ja": "ズームレベル：",
+        "en": "Zoom Level: "
+    },
+    "selectdate": {
+        "ja": "（実験）日付指定：",
+        "en": "(TEST)Acquisition Date: "
+    },
+    "makemap": {
+        "ja": "ここのマップを作る",
+        "en": "Make a map of this place"
+    },
+    "controlmenu": {
+        "ja": "マップを編集する",
+        "en": "Edit the map"
+    },
+    "address": {
+        "ja": "住所検索（日本国内のみ）",
+        "en": "Address Search(Only Japan)"
+    },
+    "search": {
+        "ja": "検索",
+        "en": "Search"
+    },
+    "addressnotfound_title": {
+        "ja": "住所が見つかりません",
+        "en": "Address not found"
+    },
+    "addressnotfound_body": {
+        "ja": "都道府県から町名まで正確に入力ください（町名まで必要）",
+        "en": "Please enter the exact name of the town from the state to the town."
+    },
+    "morezoom": {
+        "ja": "地図を作るにはズームしてください。",
+        "en": "Zoom in to create a map."
+    },
+    "morezoom2": {
+        "ja": "ズームすると<br />地物が増えます。",
+        "en": "When you zoom in,<br />will see more objects."
+    },
+    "custommode": {
+        "ja": "編集中（ロック）",
+        "en": "Editing(locked)"
+    },
+    "line_weight": {
+        "ja": "輪郭線の太さ",
+        "en": "line weight"
+    },
+    "all_select": {
+        "ja": "全て選択",
+        "en": "All select"
+    },
+    "all_deselect": {
+        "ja": "全て解除",
+        "en": "All deselect"
+    },
+    "facilityname": {
+        "ja": "施設名",
+        "en": "Facility Name"
+    },
+    "button_ok": {
+        "ja": "決定",
+        "en": "OK"
+    },
+    "button_cancel": {
+        "ja": "キャンセル",
+        "en": "Cancel"
+    },
+    "button_close": {
+        "ja": "閉じる",
+        "en": "close"
+    },
+    "button_yes": {
+        "ja": "はい",
+        "en": "YES"
+    },
+    "button_no": {
+        "ja": "いいえ",
+        "en": "NO"
+    },
+    "change_lang_error_title": {
+        "ja": "言語切り替えエラー",
+        "en": "language switching error"
+    },
+    "change_lang_error_message": {
+        "ja": "切り替え先の言語がありません。",
+        "en": "There is no language to switch to."
+    },
+    "loading_title": {
+        "ja": "マップデータのロード中",
+        "en": "Loading map data"
+    },
+    "loading_message": {
+        "ja": "サーバーからダウンロード中です。しばらくお待ちください。",
+        "en": "Loading... Please wait a moment."
+    },
+    "restart_title": {
+        "ja": "データを消してやり直す",
+        "en": "Clear data and restart."
+    },
+    "location": {
+        "ja": "現在地を表示",
+        "en": "Show current location."
+    },
+    "sverror_title": {
+        "ja": "データ取得に失敗",
+        "en": "Failed to retrieve data."
+    },
+    "sverror_message": {
+        "ja": "サーバーからのデータ取得に失敗しました。2分程待ってからやり直してください。",
+        "en": "Failed to retrieve data from the server. Please wait about 2 minutes and try again."
+    },
+    "restart_message": {
+        "ja": "ダウンロードしたデータを消して、最初からやり直しますか？",
+        "en": "Do you want to delete the downloaded data and start over?"
+    },
+    "nodata_title": {
+        "ja": "データが見つかりません",
+        "en": "Data not found."
+    },
+    "nodata_message": {
+        "ja": "指定した種類のデータは見つかりません。マッピングしてください。",
+        "en": "The type of data you specified was not found. Please mapping it."
+    },
+    "area_select": {
+        "ja": "A4(縦横)サイズ指定",
+        "en": "range selection"
+    },
+    "area_deselect": {
+        "ja": "選択解除",
+        "en": "deselection"
+    },
+    "area_A4": {
+        "ja": "A4縦サイズ",
+        "en": "A4 portrait size"
+    },
+    "area_A4_landscape": {
+        "ja": "A4横サイズ",
+        "en": "A4 landscape size"
+    },
+    "color_palette": {
+        "ja": "カラーパレット",
+        "en": "color palette"
+    },
+    "mono_palette": {
+        "ja": "モノクロパレット",
+        "en": "mono palette"
+    },
+    "marker_wikipedia": {
+        "ja": "Wikipedia記事",
+        "en": "Wikipedia article"
+    },
+    "marker_shop": {
+        "ja": "店舗・施設",
+        "en": "Shop"
+    },
+    "marker_takeaway": {
+        "ja": "持ち帰り・宅配",
+        "en": "Take-out/delivery"
+    },
+    "marker_history": {
+        "ja": "歴史・遺跡",
+        "en": "history"
+    },
+    "marker_playground": {
+        "ja": "公園・遊具",
+        "en": "Playground"
+    },
+    "marker_artwork": {
+        "ja": "文化・アート",
+        "en": "artwork"
+    },
+    "marker_natural": {
+        "ja": "自然・動物",
+        "en": "tree"
+    },
+    "marker_disaster&move": {
+        "ja": "防災・防犯・移動",
+        "en": "Disaster Prevention"
+    },
+    "marker_shelter_temporary": {
+        "ja": "一時避難所(大阪市)",
+        "en": "temporary shelter(OSAKA)"
+    },
+    "marker_shelter_tsunami": {
+        "ja": "津波・洪水避難所(大阪市)",
+        "en": "Tsunami and flood shelters(OSAKA)"
+    },
+    "marker_animal": {
+        "ja": "動物",
+        "en": "Animal"
+    },
+    "menu_background": {
+        "ja": "背景色",
+        "en": "Background"
+    },
+    "menu_park": {
+        "ja": "各種公園",
+        "en": "Park"
+    },
+    "menu_pedestrian": {
+        "ja": "各種広場",
+        "en": "Piazza"
+    },
+    "menu_site": {
+        "ja": "施設敷地",
+        "en": "Site"
+    },
+    "menu_parking": {
+        "ja": "駐車場",
+        "en": "Parking"
+    },
+    "menu_garden": {
+        "ja": "庭・草原",
+        "en": "Garden"
+    },
+    "menu_river": {
+        "ja": "水路・川",
+        "en": "Waterway"
+    },
+    "menu_forest": {
+        "ja": "森・田畑",
+        "en": "Wood/Crop"
+    },
+    "menu_railway": {
+        "ja": "レール類",
+        "en": "Railway"
+    },
+    "menu_highway_alley": {
+        "ja": "路地小道",
+        "en": "Pathway"
+    },
+    "menu_highway_step": {
+        "ja": "階段",
+        "en": "Step"
+    },
+    "menu_highway_substandard": {
+        "ja": "生活道路",
+        "en": "SubStd road"
+    },
+    "menu_highway_standard": {
+        "ja": "一般道路",
+        "en": "Std road"
+    },
+    "menu_highway_primary": {
+        "ja": "主要道路",
+        "en": "Pri road"
+    },
+    "menu_highway_motorway": {
+        "ja": "高速道路",
+        "en": "Highway"
+    },
+    "menu_building": {
+        "ja": "建物・家",
+        "en": "Building"
+    },
+    "menu_barrier": {
+        "ja": "壁・擁壁",
+        "en": "Wall"
+    },
+    "menu_station": {
+        "ja": "駅施設等",
+        "en": "Station"
+    },
+    "qrcode_make": {
+        "ja": "QRコード生成",
+        "en": "QR-code generatie"
+    },
+    "marker_delete": {
+        "ja": "アイコンを削除",
+        "en": "Remove Icon"
+    },
+    "marker_change": {
+        "ja": "アイコンを変更",
+        "en": "Change Icon"
+    },
+    "marker_to_en": {
+        "ja": "英語に変更",
+        "en": "Change to English"
+    },
+    "marker_to_ja": {
+        "ja": "日本語に変更",
+        "en": "Change to Japanese"
+    },
+    "source_wikipedia": {
+        "ja": "(出典: Wikipedia)",
+        "en": "(Source: Wikipedia)"
+    },
+    "marker_noname": {
+        "ja": "(名称無し)",
+        "en": "(no name)"
+    },
+    "step_count": {
+        "ja": "段",
+        "en": "steps"
+    }
 }
