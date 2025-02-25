@@ -34,14 +34,6 @@
                 "dashArray": null,
                 "linecap": "round"
             },
-            "river": {
-                "zoom": 11,
-                "type": "area",
-                "color": "#d8ecf8",
-                "width": 1,
-                "dashArray": null,
-                "linecap": "round"
-            },
             "park": {
                 "zoom": 15,
                 "type": "area",
@@ -58,6 +50,22 @@
                 "dashArray": null,
                 "linecap": "round"
             },
+            "river": {
+                "zoom": 11,
+                "type": "area",
+                "color": "#d8ecf8",
+                "width": 1,
+                "dashArray": null,
+                "linecap": "round"
+            },
+            "forest": {
+                "zoom": 11,
+                "type": "area",
+                "color": "#c3e2c1",
+                "width": 0.8,
+                "dashArray": null,
+                "linecap": "round"
+            },
             "parking": {
                 "zoom": 15.5,
                 "type": "area",
@@ -71,14 +79,6 @@
                 "type": "area",
                 "color": "#f2f2f2",
                 "width": 0.5,
-                "dashArray": null,
-                "linecap": "round"
-            },
-            "forest": {
-                "zoom": 11,
-                "type": "area",
-                "color": "#c3e2c1",
-                "width": 0.8,
                 "dashArray": null,
                 "linecap": "round"
             },
