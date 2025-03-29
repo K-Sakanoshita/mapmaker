@@ -6,15 +6,20 @@
                 "*": "marker-stroked.svg"
             },
             "amenity": {
+                "atm": "atm.svg",
                 "arts_centre": "arts_centre.svg",
-                "bar": "bar.svg",
                 "bank": "bank-JP.svg",
+                "bar": "bar.svg",
                 "bbq": "bbq.svg",
                 "bench": "bench.svg",
                 "bicycle_parking": "parking-bicycle.svg",
                 "bicycle_rental": "bicycle_rental.svg",
+                "biergarten": "beer-solid.svg",
                 "bus_station": "board_bus.svg",
                 "cafe": "cafe.svg",
+                "car_sharing": "sign_and_car.svg",
+                "childcare": "child-reaching-solid.svg",
+                "cinema": "cinema.svg",
                 "clinic": "doctor.svg",
                 "clock": "clock.svg",
                 "college": "college.svg",
@@ -22,15 +27,16 @@
                 "courthouse": "courthouse.svg",
                 "coworking_space": "commercial.svg",
                 "crematorium": "marker-stroked.svg",
-                "cinema": "cinema.svg",
                 "dentist": "dentist.svg",
                 "doctors": "doctor.svg",
+                "dojo": "pitch.svg",
                 "drinking_water": "drinking-water.svg",
                 "fast_food": "fast-food.svg",
                 "ferry_terminal": "ferry.svg",
                 "fire_station": "fire-station.svg",
                 "food_court": "restaurant.svg",
                 "fountain": "fountain.svg",
+                "fuel": "fuel.svg",
                 "gambling": "coins-solid.svg",
                 "grave_yard": "marker-stroked.svg",
                 "hospital": "hospital.svg",
@@ -40,11 +46,13 @@
                 "kindergarten": "marker-stroked.svg",
                 "language_school": "temaki_school.svg",
                 "library": "library.svg",
-                "nightclub": "music.svg",
                 "marketplace": "shopping-basket.svg",
+                "motorcycle_parking": "motorcycle-solid.svg",
+                "nightclub": "music.svg",
                 "parking": "parking.svg",
                 "pharmacy": "pharmacy.svg",
                 "photo_booth": "photo.svg",
+                "prep_school": "school.svg",
                 "place_of_worship": "place-of-worship.svg",
                 "police": "police.svg",
                 "post_box": "post_box.svg",
@@ -77,7 +85,8 @@
                 "animal": "zoo.svg"
             },
             "barrier": {
-                "gate": "gate.svg"
+                "gate": "gate.svg",
+                "hedge": "hedge.svg"
             },
             "bridge": {
                 "yes": "bridge.svg"
@@ -98,13 +107,24 @@
                 "carpenter": "anvil_and_hammer.svg",
                 "confectionery": "confectionery.svg",
                 "lighting": "bulb-light.svg",
-                "photographer": "attraction.svg"
+                "photographer": "attraction.svg",
+                "yes": "tools.svg"
             },
             "diplomatic": {
                 "embassy": "diplomatic.svg"
             },
             "disused:amenity": {
                 "school": "ruins.svg"
+            },
+            "emergency": {
+                "assembly_point": "assembly_point.svg",
+                "fire_extinguisher": "fire-extinguisher.svg",
+                "fire_hydrant": "fire_hydrant.svg",
+                "fire_hose": "fire_hose.svg",
+                "fire_lookout": "marker-stroked.svg",
+                "defibrillator": "defibrillator.svg",
+                "siren": "speaker.svg",
+                "water_tank": "water.svg"
             },
             "healthcare": {
                 "alternative": "house-medical-solid.svg"
@@ -159,6 +179,7 @@
                 "hairdresser": "hairdresser.svg",
                 "hardware": "tools.svg",
                 "health_food": "shop.svg",
+                "houseware": "blender-solid.svg",
                 "ice_cream": "ice-cream.svg",
                 "interior_decoration": "interior_decoration.svg",
                 "jewelry": "jewelry-store.svg",
@@ -168,6 +189,7 @@
                 "massage": "massage.svg",
                 "medical_supply": "medical_supply.svg",
                 "motorcycle": "motorcycle.svg",
+                "newsagent": "newspaper-solid.svg",
                 "optician": "optician.svg",
                 "pasta": "restaurant.svg",
                 "pastry": "bakery.svg",
@@ -186,25 +208,19 @@
                 "tobacco": "pipe.svg",
                 "travel_agency": "briefcase.svg",
                 "variety_store": "shop.svg",
+                "video_games": "gaming.svg",
                 "water": "water.svg",
                 "watches": "watch.svg",
                 "wine": "alcohol-shop.svg"
             },
             "natural": {
                 "peak": "mountain.svg",
+                "stone": "smarker-stroked.svg",
                 "tree": "park.svg",
+                "tree_row": "tree_row.svg",
                 "water": "water.svg",
                 "wetland": "wetland.svg",
                 "wood": "park-alt1.svg"
-            },
-            "emergency": {
-                "assembly_point": "assembly_point.svg",
-                "fire_extinguisher": "fire-extinguisher.svg",
-                "fire_hydrant": "fire_hydrant.svg",
-                "fire_hose": "fire_hose.svg",
-                "defibrillator": "defibrillator.svg",
-                "siren": "speaker.svg",
-                "water_tank": "water.svg"
             },
             "highway": {
                 "bus_stop": "board_bus.svg",
@@ -219,9 +235,12 @@
             "playground": {
                 "activitypanel": "playground.svg",
                 "aerialrotator": "playground.svg",
+                "agility_trail": "playground.svg",
                 "balancebeam": "balance_beam.svg",
                 "basketrotator": "playground.svg",
                 "basketswing": "playground.svg",
+                "bridge": "playground.svg",
+                "climbing": "jungle_gym.svg",
                 "climbingframe": "jungle_gym.svg",
                 "climbingwall": "playground.svg",
                 "cushion": "playground.svg",
@@ -251,6 +270,7 @@
                 "stepping_tires": "tire.svg",
                 "structure": "play_structure.svg",
                 "swing": "playground.svg",
+                "swing_carousel": "playground.svg",
                 "teenshelter": "shelter.svg",
                 "tire": "tire.svg",
                 "trampoline": "playground.svg",
@@ -266,6 +286,8 @@
                 "artwork": "art-gallery.svg",
                 "gallery": "art-gallery2.svg",
                 "guest_house": "lodging.svg",
+                "hostel": "bunk_beds.svg",
+                "hotel": "bell-concierge-solid.svg",
                 "information": "information.svg",
                 "museum": "museum.svg",
                 "picnic_site": "picnic-site.svg",
@@ -277,6 +299,7 @@
                 "archaeological_site": "archaeological-site.svg",
                 "battlefield": "ruins.svg",
                 "boundary_stone": "milestone.svg",
+                "building": "row_houses.svg",
                 "castle": "castle-JP.svg",
                 "cannon": "cannon.svg",
                 "memorial": "monument.svg",
@@ -285,6 +308,7 @@
                 "heritage": "archaeological-site.svg",
                 "tomb": "cemetery-JP.svg",
                 "locomotive": "ruins.svg",
+                "street_lamp": "marker-stroked.svg",
                 "wayside_shrine": "ojizou.svg",
                 "wayside_cross": "cross_christ.svg",
                 "vehicle": "car.svg"
@@ -318,7 +342,7 @@
                 "recreation_ground": "pitch.svg"
             },
             "leisure": {
-                "adult_gaming_centre":"coins-solid.svg",
+                "adult_gaming_centre": "coins-solid.svg",
                 "amusement_arcade": "gaming.svg",
                 "dance": "music.svg",
                 "fitness_centre": "gym.svg",

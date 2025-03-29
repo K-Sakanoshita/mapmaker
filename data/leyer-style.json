@@ -197,6 +197,14 @@
                 "color": "#000000",
                 "opacity": 0
             },
+            "site": {
+                "zoom": 15,
+                "type": "area",
+                "color": "#d0d0d0",
+                "width": 0.5,
+                "dashArray": null,
+                "linecap": "round"
+            },
             "park": {
                 "zoom": 15,
                 "type": "line",

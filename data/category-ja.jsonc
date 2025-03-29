@@ -1,6 +1,7 @@
 {
     "category": {
-        // 下記の順番はカテゴリ名を取得する時の優先順位にもなる
+        // カテゴリ名取得は最初に見つかったものから
+        // marker.jsoncと行数合わせの行
         "*": {
             "*": "-"
         },
@@ -224,8 +225,12 @@
         "highway": {
             "bus_stop": "バス停",
             "traffic_signals": "信号機",
+            "steps": "階段",
             "street_lamp": "街灯",
             "elevator": "エレベーター"
+        },
+        "social_facility": {
+            "shelter": "一時避難所"
         },
         "playground": {
             "activitypanel": "パネル遊具",
@@ -285,6 +290,7 @@
             "hostel": "簡易宿泊所",
             "information": "案内",
             "museum": "美術館",
+            "picnic_site": "ピクニックサイト",
             "viewpoint": "ビューポイント",
             "zoo": "動物園"
         },
@@ -323,17 +329,6 @@
             "surveillance": "監視機器",
             "works": "工場"
         },
-        "leisure": {
-            "adult_gaming_centre": "パチンコ/パチスロ",
-            "amusement_arcade": "ゲームセンター",
-            "garden": "庭",
-            "dance": "ダンスホール",
-            "fitness_centre": "フィットネスセンター",
-            "pitch": "グラウンド",
-            "park": "公園",
-            "playground": "児童公園",
-            "swimming_pool": "水泳プール"
-        },
         "landuse": {
             "farmland": "農地",
             "religious": "信仰",
@@ -345,6 +340,17 @@
             "retail": "商業エリア",
             "grass": "芝生",
             "recreation_ground": "レクリエーション広場"
+        },
+        "leisure": {
+            "adult_gaming_centre": "パチンコ/パチスロ",
+            "amusement_arcade": "ゲームセンター",
+            "garden": "庭",
+            "dance": "ダンスホール",
+            "fitness_centre": "フィットネスセンター",
+            "pitch": "グラウンド",
+            "park": "公園",
+            "playground": "児童公園",
+            "swimming_pool": "水泳プール"
         },
         "railway": {
             "station": "鉄道駅"
