@@ -1,6 +1,7 @@
 {
     "category": {
-        // The following order will also be the priority when retrieving the category name.
+        // カテゴリ名取得は最初に見つかったものから
+        // marker.jsoncと行数合わせの行
         "*": {
             "*": "-"
         },
@@ -212,9 +213,6 @@
             "watches": "watches",
             "wine": "wine"
         },
-        "social_facility": {
-            "shelter": "temporary shelter"
-        },
         "natural": {
             "peak": "peak",
             "stone": "stone",
@@ -227,8 +225,12 @@
         "highway": {
             "bus_stop": "bus stop",
             "traffic_signals": "traffic signals",
+            "steps": "steps",
             "street_lamp": "street lamp",
             "elevator": "elevator"
+        },
+        "social_facility": {
+            "shelter": "temporary shelter"
         },
         "playground": {
             "activitypanel": "activitypanel",
@@ -288,6 +290,7 @@
             "hotel": "hotel",
             "information": "information",
             "museum": "museum",
+            "picnic_site": "picnic site",
             "viewpoint": "viewpoint",
             "zoo": "zoo"
         },
@@ -326,17 +329,6 @@
             "surveillance": "surveillance",
             "works": "works"
         },
-        "leisure": {
-            "adult_gaming_centre": "adult gaming centre",
-            "amusement_arcade": "amusement arcade",
-            "dance": "dance",
-            "fitness_centre": "fitness center",
-            "garden": "garden",
-            "pitch": "pitch",
-            "park": "park",
-            "playground": "playground",
-            "swimming_pool": "swimming pool"
-        },
         "landuse": {
             "farmland": "farmland",
             "religious": "religious",
@@ -348,6 +340,17 @@
             "grass": "grass",
             "retail": "retail",
             "recreation_ground": "recreation ground"
+        },
+        "leisure": {
+            "adult_gaming_centre": "adult gaming centre",
+            "amusement_arcade": "amusement arcade",
+            "dance": "dance",
+            "fitness_centre": "fitness center",
+            "garden": "garden",
+            "pitch": "pitch",
+            "park": "park",
+            "playground": "playground",
+            "swimming_pool": "swimming pool"
         },
         "railway": {
             "station": "station"
