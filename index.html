@@ -51,6 +51,7 @@
     <script src="https://community-geocoder.geolonia.com/api.js" defer></script>
     <script src="https://unpkg.com/glottologist@2.0.3/dist/glottologist.min.js" defer></script>
     <script src="https://unpkg.com/@turf/turf/turf.min.js"></script>
+    <script src="https://unpkg.com/svg2roughjs@3.2.3/dist/svg2roughjs.umd.min.js" defer></script>
     <script src="./lib/leaflet.responsive.popup.js" defer></script>
     <script src="./lib/leaflet-tilelayer-colorfilter.min.js" defer></script>
     <script src="./lib/osmtogeojson.js" defer></script>
@@ -113,6 +114,10 @@
             <section class="flex-fill">
                 <article id="article">
                     <div id="mapid"></div>
+                    <aside id="roughPreviewWindow" class="rough-preview-window d-none" aria-live="polite">
+                        <div id="roughPreviewStatus" class="rough-preview-status d-none"></div>
+                        <div id="roughPreview" class="rough-preview"></div>
+                    </aside>
                 </article>
             </section>
         </div>
