@@ -200,12 +200,24 @@
         "en": "mono palette"
     },
     "rough_style": {
-        "ja": "手書き風出力",
+        "ja": "手書き風",
         "en": "Hand-drawn output"
     },
     "rough_on_off": {
         "ja": "On / Off",
         "en": "On / Off"
+    },
+    "rough_roughness": {
+        "ja": "粗さ",
+        "en": "Roughness"
+    },
+    "rough_bowing": {
+        "ja": "ゆがみ",
+        "en": "Bowing"
+    },
+    "rough_fill": {
+        "ja": "塗り",
+        "en": "Fill Style"
     },
     "rough_preview": {
         "ja": "プレビュー",

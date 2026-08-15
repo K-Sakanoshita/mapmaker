@@ -374,14 +374,6 @@ img.icon_normal {
 
 .rough-controls {
     text-align: left;
-    font-size: 13px;
-}
-
-.rough-controls-title {
-    float: none;
-    width: auto;
-    font-size: 14px;
-    font-weight: 600;
 }
 
 .rough-controls .form-switch .form-check-input {
@@ -392,6 +384,12 @@ img.icon_normal {
 .rough-range {
     height: 18px;
     margin-bottom: 3px;
+}
+
+.rough-fill-select {
+    flex: 0 0 125px;
+    width: 125px;
+    min-width: 0;
 }
 
 .rough-preview-window {
