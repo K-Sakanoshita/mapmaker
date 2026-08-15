@@ -23,11 +23,13 @@ class MapMaker {
         roughPane.style.zIndex = "450";
         const resizeRoughPane = () => {
             const size = map.getSize();
+            const mapPanePosition = L.DomUtil.getPosition(map.getPane("mapPane")) || L.point(0, 0);
             roughPane.style.width = `${size.x}px`;
             roughPane.style.height = `${size.y}px`;
+            L.DomUtil.setPosition(roughPane, mapPanePosition.multiplyBy(-1));
         };
         resizeRoughPane();
-        map.on("resize", resizeRoughPane);
+        map.on("move resize", resizeRoughPane);
         const roughPreviewWindow = document.getElementById("roughPreviewWindow");
         if (roughPreviewWindow) roughPane.appendChild(roughPreviewWindow);
         MapCont.controlAdd("bottomleft", "zoomlevel", "<div><.div>", "");
