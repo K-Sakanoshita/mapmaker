@@ -52,10 +52,10 @@
                         </div>
                     </div>
                     <div class="col-3 d-flex flex-row-reverse align-items-center pe-1">
-                        <button class="btn btn-light ms-2 ms-2" onclick="DataList.filtered_deselect()"><i
-                                class="far fa-square"></i></button>
-                        <button class="btn btn-light ms-2" onclick="DataList.filtered_select()"><i
-                                class="fas fa-check-double"></i></button>
+                        <button type="button" id="modal_select_all_deselect" class="btn btn-light ms-2"
+                            onclick="DataList.filtered_deselect()"><span aria-hidden="true">🧹</span></button>
+                        <button type="button" id="modal_select_all_select" class="btn btn-light ms-2"
+                            onclick="DataList.filtered_select()"><span aria-hidden="true">☑️</span></button>
                         <select class="form-control p-0" id="modal_select_size">
                             <option value="9">9</option>
                             <option value="10">10</option>
@@ -83,6 +83,8 @@
                 </div>
             </div>
             <div class="modal-footer">
+                <div id="modal_select_error" class="alert alert-danger d-none w-100 mb-2" role="alert"
+                    aria-live="polite"></div>
                 <button class="btn btn-primary" id="modal_select_ok"></button>
                 <button class="btn btn-secondary" id="modal_select_cancel"></button>
             </div>

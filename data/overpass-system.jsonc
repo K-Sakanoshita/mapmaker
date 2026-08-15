@@ -13,21 +13,25 @@
                 "nwr[\"amenity\"]",
                 "nwr[\"landuse\"]",
                 "nwr[\"leisure\"]",
-                "nwr[\"power\"]"
+                "nwr[\"power\"]",
+                "nwr[\"historic\"]"
             ],
             "tags": [
                 "amenity=place_of_worship",
                 "amenity=townhall",
                 "amenity=kindergarten",
                 "amenity=school",
+                "landuse=brownfield",
                 "landuse=commercial",
+                "landuse=construction",
                 "landuse=cemetery",
                 "landuse=industrial",
                 "landuse=retail",
                 "leisure=golf_course",
                 "landuse=railway",
                 "power=substation",
-                "power=generator"
+                "power=generator",
+                "historic=archaeological_site"
             ]
         },
         "park": {
@@ -58,11 +62,18 @@
             ],
             "tags": [
                 "leisure=garden",
-                "landuse=farmland",
                 "landuse=allotments",
                 "landuse=orchard",
                 "landuse=grass",
                 "landuse=aquaculture"
+            ]
+        },
+        "wetland": {
+            "overpass": [
+                "nwr[\"natural\"]"
+            ],
+            "tags": [
+                "natural=wetland"
             ]
         },
         "waterArea": {
@@ -100,18 +111,37 @@
         },
         "forest": {
             "overpass": [
-                "nwr[\"barrier\"]",
                 "nwr[\"natural\"]",
                 "nwr[\"landuse\"]"
             ],
             "tags": [
-                "barrier=hedge",
-                "natural=wood",
-                "natural=tree_row",
-                "natural=tree",
                 "landuse=forest",
+                "landuse=meadow",
+                "natural=tree",
+                "natural=wood",
                 "natural=grassland",
                 "natural=shrubbery"
+            ]
+        },
+        "farmland": {
+            "overpass": [
+                "nwr[\"landuse\"]"
+            ],
+            "tags": [
+                "landuse=farmland",
+                "landuse=vineyard",
+                "landuse=greenhouse_horticulture",
+                "landuse=plant_nursery"
+            ]
+        },
+        "greenLine": {
+            "overpass": [
+                "nwr[\"barrier\"]",
+                "nwr[\"natural\"]"
+            ],
+            "tags": [
+                "barrier=hedge",
+                "natural=tree_row"
             ]
         },
         "pedestrian": {
@@ -124,7 +154,6 @@
             "tags": [
                 "highway=pedestrian&&area",
                 "man_made=bridge",
-                "landuse=brownfield",
                 "natural=sand"
             ]
         },
@@ -216,12 +245,14 @@
             "overpass": [
                 "nwr[\"building\"]",
                 "nwr[\"man_made\"]",
-                "nwr[\"waterway\"]"
+                "nwr[\"waterway\"]",
+                "node[\"entrance\"]"
             ],
             "tags": [
                 "building",
                 "man_made=breakwater",
-                "waterway=dam"
+                "waterway=dam",
+                "entrance"
             ]
         },
         "barrier": {
@@ -245,7 +276,7 @@
             ]
         },
         "wikipedia": {
-            "marker": "maki-icon/wikipedia.svg",
+            "marker": "icon/wikipedia.png",
             "api_": "wikipedia.org/w/api.php?format=json&action=query&prop=extracts%7Cimages&exintro=&explaintext=&titles=",
             "api": "wikipedia.org/api/rest_v1/page/summary/",
             "domain": "wikipedia.org",
@@ -263,7 +294,7 @@
             ]
         },
         "shop": {
-            "marker": "maki-icon/shop.svg",
+            "marker": "icon/shop.png",
             "overpass": [
                 "nwr[\"shop\"]",
                 "nwr[\"amenity\"]",
@@ -278,7 +309,7 @@
             ]
         },
         "takeaway": {
-            "marker": "maki-icon/fast-food.svg",
+            "marker": "icon/fast-food.png",
             "overpass": [
                 "nw[\"takeaway\"]",
                 "nw[\"takeaway:covid19\"]",
@@ -299,7 +330,7 @@
             ]
         },
         "history": {
-            "marker": "maki-icon/monument.svg",
+            "marker": "icon/monument.png",
             "overpass": [
                 "nw[\"historic\"]",
                 "nw[\"tourism\"]",
@@ -317,7 +348,7 @@
             ]
         },
         "playground": {
-            "marker": "maki-icon/playground.svg",
+            "marker": "icon/playground.png",
             "overpass": [
                 "nwr[\"amenity\"]",
                 "nwr[\"natural\"]",
@@ -332,7 +363,7 @@
             ]
         },
         "artwork": {
-            "marker": "maki-icon/star.svg",
+            "marker": "icon/star.png",
             "overpass": [
                 "nw[\"tourism\"]",
                 "nw[\"shop\"]"
@@ -344,7 +375,7 @@
             ]
         },
         "natural": {
-            "marker": "maki-icon/animal-shelter.svg",
+            "marker": "icon/animal-shelter.png",
             "overpass": [
                 "nwr[\"natural\"]",
                 "nwr[\"species\"]",
@@ -363,7 +394,7 @@
             ]
         },
         "disaster&move": {
-            "marker": "maki-icon/defibrillator.svg",
+            "marker": "icon/defibrillator.png",
             "overpass": [
                 "nwr[\"highway\"]",
                 "nwr[\"amenity\"]",
@@ -379,7 +410,7 @@
         },
         "shelter_temporary": {
             "copyright": "大阪市オープンデータ",
-            "marker": "maki-icon/shelter.svg",
+            "marker": "icon/shelter.png",
             "file": "./data/opendata_2015.csv",
             "columns": {
                 "場所の名前": "name",
@@ -398,7 +429,7 @@
         },
         "shelter_tsunami": {
             "copyright": "大阪市オープンデータ",
-            "marker": "maki-icon/shelter.svg",
+            "marker": "icon/shelter.png",
             "file": "./data/opendata_2016.csv",
             "columns": {
                 "場所の名前": "name",

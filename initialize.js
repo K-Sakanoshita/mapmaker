@@ -42,12 +42,17 @@ class initialize {
                     mapMaker.init(menuhtml);					// mapMaker Initialize
                     SVGCont.init();								// Marker Initialize
                     // Google Analytics
+                    const analyticsHost = window.location.hostname;
                     if (Conf.default.GoogleAnalytics !== "") {
                         $('head').append('<script async src="https://www.googletagmanager.com/gtag/js?id=' + Conf.default.GoogleAnalytics + '"></script>');
                         window.dataLayer = window.dataLayer || [];
                         function gtag() { dataLayer.push(arguments); };
                         gtag('js', new Date());
-                        gtag('config', Conf.default.GoogleAnalytics);
+                        const cookieDomain = Conf.default.GoogleAnalyticsCookieDomain || "";
+                        const analyticsConfig = cookieDomain === analyticsHost
+                            ? { cookie_domain: cookieDomain }
+                            : {};
+                        gtag('config', Conf.default.GoogleAnalytics, analyticsConfig);
                     };
                     glot.render();
                 });

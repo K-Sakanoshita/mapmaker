@@ -78,6 +78,39 @@
     </div>
 
     <div class="row g-0 mt-2 overflow-y-scroll" id="customMap">
+        <fieldset class="col-12 rough-controls border rounded mb-2 p-2 d-none" id="roughControls">
+            <legend class="rough-controls-title px-1 mb-1" glot-model="rough_style"></legend>
+            <div class="form-check form-switch d-flex align-items-center justify-content-between ps-0">
+                <label class="form-check-label" for="rough_enabled" glot-model="rough_on_off"></label>
+                <input class="form-check-input float-none m-0" type="checkbox" role="switch" id="rough_enabled"
+                    onchange="mapMaker.rough_change()">
+            </div>
+            <div id="roughParameters" class="mt-2 d-none">
+                <div class="d-flex justify-content-between">
+                    <label for="roughness">Roughness</label>
+                    <output id="roughness_value" for="roughness">1.0</output>
+                </div>
+                <input class="form-range rough-range" type="range" id="roughness" min="0" max="10" step="0.1"
+                    value="1" oninput="mapMaker.rough_change()" disabled>
+                <div class="d-flex justify-content-between">
+                    <label for="bowing">Bowing</label>
+                    <output id="bowing_value" for="bowing">1.0</output>
+                </div>
+                <input class="form-range rough-range" type="range" id="bowing" min="0" max="10" step="0.1"
+                    value="1" oninput="mapMaker.rough_change()" disabled>
+                <label for="rough_fill_style" class="form-label mb-1">Fill Style</label>
+                <select class="form-select form-select-sm mb-2" id="rough_fill_style"
+                    onchange="mapMaker.rough_change()" disabled>
+                    <option value="hachure">Hachure</option>
+                    <option value="solid" selected>Solid</option>
+                    <option value="zigzag">Zigzag</option>
+                    <option value="cross-hatch">Cross-hatch</option>
+                    <option value="dots">Dots</option>
+                    <option value="dashed">Dashed</option>
+                    <option value="zigzag-line">Zigzag-line</option>
+                </select>
+            </div>
+        </fieldset>
         <fieldset id="AAA" class="d-none">
             <div class="col border-0 border-bottom">
                 <div class="d-flex justify-content-between align-items-center">

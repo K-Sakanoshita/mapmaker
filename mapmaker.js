@@ -10,10 +10,26 @@ class MapMaker {
         this.selectMode = ""
         this.copyrights = []
         this.colorPicker = []
+        this.roughPreviewTimer = null
+        this.roughPreviewVersion = 0
+        this.roughPreviewRendering = false
+        this.roughPreviewPending = false
     }
     // Initialize
     init(menuhtml) {
         MapCont.init();
+        const roughPane = map.getPane("roughPreviewPane") || map.createPane("roughPreviewPane");
+        roughPane.classList.add("leaflet-rough-preview-pane");
+        roughPane.style.zIndex = "450";
+        const resizeRoughPane = () => {
+            const size = map.getSize();
+            roughPane.style.width = `${size.x}px`;
+            roughPane.style.height = `${size.y}px`;
+        };
+        resizeRoughPane();
+        map.on("resize", resizeRoughPane);
+        const roughPreviewWindow = document.getElementById("roughPreviewWindow");
+        if (roughPreviewWindow) roughPane.appendChild(roughPreviewWindow);
         MapCont.controlAdd("bottomleft", "zoomlevel", "<div><.div>", "");
         mapMaker.makemenu(menuhtml);										// Make edit menu
         winCont.menulist_make();
@@ -22,6 +38,144 @@ class MapMaker {
         document.getElementById("search_input").placeholder = glot.get("address")			// set placeholder
         document.getElementById("search_input").previousElementSibling.innerHTML = glot.get("search")	// set button name
         document.getElementById("search_input").addEventListener('change', (e) => { mapMaker.searchPoi(e.target.value) });	// Address Search
+    }
+
+    rough_change() {
+        const enabled = document.getElementById("rough_enabled")?.checked === true;
+        const previewWindow = document.getElementById("roughPreviewWindow");
+        const preview = document.getElementById("roughPreview");
+        const status = document.getElementById("roughPreviewStatus");
+        document.getElementById("roughParameters")?.classList.toggle("d-none", !enabled);
+        for (const id of ["roughness", "bowing", "rough_fill_style"]) {
+            const input = document.getElementById(id);
+            if (input) input.disabled = !enabled;
+        }
+        for (const id of ["roughness", "bowing"]) {
+            const input = document.getElementById(id);
+            const output = document.getElementById(`${id}_value`);
+            if (input && output) output.value = Number(input.value).toFixed(1);
+        }
+        this.roughPreviewVersion++;
+        clearTimeout(this.roughPreviewTimer);
+        if (!enabled) {
+            previewWindow?.classList.add("d-none");
+            preview?.replaceChildren();
+            status?.classList.add("d-none");
+            this.roughPreviewPending = false;
+            return;
+        }
+        previewWindow?.classList.remove("d-none");
+        this.roughPreviewTimer = setTimeout(() => this.rough_preview(), 300);
+    }
+
+    rough_options() {
+        const numberValue = (id, fallback) => {
+            const value = Number(document.getElementById(id)?.value);
+            if (!Number.isFinite(value)) return fallback;
+            return Math.min(10, Math.max(0, value));
+        };
+        return {
+            enabled: document.getElementById("rough_enabled")?.checked === true,
+            roughness: numberValue("roughness", 1),
+            bowing: numberValue("bowing", 1),
+            fillStyle: ["hachure", "solid", "zigzag", "cross-hatch", "dots", "dashed", "zigzag-line"]
+                .includes(document.getElementById("rough_fill_style")?.value)
+                ? document.getElementById("rough_fill_style").value
+                : "solid"
+        };
+    }
+
+    async rough_preview() {
+        const target = document.getElementById("roughPreview");
+        const status = document.getElementById("roughPreviewStatus");
+        if (!target || !this.rough_options().enabled) return;
+        if (this.roughPreviewRendering) {
+            this.roughPreviewPending = true;
+            return;
+        }
+
+        const source = this.rough_preview_source();
+        const version = this.roughPreviewVersion;
+        const options = this.rough_options();
+        this.roughPreviewRendering = true;
+        this.roughPreviewPending = false;
+        if (status) {
+            status.textContent = `${glot.get("rough_preview")}...`;
+            status.classList.remove("d-none");
+        }
+
+        const Svg2Roughjs = globalThis.svg2roughjs?.Svg2Roughjs;
+        if (!Svg2Roughjs) {
+            this.roughPreviewRendering = false;
+            if (status) status.textContent = glot.get("rough_error");
+            return;
+        }
+
+        const output = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        const converter = new Svg2Roughjs(output, undefined, {
+            roughness: options.roughness,
+            bowing: options.bowing,
+            fillStyle: options.fillStyle
+        });
+        converter.svg = source;
+        converter.fontFamily = null;
+        converter.randomize = false;
+        converter.backgroundColor = Layers.background?.opacity === 0
+            ? "transparent"
+            : (Layers.background?.color || "#ffffff");
+
+        try {
+            const roughSvg = await converter.sketch(true);
+            if (version !== this.roughPreviewVersion) return;
+            target.replaceChildren(roughSvg instanceof SVGElement ? roughSvg : output);
+            status?.classList.add("d-none");
+        } catch (error) {
+            console.error("rough preview failed", error);
+            if (version === this.roughPreviewVersion && status) status.textContent = glot.get("rough_error");
+        } finally {
+            this.roughPreviewRendering = false;
+            if (this.roughPreviewPending && this.rough_options().enabled) {
+                this.roughPreviewPending = false;
+                this.roughPreviewTimer = setTimeout(() => this.rough_preview(), 0);
+            }
+        }
+    }
+
+    rough_preview_source() {
+        const mapSvg = document.querySelector(".leaflet-overlay-pane svg");
+        const mapSize = map.getSize();
+        if (!mapSvg?.viewBox?.baseVal) {
+            return new DOMParser().parseFromString(`
+                <svg xmlns="http://www.w3.org/2000/svg" width="${mapSize.x}" height="${mapSize.y}"
+                    viewBox="0 0 ${mapSize.x} ${mapSize.y}">
+                    <rect width="${mapSize.x}" height="${mapSize.y}" fill="${Layers.background?.color || "#ffffff"}"/>
+                </svg>`, "image/svg+xml").documentElement;
+        }
+
+        const viewBox = mapSvg.viewBox.baseVal;
+        const cropWidth = Math.min(mapSize.x, viewBox.width);
+        const cropHeight = Math.min(mapSize.y, viewBox.height);
+        const cropX = viewBox.x + (viewBox.width - cropWidth) / 2;
+        const cropY = viewBox.y + (viewBox.height - cropHeight) / 2;
+
+        const source = mapSvg.cloneNode(true);
+        source.removeAttribute("style");
+        source.removeAttribute("class");
+        source.setAttribute("width", String(mapSize.x));
+        source.setAttribute("height", String(mapSize.y));
+        source.setAttribute("viewBox", `${cropX} ${cropY} ${cropWidth} ${cropHeight}`);
+        source.setAttribute("preserveAspectRatio", "xMidYMid slice");
+
+        if (Layers.background?.opacity !== 0) {
+            const background = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            background.setAttribute("x", String(cropX));
+            background.setAttribute("y", String(cropY));
+            background.setAttribute("width", String(cropWidth));
+            background.setAttribute("height", String(cropHeight));
+            background.setAttribute("fill", Layers.background?.color || "#ffffff");
+            source.insertBefore(background, source.firstChild);
+        }
+        return source;
     }
 
     // 基本メニューの作成 menuhtml:指定したHTMLで左上に作成 menuhtmlが空の時は過去のHTMLから復元
@@ -106,7 +260,7 @@ class MapMaker {
                         $(key_layer).children().toggleClass("fa-trash-alt fa-undo");
                         for (let eKey of LayerCont.styles) {
                             if (Layers[eKey].geojson) {
-                                winCont.modal_text(`<br>Map Writeing... ${eKey}`, true);
+                                winCont.modal_text(`Map Writeing... ${eKey}`, true);
                                 LayerCont.makeLayer(eKey, eKey == key ? view : undefined);   // 指定したkeyレイヤーを作成
                             };
                         };
@@ -150,6 +304,7 @@ class MapMaker {
 
     // make custom map
     make(query_date) {
+        const waitPaint = () => new Promise(resolve => { requestAnimationFrame(() => { setTimeout(resolve, 0); }); });
         let latlng = map.getCenter();
         while (latlng.lng >= 180) latlng.lng -= 360;
         while (latlng.lng <= -180) latlng.lng += 360;
@@ -167,15 +322,19 @@ class MapMaker {
 
         var targets = [];
         var progress = function (data_length) {
-            def_msg = "<br>Data Loading... " + Math.trunc(data_length / 1024).toLocaleString() + "KBytes."
+            def_msg = "Data Loading... " + Math.trunc(data_length / 1024).toLocaleString() + "KBytes."
             winCont.modal_text(def_msg, true)
         };
         for (let key of LayerCont.styles) if (Conf.style[LayerCont.palette][key].zoom <= nowzoom) targets.push(key);
-        Basic.retry(() => overPassCont.get(targets, progress), 5).then((ovasnswer) => {
-            winCont.modal_text("<br>Data Loading Complate... ", true);
-            targets.forEach(target => {
+        Basic.retry(() => overPassCont.get(targets, progress), 5).then(async (ovasnswer) => {
+            winCont.modal_text("Data Loading Complate... ", true);
+            await waitPaint();
+            for (const target of targets) {
+                winCont.modal_text(`Layer Cliping... ${target}`, true);
+                await waitPaint();
+
                 let tmpcnt = 0;
-                console.log(`Start: process ${target} data.`)
+                //console.log(`Start: process ${target} data.`)
                 let geojson = overPassCont.get_target(ovasnswer, target);
                 if (geojson.length > 0) {
 
@@ -183,23 +342,15 @@ class MapMaker {
                     // bboxLonLat = [minLon, minLat, maxLon, maxLat]
                     const b = map.getBounds();
                     const bboxLonLat = [b.getWest(), b.getSouth(), b.getEast(), b.getNorth()];
-
                     const clipFeatures = (featuresLike, bbox) => {
-                        // turf が無い/使えないならそのまま返す
-                        if (typeof turf === "undefined" || typeof turf.bboxClip !== "function") return featuresLike;
+                        if (typeof turf === "undefined" || typeof turf.bboxClip !== "function") return featuresLike;    // turf が無い/使えないならそのまま返す
 
                         // --- 正規化：Feature配列へ ---
                         let features = featuresLike;
-
                         // FeatureCollection {type:"FeatureCollection", features:[...]}
-                        if (features && features.type === "FeatureCollection" && Array.isArray(features.features)) {
-                            features = features.features;
-                        }
+                        if (features && features.type === "FeatureCollection" && Array.isArray(features.features)) { features = features.features; }
                         // 単一Feature
-                        if (features && features.type === "Feature") {
-                            features = [features];
-                        }
-                        // それ以外は配列でなければ空扱い（ここがエラー回避の肝）
+                        if (features && features.type === "Feature") { features = [features]; }
                         if (!Array.isArray(features)) return [];
 
                         const out = [];
@@ -218,10 +369,7 @@ class MapMaker {
                                 }
                                 continue;
                             }
-                            if (gt === "MultiPoint") {
-                                out.push(f);
-                                continue;
-                            }
+                            if (gt === "MultiPoint") { out.push(f); continue; }
 
                             try {
                                 const clipped = turf.bboxClip(f, bbox);
@@ -248,8 +396,6 @@ class MapMaker {
 
                         // 解析後に、実際の表示 bbox で切り戻す
                         fil_geojson.features = clipFeatures(fil_geojson.features, bboxLonLat);
-
-                        console.log(fil_geojson);
                     } else {
                         // sea 以外も必要なら clip
                         // fil_geojson.features = clipFeatures(fil_geojson.features, bboxLonLat);
@@ -257,10 +403,11 @@ class MapMaker {
 
                     Layers[target].geojson = fil_geojson.features;
                 };
-            });
+            };
+
             for (let key of LayerCont.styles) {
                 if (Layers[key].geojson) {
-                    winCont.modal_text(`<br>Map Writeing... ${key}`, true);
+                    winCont.modal_text(`Map Writeing... ${key}`, true);
                     LayerCont.makeLayer(key);   // 指定したkeyレイヤーを作成
                 };
             };
@@ -284,7 +431,6 @@ class MapMaker {
             });
         }
         getLatLng(keyword, (latlng) => {
-            console.log(latlng);
             if (latlng.level === 0) {                   // 見つからず
                 errorMsg();
             } else if (latlng.level === 1) {            // 都道府県
@@ -357,7 +503,6 @@ class MapMaker {
                     cords = GeoCont.bboxclip([cords], true);				// 画面外のPOIは無視したgeojsonを作成
                     if (cords.length > 0) {
                         geojson.geometry.type = "Point";
-                        if (cords[0][0] == NaN) console.log("NAN");
                         geojson.geometry.coordinates = cords[0];
                         geojsons.geojson.push(geojson);
                         geojsons.targets.push(answer.targets[idx]);
@@ -388,20 +533,20 @@ class MapMaker {
         switch (filename) {
             case "":
             case undefined:
-                let html = "", images = [];
-                Object.keys(Conf.marker.tag).forEach(key1 => {
-                    Object.keys(Conf.marker.tag[key1]).forEach((key2) => {
-                        let filename = Conf.marker.path + "/" + Conf.marker.tag[key1][key2];
-                        filename = filename.indexOf(",") > 0 ? filename.split(",")[0] : filename;
-                        if (images.indexOf(filename) == -1) { images.push(filename) };
-                    });
-                });
-                Object.values(Conf.marker_append.files).forEach(key1 => {
-                    let filename = Conf.marker_append.path + "/" + key1;
-                    filename = filename.indexOf(",") > 0 ? filename.split(",")[0] : filename;
-                    if (images.indexOf(filename) == -1) { images.push(filename) };
-                });
-                images = images.filter((x, i, self) => { return self.indexOf(x) === i });	//重複削除
+                let html = "";
+                const imageSet = new Set();
+                const addImages = (value, path) => {
+                    if (typeof value === "string") {
+                        const filename = value.indexOf(",") > 0 ? value.split(",")[0] : value;
+                        imageSet.add(`${path}/${filename}`);
+                    } else if (value !== null && typeof value === "object") {
+                        Object.values(value).forEach(child => addImages(child, path));
+                    };
+                };
+                addImages(Conf.marker.tag, Conf.icon.path);
+                addImages(Conf.marker.subtag, Conf.icon.path);
+                addImages(Conf.marker_append.files, Conf.marker_append.path);
+                const images = Array.from(imageSet);
                 images.sort();
                 Object.keys(images).forEach(fidx => { html += `<a href="#" onclick="mapMaker.poi_marker_change('${target}','${osmid}','${images[fidx]}')"><img class="iconx2" src="${images[fidx]}"></a>` });
                 winCont.modal_open({ "title": "", "message": html, "mode": "close", callback_close: winCont.closeModal });
@@ -447,6 +592,9 @@ class MapMaker {
                 customMap.classList.remove("d-none");          // Hide Custom Area
                 makeMap.classList.add("d-none");            // Hide MakeMap button
                 controlMenu.classList.remove("d-none");     // Show Control Menu
+                roughControls.classList.remove("d-none");  // Show Rough.js controls
+                document.getElementById("roughPreviewWindow")?.classList.remove("d-none");
+                this.rough_change();
                 saveMap.classList.remove("d-none");         // Show Save Button
                 clearMap.classList.remove("d-none");           // Hide Clear Button
                 ["dragging", "zoomControl", "scrollWheelZoom", "touchZoom"].forEach(key => map[key].disable());
@@ -457,6 +605,7 @@ class MapMaker {
                     $("#mapid").addClass("bg-clear");
                 } else {
                     $("#mapid").removeClass("bg-clear");
+                    $("#mapid").css('background-color', Layers.background.color);
                     $("#background_color").css('background-color', Layers.background.color);
                 };
                 this.customMode = mode;
@@ -465,6 +614,8 @@ class MapMaker {
             case false:
                 makeMap.classList.remove("d-none");         // Show MakeMap button
                 controlMenu.classList.add("d-none");        // Hide Control Menu
+                roughControls.classList.add("d-none");      // Hide Rough.js controls
+                document.getElementById("roughPreviewWindow")?.classList.add("d-none");
                 saveMap.classList.add("d-none");            // Hide Save Button
                 clearMap.classList.add("d-none");           // Hide Clear Button
                 customMap.classList.add("d-none");          // Hide Custom Area
@@ -473,6 +624,7 @@ class MapMaker {
                 ["dragging", "zoomControl", "scrollWheelZoom", "touchZoom"].forEach(key => map[key].enable());
                 $("#search_input").attr('disabled', false);
                 $("#mapid").removeClass("bg-clear");
+                $("#mapid").css('background-color', "");
                 $("#background_color").css('background-color', "");
                 this.customMode = mode;
                 mapMaker.zoomMessage();

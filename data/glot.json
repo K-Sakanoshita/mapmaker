@@ -163,6 +163,10 @@
         "ja": "指定した種類のデータは見つかりません。マッピングしてください。",
         "en": "The type of data you specified was not found. Please mapping it."
     },
+    "icon_limit_message": {
+        "ja": "アイコンは最大{limit}件まで追加できます。現在の選択では合計{count}件になります。選択数を減らしてください。",
+        "en": "You can add up to {limit} icons. The current selection would result in {count} icons. Please reduce the selection."
+    },
     "area_select": {
         "ja": "用紙サイズ指定",
         "en": "range selection"
@@ -194,6 +198,22 @@
     "mono_palette": {
         "ja": "モノクロパレット",
         "en": "mono palette"
+    },
+    "rough_style": {
+        "ja": "手書き風出力",
+        "en": "Hand-drawn output"
+    },
+    "rough_on_off": {
+        "ja": "On / Off",
+        "en": "On / Off"
+    },
+    "rough_preview": {
+        "ja": "プレビュー",
+        "en": "Preview"
+    },
+    "rough_error": {
+        "ja": "手書き風への変換に失敗したため、通常の地図を保存します。",
+        "en": "The hand-drawn conversion failed, so the regular map will be saved."
     },
     "marker_wikipedia": {
         "ja": "Wikipedia記事",
@@ -291,9 +311,21 @@
         "ja": "水路・川",
         "en": "Water line"
     },
+    "menu_wetland": {
+        "ja": "湿地",
+        "en": "Wetland"
+    },
+    "menu_farmland": {
+        "ja": "田畑",
+        "en": "Farmland"
+    },
     "menu_forest": {
-        "ja": "森・田畑",
-        "en": "Wood/Crop"
+        "ja": "森",
+        "en": "Forest"
+    },
+    "menu_greenLine": {
+        "ja": "並木・生垣",
+        "en": "Green line"
     },
     "menu_railway": {
         "ja": "レール類",
