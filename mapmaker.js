@@ -47,14 +47,15 @@ class MapMaker {
     }
 
     rough_change() {
-        const enabled = document.getElementById("rough_enabled")?.checked === true;
+        const selected = document.getElementById("rough_enabled")?.checked === true;
+        const enabled = selected && this.customMode;
         const previewWindow = document.getElementById("roughPreviewWindow");
         const preview = document.getElementById("roughPreview");
         const status = document.getElementById("roughPreviewStatus");
-        document.getElementById("roughParameters")?.classList.toggle("d-none", !enabled);
+        document.getElementById("roughParameters")?.classList.toggle("d-none", !selected);
         for (const id of ["roughness", "bowing", "rough_fill_style"]) {
             const input = document.getElementById(id);
-            if (input) input.disabled = !enabled;
+            if (input) input.disabled = !selected;
         }
         for (const id of ["roughness", "bowing"]) {
             const input = document.getElementById(id);
@@ -642,6 +643,7 @@ class MapMaker {
     custom(mode) {
         switch (mode) {
             case true:
+                this.customMode = mode;
                 map.doubleClickZoom.disable();
                 let palette = Conf.style[LayerCont.palette];
                 for (let panel of Conf.editPanels) {									    // editPanelsに基づいて編集パネルを作成
@@ -662,7 +664,6 @@ class MapMaker {
                 makeMap.classList.add("d-none");            // Hide MakeMap button
                 controlMenu.classList.remove("d-none");     // Show Control Menu
                 roughControls.classList.remove("d-none");  // Show Rough.js controls
-                document.getElementById("roughPreviewWindow")?.classList.remove("d-none");
                 this.rough_change();
                 saveMap.classList.remove("d-none");         // Show Save Button
                 clearMap.classList.remove("d-none");           // Hide Clear Button
@@ -677,14 +678,14 @@ class MapMaker {
                     $("#mapid").css('background-color', Layers.background.color);
                     $("#background_color").css('background-color', Layers.background.color);
                 };
-                this.customMode = mode;
                 mapMaker.zoomMessage();
                 break;
             case false:
+                this.customMode = mode;
                 makeMap.classList.remove("d-none");         // Show MakeMap button
                 controlMenu.classList.add("d-none");        // Hide Control Menu
                 roughControls.classList.add("d-none");      // Hide Rough.js controls
-                document.getElementById("roughPreviewWindow")?.classList.add("d-none");
+                this.rough_change();
                 saveMap.classList.add("d-none");            // Hide Save Button
                 clearMap.classList.add("d-none");           // Hide Clear Button
                 customMap.classList.add("d-none");          // Hide Custom Area
@@ -695,7 +696,6 @@ class MapMaker {
                 $("#mapid").removeClass("bg-clear");
                 $("#mapid").css('background-color', "");
                 $("#background_color").css('background-color', "");
-                this.customMode = mode;
                 mapMaker.zoomMessage();
                 this.copyrights = [];
                 break;
