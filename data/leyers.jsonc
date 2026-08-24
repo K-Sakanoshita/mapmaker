@@ -198,7 +198,7 @@
             "highway_primary": {
                 "zoom": 12,
                 "type": "line",
-                "color": "#f2cf5b",
+                "color": "#F6D76A",
                 "width": 5.0,
                 "dashArray": null,
                 "linecap": "round",
