@@ -23,6 +23,11 @@ body {
     overflow: hidden;
 }
 
+.app-viewport {
+    height: 100vh;
+    height: 100dvh;
+}
+
 #article {
     flex-direction: column;
     width: 100%;
