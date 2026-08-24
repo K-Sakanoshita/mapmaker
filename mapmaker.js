@@ -14,6 +14,9 @@ class MapMaker {
         this.roughPreviewVersion = 0
         this.roughPreviewRendering = false
         this.roughPreviewPending = false
+        this.exportInProgress = false
+        this.basemenuResizeInitialized = false
+        this.basemenuResizeFrame = null
     }
     // Initialize
     init(menuhtml) {
@@ -34,6 +37,7 @@ class MapMaker {
         if (roughPreviewWindow) roughPane.appendChild(roughPreviewWindow);
         MapCont.controlAdd("bottomleft", "zoomlevel", "<div><.div>", "");
         mapMaker.makemenu(menuhtml);										// Make edit menu
+        mapMaker.initBasemenuResize();
         winCont.menulist_make();
         mapMaker.zoomMessage();																// Zoom 
         map.on('zoomend', () => mapMaker.zoomMessage());										// ズーム終了時に表示更新
@@ -267,6 +271,8 @@ class MapMaker {
                             };
                         };
                     }
+                    // 削除・復活後の表示状態を手書きプレビューにも反映する。
+                    if (mapMaker.rough_options().enabled) mapMaker.rough_change();
                 });
             };
         };
@@ -277,6 +283,67 @@ class MapMaker {
 
         mapMaker.custom(false);	// カスタムモードOFF
         console.log("End: make menu.")
+    }
+
+    initBasemenuResize() {
+        if (this.basemenuResizeInitialized) return;
+
+        const editbar = document.getElementById("editbar");
+        const handle = document.getElementById("basemenuResizeHandle");
+        if (!editbar || !handle) return;
+
+        let dragging = false;
+        let isWide = false;
+        let requestedSize = 0;
+
+        const applyDrag = () => {
+            this.basemenuResizeFrame = null;
+            const rect = editbar.getBoundingClientRect();
+            const total = isWide ? rect.width : rect.height;
+            const minMenuSize = isWide ? 180 : 120;
+            const minMapSize = isWide ? 240 : 160;
+            const size = Math.max(minMenuSize, Math.min(requestedSize, total - minMapSize));
+            const property = isWide ? "--basemenu-width" : "--basemenu-height";
+            editbar.style.setProperty(property, `${size}px`);
+            map?.invalidateSize({ animate: false, pan: false, debounceMoveend: true });
+        };
+
+        const finishDrag = () => {
+            if (!dragging) return;
+            dragging = false;
+            if (this.basemenuResizeFrame !== null) {
+                cancelAnimationFrame(this.basemenuResizeFrame);
+                applyDrag();
+            }
+            document.body.classList.remove("is-resizing-basemenu");
+            document.body.style.removeProperty("cursor");
+            map?.invalidateSize({ animate: false, pan: false });
+        };
+
+        handle.addEventListener("pointerdown", (event) => {
+            if (event.pointerType === "mouse" && event.button !== 0) return;
+            event.preventDefault();
+            dragging = true;
+            isWide = window.matchMedia("(min-width: 992px)").matches;
+            const rect = editbar.getBoundingClientRect();
+            requestedSize = isWide ? event.clientX - rect.left : event.clientY - rect.top;
+            document.body.classList.add("is-resizing-basemenu");
+            document.body.style.cursor = isWide ? "col-resize" : "row-resize";
+        });
+
+        window.addEventListener("pointermove", (event) => {
+            if (!dragging) return;
+            event.preventDefault();
+            const rect = editbar.getBoundingClientRect();
+            requestedSize = isWide ? event.clientX - rect.left : event.clientY - rect.top;
+            if (this.basemenuResizeFrame === null) {
+                this.basemenuResizeFrame = requestAnimationFrame(applyDrag);
+            }
+        });
+
+        window.addEventListener("pointerup", finishDrag);
+        window.addEventListener("pointercancel", finishDrag);
+        this.basemenuResizeInitialized = true;
     }
 
     // 利用しているデータセットをCopyrightに反映
@@ -644,8 +711,28 @@ class MapMaker {
     }
 
     // save layers&pois
-    save(type) {
-        SVGCont.save({ type: type, mode: this.selectMode });
+    async save(type) {
+        if (this.exportInProgress) return;
+
+        const processing = document.getElementById("exportProcessing");
+        const saveButtons = document.querySelectorAll("#saveMap button");
+        this.exportInProgress = true;
+        processing?.classList.remove("d-none");
+        saveButtons.forEach(button => button.disabled = true);
+
+        // オーバーレイを描画してから、重い書き出し処理を始める。
+        await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+        try {
+            await SVGCont.save({ type: type, mode: this.selectMode });
+        } catch (error) {
+            console.error("save: export failed", error);
+            window.alert(glot.get("export_error"));
+        } finally {
+            processing?.classList.add("d-none");
+            saveButtons.forEach(button => button.disabled = false);
+            this.exportInProgress = false;
+        }
     }
 
     // View Zoom Level & Status Comment

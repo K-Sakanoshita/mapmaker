@@ -257,12 +257,15 @@
         },
         "barrier": {
             "overpass": [
-                "nwr[\"barrier\"]"
+                "nwr[\"barrier\"]",
+                "nwr[\"man_made\"=\"embankment\"]"
             ],
             "tags": [
                 "barrier=wall",
                 "barrier=fence",
-                "barrier=retaining_wall"
+                "barrier=kerb",
+                "barrier=retaining_wall",
+                "man_made=embankment"
             ]
         },
         "station": {

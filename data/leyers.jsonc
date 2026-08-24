@@ -66,15 +66,15 @@
                 "zoom": 11,
                 "type": "area",
                 "color": "#cfe5f2",
-                "width": 1,
+                "width": 0,
                 "dashArray": null,
                 "linecap": "round"
             },
             "waterLine": {
                 "zoom": 11,
                 "type": "line",
-                "color": "#b9d9eb",
-                "width": 1,
+                "color": "#cfe5f2",
+                "width": 3,
                 "dashArray": null,
                 "linecap": "round"
             },
@@ -145,14 +145,14 @@
             "railway": {
                 "zoom": 11,
                 "type": "line",
-                "color": "#a8a4a0",
-                "width": 1.4,
+                "color": "#686866",
+                "width": 3,
                 "dashArray": "0",
                 "linecap": "butt",
                 "overstyle": {
-                    "color": "#b3b3b3",
-                    "width": 4,
-                    "dashArray": "1 4",
+                    "color": "#f4f3f0",
+                    "width": 1.4,
+                    "dashArray": "6 5",
                     "linecap": "butt"
                 }
             },
@@ -190,6 +190,7 @@
                 "overstyle": {
                     "color": "#f0f0f0",
                     "width": 0.7,
+                    "zoomWidthStep": 0.3,
                     "dashArray": "6 6",
                     "linecap": "butt"
                 }
@@ -203,7 +204,8 @@
                 "linecap": "round",
                 "overstyle": {
                     "color": "#f0f0f0",
-                    "width": 1,
+                    "width": 0.7,
+                    "zoomWidthStep": 0.3,
                     "dashArray": "8 8",
                     "linecap": "butt"
                 }
@@ -217,7 +219,8 @@
                 "linecap": "round",
                 "overstyle": {
                     "color": "#f0f0f0",
-                    "width": 1,
+                    "width": 0.7,
+                    "zoomWidthStep": 0.3,
                     "dashArray": "8 8",
                     "linecap": "butt"
                 }
@@ -356,14 +359,14 @@
             "railway": {
                 "zoom": 11,
                 "type": "line",
-                "color": "#70706f",
-                "width": 2,
+                "color": "#60605f",
+                "width": 4,
                 "dashArray": "0",
                 "linecap": "butt",
                 "overstyle": {
-                    "color": "#808080",
-                    "width": 4,
-                    "dashArray": "1 4",
+                    "color": "#f2f2f0",
+                    "width": 1.4,
+                    "dashArray": "6 5",
                     "linecap": "butt"
                 }
             },
@@ -444,7 +447,7 @@
                 "zoom": 15,
                 "type": "line",
                 "color": "#8a8a88",
-                "width": 2,
+                "width": 0.7,
                 "dashArray": null,
                 "linecap": "round"
             },

@@ -135,6 +135,14 @@
         "ja": "サーバーからダウンロード中です。しばらくお待ちください。",
         "en": "Loading... Please wait a moment."
     },
+    "export_processing": {
+        "ja": "ダウンロードデータを作成中です。しばらくお待ちください。",
+        "en": "Preparing your download. Please wait a moment."
+    },
+    "export_error": {
+        "ja": "ダウンロードデータの作成に失敗しました。もう一度お試しください。",
+        "en": "Failed to prepare the download. Please try again."
+    },
     "restart_title": {
         "ja": "リセット",
         "en": "Reset"

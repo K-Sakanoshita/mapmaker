@@ -76,6 +76,14 @@
 
 <body ontouchstart="">
 
+    <div id="exportProcessing" class="export-processing d-none" role="status" aria-live="assertive"
+        aria-busy="true">
+        <div class="export-processing-message">
+            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+            <span glot-model="export_processing">ダウンロードデータを作成中です。しばらくお待ちください。</span>
+        </div>
+    </div>
+
     <div class="d-flex flex-column vh-100">
         <!-- タイトルメニュー（固定） -->
         <header class="border-bottom">

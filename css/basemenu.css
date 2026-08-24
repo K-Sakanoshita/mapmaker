@@ -46,6 +46,31 @@ body {
     z-index: 0;
 }
 
+.export-processing {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: rgba(0, 0, 0, 0.35);
+}
+
+.export-processing-message {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    max-width: 100%;
+    padding: 14px 18px;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #212529;
+    font-size: 16px;
+    text-align: center;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+}
+
 /* fade out */
 
 #fadeLayer {
@@ -315,6 +340,7 @@ img.icon_normal {
 
 /* 共通：flex子要素の高さ計算が崩れないように */
 #editbar {
+    position: relative;
     min-height: 0;
 }
 
@@ -328,10 +354,78 @@ img.icon_normal {
 }
 
 .pane-menu {
-    flex: 0 0 240px;
-    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 800;
+    width: clamp(180px, var(--basemenu-width, 240px), calc(100% - 240px));
     height: 100%;
     min-height: 0;
+    background: #faf8f8;
+    box-shadow: 4px 0 8px rgba(0, 0, 0, 0.2);
+}
+
+#basemenuResizeHandle {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 12px;
+    height: 100%;
+    padding: 0;
+    z-index: 1001;
+    cursor: col-resize;
+    touch-action: none;
+}
+
+#basemenuResizeHandle::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 0;
+    width: 12px;
+    height: 56px;
+    transform: translateY(-50%);
+    border: 1px solid #adb5bd;
+    border-right: 0;
+    border-radius: 8px 0 0 8px;
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: -1px 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+#basemenuResizeHandle::after {
+    content: "⋮";
+    position: absolute;
+    top: 50%;
+    right: 1px;
+    width: 10px;
+    transform: translateY(-52%);
+    color: #495057;
+    font-size: 22px;
+    line-height: 1;
+    text-align: center;
+}
+
+#basemenuResizeHandle:hover::before,
+body.is-resizing-basemenu #basemenuResizeHandle::before {
+    border-color: rgb(0, 117, 58);
+    background: rgb(224, 243, 233);
+}
+
+#basemenuResizeHandle:hover::after,
+body.is-resizing-basemenu #basemenuResizeHandle::after {
+    color: rgb(0, 117, 58);
+}
+
+body.is-resizing-basemenu,
+body.is-resizing-basemenu * {
+    cursor: inherit !important;
+    user-select: none !important;
+}
+
+@media (min-width: 992px) {
+    #mapid .leaflet-left {
+        left: clamp(180px, var(--basemenu-width, 240px), calc(100% - 240px));
+    }
 }
 
 #basemenu>.container-fluid {
@@ -350,13 +444,50 @@ img.icon_normal {
     align-content: flex-start;
 }
 
-/* 縦並び（>=720px）：メニューは幅固定 + 高さ100% */
-@media (max-width: 992px) {
+/* モバイル：メニューを地図上部に重ね、ハンドルで高さだけを変更 */
+@media (max-width: 991.98px) {
     .pane-menu {
-        flex: 0 0 240px;
-        height: 240px !important;
+        height: clamp(120px, var(--basemenu-height, 240px), calc(100% - 160px)) !important;
         width: 100%;
         overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    #mapid .leaflet-top {
+        top: clamp(120px, var(--basemenu-height, 240px), calc(100% - 160px));
+    }
+
+    #basemenuResizeHandle {
+        top: auto;
+        right: auto;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 12px;
+        cursor: row-resize;
+    }
+
+    #basemenuResizeHandle::before {
+        top: auto;
+        right: auto;
+        bottom: 0;
+        left: 50%;
+        width: 56px;
+        height: 12px;
+        transform: translateX(-50%);
+        border: 1px solid #adb5bd;
+        border-bottom: 0;
+        border-radius: 8px 8px 0 0;
+        box-shadow: 1px -1px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    #basemenuResizeHandle::after {
+        content: "⋯";
+        top: -8px;
+        right: auto;
+        left: 50%;
+        width: 40px;
+        transform: translateX(-50%);
     }
 
     a.title {
