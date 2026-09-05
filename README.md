@@ -1,5 +1,7 @@
 # まち歩きマップメーカー
 
+公開サイト: [https://mapmaker.openacrossbase.net/](https://mapmaker.openacrossbase.net/)
+
 ## 目的・用途
 印刷向けのまち歩き地図、案内地図、地図柄のグッズ制作などに使えるOpenStreetMap。  
 でも、高機能だけど複雑なソフトウェアやプログラミングの知識は持っている人は少ない。  
@@ -280,3 +282,6 @@
 
 2026/08/26
 * 地図をクリアして再作成した際にレイヤー一覧が重複し、データ抽出と描画処理が繰り返される問題を修正
+
+2026/09/05
+* GitHub Pagesのカスタムドメインを`mapmaker.openacrossbase.net`へ変更

@@ -28,11 +28,6 @@ class initialize {
             $.when.apply($, jqXHRs).always(function () {
                 let menuhtml = arguments[0][0];								// Get Menu HTML
                 $("#modals").html(arguments[1][0]);							// Make Modal HTML
-                /*
-                Conf = Object.assign(JSON5.parse(arguments[2][0]), JSON5.parse(arguments[3][0]));
-                Conf = Object.assign(Conf, JSON5.parse(arguments[4][0]));
-                Conf = Object.assign(Conf, JSON5.parse(arguments[5][0]));
-                */
                 for (let i = 2; i <= 11; i++) Conf = Object.assign(Conf, JSON5.parse(arguments[i][0]));	// Make Config Object
                 Conf.category_keys = Object.keys(Conf.category); // Make Conf.category_keys
 

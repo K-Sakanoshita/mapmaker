@@ -396,16 +396,14 @@ class MapMaker {
             winCont.modal_text(def_msg, true)
         };
         for (let key of LayerCont.styles) if (Conf.style[LayerCont.palette][key].zoom <= nowzoom) targets.push(key);
-        Basic.retry(() => overPassCont.get(targets, progress), 5).then(async (ovasnswer) => {
+        Basic.retry(() => overPassCont.get(targets, progress), 5).then(async (ovanswer) => {
             winCont.modal_text("Data Loading Complate... ", true);
             await waitPaint();
             for (const target of targets) {
                 winCont.modal_text(`Layer Cliping... ${target}`, true);
                 await waitPaint();
 
-                let tmpcnt = 0;
-                //console.log(`Start: process ${target} data.`)
-                let geojson = overPassCont.get_target(ovasnswer, target);
+                let geojson = overPassCont.get_target(ovanswer, target);
                 if (geojson.length > 0) {
 
                     // === 追加: 画面bboxで clip してから Layers に入れる ===
@@ -458,17 +456,11 @@ class MapMaker {
                     let fil_geojson = { "features": geojson };
 
                     if (target == "sea") {
-                        console.log(`Processing sea data...${tmpcnt++}`);
-                        console.log("SEA RAW FEATURES", fil_geojson.features);
-
                         // coastline merge は広めの bbox で解析
                         fil_geojson.features = CoastLine.merge(fil_geojson.features, "LLL");
 
                         // 解析後に、実際の表示 bbox で切り戻す
                         fil_geojson.features = clipFeatures(fil_geojson.features, bboxLonLat);
-                    } else {
-                        // sea 以外も必要なら clip
-                        // fil_geojson.features = clipFeatures(fil_geojson.features, bboxLonLat);
                     }
 
                     Layers[target].geojson = fil_geojson.features;
@@ -485,10 +477,16 @@ class MapMaker {
             winCont.closeModal().then(() => {
                 console.log("mapMaker: make: end");
             })
-        })/*.catch(() => {
-				let modal = { "title": glot.get("sverror_title"), "message": glot.get("sverror_message"), "mode": "close", "callback_close": () => mapMaker.clearAll() };
-				winCont.modal_open(modal);
-			});*/
+        }).catch((error) => {
+            console.error("mapMaker: make failed", error);
+            const modal = {
+                "title": glot.get("sverror_title"),
+                "message": glot.get("sverror_message"),
+                "mode": "close",
+                "callback_close": () => mapMaker.clearAll()
+            };
+            winCont.modal_open(modal);
+        });
         return;
     }
 
@@ -548,8 +546,8 @@ class MapMaker {
                     })
                 });
             } else {
-                Basic.retry(() => overPassCont.get([key]), 5).then((ovasnswer) => {
-                    if (ovasnswer == undefined) {
+                Basic.retry(() => overPassCont.get([key]), 5).then((ovanswer) => {
+                    if (!ovanswer || !Array.isArray(ovanswer.geojson) || ovanswer.geojson.length === 0) {
                         let modal = {
                             "title": glot.get("nodata_title"), "message": glot.get("nodata_message"),
                             "mode": "close", "callback_close": () => winCont.closeModal()
@@ -557,7 +555,7 @@ class MapMaker {
                         winCont.modal_open(modal);
                     } else {
                         winCont.closeModal().then(() => {
-                            poiset(key, ovasnswer);
+                            poiset(key, ovanswer);
                         })
                     };
                 });
