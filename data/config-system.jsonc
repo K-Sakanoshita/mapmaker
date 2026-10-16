@@ -13,9 +13,13 @@
     },
     "tile_select": {
         "Facebook_Builtin": "OSM_Mono",
-        "default": "OSM_Mono"
+        "default": "OSMFJ_POI"
     },
     "tile": {
+        "OSMFJ_POI": {
+            "name": "OpenStreetMap (OSMFJ POI)",
+            "style": "./tiles/osmfj_poi.json"
+        },
         "OSM_Mono": {
             "name": "OpenStreetMap Mono",
             "copyright": "<a href=\"https://openstreetmap.org\">&copy OpenStreetMap contributors</a>",

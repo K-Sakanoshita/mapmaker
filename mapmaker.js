@@ -10,10 +10,6 @@ class MapMaker {
         this.selectMode = ""
         this.copyrights = []
         this.colorPicker = []
-        this.roughPreviewTimer = null
-        this.roughPreviewVersion = 0
-        this.roughPreviewRendering = false
-        this.roughPreviewPending = false
         this.exportInProgress = false
         this.basemenuWindowInitialized = false
         this.basemenuWindowMode = "minimized"
@@ -21,25 +17,21 @@ class MapMaker {
     // Initialize
     init(menuhtml) {
         MapCont.init();
-        const roughPane = map.getPane("roughPreviewPane") || map.createPane("roughPreviewPane");
-        roughPane.classList.add("leaflet-rough-preview-pane");
-        roughPane.style.zIndex = "450";
-        const resizeRoughPane = () => {
-            const size = map.getSize();
-            const mapPanePosition = L.DomUtil.getPosition(map.getPane("mapPane")) || L.point(0, 0);
-            roughPane.style.width = `${size.x}px`;
-            roughPane.style.height = `${size.y}px`;
-            L.DomUtil.setPosition(roughPane, mapPanePosition.multiplyBy(-1));
-        };
-        resizeRoughPane();
-        map.on("move resize", resizeRoughPane);
-        const roughPreviewWindow = document.getElementById("roughPreviewWindow");
-        if (roughPreviewWindow) roughPane.appendChild(roughPreviewWindow);
-        MapCont.controlAdd("bottomleft", "zoomlevel", "<div><.div>", "");
+        MapCont.controlAdd("bottomleft", "zoomlevel", `<div id="zoomlevelValue"></div>
+            <div id="morezoom" class="small d-none" role="status">
+                <span glot-model="morezoom"></span>
+                <span id="morezoomFeatures" class="mt-1"></span>
+            </div>`, "");
         mapMaker.makemenu(menuhtml);										// Make edit menu
+        this.mobileSheet ||= new MobileEditorSheet(this);
         mapMaker.initBasemenuWindow();
         winCont.menulist_make();
         mapMaker.zoomMessage();																// Zoom 
+        map.on('movestart', () => this.clearExportPreview());
+        map.on('moveend resize', () => this.queueExportPreview());
+        map.on('moveend', () => { if (this.customMode && this.rough_options().enabled) this.rough_change(); });
+        map.on('pitchend', () => this.syncPositionView());
+        this.syncPositionView();
         map.on('zoomend', () => mapMaker.zoomMessage());										// ズーム終了時に表示更新
         const searchInput = document.getElementById("search_input");
         const searchButton = searchInput.previousElementSibling;
@@ -49,12 +41,208 @@ class MapMaker {
         searchInput.addEventListener('change', (e) => { mapMaker.searchPoi(e.target.value) });	// Address Search
     }
 
+    previewBusy(busy) {
+        let status = document.getElementById('mapmakerRenderStatus');
+        if (!status && busy) {
+            status = document.createElement('div');
+            status.id = 'mapmakerRenderStatus';
+            status.className = 'export-processing';
+            status.setAttribute('role', 'status');
+            status.setAttribute('aria-live', 'polite');
+            const message = document.createElement('div');
+            message.className = 'export-processing-message';
+            const spinner = document.createElement('span');
+            spinner.className = 'spinner-border spinner-border-sm';
+            spinner.setAttribute('aria-hidden', 'true');
+            const text = document.createElement('span');
+            text.textContent = glot.get('processing_message');
+            message.append(spinner, text); status.append(message);
+            document.body.append(status);
+        }
+        status?.classList.toggle('d-none', !busy);
+        map.getContainer().setAttribute('aria-busy', String(busy));
+    }
+
+    clearExportPreview() {
+        this.exportPreviewVersion = (this.exportPreviewVersion || 0) + 1;
+        clearTimeout(this.exportPreviewTimer);
+        this.previewBusy(false);
+        document.getElementById('mapmakerExportPreview')?.classList.add('d-none');
+        map.getContainer().classList.remove('mapmaker-export-preview');
+    }
+
+    queueExportPreview() {
+        if (!map.ready) return;
+        if (!this.customMode) {
+            this.clearRoughPreview();
+            map.editorRenderer?.clear();
+            this.clearExportPreview();
+            return;
+        }
+        map.editorRenderer ||= new MapLibreEditorRenderer(map);
+        // Existing native layers already follow the camera. Resize/move events
+        // do not require source reconstruction or another busy indicator.
+        if (map.editorRenderer.pending) return map.editorRenderer.pending;
+        if (!map.editorRenderer.needsSync()) {
+            if (this.rough_options().enabled) this.queueRoughPreview();
+            return;
+        }
+        this.clearExportPreview();
+        document.getElementById('mapmakerExportPreview')?.remove();
+        if (this.exportPreviewImageURL) URL.revokeObjectURL(this.exportPreviewImageURL);
+        this.exportPreviewImageURL = null;
+        this.previewBusy(true);
+        const rendering = map.editorRenderer.sync();
+        rendering.catch(error => {
+            console.error('MapLibre editor failed', error);
+            window.alert(glot.get('export_error'));
+        }).finally(() => {
+            this.previewBusy(false);
+            if (this.customMode && this.rough_options().enabled) this.queueRoughPreview();
+        });
+        return rendering;
+    }
+
+    setRoughPreviewLock(locked) {
+        this.roughPreviewLocked = locked;
+        document.getElementById('basemenu')?.classList.toggle('rough-preview-mode', locked);
+        if (locked) {
+            if (!this.roughPreviewControls) {
+                this.roughPreviewControls = new Map();
+                const controls = document.querySelectorAll('header, #editbar button, #editbar input, #editbar select, #editbar [onclick]');
+                for (const node of controls) {
+                    if (node.closest('#roughControls') || node.closest('.save-download') || /mapMaker\.save\(/.test(node.getAttribute('onclick') || '')) continue;
+                    this.roughPreviewControls.set(node, { disabled: node.disabled, inert: node.inert });
+                }
+                const container = map.getContainer();
+                this.roughPreviewControls.set(container, { disabled: container.disabled, inert: container.inert });
+                map.closePopup();
+            }
+            for (const node of this.roughPreviewControls.keys()) {
+                node.inert = true;
+                if ('disabled' in node) node.disabled = true;
+            }
+        } else if (this.roughPreviewControls) {
+            for (const [node, state] of this.roughPreviewControls) {
+                node.inert = state.inert;
+                if (state.disabled !== undefined) node.disabled = state.disabled;
+            }
+            this.roughPreviewControls = null;
+        }
+    }
+
+    clearRoughPreview() {
+        this.roughPreviewVersion = (this.roughPreviewVersion || 0) + 1;
+        clearTimeout(this.roughPreviewTimer);
+        document.getElementById('mapmakerRoughPreview')?.remove();
+        this.closeRoughPreviewModal();
+        map.getContainer().classList.remove('mapmaker-rough-preview');
+        map.getContainer().setAttribute('aria-busy', 'false');
+        if (this.roughPreviewURL) URL.revokeObjectURL(this.roughPreviewURL);
+        this.roughPreviewURL = null;
+        this.setRoughPreviewLock(false);
+    }
+
+    closeRoughPreviewModal() {
+        const modal = this.roughPreviewModal;
+        this.roughPreviewModal = null;
+        // A later dialog may have reused the shared modal; only close our own instance.
+        if (modal && winCont.modal === modal && winCont.modalMode) return winCont.closeModal();
+    }
+
+    queueRoughPreview() {
+        if (!this.customMode || !this.rough_options().enabled) return;
+        this.setRoughPreviewLock(true);
+        const version = this.roughPreviewVersion = (this.roughPreviewVersion || 0) + 1;
+        clearTimeout(this.roughPreviewTimer);
+        this.roughPreviewTimer = setTimeout(() => {
+            const previous = this.roughPreviewTask;
+            // Only one SVG worker request may run at a time. Off/rapid changes
+            // invalidate the result without letting an old image reappear.
+            this.roughPreviewTask = Promise.resolve(previous).catch(() => {}).then(() => this.renderRoughPreview(version));
+        }, 150);
+    }
+
+    async renderRoughPreview(version) {
+        const current = () => version === this.roughPreviewVersion && this.customMode && this.rough_options().enabled;
+        if (!current()) return;
+        const container = map.getContainer();
+        container.setAttribute('aria-busy', 'true');
+        let url;
+        try {
+            if (!winCont.modalMode) {
+                const message = `<span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>${glot.get('processing_message')}`;
+                const opening = winCont.modal_open({ title: '', message, mode: '', compact: true });
+                this.roughPreviewModal = winCont.modal;
+                await opening;
+            }
+            if (!current()) return;
+            // Preview and default downloads cover the same complete map.
+            const exportRect = this.captureExportRect('');
+            const { outText } = await SVGCont.buildSVG({ type: 'svg', mode: '', exportRect, preview: true });
+            if (!current()) return;
+            url = URL.createObjectURL(new Blob([outText], { type: 'image/svg+xml;charset=utf-8' }));
+            const image = new Image(); image.alt = glot.get('rough_preview'); image.draggable = false; image.src = url;
+            await image.decode();
+            if (!current()) return;
+            const overlay = document.createElement('div'); overlay.id = 'mapmakerRoughPreview';
+            Object.assign(overlay.style, { left: `${exportRect.x1}px`, top: `${exportRect.y1}px`, width: `${exportRect.width}px`, height: `${exportRect.height}px` });
+            overlay.appendChild(image);
+            document.getElementById('mapmakerRoughPreview')?.remove();
+            container.appendChild(overlay); container.classList.add('mapmaker-rough-preview');
+            if (this.roughPreviewURL) URL.revokeObjectURL(this.roughPreviewURL);
+            this.roughPreviewURL = url; url = null;
+        } catch (error) {
+            if (current()) {
+                console.error('Hand-drawn preview failed', error);
+                document.getElementById('rough_enabled').checked = false;
+                this.clearRoughPreview(); this.rough_change();
+                window.alert(glot.get('rough_preview_error'));
+            }
+        } finally {
+            if (url) URL.revokeObjectURL(url);
+            if (current()) {
+                // Paint the decoded image before dismissing the processing message.
+                await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+                if (current()) {
+                    container.setAttribute('aria-busy', 'false');
+                    await this.closeRoughPreviewModal();
+                }
+            } else if (!this.customMode || !this.rough_options().enabled) {
+                await this.closeRoughPreviewModal();
+            }
+        }
+    }
+
+    captureExportRect(mode) {
+        // Inert suppresses DOM hit testing too; temporarily restore it only for
+        // the synchronous visible-map rectangle measurement.
+        const container = map.getContainer(), inert = container.inert;
+        container.inert = false;
+        try { return SVGCont._getExportRectPx(mode); }
+        finally { container.inert = inert; }
+    }
+
+    async toggleLayerVisibility(key, visible) {
+        if (map.editorRenderer?.active) {
+            LayerCont.updateLayerVisibility(key, visible);
+            return;
+        }
+        const message = `<div class="d-flex align-items-center gap-2"><span class="spinner-border spinner-border-sm" aria-hidden="true"></span><span>${glot.get("processing_message")}</span></div>`;
+        await winCont.modal_open({ title: "", message, mode: "", compact: true });
+        await new Promise(resolve => requestAnimationFrame(() => setTimeout(resolve, 0)));
+        try {
+            LayerCont.updateLayerVisibility(key, visible);
+        } finally {
+            await new Promise(resolve => requestAnimationFrame(resolve));
+            await winCont.closeModal();
+        }
+    }
+
     rough_change() {
         const selected = document.getElementById("rough_enabled")?.checked === true;
-        const enabled = selected && this.customMode;
-        const previewWindow = document.getElementById("roughPreviewWindow");
-        const preview = document.getElementById("roughPreview");
-        const status = document.getElementById("roughPreviewStatus");
+        if (!selected || !this.customMode) this.clearRoughPreview();
+        this.queueExportPreview();
         document.getElementById("roughParameters")?.classList.toggle("d-none", !selected);
         for (const id of ["roughness", "bowing", "rough_fill_style"]) {
             const input = document.getElementById(id);
@@ -65,17 +253,6 @@ class MapMaker {
             const output = document.getElementById(`${id}_value`);
             if (input && output) output.value = Number(input.value).toFixed(1);
         }
-        this.roughPreviewVersion++;
-        clearTimeout(this.roughPreviewTimer);
-        if (!enabled) {
-            previewWindow?.classList.add("d-none");
-            preview?.replaceChildren();
-            status?.classList.add("d-none");
-            this.roughPreviewPending = false;
-            return;
-        }
-        previewWindow?.classList.remove("d-none");
-        this.roughPreviewTimer = setTimeout(() => this.rough_preview(), 300);
     }
 
     rough_options() {
@@ -95,106 +272,13 @@ class MapMaker {
         };
     }
 
-    async rough_preview() {
-        const target = document.getElementById("roughPreview");
-        const status = document.getElementById("roughPreviewStatus");
-        if (!target || !this.rough_options().enabled) return;
-        if (this.roughPreviewRendering) {
-            this.roughPreviewPending = true;
-            return;
-        }
-
-        const source = this.rough_preview_source();
-        const version = this.roughPreviewVersion;
-        const options = this.rough_options();
-        this.roughPreviewRendering = true;
-        this.roughPreviewPending = false;
-        if (status) {
-            status.textContent = `${glot.get("rough_preview")}...`;
-            status.classList.remove("d-none");
-        }
-
-        const Svg2Roughjs = globalThis.svg2roughjs?.Svg2Roughjs;
-        if (!Svg2Roughjs) {
-            this.roughPreviewRendering = false;
-            if (status) status.textContent = glot.get("rough_error");
-            return;
-        }
-
-        const output = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-        const converter = new Svg2Roughjs(output, undefined, {
-            roughness: options.roughness,
-            bowing: options.bowing,
-            fillStyle: options.fillStyle
-        });
-        converter.svg = source;
-        converter.fontFamily = null;
-        converter.randomize = false;
-        converter.backgroundColor = Layers.background?.opacity === 0
-            ? "transparent"
-            : (Layers.background?.color || "#ffffff");
-
-        try {
-            const roughSvg = await converter.sketch(true);
-            if (version !== this.roughPreviewVersion) return;
-            target.replaceChildren(roughSvg instanceof SVGElement ? roughSvg : output);
-            status?.classList.add("d-none");
-        } catch (error) {
-            console.error("rough preview failed", error);
-            if (version === this.roughPreviewVersion && status) status.textContent = glot.get("rough_error");
-        } finally {
-            this.roughPreviewRendering = false;
-            if (this.roughPreviewPending && this.rough_options().enabled) {
-                this.roughPreviewPending = false;
-                this.roughPreviewTimer = setTimeout(() => this.rough_preview(), 0);
-            }
-        }
-    }
-
-    rough_preview_source() {
-        const mapSvg = document.querySelector(".leaflet-overlay-pane svg");
-        const mapSize = map.getSize();
-        if (!mapSvg?.viewBox?.baseVal) {
-            return new DOMParser().parseFromString(`
-                <svg xmlns="http://www.w3.org/2000/svg" width="${mapSize.x}" height="${mapSize.y}"
-                    viewBox="0 0 ${mapSize.x} ${mapSize.y}">
-                    <rect width="${mapSize.x}" height="${mapSize.y}" fill="${Layers.background?.color || "#ffffff"}"/>
-                </svg>`, "image/svg+xml").documentElement;
-        }
-
-        const viewBox = mapSvg.viewBox.baseVal;
-        const cropWidth = Math.min(mapSize.x, viewBox.width);
-        const cropHeight = Math.min(mapSize.y, viewBox.height);
-        const cropX = viewBox.x + (viewBox.width - cropWidth) / 2;
-        const cropY = viewBox.y + (viewBox.height - cropHeight) / 2;
-
-        const source = mapSvg.cloneNode(true);
-        source.removeAttribute("style");
-        source.removeAttribute("class");
-        source.setAttribute("width", String(mapSize.x));
-        source.setAttribute("height", String(mapSize.y));
-        source.setAttribute("viewBox", `${cropX} ${cropY} ${cropWidth} ${cropHeight}`);
-        source.setAttribute("preserveAspectRatio", "xMidYMid slice");
-
-        if (Layers.background?.opacity !== 0) {
-            const background = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-            background.setAttribute("x", String(cropX));
-            background.setAttribute("y", String(cropY));
-            background.setAttribute("width", String(cropWidth));
-            background.setAttribute("height", String(cropHeight));
-            background.setAttribute("fill", Layers.background?.color || "#ffffff");
-            source.insertBefore(background, source.firstChild);
-        }
-        return source;
-    }
-
     // 基本メニューの作成 menuhtml:指定したHTMLで左上に作成 menuhtmlが空の時は過去のHTMLから復元
     makemenu(menuhtml) {
         console.log("Start: make menu.")
         document.getElementById("basemenu").innerHTML = menuhtml;
 
         console.log("Start: make marker.")
-        let html = "", keys = Object.keys(Conf.osm);							// マーカー追加メニュー作成
+        let html = `<button type="button" class="dropdown-item" onclick="ManualPins.start()"><span class="manual-pin-menu-icon" aria-hidden="true">${ManualPins.svg("location")}</span>${glot.get("manual_pin_add")}</button><div class="dropdown-divider"></div>`, keys = Object.keys(Conf.osm);							// マーカー追加メニュー作成
         keys.forEach(key => {
             if (Conf.osm[key].marker !== undefined) {
                 html += `<span class="dropdown-item btn ps-1 me-1" onclick="mapMaker.addPoi('${key}')">`;
@@ -202,7 +286,34 @@ class MapMaker {
                 html += `${glot.get("marker_" + key)}</span>\n`;
             };
         });
-        document.getElementById("menu_list").innerHTML = html
+        const iconMenu = document.getElementById("menu_list");
+        iconMenu.innerHTML = html;
+        const iconToggle = document.getElementById('dropdownMenuButton');
+        const iconMenuSpace = () => {
+            const viewport = window.visualViewport;
+            const viewportTop = viewport?.offsetTop || 0;
+            const top = Math.max(viewportTop, document.getElementById('editbar').getBoundingClientRect().top);
+            const bottom = viewportTop + (viewport?.height || window.innerHeight);
+            const rect = iconToggle.getBoundingClientRect();
+            const above = Math.max(0, rect.top - top - 10);
+            const below = Math.max(0, bottom - rect.bottom - 10);
+            iconMenu.style.maxHeight = `${Math.max(above, below)}px`;
+            return above > below ? 'top-start' : 'bottom-start';
+        };
+        new bootstrap.Dropdown(iconToggle, {
+            popperConfig: config => ({
+                ...config, strategy: 'fixed', placement: iconMenuSpace(),
+                modifiers: [
+                    ...config.modifiers,
+                    { name: 'iconMenuHeight', enabled: true, phase: 'beforeRead', fn: () => { iconMenuSpace(); } },
+                    { name: 'flip', options: { boundary: [], rootBoundary: 'viewport', padding: 8 } },
+                    { name: 'preventOverflow', options: { boundary: [], rootBoundary: 'viewport', padding: 8 } }
+                ]
+            })
+        });
+        for (const type of ['wheel', 'touchmove']) {
+            iconMenu.addEventListener(type, event => event.stopPropagation(), { passive: true });
+        }
 
         console.log("Start: make custom panel.")
         for (let panel of Conf.editPanels) {									    // editPanelsに基づいて編集パネルを作成
@@ -220,7 +331,7 @@ class MapMaker {
                 let key_layer = `#${key}_layer`;
                 let key_line = `#${key}_line`;
                 let copyobj = document.getElementById("AAA").cloneNode(true);
-                copyobj.getElementsByClassName("customName")[0].innerHTML = glot.get("menu_" + key);
+                copyobj.getElementsByClassName("layer-control-label")[0].innerHTML = glot.get("menu_" + key);
                 copyobj.querySelector('#AAA_color').setAttribute('id', key + "_color");
                 copyobj.querySelector('#AAA_line').setAttribute('value', Layers[key].width);
                 copyobj.querySelector('#AAA_line').setAttribute('id', key + "_line");
@@ -233,7 +344,7 @@ class MapMaker {
                 this.colorPicker[key] = new Alwan(`#${key}_color`, {
                     preview: false, copy: false,
                     inputs: { hex: false, rgb: true, hsl: false }, color: Layers[key].color,
-                    classname: "colorPalette", swatches: Conf.default.swatches
+                    classname: "colorPalette", swatches: LayerCont.colorSwatches()
                 });
 
                 // 色変更時のイベント定義
@@ -257,6 +368,11 @@ class MapMaker {
                     Layers[key].width = event.target.value; //width;
                     LayerCont.updateLayerWidth(key);
                 });
+                const widthButton = document.getElementById(key + "_line");
+                if (widthButton) {
+                    widthButton.setAttribute('aria-label', `${glot.get("menu_" + key)} — ${glot.get("layer_column_width")}`);
+                    widthButton.addEventListener('click', () => LineWidthPanel.open(key, widthButton));
+                }
                 // 表示変更時のイベント定義
                 $(`#${key}_layer`).on('click', async function () {
                     if (key_layer.indexOf("background") > -1) { // 地面の処理
@@ -269,15 +385,7 @@ class MapMaker {
                         let view = $(key_layer).children().attr("class").indexOf("fa-trash-alt") > 0 ? false : true;    // 現在の状態を判定
                         $(key_layer).children().toggleClass("fa-trash-alt fa-undo");
                         if (Layers[key].geojson) {
-                            const processingMessage = `<div class="d-flex align-items-center gap-2"><span class="spinner-border spinner-border-sm" aria-hidden="true"></span><span>${glot.get("processing_message")}</span></div>`;
-                            await winCont.modal_open({ title: "", message: processingMessage, mode: "", compact: true });
-                            await new Promise(resolve => requestAnimationFrame(() => setTimeout(resolve, 0)));
-                            try {
-                                LayerCont.updateLayerVisibility(key, view);
-                            } finally {
-                                await new Promise(resolve => requestAnimationFrame(resolve));
-                                await winCont.closeModal();
-                            }
+                            await mapMaker.toggleLayerVisibility(key, view);
                         };
                     }
                     // 削除・復活後の表示状態を手書きプレビューにも反映する。
@@ -289,6 +397,8 @@ class MapMaker {
 
         console.log("Start: make glot render.")
         glot.render();
+        document.querySelector('.save-reset button').setAttribute('aria-label', glot.get('save_reset_label'));
+        document.getElementById('mobilePaletteSelect').value = LayerCont.palette;
 
         mapMaker.custom(false);	// カスタムモードOFF
         console.log("End: make menu.")
@@ -304,31 +414,40 @@ class MapMaker {
         const minimumSizes = new Map();
 
         const updateResizeButton = () => {
-            const expanded = this.basemenuWindowMode == "expanded";
+            const expanded = this.customMode && this.basemenuWindowMode == "expanded";
+            resizeButton.disabled = !this.customMode || !!this.roughPreviewLocked;
             const label = glot.get(expanded ? "basemenu_restore" : "basemenu_expand");
             resizeButton.title = label;
             resizeButton.setAttribute("aria-label", label);
             resizeButton.classList.toggle("is-expanded", expanded);
+            resizeButton.setAttribute("aria-expanded", String(expanded));
+            const icon = resizeButton.querySelector('i');
+            if (icon) icon.className = expanded ? 'far fa-window-restore' : 'far fa-window-maximize';
         };
 
         const applyWindowSize = () => {
-            const wideLayout = window.matchMedia("(min-width: 992px)").matches;
+            if (this.mobileSheet?.update()) return;
+            document.getElementById("basemenu").classList.toggle("is-minimized", this.basemenuWindowMode === "minimized");
+            const wideLayout = window.matchMedia("(min-width: 992px), (min-width: 768px) and (orientation: landscape)").matches;
             const portrait = window.matchMedia("(orientation: portrait)").matches;
             const rect = editbar.getBoundingClientRect();
             const total = wideLayout ? rect.width : rect.height;
+            const menuMinimum = parseFloat(getComputedStyle(editbar).getPropertyValue("--basemenu-min-width")) || 260;
             const visibleControls = [makeMap, saveMap, controlMenu]
                 .filter(element => element && !element.classList.contains("d-none"));
             const controlsBottom = visibleControls.reduce((bottom, element) => {
                 return Math.max(bottom, element.getBoundingClientRect().bottom - rect.top);
             }, 0);
-            const layoutKey = wideLayout ? "wide" : (portrait ? "portrait" : "landscape");
-            const measuredMinimum = wideLayout ? 240 : Math.max(120, Math.ceil(controlsBottom + 4));
+            const layoutKey = `${wideLayout ? `wide-${menuMinimum}` : portrait ? 'portrait' : 'landscape'}:${this.customMode ? 'edit' : 'position'}`;
+            const measuredMinimum = wideLayout ? menuMinimum : Math.max(120, Math.ceil(controlsBottom + 4));
             const minimum = Math.max(minimumSizes.get(layoutKey) || 0, measuredMinimum);
             minimumSizes.set(layoutKey, minimum);
             const minimumMap = wideLayout ? 240 : 160;
             let size = minimum;
 
-            if (this.basemenuWindowMode == "expanded") {
+            if (!this.customMode) {
+                size = minimum;
+            } else if (this.basemenuWindowMode == "expanded") {
                 size = portrait ? total - minimumMap : total / 3;
             } else if (this.basemenuWindowMode == "normal") {
                 size = portrait ? total / 2 : minimum;
@@ -384,6 +503,19 @@ class MapMaker {
         };
     }
 
+    positionView(threeD) {
+        map.gl.easeTo({ pitch: threeD ? 30 : 0, duration: 300 });
+    }
+
+    syncPositionView() {
+        const threeD = map.gl.getPitch() > 0;
+        for (const [id, active] of [['position2D', !threeD], ['position3D', threeD]]) {
+            const button = document.getElementById(id);
+            button?.setAttribute('aria-pressed', String(active));
+            button?.classList.toggle('active', active);
+        }
+    }
+
     // make custom map
     make(query_date) {
         const waitPaint = () => new Promise(resolve => { requestAnimationFrame(() => { setTimeout(resolve, 0); }); });
@@ -391,7 +523,7 @@ class MapMaker {
         while (latlng.lng >= 180) latlng.lng -= 360;
         while (latlng.lng <= -180) latlng.lng += 360;
         map.setView(latlng);    // 経度を-180～180に変換してからセット（OverpassAPIの仕様に合わせるため）
-        let nowzoom = map.getZoom(), def_msg;
+        let nowzoom = this.zoomLevel(), def_msg;
         if (nowzoom < Conf.default.MinZoomLevel) return false;
         if (typeof (query_date) == "undefined") query_date = "";
         def_msg = glot.get("loading_message");
@@ -403,16 +535,20 @@ class MapMaker {
         Basic.getData('https://script.google.com/macros/s/AKfycbyuuTCJ4qPcSFCRmSlrhwlHDK8uFYUzSkF5EPoklOtShPadnyHT28P1gj8awGeWKyISGQ/exec?URL=' + href);
 
         var targets = [];
+        let lastProgressTenths = null;
         var progress = function (data_length) {
-            def_msg = "Data Loading... " + Math.trunc(data_length / 1024).toLocaleString() + "KBytes."
-            winCont.modal_text(def_msg, true)
+            const tenths = Math.floor(data_length / (1024 * 1024) * 10);
+            if (tenths === lastProgressTenths) return;
+            lastProgressTenths = tenths;
+            def_msg = "Data Loading... " + (tenths / 10).toFixed(1) + "MB.";
+            winCont.modal_text(def_msg, false);
         };
         for (let key of LayerCont.styles) if (Conf.style[LayerCont.palette][key].zoom <= nowzoom) targets.push(key);
         Basic.retry(() => overPassCont.get(targets, progress), 5).then(async (ovanswer) => {
-            winCont.modal_text("Data Loading Complate... ", true);
+            winCont.modal_text("Data Loading Complete...", false);
             await waitPaint();
             for (const target of targets) {
-                winCont.modal_text(`Layer Cliping... ${target}`, true);
+                winCont.modal_text(`Layer Cliping... ${target}`, false);
                 await waitPaint();
 
                 let geojson = overPassCont.get_target(ovanswer, target);
@@ -481,18 +617,25 @@ class MapMaker {
 
             for (let key of LayerCont.styles) {
                 if (Layers[key].geojson) {
-                    winCont.modal_text(`Map Writeing... ${key}`, true);
+                    winCont.modal_text(`Map Writeing... ${key}`, false);
                     await waitPaint();
-                    LayerCont.makeLayer(key, undefined, false);   // 指定したkeyレイヤーを作成
+                    await LayerCont.makeLayerAsync(key, undefined, false, (done, total) => {
+                        winCont.modal_text(`Map Writing... ${key} ${done}/${total}`, false);
+                    });   // 指定したkeyレイヤーを作成
                 };
             };
-            winCont.modal_text("Map Ordering...", true);
+            winCont.modal_text("Map Ordering...", false);
             await waitPaint();
             LayerCont.applyDrawOrder();
             mapMaker.custom(true);
-            winCont.closeModal().then(() => {
-                console.log("mapMaker: make: end");
-            })
+            await mapMaker.queueExportPreview();
+            // sync後に有効化されるベクタースタイルも画面へ反映してから閉じる。
+            await new Promise(resolve => {
+                map.gl.once('idle', resolve);
+                map.gl.triggerRepaint();
+            });
+            await winCont.closeModal();
+            console.log("mapMaker: make: end");
         }).catch((error) => {
             console.error("mapMaker: make failed", error);
             const modal = {
@@ -581,6 +724,8 @@ class MapMaker {
             function poiset(key, answer) {
                 let geojsons = { geojson: [], targets: [] };
                 answer.geojson.forEach((geojson, idx) => {
+                    // POI用のPoint化で描画・保存元のジオメトリを変えない。
+                    geojson = { ...geojson, geometry: { ...geojson.geometry } };
                     let geo = geojson.geometry;
                     let cords; // = geo.coordinates;
                     cords = GeoCont.multi2flat(geo.coordinates, geo.type);	// ネスト構造のデータをフラット化
@@ -597,7 +742,7 @@ class MapMaker {
                 winCont.modal_select(key).then((slanswer) => {
                     poiCont.addGeoJSON(slanswer);
                     Marker.set(key);
-                    winCont.closeModal().then(() => { console.log(`mapMaker: Add: ${key} end`) })
+                    console.log(`mapMaker: Add: ${key} end`);
                 }).catch(() => console.log("addPoi: cancel"));
             };
         })
@@ -665,7 +810,7 @@ class MapMaker {
                     let rems = false;
                     for (let key of panel.styles) {
                         let zoom = palette[key].zoom == undefined ? 0 : palette[key].zoom;
-                        let disabled = zoom <= map.getZoom() ? "remove" : "add";
+                        let disabled = zoom <= this.zoomLevel() ? "remove" : "add";
                         rems = rems || disabled == "remove";    // どれか一つでも表示可能なレイヤーがあればパネルを表示
                         document.getElementById(key).classList[disabled]("d-none");
                     }
@@ -682,13 +827,13 @@ class MapMaker {
                 makeMap.classList.add("d-none");            // Hide MakeMap button
                 controlMenu.classList.remove("d-none");     // Show Control Menu
                 roughControls.classList.remove("d-none");  // Show Rough.js controls
-                this.rough_change();
                 saveMap.classList.remove("d-none");         // Show Save Button
                 requestAnimationFrame(() => this.applyBasemenuWindowSize?.());
                 //clearMap.classList.remove("d-none");           // Hide Clear Button
                 ["dragging", "zoomControl", "scrollWheelZoom", "touchZoom"].forEach(key => map[key].disable());
                 $("#search_input").attr('disabled', 'disabled');
                 MapCont.stop();
+                Birdseye.setEnabled(map.gl.getPitch() > 0);
                 Object.keys(this.maps).forEach(key => { if (map.hasLayer(this.maps[key])) { Layers["MAP"] = this.maps[key]; map.removeLayer(this.maps[key]) } });	// remove select layer
                 if (Layers.background.opacity === 0) {		// set background
                     $("#mapid").addClass("bg-clear");
@@ -697,9 +842,12 @@ class MapMaker {
                     $("#mapid").css('background-color', Layers.background.color);
                     $("#background_color").css('background-color', Layers.background.color);
                 };
+                this.rough_change();
                 mapMaker.zoomMessage();
                 break;
             case false:
+                if (typeof ManualPins !== "undefined") ManualPins.stop();
+                if (typeof LineWidthPanel !== "undefined") LineWidthPanel.close(false);
                 this.customMode = mode;
                 makeMap.classList.remove("d-none");         // Show MakeMap button
                 controlMenu.classList.add("d-none");        // Hide Control Menu
@@ -718,6 +866,7 @@ class MapMaker {
                 $("#background_color").css('background-color', "");
                 mapMaker.zoomMessage();
                 this.copyrights = [];
+                this.queueExportPreview();
                 break;
         }
         return this.customMode;
@@ -731,11 +880,16 @@ class MapMaker {
     }
 
     // save layers&pois
-    async save(type) {
+    async save(type, birdseye = null) {
         if (this.exportInProgress) return;
+        const downloadMenu = document.getElementById('saveDownloadMenu');
+        if (downloadMenu && typeof bootstrap !== 'undefined') bootstrap.Dropdown.getInstance(downloadMenu)?.hide();
 
+        // 保存中の全面オーバーレイが地図を覆う前に、地図・用紙の範囲を確定する。
+        const exportRect = this.captureExportRect(this.selectMode);
         const processing = document.getElementById("exportProcessing");
-        const saveButtons = document.querySelectorAll("#saveMap button");
+        const saveButtons = document.querySelectorAll('#saveMap button, #controlMenu [onclick="Birdseye.open()"], #birdseyeModal button, #birdseyeModal input');
+        const disabledBeforeSave = new Map([...saveButtons].map(button => [button, button.disabled]));
         this.exportInProgress = true;
         processing?.classList.remove("d-none");
         saveButtons.forEach(button => button.disabled = true);
@@ -744,21 +898,25 @@ class MapMaker {
         await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 
         try {
-            await SVGCont.save({ type: type, mode: this.selectMode });
+            await SVGCont.save({ type: type, mode: this.selectMode, birdseye, exportRect });
         } catch (error) {
             console.error("save: export failed", error);
             window.alert(glot.get("export_error"));
         } finally {
             processing?.classList.add("d-none");
-            saveButtons.forEach(button => button.disabled = false);
+            saveButtons.forEach(button => button.disabled = disabledBeforeSave.get(button));
+            if (this.roughPreviewLocked) this.setRoughPreviewLock(true);
             this.exportInProgress = false;
         }
     }
 
+    // 表示と地物の取得・メニューの判定で同じ小数1桁のズーム値を使う。
+    zoomLevel() { return Number(map.getZoom().toFixed(1)); }
+
     // View Zoom Level & Status Comment
     zoomMessage() {
-        let nowzoom = map.getZoom();
-        let message = `${glot.get("zoomlevel")}${map.getZoom()} `;
+        let nowzoom = this.zoomLevel();
+        let message = `${glot.get("zoomlevel")}${nowzoom} `;
         const needsZoom = nowzoom < Conf.default.MinZoomLevel;
         makeMap.classList.toggle("d-none", mapMaker.custom());
         makeMap.querySelector("button").disabled = needsZoom;
@@ -777,8 +935,8 @@ class MapMaker {
             if (hiddenFeatures.length > 3) examples.push(glot.get("morezoom_etc"));
             featureList.textContent = `${glot.get("morezoom_example")} ${examples.join(" ")}`;
         }
-        if (mapMaker.custom()) message += `<br>${glot.get("custommode")}`;
-        $("#zoomlevel").html("<h2 class='zoom'>" + message + "</h2>");
+        if (mapMaker.custom() && !map.threeD) message += `<br>${glot.get("custommode")}`;
+        $("#zoomlevelValue").html("<h2 class='zoom'>" + message + "</h2>");
     }
 
     // Try Again
@@ -792,6 +950,7 @@ class MapMaker {
                 overPassCont.clear();
                 LayerCont.clearAll();
                 Marker.clearAll();
+                ManualPins.clear();
                 poiCont.clearAll();
                 winCont.closeModal();
             },

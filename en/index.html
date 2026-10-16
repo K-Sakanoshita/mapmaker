@@ -37,11 +37,8 @@
     <meta name="twitter:description" content="Create freely editable and reusable map images." />
     <meta name="twitter:image" content="https://mapmaker.openacrossbase.net/image/ogimage_en.png" />
     <link rel="shortcut icon" href="favicon.ico" />
-    <link rel="stylesheet" href="./css/basemenu.css" />
-    <link rel="stylesheet" href="./css/leaflet.responsive.popup.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.90.1/dist/L.Control.Locate.min.css">
+    <link rel="stylesheet" href="./css/basemenu.css?v=maplibre-58" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@5.20.0/dist/maplibre-gl.css" />
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/v/bs5/dt-3.0.3/sl-4.0.1/datatables.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">
@@ -52,27 +49,31 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.1.0/chroma.min.js" defer></script>
     <script src="https://cdn.datatables.net/v/bs5/dt-3.0.3/sl-4.0.1/datatables.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet-src.min.js" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.90.1/dist/L.Control.Locate.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@5.20.0/dist/maplibre-gl.js" defer></script>
+    <script src="./lib/maplibre-adapter.js?v=maplibre-25" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode-svg@1.1.0/lib/qrcode.min.js" defer></script>
     <script src="https://community-geocoder.geolonia.com/api.js" defer></script>
     <script src="https://unpkg.com/glottologist@2.0.3/dist/glottologist.min.js" defer></script>
     <script src="https://unpkg.com/@turf/turf/turf.min.js"></script>
     <script src="https://unpkg.com/svg2roughjs@3.2.3/dist/svg2roughjs.umd.min.js" defer></script>
-    <script src="./lib/leaflet.responsive.popup.js" defer></script>
-    <script src="./lib/leaflet-tilelayer-colorfilter.min.js" defer></script>
     <script src="./lib/osmtogeojson.js" defer></script>
-    <script src="./lib/leaflet-hash.js" defer></script>
     <script src="./lib/basiclib.js" defer></script>
-    <script src="./lib/winlib.js" defer></script>
-    <script src="./lib/svglib.js" defer></script>
-    <script src="./lib/geolib.js" defer></script>
+    <script src="./lib/winlib.js?v=maplibre-6" defer></script>
+    <script src="./lib/svglib.js?v=maplibre-29" defer></script>
+    <script src="./lib/geolib.js?v=maplibre-21" defer></script>
     <script src="./lib/geolib_coastline.js" defer></script>
-    <script src="./lib/overpasslib.js" defer></script>
-    <script src="./lib/poislib.js" defer></script>
-    <script src="./lib/layerlib.js" defer></script>
-    <script src="./lib/listtable.js" defer></script>
-    <script src="./mapmaker.js" defer></script>
+    <script src="./lib/overpasslib.js?v=maplibre-23" defer></script>
+    <script src="./lib/poislib.js?v=maplibre-8" defer></script>
+    <script src="./lib/layerlib.js?v=maplibre-29" defer></script>
+    <script src="./lib/listtable.js?v=maplibre-1" defer></script>
+    <script src="./lib/maplibre-building-outlines.js?v=25" defer></script>
+    <script src="./lib/maplibre-vector-editor.js?v=11" defer></script>
+    <script src="./lib/maplibre-editor.js?v=39" defer></script>
+    <script src="./lib/manual-pins.js?v=7" defer></script>
+    <script src="./lib/line-width-panel.js?v=1" defer></script>
+    <script src="./lib/mobile-editor-sheet.js?v=2" defer></script>
+    <script src="./mapmaker.js?v=maplibre-52" defer></script>
+    <script src="./lib/birdseye.js?v=maplibre-16" defer></script>
     <script src="./initialize.js" defer></script>
     <script type="module">
         import JSON5 from 'https://unpkg.com/json5@2/dist/index.min.mjs'
@@ -138,10 +139,6 @@
                         <button id="mapMakerIntroClose" class="mapmaker-intro__close" type="button"
                             aria-label="Close introduction">&times;</button>
                     </section>
-                    <aside id="roughPreviewWindow" class="rough-preview-window d-none" aria-live="polite">
-                        <div id="roughPreviewStatus" class="rough-preview-status d-none"></div>
-                        <div id="roughPreview" class="rough-preview"></div>
-                    </aside>
                 </article>
             </section>
         </div>

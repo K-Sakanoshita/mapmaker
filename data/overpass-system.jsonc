@@ -120,7 +120,8 @@
                 "natural=tree",
                 "natural=wood",
                 "natural=grassland",
-                "natural=shrubbery"
+                "natural=shrubbery",
+                "natural=scrub"
             ]
         },
         "farmland": {

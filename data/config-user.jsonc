@@ -105,6 +105,12 @@
             "#9f83bb",
             "#9475b2" // 紫系 (観光地や特別エリア)
         ],
+        "birdseye": {
+            "defaultHeight": 3,
+            "floorHeight": 3,
+            "bearing": 0,
+            "tilt": 45
+        },
         "ColorDarken": 0.5,
         "Circle": {
             "radius": 8,

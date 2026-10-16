@@ -1,4 +1,35 @@
 {
+    "save_menu": {"ja": "保存", "en": "Save"},
+    "save_png": {"ja": "PNG画像を保存", "en": "Save PNG image"},
+    "save_svg": {"ja": "SVG画像を保存（編集可能）", "en": "Save editable SVG image"},
+    "save_reset_label": {"ja": "戻る", "en": "Start over"},
+    "sheet_styles": {"ja": "色・線幅", "en": "Style"},
+    "sheet_facilities": {"ja": "施設選択", "en": "Select places"},
+    "sheet_open": {"ja": "編集パネルを開く", "en": "Open editing panel"},
+    "sheet_collapse": {"ja": "編集パネルを閉じる", "en": "Collapse editing panel"},
+    "sheet_expand": {"ja": "広げる", "en": "Expand"},
+    "sheet_half": {"ja": "半画面", "en": "Half screen"},
+    "sheet_close": {"ja": "閉じる", "en": "Close"},
+    "line_width_decrease": {"ja": "線幅を0.1細くする", "en": "Decrease width by 0.1"},
+    "line_width_increase": {"ja": "線幅を0.1太くする", "en": "Increase width by 0.1"},
+    "line_width_range": {"ja": "0〜60の数値を入力してください。", "en": "Enter a number between 0 and 60."},
+    "manual_pin_add": {"ja": "目印ピンを置く", "en": "Place a pin"},
+    "manual_pin_kind": {"ja": "ピンの種類", "en": "Pin type"},
+    "manual_pin_location": {"ja": "場所ピン", "en": "Location pin"},
+    "manual_pin_pushpin": {"ja": "画鋲ピン", "en": "Pushpin"},
+    "manual_pin_text": {"ja": "文字（任意）", "en": "Text (optional)"},
+    "manual_pin_text_placeholder": {"ja": "集合場所など", "en": "e.g. Meeting point"},
+    "manual_pin_text_save": {"ja": "文字を更新", "en": "Update text"},
+    "manual_pin_hint": {"ja": "地図をタップして配置", "en": "Tap the map to place a pin"},
+    "manual_pin_done": {"ja": "完了", "en": "Done"},
+    "manual_pin_delete": {"ja": "このピンを削除", "en": "Delete this pin"},
+    "position_2d": {"ja": "2D地図", "en": "2D map"},
+    "position_3d": {"ja": "3D地図", "en": "3D map"},
+    "birdseye_open": {"ja": "3D化", "en": "3D guide map"},
+    "birdseye_bearing": {"ja": "地図の向き", "en": "Map rotation"},
+    "birdseye_tilt": {"ja": "地図の傾き", "en": "Map tilt"},
+    "birdseye_note": {"ja": "右ボタンまたはCtrl＋ドラッグで回転・傾斜。", "en": "Right-drag or Ctrl-drag to rotate and tilt."},
+
     "about": {
         "ja": "まち歩きマップメーカーについて",
         "en": "about Walking Map Maker"
@@ -120,12 +151,28 @@
         "en": "line weight"
     },
     "all_select": {
-        "ja": "全て選択",
-        "en": "All select"
+        "ja": "全選択",
+        "en": "Select all"
     },
     "all_deselect": {
-        "ja": "全て解除",
-        "en": "All deselect"
+        "ja": "全解除",
+        "en": "Deselect all"
+    },
+    "icon_all_categories": {
+        "ja": "すべての種類",
+        "en": "All types"
+    },
+    "icon_search": {
+        "ja": "名前・種類で検索",
+        "en": "Search names or types"
+    },
+    "icon_show_names": {
+        "ja": "名前を表示する",
+        "en": "Show names"
+    },
+    "icon_text_size": {
+        "ja": "文字サイズ",
+        "en": "Text size"
     },
     "facilityname": {
         "ja": "施設名",
@@ -251,13 +298,33 @@
         "ja": "カラーパレット",
         "en": "color palette"
     },
+    "icon_appearance": {
+        "ja": "表示スタイル（全アイコン）",
+        "en": "Appearance (all icons)"
+    },
+    "icon_appearance_standard": {
+        "ja": "枠付き",
+        "en": "Framed"
+    },
+    "icon_appearance_unframed": {
+        "ja": "枠なし",
+        "en": "Unframed"
+    },
+    "icon_appearance_subtle": {
+        "ja": "控えめ",
+        "en": "Subtle"
+    },
+    "coloring_palette": {
+        "ja": "塗り絵パレット",
+        "en": "Coloring palette"
+    },
     "mono_palette": {
         "ja": "モノクロパレット",
         "en": "mono palette"
     },
     "rough_style": {
         "ja": "手書き風",
-        "en": "Hand-drawn output"
+        "en": "Hand-drawn"
     },
     "rough_on_off": {
         "ja": "On / Off",
@@ -274,6 +341,10 @@
     "rough_fill": {
         "ja": "塗り",
         "en": "Fill Style"
+    },
+    "rough_preview_error": {
+        "ja": "手書き風プレビューを作成できませんでした。通常表示に戻します。",
+        "en": "Could not create the hand-drawn preview. Returning to the regular map."
     },
     "rough_preview": {
         "ja": "プレビュー",
@@ -462,6 +533,26 @@
     "marker_change": {
         "ja": "アイコンを変更",
         "en": "Change Icon"
+    },
+    "marker_size": {
+        "ja": "アイコンサイズ",
+        "en": "Icon size"
+    },
+    "marker_size_small": {
+        "ja": "小",
+        "en": "Small"
+    },
+    "marker_size_standard": {
+        "ja": "標準",
+        "en": "Standard"
+    },
+    "marker_size_large": {
+        "ja": "大",
+        "en": "Large"
+    },
+    "marker_appearance": {
+        "ja": "表示スタイル",
+        "en": "Appearance"
     },
     "marker_to_en": {
         "ja": "英語に変更",

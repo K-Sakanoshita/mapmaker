@@ -1,0 +1,12 @@
+const fs = require('node:fs'), vm = require('node:vm'), assert = require('node:assert/strict');
+const calls = [], visibilityCalls = [];
+const box = vm.createContext({console, map: {editorRenderer: {active:true, refreshCategory:key=>calls.push(key), setCategoryVisibility:key=>visibilityCalls.push(key)}}, Layers:{building:{}}});
+vm.runInContext(fs.readFileSync('lib/layerlib.js','utf8'),box);
+const control = vm.runInContext('Object.create(LayerControl.prototype)',box);
+control.styles=['building','park'];
+control.makeLayer=()=>{throw Error('Style edits must not rebuild models');};
+control.updateLayer('building'); control.updateLayerWidth('building'); control.updateLayerVisibility('building',false); control.updateLayer();
+assert.deepEqual(calls,['building','building','building','park']);
+assert.deepEqual(visibilityCalls,['building']);
+assert.equal(box.Layers.building.opacity,0);
+console.log('PASS color, width, visibility and palette edits route to persistent native layers');

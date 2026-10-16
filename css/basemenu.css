@@ -323,12 +323,21 @@ table.dataTable tbody>tr>.selected {
     text-align: center;
 }
 
-.customName {
-    font-size: 80%;
-    width: 64px;
-    overflow: hidden;
+.menu-button-label,
+.layer-control-label {
+    font-size: var(--menu-label-size);
     white-space: nowrap;
 }
+.layer-control-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#controlMenu .dropdown-menu,
+#controlMenu .dropdown-item {
+    font-size: var(--menu-label-size);
+}
+
 
 .input-hidden {
     width: 50px;
@@ -408,7 +417,7 @@ button:active {
     margin: 1px;
     padding: 0px;
     width: 48px;
-    height: 20px;
+    height: 24px;
     vertical-align: middle;
     border: #999;
     border-width: 1px;
@@ -461,6 +470,7 @@ img.icon_normal {
 
 /* 共通：flex子要素の高さ計算が崩れないように */
 #editbar {
+    --basemenu-min-width: 260px;
     position: relative;
     min-height: 0;
 }
@@ -479,104 +489,149 @@ img.icon_normal {
     top: 0;
     left: 0;
     z-index: 800;
-    width: clamp(260px, var(--basemenu-width, 260px), calc(100% - 260px));
+    width: clamp(var(--basemenu-min-width), var(--basemenu-width, var(--basemenu-min-width)), calc(100% - 260px));
     height: 100%;
     min-height: 0;
     background: #faf8f8;
     box-shadow: 4px 0 8px rgba(0, 0, 0, 0.2);
 }
 
-.basemenu-windowbar {
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-left: 8px;
-    border-bottom: 1px solid #b9b9b9;
-    background: #f3f3f3;
-    user-select: none;
+@media (min-width: 992px) {
+    #editbar { --basemenu-min-width: 300px; }
 }
 
-.basemenu-windowbar-title {
+/* Shared menu typography; map labels keep their own sizes. */
+#basemenu, #mobileSaveBar {
+    --menu-text-size: 18px;
+    --menu-label-size: 0.9rem;
+    --menu-icon-scale: 1.125em;
+    --menu-window-size: 17px;
+    font-size: var(--menu-text-size);
+}
+#basemenu .btn, #mobileSaveBar .save-reset > .btn { --bs-btn-font-size: var(--menu-text-size); }
+#basemenu .form-control,
+#basemenu .form-select { font-size: var(--menu-text-size); }
+#basemenu button > i, #mobileSaveBar .save-reset > button > i { font-size: var(--menu-icon-scale); }
+#basemenu #menu_list img { width: 27px; height: auto; }
+
+#basemenu .basemenu-window-controls {
+    display: inline-flex;
+    align-items: stretch;
+    position: absolute;
+    width: 82px;
+    height: 40px;
+    flex: none;
+    top: 8px;
+    right: 8px;
+    z-index: 2;
+    margin: 0;
+    border: 1px solid #7b838a;
+    border-radius: 6px;
     overflow: hidden;
-    color: #333333;
-    font-size: 12px;
-    white-space: nowrap;
-}
-
-.basemenu-window-controls {
-    height: 100%;
-    display: flex;
-    margin-left: auto;
 }
 
 .basemenu-window-button {
-    position: relative;
-    width: 42px;
-    height: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 38px;
     padding: 0;
     border: 0;
     border-radius: 0;
-    background: transparent;
+    font-size: var(--menu-window-size);
+    line-height: 1;
+    color: #111111;
     box-shadow: none;
 }
 
-.basemenu-window-button:hover {
-    background: #e5e5e5;
+.basemenu-window-controls > .basemenu-window-button + .basemenu-window-button {
+    margin-left: 0;
+    border-left: 1px solid #7b838a;
 }
 
-.basemenu-window-button:active {
-    top: 0;
-    background: #d8d8d8;
+.basemenu-window-button i {
+    width: 18px;
+    text-align: center;
 }
 
-.basemenu-minimize::after {
-    content: "";
-    position: absolute;
-    right: 16px;
-    bottom: 8px;
-    width: 10px;
-    height: 1px;
-    background: #222222;
+#basemenuMinimize i {
+    transform: translateY(7px);
 }
 
-.basemenu-resize span,
-.basemenu-resize span::after {
-    position: absolute;
-    width: 10px;
-    height: 9px;
-    border: 1px solid #222222;
+.basemenu-window-button:focus-visible {
+    outline: 2px solid #198754;
+    outline-offset: -3px;
 }
 
-.basemenu-resize span {
-    top: 10px;
-    left: 16px;
-}
-
-.basemenu-resize span::after {
-    content: "";
-    display: none;
-    top: -4px;
-    left: 3px;
-    background: #f3f3f3;
-}
-
-.basemenu-resize.is-expanded span::after {
-    display: block;
-}
-
-@media (min-width: 992px) {
+@media (min-width: 992px), (min-width: 768px) and (orientation: landscape) {
     #mapid .leaflet-left {
-        left: clamp(260px, var(--basemenu-width, 260px), calc(100% - 260px));
+        left: clamp(var(--basemenu-min-width), var(--basemenu-width, var(--basemenu-min-width)), calc(100% - 260px));
     }
 }
 
 #basemenu>.container-fluid {
-    height: calc(100% - 30px);
+    position: relative;
+    height: 100%;
     display: flex;
     flex-direction: column;
     overflow: visible;
     min-height: 0;
+}
+
+#basemenu .btn-light:not(.basemenu-window-button),
+#mobileSaveBar .btn-light:not(.basemenu-window-button) {
+    border-color: #a3a9af;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
+}
+#basemenu .btn-light:not(.basemenu-window-button):hover,
+#mobileSaveBar .btn-light:not(.basemenu-window-button):hover {
+    border-color: #7b838a;
+}
+#basemenu .btn-light:not(.basemenu-window-button):active,
+#mobileSaveBar .btn-light:not(.basemenu-window-button):active {
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+#controlMenu > div > button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 42px;
+    white-space: nowrap;
+}
+#controlMenu > div > button > i {
+    flex: 0 0 20px;
+    text-align: center;
+}
+#controlMenu > div > .dropdown-toggle::after {
+    margin-left: 0;
+}
+
+/* 82pxの操作ボタンと、誤タップを防ぐ16px以上の間隔。 */
+#makeMap .make-map-action,
+#saveMap {
+    padding-right: 98px;
+    min-height: 40px;
+}
+#basemenu:has(#makeMap:not(.d-none)) .basemenu-window-controls { display: none; }
+#makeMap .make-map-action { padding-right: 0; }
+#makeMap .make-map-action > button {
+    white-space: nowrap;
+}
+@media (min-width: 992px), (min-width: 768px) and (orientation: landscape), (max-width: 359.98px) {
+    #saveMap .fa-file-download,
+    #makeMap .make-map-action .fa-map {
+        display: none;
+    }
+    #makeMap .make-map-action > button {
+        padding-left: 4px;
+        padding-right: 4px;
+        font-size: 16px;
+    }
+    #makeMap .make-map-action > button > span {
+        margin-left: 0 !important;
+    }
 }
 
 #customMap {
@@ -594,8 +649,8 @@ img.icon_normal {
     overscroll-behavior: contain;
 }
 
-/* モバイル：メニューを地図上部に重ねる */
-@media (max-width: 991.98px) {
+/* Narrow or portrait screens place the menu above the map. */
+@media (max-width: 767.98px), (max-width: 991.98px) and (orientation: portrait) {
     .pane-menu {
         height: clamp(120px, var(--basemenu-height, 120px), calc(100% - 160px)) !important;
         width: 100%;
@@ -607,6 +662,27 @@ img.icon_normal {
         top: clamp(120px, var(--basemenu-height, 120px), calc(100% - 160px));
     }
 
+    .layer-control-columns,
+    .layer-control-row {
+        grid-template-columns: minmax(64px, 1fr) 44px 44px 60px;
+        column-gap: 10px;
+        padding-inline: 8px;
+    }
+    .layer-control-row { min-height: 52px; padding-block: 4px; }
+    .layer-control-row .del_button {
+        width: 44px; height: 44px; padding: 0; margin: 0 !important;
+    }
+    .layer-control-row .del_button i { margin: 0 !important; }
+    .layer-control-row .colorPalette {
+        width: 44px !important; height: 44px !important; margin: 0 !important;
+    }
+    .layer-control-row .line_text {
+        width: 60px; height: 44px; margin: 0; padding-inline: 6px; font-size: 16px;
+    }
+
+}
+
+@media (max-width: 991.98px) {
     a.title {
         display: flex;
         align-items: center;
@@ -652,44 +728,6 @@ img.icon_normal {
     min-width: 0;
 }
 
-.rough-preview-window {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    overflow: hidden;
-}
-
-.leaflet-rough-preview-pane {
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-}
-
-.rough-preview {
-    width: 100%;
-    height: 100%;
-}
-
-.rough-preview svg {
-    display: block;
-    width: 100%;
-    height: 100%;
-}
-
-.rough-preview-status {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    z-index: 1;
-    padding: 8px 12px;
-    transform: translate(-50%, -50%);
-    border-radius: 4px;
-    background: rgba(255, 255, 255, 0.9);
-    color: #444;
-    font-size: 14px;
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
-}
-
 /* Keep the map action visible while indicating that more zoom is required. */
 #makeMap button:disabled {
     background-color: #e9ecef;
@@ -698,4 +736,206 @@ img.icon_normal {
     opacity: 1;
     cursor: not-allowed;
     pointer-events: auto;
+}
+
+/* MapLibre: controls remain above the map; the existing editor stays independent. */
+#mapid .maplibregl-ctrl-bottom-left { max-width: calc(100% - 150px); }
+#mapid .maplibregl-ctrl-bottom-left #zoomlevel { background: rgba(255,255,255,.9); padding: 2px 6px; }
+#zoomlevel { max-width: min(320px, 100%); white-space: normal; }
+#zoomlevel h2.zoom { margin-bottom: 0; }
+#zoomlevel #morezoom { padding: 0 10px 10px; line-height: 1.4; }
+#mapid .mapmaker-marker { cursor: move; overflow: visible; }
+#mapid .maplibregl-popup { z-index: 600; }
+#mapid .maplibregl-popup-content { color: #212529; padding: 12px; }
+#mapid .maplibregl-popup-close-button { position: absolute; top: 0; right: 0; box-shadow: none; }
+#mapid .maplibregl-ctrl-attrib { font-size: 10px; }
+#mapid .maplibregl-ctrl-bottom-right select { width: 180px; }
+
+#mapmakerExportPreview {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+.mapmaker-export-preview .maplibregl-canvas {
+    opacity: 0;
+}
+
+#mapmakerExportPreview > svg { width: 100%; height: 100%; }
+#mapmakerExportPreview [data-editor-id] { cursor: pointer; }
+#mapid .mapmaker-marker { z-index: 2; }
+
+/* The cached SVG image isolates expensive map paint from menu and hover updates. */
+#mapmakerExportPreview.svg-display-cache { contain: layout paint; }
+#mapmakerExportPreview.svg-display-cache > img {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    pointer-events: auto;
+}
+#mapmakerExportPreview.svg-display-cache > svg {
+    position: absolute; inset: 0; opacity: 0; z-index: 1;
+}
+#mapmakerExportPreview.svg-display-cache:not(.svg-hit-test) > svg,
+#mapmakerExportPreview.svg-display-cache:not(.svg-hit-test) > svg * {
+    pointer-events: none !important;
+}
+
+/* The hand-drawn image covers the entire map, including behind the menu. */
+#mapmakerRoughPreview { position: absolute; z-index: 5; overflow: hidden; pointer-events: none; }
+#mapmakerRoughPreview > img { display: block; width: 100%; height: 100%; }
+.mapmaker-rough-preview .maplibregl-canvas,
+.mapmaker-rough-preview .mapmaker-marker { visibility: hidden; }
+
+/* 手書き風では調整と保存だけを残し、通常の編集パネルを畳む。 */
+#basemenu.rough-preview-mode {
+    display: flex;
+    flex-direction: column;
+    height: auto !important;
+    max-height: 100%;
+}
+#basemenu.rough-preview-mode > .container-fluid {
+    height: auto;
+    flex: 0 1 auto;
+}
+#basemenu.rough-preview-mode .basemenu-window-controls,
+#basemenu.rough-preview-mode #makeMap,
+#basemenu.rough-preview-mode #controlMenu,
+#basemenu.rough-preview-mode #customMap > :not(#roughControls),
+#basemenu.rough-preview-mode #saveMap .save-reset { display: none !important; }
+#basemenu.rough-preview-mode #saveMap { padding-right: 0; }
+#basemenu.rough-preview-mode #saveMap .save-download { width: 100%; }
+@media (max-width: 767.98px), (max-width: 991.98px) and (orientation: portrait) {
+    #basemenu.rough-preview-mode {
+        max-height: calc(100% - 160px);
+    }
+}
+
+/* Facility selection occupies the palette area without covering the map. */
+.icon-select-panel { flex: 1 1 auto; min-height: 0; margin-top: 8px; text-align: left; overflow: hidden; }
+.icon-select-layout, .icon-select-content { height: 100%; min-height: 0; display: flex; flex-direction: column; }
+.icon-select-scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; overflow-x: hidden; }
+.icon-select-toolbar { overflow: visible; }
+.icon-select-footer { flex: 0 0 auto; }
+.icon-select-fields { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
+.icon-select-toolbar .icon-text-size { width: 64px; }
+.icon-select-toolbar .icon-appearance-select { width: auto; min-width: 0; flex-shrink: 0; }
+.icon-select-toolbar label[for="modal_select_appearance"] { white-space: nowrap; }
+.icon-select-body { overflow: visible; }
+.icon-select-body table { width: 100% !important; table-layout: fixed; }
+.icon-select-body td, .icon-select-body th { overflow-wrap: anywhere; }
+.icon-select-footer { border-top: 1px solid #dee2e6; background: #fff; }
+
+#basemenu.is-minimized .icon-select-panel { display: none; }
+
+.icon-select-toolbar .icon-name-options,
+.icon-select-toolbar .icon-selection-actions { grid-column: 1 / -1; }
+.icon-selection-actions > button { flex: 1; white-space: nowrap; }
+.icon-name-options label { margin: 0; }
+
+.icon-name-options > div { flex-shrink: 0; white-space: nowrap; }
+
+/* Pin placement stays available above both flat and 3D maps. */
+.manual-pin-toolbar {
+    position: absolute; z-index: 650; top: 10px; right: 10px;
+    width: max-content; max-width: calc(100% - 20px); display: flex;
+    align-items: center; flex-wrap: wrap; gap: 6px; padding: 6px;
+    background: rgba(255,255,255,.96); border-radius: 6px; box-shadow: 0 1px 5px #0004;
+    font-size: 13px;
+}
+.manual-pin-choice { font-size: 22px; padding: 2px 8px; }
+.manual-pin-choice.active { outline: 2px solid #198754; }
+.manual-pin-kind-choices { display: flex; gap: 6px; }
+.manual-pin-actions { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.manual-pin-actions .btn { white-space: nowrap; }
+.manual-pin-placement .maplibregl-canvas { cursor: crosshair; }
+.manual-pin-glyph svg { width: 100%; height: 100%; display: block; }
+.manual-pin-text-field { display: flex; align-items: center; flex: 1 1 100%; gap: 6px; min-width: 0; margin: 0; }
+.manual-pin-text-field input { flex: 1; min-width: 0; width: 180px; font-size: 16px; }
+.manual-pin-content { display: flex; align-items: center; gap: 4px; width: max-content; }
+.manual-pin-glyph { flex: none; }
+.manual-pin-label { color: #212529; font-family: system-ui, sans-serif; line-height: 1.2; white-space: pre; }
+.manual-pin-label-form { min-width: 0; }
+
+
+.manual-pin-choice svg { display: block; width: 24px; height: 26px; }
+.manual-pin-menu-icon { display: inline-block; width: 24px; height: 26px; margin-right: 4px; vertical-align: middle; }
+.manual-pin-menu-icon svg { display: block; width: 100%; height: 100%; }
+#menu_list {
+    overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; touch-action: pan-y;
+    width: max-content; min-width: 0; max-width: calc(100vw - 16px);
+}
+#menu_list .dropdown-item { white-space: normal; }
+#menu_list > button.dropdown-item,
+#saveMap .dropdown-menu button.dropdown-item { box-shadow: none; }
+
+.line-width-panel {
+    position: fixed; z-index: 1100; width: 260px; max-width: calc(100vw - 24px);
+    padding: 12px; border: 1px solid #ced4da; border-radius: 8px;
+    background: #fff; box-shadow: 0 3px 16px #0003; color: #212529;
+}
+.line-width-title { margin-bottom: 10px; font-size: 14px; font-weight: 600; }
+.line-width-controls { display: grid; grid-template-columns: 48px minmax(0, 1fr) 48px; gap: 8px; margin-bottom: 10px; }
+.line-width-controls .btn { min-height: 48px; font-size: 24px; touch-action: none; user-select: none; }
+.line-width-controls input { min-width: 0; font-size: 20px; text-align: center; }
+.line-width-error { color: #b02a37; font-size: 13px; margin-bottom: 8px; }
+
+.mobile-save-bar, .mobile-sheet-header, .mobile-palette-select { display: none; }
+#controlMenu #mobileStylesTab { display: none; }
+@media (max-width: 767.98px), (max-width: 991.98px) and (orientation: portrait) {
+    #editbar.mobile-editor #basemenu {
+        top: auto; bottom: 0; width: 100%;
+        height: var(--basemenu-height, 90px) !important; max-height: calc(100% - 100px);
+        border-radius: 14px 14px 0 0; padding-bottom: env(safe-area-inset-bottom, 0px);
+        box-shadow: 0 -3px 14px #0003;
+    }
+    /* Dropdowns must escape the sheet stacking order above the save bar (810). */
+    #editbar.mobile-editor #basemenu:has(.dropdown-menu.show) { z-index: 820; }
+    .mobile-editor #basemenu > .container-fluid { padding: 0 4px 4px !important; }
+    .mobile-editor .basemenu-window-controls { display: none !important; }
+    .mobile-editor .mobile-save-bar {
+        display: flex; position: absolute; z-index: 810; top: 0; left: 0; right: 0;
+        background: rgba(250,248,248,.96); padding: 4px 8px;
+    }
+    .mobile-editor #saveMap { display: flex; width: 100%; padding: 0; min-height: 44px; align-items: center; }
+    .mobile-editor #saveMap .save-reset { width: 48px; padding: 0 !important; }
+    .mobile-editor #saveMap .save-download { width: auto; min-width: 124px; padding: 0 !important; margin-left: auto !important; }
+    .mobile-editor #saveMap > div > button { min-height: 44px; }
+    .mobile-editor #saveMap .dropdown-menu { min-width: 240px; }
+    .mobile-editor #saveMap .dropdown-item { min-height: 48px; font-size: 16px; }
+    .mobile-editor .mobile-sheet-header { display: flex; flex: 0 0 auto; align-items: center; gap: 6px; min-height: 44px; }
+    .mobile-sheet-window-controls { flex: 0 0 auto; margin: 6px 8px 6px 4px; }
+    .mobile-sheet-window-controls .mobile-sheet-window-button { width: 44px; height: 44px; padding: 0; font-size: 17px !important; }
+    #mobileSheetClose i { transform: translateY(7px); }
+    .mobile-sheet-handle { flex: 1; min-width: 0; min-height: 44px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; background: transparent; box-shadow: none; font-size: 14px; touch-action: none; user-select: none; }
+    .mobile-sheet-grip { width: 38px; height: 4px; border-radius: 3px; background: #adb5bd; }
+    .mobile-editor #basemenu.is-minimized .mobile-sheet-window-controls,
+    .mobile-editor #basemenu.is-minimized #mobileSheetTitle { display: none; }
+    .mobile-editor #basemenu.is-minimized .mobile-sheet-header,
+    .mobile-editor #basemenu.is-minimized .mobile-sheet-handle { min-height: 24px; }
+    .mobile-editor #controlMenu { flex: 0 0 auto; margin-top: 0 !important; flex-wrap: nowrap; }
+    .mobile-editor #controlMenu > div { width: 25%; padding: 3px !important; }
+    .mobile-editor #controlMenu > div > button { flex-direction: column; min-height: 54px; gap: 3px; padding: 4px 0; }
+    .mobile-editor #controlMenu > div > button,
+    .mobile-editor #saveMap .save-reset > button { font-size: 14px; }
+    .mobile-editor #controlMenu .menu-button-label { font-size: 12px; }
+    .mobile-editor #controlMenu .dropdown-toggle::after { display: none; }
+    .mobile-editor #colorMenu { order: 0; }
+    .mobile-editor #editMenu { order: 1; }
+    .mobile-editor .editor-size-tab { order: 2; }
+    .mobile-editor .editor-3d-tab { order: 3; }
+    .mobile-editor #ColorSelect { display: none; }
+    .mobile-editor #controlMenu #mobileStylesTab { display: inline-flex; }
+    .mobile-editor #mobileStylesTab span { font-size: 12px; }
+    .mobile-editor #controlMenu .dropdown-item { min-height: 44px; }
+    .mobile-editor #customMap { margin-top: 0 !important; overscroll-behavior: contain; }
+    .mobile-editor #basemenu.is-minimized #customMap { display: none !important; }
+    .mobile-editor .mobile-palette-select { display: flex; flex: 0 0 auto; align-items: center; gap: 10px; }
+    .mobile-palette-select label { white-space: nowrap; font-size: 14px; }
+    .mobile-editor .icon-select-panel { margin-top: 0; }
+    .mobile-editor .icon-select-scroll { overscroll-behavior: contain; }
+    .mobile-editor #mapid .maplibregl-ctrl-bottom-left,
+    .mobile-editor #mapid .maplibregl-ctrl-bottom-right { bottom: calc(var(--basemenu-height, 90px) + 2px); }
+    .mobile-editor #basemenu.rough-preview-mode { max-height: calc(100% - 100px); }
+    .mobile-editor:has(.rough-preview-mode) #saveMap .save-reset { display: none; }
 }

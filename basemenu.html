@@ -1,52 +1,66 @@
-<div class="basemenu-windowbar">
-    <span class="basemenu-windowbar-title" glot-model="basemenu_window_title"></span>
-    <div class="basemenu-window-controls">
-        <button type="button" id="basemenuMinimize" class="basemenu-window-button" aria-label="最小化">
-            <i class="fas fa-compress"></i>
+<div class="container-fluid text-center m-0 p-1">
+    <div class="basemenu-window-controls btn-group" role="group">
+        <button type="button" id="basemenuMinimize" class="btn btn-light basemenu-window-button" aria-label="最小化" aria-controls="customMap">
+            <i class="fas fa-minus" aria-hidden="true"></i>
         </button>
-        <button type="button" id="basemenuResize" class="basemenu-window-button basemenu-resize" aria-label="サイズ変更">
-            <i class="fas fa-expand"></i>
+        <button type="button" id="basemenuResize" class="btn btn-light basemenu-window-button basemenu-resize" aria-label="拡大" aria-controls="customMap" aria-expanded="false">
+            <i class="far fa-window-maximize" aria-hidden="true"></i>
         </button>
     </div>
-</div>
-
-<div class="container-fluid text-center m-0 p-1">
 
     <div class="row g-0" id="makeMap">
         <div class="col p-1 m-0">
+            <div class="make-map-action">
             <button class="btn btn-primary w-100" aria-describedby="morezoom" disabled onclick="mapMaker.make(Basic.getdate())">
                 <i class="fas fa-map me-2"></i><span glot-model="makemap" class="ms-2"></span>
             </button>
-            <div id="morezoom" class="small mt-2 text-center d-none" role="status">
-                <span glot-model="morezoom"></span>
-                <span id="morezoomFeatures" class="mt-1"></span>
             </div>
+            <div class="d-flex gap-1 mt-2">
+                <button type="button" id="position2D" class="btn btn-outline-secondary w-50" onclick="mapMaker.positionView(false)" glot-model="position_2d">2D地図</button>
+                <button type="button" id="position3D" class="btn btn-outline-secondary w-50" onclick="mapMaker.positionView(true)" glot-model="position_3d">3D地図</button>
+            </div>
+            <small id="birdseyeGesture" class="d-none d-lg-block text-muted mt-2" glot-model="birdseye_note">右ボタンまたはCtrl＋ドラッグで回転・傾斜。</small>
         </div>
     </div>
 
-    <div class="row row-cols-3 gx-0 mt-0" id="saveMap">
-        <div class="col-4 p-1 m-0">
-            <button class="btn btn-light ps-0 pe-0 w-100" onclick="mapMaker.clearAll()">
-                <i class="fas fa-undo me-2"></i>
+    <div class="row gx-0 mt-0" id="saveMap">
+        <div class="col-4 p-1 m-0 save-reset">
+            <button type="button" class="btn btn-light w-100" onclick="mapMaker.clearAll()" aria-label="戻る">
+                <i class="fas fa-undo" aria-hidden="true"></i>
             </button>
         </div>
-        <div class="col-4 p-1 m-0">
-            <button class="btn btn-success ps-0 pe-0 w-100" onclick="mapMaker.save('png');">
-                <i class="fas fa-file-download me-2 flex-row"></i><span class="customName">PNG</span>
+        <div class="col-8 p-1 m-0 dropdown save-download">
+            <button type="button" class="btn btn-success dropdown-toggle w-100" id="saveDownloadMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-file-download me-1" aria-hidden="true"></i><span glot-model="save_menu">保存</span>
             </button>
-        </div>
-        <div class="col-4 p-1 m-0">
-            <button class="btn btn-success ps-0 pe-0 w-100" onclick="mapMaker.save('svg');">
-                <i class="fas fa-file-download me-2 flex-row"></i><span class="customName">SVG</span>
-            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="saveDownloadMenu">
+                <li><button type="button" class="dropdown-item" onclick="mapMaker.save('png');" glot-model="save_png">PNG画像を保存</button></li>
+                <li><button type="button" class="dropdown-item" onclick="mapMaker.save('svg');" glot-model="save_svg">SVG画像を保存（編集可能）</button></li>
+            </ul>
         </div>
     </div>
 
-    <div class="row row-cols-3 gy-3 gx-0 mt-0" id="controlMenu">
-        <div class="col-4 p-1 m-0">
+    <div id="mobileSheetHeader" class="mobile-sheet-header">
+        <button type="button" id="mobileSheetHandle" class="mobile-sheet-handle" aria-controls="customMap modal_select" aria-expanded="false">
+            <span class="mobile-sheet-grip" aria-hidden="true"></span><span id="mobileSheetTitle" glot-model="sheet_styles">色・線幅</span>
+        </button>
+        <div class="mobile-sheet-window-controls btn-group" role="group">
+            <button type="button" id="mobileSheetClose" class="btn btn-light mobile-sheet-window-button" aria-label="最小化"><i class="fas fa-minus" aria-hidden="true"></i></button>
+            <button type="button" id="mobileSheetExpand" class="btn btn-light mobile-sheet-window-button" aria-label="拡大"><i class="far fa-window-maximize" aria-hidden="true"></i></button>
+        </div>
+    </div>
+
+    <div class="row row-cols-2 gy-0 gx-0 mt-2" id="controlMenu">
+        <div class="col-6 p-1 m-0 editor-3d-tab">
+            <button class="btn btn-light w-100 h-100" onclick="Birdseye.open()">
+                <i class="fas fa-cube"></i>
+                <span class="menu-button-label" glot-model="birdseye_open">3D化</span>
+            </button>
+        </div>
+        <div class="col-6 p-1 m-0 editor-size-tab">
             <button class="btn btn-light ps-0 pe-0 dropdown-toggle w-100" id="AreaSelect1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="fas fa-vector-square"></i><br>
-                <span class="customName" glot-model="select_size"></span>
+                <i class="fas fa-vector-square"></i>
+                <span class="menu-button-label" glot-model="select_size"></span>
             </button>
             <div class="dropdown-menu" aria-labelledby="AreaSelect1">
                 <span class="dropdown-item btn ps-1 me-1" onclick="mapMaker.area_select('A4')"><i class="fas fa-arrows-alt-v ms-1 pe-1 ms-2"></i><span glot-model="area_A4" class="ms-2"></span></span>
@@ -57,18 +71,19 @@
             </div>
         </div>
 
-        <div class="col-4 p-1 m-0" id="editMenu">
+        <div class="col-6 p-1 m-0" id="editMenu">
             <button class="btn btn-light ps-0 pe-0 dropdown-toggle w-100" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="fas fa-map-marker"></i><br>
-                <span class="customName" glot-model="add_icon"></span>
+                <i class="fas fa-map-marker"></i>
+                <span class="menu-button-label" glot-model="add_icon"></span>
             </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id="menu_list"></div>
         </div>
 
-        <div class="col-4 p-1 m-0" id="colorMenu">
+        <div class="col-6 p-1 m-0" id="colorMenu">
+            <button type="button" id="mobileStylesTab" class="btn btn-light w-100" aria-controls="customMap" aria-expanded="false"><i class="fas fa-palette" aria-hidden="true"></i><span glot-model="sheet_styles">色・線幅</span></button>
             <button class="btn btn-light ps-0 pe-0 dropdown-toggle w-100" id="ColorSelect" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="fas fa-palette"></i><br>
-                <span class="customName" glot-model="select_color"></span>
+                <i class="fas fa-palette"></i>
+                <span class="menu-button-label" glot-model="select_color"></span>
             </button>
             <div class="dropdown-menu" aria-labelledby="ColorSelect">
                 <span class="dropdown-item btn ps-1 me-1" onclick="LayerCont.setStyle('color')">
@@ -76,12 +91,93 @@
                     <span glot-model="color_palette"></span></span>
                 <span class="dropdown-item btn ps-1 me-1" onclick="LayerCont.setStyle('mono')">
                     <i class="fas fa-swatchbook ms-2 me-1"></i>
-                    <span class="customName" glot-model="mono_palette"></span></span>
+                    <span glot-model="mono_palette"></span></span>
+                <span class="dropdown-item btn ps-1 me-1" onclick="LayerCont.setStyle('coloring')">
+                    <i class="fas fa-swatchbook ms-2 me-1"></i>
+                    <span glot-model="coloring_palette"></span></span>
             </div>
         </div>
     </div>
 
+<div id="modal_select" class="icon-select-panel d-none" aria-label="施設選択">
+    <div class="icon-select-layout">
+        <div class="icon-select-content">
+            <div class="icon-select-scroll">
+            <div class="icon-select-toolbar p-2">
+                <div class="icon-select-fields">
+                    <div>
+                        <select class="form-control" id="modal_select_category">
+                            <option value="-">---</option>
+                        </select>
+                    </div>
+                    <div>
+                        <input type="search" class="form-control"
+                            id="modal_select_keyword">
+                    </div>
+                    <div class="icon-name-options d-flex flex-wrap align-items-center justify-content-between gap-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <input type="checkbox" id="modal_select_facility">
+                            <label for="modal_select_facility" id="modal_select_facilityname"></label>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <label for="modal_select_size" glot-model="icon_text_size"></label>
+                            <select class="form-control icon-text-size" id="modal_select_size">
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                            <option value="12">12</option>
+                            <option value="14">14</option>
+                            <option value="16">16</option>
+                            <option value="18">18</option>
+                            <option value="20">20</option>
+                            <option value="24">24</option>
+                            <option value="32">32</option>
+                            <option value="42">42</option>
+                            <option value="54">54</option>
+                            <option value="68">68</option>
+                            <option value="84">84</option>
+                            <option value="102">102</option>
+                        </select>
+                        </div>
+                    </div>
+                    <div class="icon-selection-actions d-flex gap-2">
+                        <button type="button" id="modal_select_all_select" class="btn btn-light"
+                            onclick="DataList.filtered_select()"><i class="far fa-check-square" aria-hidden="true"></i> <span glot-model="all_select"></span></button>
+                        <button type="button" id="modal_select_all_deselect" class="btn btn-light"
+                            onclick="DataList.filtered_deselect()"><i class="far fa-square" aria-hidden="true"></i> <span glot-model="all_deselect"></span></button>
+                    </div>
+                </div>
+                <div class="d-flex flex-wrap align-items-center gap-2 mt-2">
+                    <label class="small mb-0" for="modal_select_appearance" glot-model="icon_appearance"></label>
+                    <select class="form-select form-select-sm icon-appearance-select" id="modal_select_appearance">
+                        <option value="standard" glot-model="icon_appearance_standard"></option>
+                        <option value="unframed" glot-model="icon_appearance_unframed"></option>
+                        <option value="subtle" glot-model="icon_appearance_subtle"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="icon-select-body px-2">
+                <table class="table" id="modal_select_table"></table>
+            </div>
+            </div>
+            <div class="icon-select-footer p-2 d-flex flex-wrap gap-2 justify-content-end">
+                <div id="modal_select_error" class="alert alert-danger d-none w-100 mb-2" role="alert"
+                    aria-live="polite"></div>
+                <button class="btn btn-primary" id="modal_select_ok"></button>
+                <button class="btn btn-secondary" id="modal_select_cancel"></button>
+            </div>
+        </div>
+    </div>
+</div>
+
     <div class="row g-0 mt-2 overflow-y-scroll" id="customMap">
+        <div class="mobile-palette-select col-12 px-2 py-2">
+            <label for="mobilePaletteSelect" glot-model="select_color">色選択</label>
+            <select id="mobilePaletteSelect" class="form-select" onchange="LayerCont.setStyle(this.value)">
+                <option value="color" glot-model="color_palette"></option>
+                <option value="mono" glot-model="mono_palette"></option>
+                <option value="coloring" glot-model="coloring_palette"></option>
+            </select>
+        </div>
         <section class="col-12 rough-controls d-none" id="roughControls">
             <div class="ps-1 mt-1 fw-medium text-start border-0 border-bottom bg-light bg-gradient">
                 <span glot-model="rough_style"></span>
@@ -128,11 +224,11 @@
         <fieldset id="AAA" class="d-none">
             <div class="col border-0 border-bottom">
                 <div class="layer-control-row align-items-center">
-                    <span class="customName"></span>
+                    <span class="layer-control-label"></span>
                     <button id="AAA_layer" class="del_button me-1">
                         <i class="fas fa-trash-alt me-1"></i></button>
                     <input type="button" id="AAA_color">
-                    <input type="number" id="AAA_line" class="line_text" max="60" min="0" step="0.1">
+                    <input type="button" id="AAA_line" class="line_text" aria-haspopup="dialog" aria-expanded="false">
                 </div>
         </fieldset>
     </div>
