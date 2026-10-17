@@ -4,14 +4,14 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
  class Element {
   constructor(id){this.id=id;this.style={};this.inert=false;this.disabled=false;this.children=[];this.attrs={};const names=new Set();this.classList={add:x=>names.add(x),remove:x=>names.delete(x),contains:x=>names.has(x),toggle(x,on){on?names.add(x):names.delete(x);}};if(id)ids.set(id,this);}
   setAttribute(k,v){this.attrs[k]=v;}getAttribute(k){return this.attrs[k]||null;}
-  closest(sel){return sel==='#roughControls'&&this.rough?this:null;}
+  closest(sel){return sel==='#roughControls'&&this.rough || sel==='.colorPalette'&&this.colorControl?this:null;}
   appendChild(node){this.children.push(node);node.parent=this;if(node.id)ids.set(node.id,node);}
   remove(){ids.delete(this.id);if(this.parent)this.parent.children=this.parent.children.filter(x=>x!==this);}
  }
  const menu=new Element('basemenu');
  const container=new Element('mapid'),toggle=new Element('rough_enabled');toggle.checked=true;toggle.rough=true;
  const color=new Element('color'),reset=new Element('reset'),save=new Element('save'),threeD=new Element('3d'),disabled=new Element('already-disabled');
- disabled.disabled=true;save.attrs.onclick="mapMaker.save('png')";
+ color.colorControl=true;disabled.disabled=true;save.attrs.onclick="mapMaker.save('png')";
  const controls=[color,reset,save,threeD,disabled,toggle],saveButtons=[reset,save,threeD];
  const box=vm.createContext({console:{log:console.log,error(){}},setTimeout,clearTimeout,Blob,Image:class extends Element{async decode(){}},
   URL:{createObjectURL:()=>`blob:${builds.length}`,revokeObjectURL:u=>revoked.push(u)},
@@ -28,15 +28,17 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
  assert.equal(modals[0][1].compact,true);assert.equal(modals[0][1].mode,'');assert.match(modals[0][1].message,/processing_message/);
  assert.equal(modals.at(-1)[0],'close');assert.equal(box.winCont.modalMode,false);
  assert.equal(ids.has('mapmakerRoughStatus'),false,'processing uses shared modal instead of a status element');
- assert.ok(menu.classList.contains('rough-preview-mode'));
- assert.equal(container.inert,true);assert.equal(color.disabled,true);assert.equal(reset.disabled,true);assert.equal(threeD.disabled,true);assert.equal(toggle.disabled,false);assert.equal(save.disabled,false);
+ assert.equal(menu.classList.contains('rough-preview-mode'),false,'rough preview preserves the normal menu layout');
+ assert.equal(container.inert,true);assert.equal(color.disabled,false);assert.equal(reset.disabled,false);assert.equal(threeD.disabled,false);assert.equal(toggle.disabled,false);assert.equal(save.disabled,false);
+ box.ManualPins={active:true};maker.setRoughPreviewLock(true);assert.equal(container.inert,false,'pin placement can receive map input');
+ box.ManualPins.active=false;maker.setRoughPreviewLock(true);assert.equal(container.inert,true,'leaving pin placement restores map locking');
  assert.equal(builds[0].preview,true);assert.equal(builds[0].screenPreview,undefined,'preview uses save geometry and marker composition without hit targets');
  assert.equal(ids.get('mapmakerRoughPreview').style.left,'0px');assert.equal(ids.get('mapmakerRoughPreview').style.width,'920px');assert.equal(ids.get('mapmakerRoughPreview').children.length,1);
  assert.equal(ids.get('mapmakerRoughPreview').style.top,'0px');assert.equal(ids.get('mapmakerRoughPreview').style.height,'700px','preview covers the area behind mobile menus as well');
  assert.equal(builds[0].exportRect.height,700);
  assert.ok(container.classList.contains('mapmaker-rough-preview'));
- // Save must preserve the lock, rather than re-enable reset and 3D controls.
- await maker.save('png');assert.equal(reset.disabled,true);assert.equal(threeD.disabled,true);assert.equal(save.disabled,false);
+ // Save preserves map locking and the enabled state of menu actions.
+ await maker.save('png');assert.equal(reset.disabled,false);assert.equal(threeD.disabled,false);assert.equal(save.disabled,false);
  maker.clearRoughPreview();assert.equal(menu.classList.contains('rough-preview-mode'),false);assert.equal(container.inert,false);assert.equal(color.disabled,false);assert.equal(disabled.disabled,true);assert.equal(ids.has('mapmakerRoughPreview'),false);assert.ok(revoked.length);
  // Off during generation must never resurrect the stale image.
  delay=true;const pending=render();await new Promise(setImmediate);maker.clearRoughPreview();releaseBuild();await pending;

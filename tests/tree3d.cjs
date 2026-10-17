@@ -19,10 +19,15 @@ assert.match(output, /fill="#8b6b4a"/); assert.match(output, /fill="#9fc89d"/);
 assert.doesNotMatch(output, /NaN|Infinity/);
 assert.doesNotMatch(flat, /data-tree-id|data-building-face/);
 const parts = partsFor(tree);
-assert.equal(parts.length, 2); assert.equal(parts[1].base, 1.2); assert.equal(parts[1].height, 4);
+assert.equal(parts.length, 5); assert.equal(parts[1].base, 1.2); assert.equal(parts.at(-1).height, 4);
+for (let i = 2; i < parts.length; i++) {
+    const radius = part => part.geometry.coordinates[0][0][0] - tree.geometry.coordinates[0];
+    assert.ok(radius(parts[i]) < radius(parts[i-1]), 'upper crown bands become narrower');
+    assert.equal(parts[i].base, parts[i-1].height, 'crown bands meet without gaps');
+}
 assert.deepEqual(parts[0].geometry.coordinates[0][0], parts[0].geometry.coordinates[0].at(-1));
 for (const [height, expected] of [['10 ft',3.048], ['6 m',6], ['bad',4], ['-2',4]]) {
-    tree.properties.height = height; assert.equal(partsFor(tree)[1].height, expected);
+    tree.properties.height = height; assert.equal(partsFor(tree).at(-1).height, expected);
 }
 delete tree.properties.height;
 // A raised crown uses its base altitude for both projection and frustum clipping.
@@ -31,7 +36,7 @@ const clipped = [];
 const tf = { camera: true, toPageMmXY: ([x,y], z=0) => [x,y-z], clipPolygon(points) { clipped.push(points); return points.map(([x,y,z=0]) => [x,y-z]); } };
 exporter._buildingSVG(polygon,tf,{fill:'#9fc89d',fillOpacity:1},exporter.opts,part);
 assert.ok(clipped.some(points => points.some(p => p[2] === 1.2)), 'crown walls start above ground');
-assert.ok(clipped.some(points => points.every(p => p[2] === 4)), 'crown roof uses tree height');
+assert.ok(clipped.some(points => points.every(p => p[2] === part.height)), 'crown band roof uses its own height');
 box.Layers.garden.opacity = 0;
 assert.doesNotMatch(exporter.toSVGFromLayers(bbox, options), /data-tree-id/);
 box.Layers.garden.opacity = 1;

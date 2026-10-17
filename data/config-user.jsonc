@@ -16,6 +16,12 @@
         ],
         "DefaultZoom": 6,
         "ZoomSnap": 0.25,
+        // ズーム別の傾き上限（度）。点の間は線形補間し、範囲外は端の値を使用。
+        "maxPitchByZoom": [
+            { "zoom": 14, "pitch": 20 },
+            { "zoom": 16, "pitch": 35 },
+            { "zoom": 18, "pitch": 50 }
+        ],
         "MinZoomLevel": 11,
         "LimitZoomLevel": 15,
         "MaxZoomLevel": 23,

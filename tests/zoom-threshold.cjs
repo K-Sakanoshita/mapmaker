@@ -7,7 +7,7 @@ const box = vm.createContext({
     Conf: { default: { MinZoomLevel: 11, LimitZoomLevel: 15 }, style: { color: { building: { zoom: 14 } } } },
     LayerCont: { palette: 'color', styles: ['building'] },
     glot: { get: key => key }, winCont: { modal_open() {}, spinner() {} },
-    Basic: { getData() {}, retry(fn) { fn(); return { then: () => ({ catch() {} }) }; } },
+    Basic: { getData() {}, retry(fn) { fn(); return new Promise(() => {}); } },
     overPassCont: { get(value) { targets = [...value]; } },
     makeMap: { classList: { toggle() {} }, querySelector: () => ({ disabled: false }) },
     document: { getElementById: () => guidance },

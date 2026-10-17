@@ -10,7 +10,7 @@ assert.equal(renderer.color('invalid'),'#000000');assert.equal(renderer.color('i
 for(let i=0;i<300;i++)renderer.color(String(i));assert.ok(renderer.colorCache.size<=256);
 const partsFor=vm.runInContext('getMapMakerTreeParts',box),tree={properties:{natural:'tree'},geometry:{type:'Point',coordinates:[139,35]}};
 const first=partsFor(tree);assert.equal(partsFor(tree),first);
-tree.properties.height='8';const taller=partsFor(tree);assert.notEqual(taller,first);assert.equal(taller[1].height,8);
+tree.properties.height='8';const taller=partsFor(tree);assert.notEqual(taller,first);assert.equal(taller.at(-1).height,8);
 tree.geometry.coordinates[0]+=1;const moved=partsFor(tree);assert.notEqual(moved,taller);assert.ok(moved[1].geometry.coordinates[0][0][0]>139.9);
 box.Conf.pointStyle.tree.radius=2;assert.notEqual(partsFor(tree),moved);
 const Controller=vm.runInContext('OverPassControl',box),controller=new Controller();box.overPassCont=controller;

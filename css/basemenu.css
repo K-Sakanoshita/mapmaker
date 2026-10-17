@@ -76,6 +76,19 @@ body {
     box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
 }
 
+/* Keep compact processing messages on one line, including narrow screens. */
+#modal_window.processing-compact .modal-dialog {
+    width: max-content;
+    max-width: calc(100vw - 16px);
+    margin-inline: auto;
+}
+#modal_window.processing-compact #modal_window_message,
+.export-processing-message {
+    white-space: nowrap;
+    font-size: clamp(11px, 3.2vw, 16px);
+}
+.export-processing-message .spinner-border { flex-shrink: 0; }
+
 .mapmaker-intro {
     position: absolute;
     top: var(--mapmaker-intro-top, 12px);
@@ -244,7 +257,8 @@ span.subtitle {
     padding: 0px 4px 0px 0px;
 }
 
-span.icon {
+span.icon,
+.manual-pin-label {
     border-radius: 4px;
     margin-left: 2px;
     padding: 0px 2px;
@@ -308,15 +322,43 @@ table.dataTable tbody>tr>.selected {
 .layer-control-columns,
 .layer-control-row {
     display: grid;
-    grid-template-columns: minmax(64px, 1fr) 34px 24px 50px;
-    column-gap: 2px;
+    grid-template-columns: minmax(64px, 1fr) 36px 32px 52px;
+    column-gap: 4px;
+    padding-right: 8px;
 }
 
 .layer-control-columns {
-    padding: 2px 1px 1px 1px;
+    padding: 2px 8px 1px 1px;
     color: #666666;
     font-size: 70%;
     line-height: 1.2;
+}
+
+.layer-control-columns.layer-control-group {
+    margin-top: 10px;
+    padding: 6px 8px;
+    align-items: center;
+    background: #eef0f2;
+    border-block: 1px solid #dde1e5;
+    font-size: 11px;
+}
+.layer-control-group-title {
+    color: #343a40;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: left;
+}
+.layer-control-row { min-height: 30px; padding-left: 8px; text-align: left; }
+.layer-control-row > :not(:first-child) { justify-self: center; }
+.layer-control-row .del_button { margin: 0 !important; }
+#roughControls { margin-bottom: 4px; }
+.rough-controls-toggle.form-switch {
+    margin: 0 8px 4px;
+    padding: 8px 10px;
+    border: 1px solid #d7dce1;
+    border-radius: 6px;
+    background: #fff;
+    font-size: 14px;
 }
 
 .layer-control-columns span:not(:first-child) {
@@ -464,9 +506,31 @@ img.icon_normal {
 }
 
 .qr_code {
+    position: relative;
     border: 1px;
     border-style: solid;
 }
+
+
+.wiki-article-close {
+    position: absolute;
+    top: -16px;
+    right: -16px;
+    z-index: 1;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 1px solid #777;
+    border-radius: 50%;
+    background: #fff;
+    color: #222;
+    font: 18px/1 sans-serif;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+}
+.wiki-article-close:hover { background: #eee; }
+.wiki-article-close:focus-visible { outline: 2px solid #0d6efd; outline-offset: 2px; }
 
 /* 共通：flex子要素の高さ計算が崩れないように */
 #editbar {
@@ -786,30 +850,7 @@ img.icon_normal {
 #mapmakerRoughPreview > img { display: block; width: 100%; height: 100%; }
 .mapmaker-rough-preview .maplibregl-canvas,
 .mapmaker-rough-preview .mapmaker-marker { visibility: hidden; }
-
-/* 手書き風では調整と保存だけを残し、通常の編集パネルを畳む。 */
-#basemenu.rough-preview-mode {
-    display: flex;
-    flex-direction: column;
-    height: auto !important;
-    max-height: 100%;
-}
-#basemenu.rough-preview-mode > .container-fluid {
-    height: auto;
-    flex: 0 1 auto;
-}
-#basemenu.rough-preview-mode .basemenu-window-controls,
-#basemenu.rough-preview-mode #makeMap,
-#basemenu.rough-preview-mode #controlMenu,
-#basemenu.rough-preview-mode #customMap > :not(#roughControls),
-#basemenu.rough-preview-mode #saveMap .save-reset { display: none !important; }
-#basemenu.rough-preview-mode #saveMap { padding-right: 0; }
-#basemenu.rough-preview-mode #saveMap .save-download { width: 100%; }
-@media (max-width: 767.98px), (max-width: 991.98px) and (orientation: portrait) {
-    #basemenu.rough-preview-mode {
-        max-height: calc(100% - 160px);
-    }
-}
+.mapmaker-rough-preview.manual-pin-placement .maplibregl-canvas { visibility: visible; opacity: 0; }
 
 /* Facility selection occupies the palette area without covering the map. */
 .icon-select-panel { flex: 1 1 auto; min-height: 0; margin-top: 8px; text-align: left; overflow: hidden; }
@@ -874,6 +915,10 @@ img.icon_normal {
     padding: 12px; border: 1px solid #ced4da; border-radius: 8px;
     background: #fff; box-shadow: 0 3px 16px #0003; color: #212529;
 }
+.rough-settings-button { border: 0; background: transparent; color: inherit; padding: 0; text-align: left; }
+.rough-settings-button:hover { text-decoration: underline; }
+.rough-style-panel { max-height: calc(100dvh - 24px); overflow-y: auto; }
+.rough-style-panel .rough-fill-select { max-width: 130px; }
 .line-width-title { margin-bottom: 10px; font-size: 14px; font-weight: 600; }
 .line-width-controls { display: grid; grid-template-columns: 48px minmax(0, 1fr) 48px; gap: 8px; margin-bottom: 10px; }
 .line-width-controls .btn { min-height: 48px; font-size: 24px; touch-action: none; user-select: none; }
@@ -936,6 +981,4 @@ img.icon_normal {
     .mobile-editor .icon-select-scroll { overscroll-behavior: contain; }
     .mobile-editor #mapid .maplibregl-ctrl-bottom-left,
     .mobile-editor #mapid .maplibregl-ctrl-bottom-right { bottom: calc(var(--basemenu-height, 90px) + 2px); }
-    .mobile-editor #basemenu.rough-preview-mode { max-height: calc(100% - 100px); }
-    .mobile-editor:has(.rough-preview-mode) #saveMap .save-reset { display: none; }
 }

@@ -326,10 +326,6 @@
         "ja": "手書き風",
         "en": "Hand-drawn"
     },
-    "rough_on_off": {
-        "ja": "On / Off",
-        "en": "On / Off"
-    },
     "rough_roughness": {
         "ja": "粗さ",
         "en": "Roughness"
@@ -369,10 +365,6 @@
     "panelWaters": {
         "ja": "水系",
         "en": "Water"
-    },
-    "layer_column_item": {
-        "ja": "項目",
-        "en": "Item"
     },
     "layer_column_visibility": {
         "ja": "表示",

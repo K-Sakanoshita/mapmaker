@@ -10,6 +10,9 @@ class GLMap {
     addLayer(layer) { this.layers.set(layer.id, layer); }
     getSource(id) { return this.sources.get(id); }
     addSource(id, options) { this.sources.set(id, { data: options.data, setData(data) { this.data = data; } }); }
+    getZoom() { return this.options.zoom; }
+    getMaxPitch() { return this.options.maxPitch; }
+    setMaxPitch(value) { this.options.maxPitch = value; }
     getPitch() { return this.pitch || 0; }
     getStyle() { return { layers: [...this.layers.values()] }; }
     setLayoutProperty(id, property, value) { const layer = this.layers.get(id); layer.layout = { ...layer.layout, [property]: value }; }

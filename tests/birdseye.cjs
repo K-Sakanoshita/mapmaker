@@ -177,7 +177,7 @@ assert.match(wallOutput(), /data-height-m="3.048"/);
 wallLine.properties = { barrier: 'wall', height: 'invalid', 'building:levels': '8' };
 assert.match(wallOutput(), /data-height-m="1.5"/);
 assert.doesNotMatch(wallBox.exporter.toSVGFromLayers(bbox), /data-height-m/);
-for (const barrier of ['fence','kerb','hedge','retaining_wall']) {
+for (const barrier of ['fence','kerb','retaining_wall']) {
     wallLine.properties = { barrier };
     assert.doesNotMatch(wallOutput(), /data-height-m/);
 }
@@ -187,6 +187,34 @@ assert.doesNotMatch(wallOutput(), /NaN|Infinity/);
 wallBox.Layers.barrier.opacity = 0;
 assert.doesNotMatch(wallOutput(), /data-height-m/);
 console.log('PASS wall SVG height/units/fallback, color, multiline/duplicate points, hidden category and unchanged fences/2D');
+
+const hedgeBox = context(source);
+const hedge = { type: 'Feature', id: 'hedge', properties: { barrier: 'hedge' },
+    geometry: { type: 'LineString', coordinates: [[139,35],[139.0003,35],[139.0003,35.0003]] } };
+hedgeBox.LayerCont.styles = ['barrier'];
+hedgeBox.Conf.style.color.barrier = { type: 'line' };
+hedgeBox.Layers.barrier = { opacity: 1, geojson: [hedge] };
+hedgeBox.SVGCont.svg_style = () => ({ color: '#669966', opacity: 1, fillOpacity: 0, weight: .5 });
+const hedgeOutput = () => hedgeBox.exporter.toSVGFromLayers(bbox, { birdseye: { tilt: 45 } });
+assert.match(hedgeOutput(), /data-height-m="1"/);
+assert.match(hedgeOutput(), /fill="#669966"/);
+assert.match(hedgeOutput(), /data-building-face="wall"/);
+assert.doesNotMatch(hedgeBox.exporter.toSVGFromLayers(bbox), /data-height-m/);
+hedge.properties = { tags: { barrier: 'hedge', height: '5 ft' } };
+assert.match(hedgeOutput(), /data-height-m="1.524"/);
+hedge.properties = { barrier: 'hedge', height: 'invalid', 'building:levels': '8' };
+assert.match(hedgeOutput(), /data-height-m="1"/);
+hedge.geometry = { type: 'Polygon', coordinates: [[[139,35],[139.0003,35],[139.0003,35.0003],[139,35]]] };
+hedgeBox.testHedge = hedge;
+const segments = vm.runInContext('getMapMakerBarrierGeometry(testHedge)', hedgeBox);
+assert.equal(segments.coordinates.length, 3, 'closed hedge is a strip per segment, not a filled interior');
+const firstRing = segments.coordinates[0][0];
+assert.ok(Math.abs((firstRing[0][1] - firstRing[1][1]) * 111319.49079327358 - .5) < 1e-6, 'hedge width is 0.5 m');
+assert.doesNotMatch(hedgeOutput(), /NaN|Infinity/);
+hedgeBox.Layers.barrier.opacity = 0;
+assert.doesNotMatch(hedgeOutput(), /data-height-m/);
+console.log('PASS hedge SVG default/explicit heights, 0.5 m strips, color, closed paths, hidden layer and flat 2D');
+
 
 // A wall bending towards the camera must not bring its far segment above a building.
 const occlusionBox = context(source);

@@ -179,12 +179,9 @@
             </select>
         </div>
         <section class="col-12 rough-controls d-none" id="roughControls">
-            <div class="ps-1 mt-1 fw-medium text-start border-0 border-bottom bg-light bg-gradient">
-                <span glot-model="rough_style"></span>
-            </div>
-            <div class="form-check form-switch d-flex align-items-center justify-content-between px-2 py-1 border-bottom">
-                <label class="form-check-label" for="rough_enabled" glot-model="rough_on_off"></label>
-                <input class="form-check-input float-none m-0" type="checkbox" role="switch" id="rough_enabled" onchange="mapMaker.rough_change()">
+            <div class="rough-controls-toggle form-check form-switch d-flex align-items-center justify-content-between">
+                <button type="button" id="roughSettingsButton" class="rough-settings-button fw-medium" aria-haspopup="dialog" aria-expanded="false" onclick="RoughStylePanel.open()" glot-model="rough_style"></button>
+                <input class="form-check-input float-none m-0" type="checkbox" role="switch" id="rough_enabled" aria-labelledby="roughSettingsButton" onchange="RoughStylePanel.toggle()">
             </div>
             <div id="roughParameters" class="d-none">
                 <div class="px-2 py-1 border-bottom">
@@ -192,16 +189,16 @@
                         <label for="roughness" glot-model="rough_roughness"></label>
                         <output id="roughness_value" for="roughness">1.0</output>
                     </div>
-                    <input class="form-range rough-range" type="range" id="roughness" min="0" max="10" step="0.1" value="1" oninput="mapMaker.rough_change()" disabled>
+                    <input class="form-range rough-range" type="range" id="roughness" min="0" max="10" step="0.1" value="1" oninput="mapMaker.rough_change(1000)" disabled>
                 </div>
                 <div class="px-2 py-1 border-bottom">
                     <div class="d-flex justify-content-between">
                         <label for="bowing" glot-model="rough_bowing"></label>
                         <output id="bowing_value" for="bowing">1.0</output>
                     </div>
-                    <input class="form-range rough-range" type="range" id="bowing" min="0" max="10" step="0.1" value="1" oninput="mapMaker.rough_change()" disabled>
+                    <input class="form-range rough-range" type="range" id="bowing" min="0" max="10" step="0.1" value="1" oninput="mapMaker.rough_change(1000)" disabled>
                 </div>
-                <div class="d-flex justify-content-between align-items-center px-2 py-1 border-bottom">
+                <div class="d-flex justify-content-between align-items-center px-2 py-1">
                     <label for="rough_fill_style" class="text-nowrap me-2" glot-model="rough_fill"></label>
                     <select class="form-select form-select-sm rough-fill-select" id="rough_fill_style" onchange="mapMaker.rough_change()" disabled>
                         <option value="hachure">Hachure</option>
@@ -215,12 +212,6 @@
                 </div>
             </div>
         </section>
-        <div id="layerControlColumns" class="layer-control-columns col-12 border-bottom d-none">
-            <span glot-model="layer_column_item"></span>
-            <span glot-model="layer_column_visibility"></span>
-            <span glot-model="layer_column_color"></span>
-            <span glot-model="layer_column_width"></span>
-        </div>
         <fieldset id="AAA" class="d-none">
             <div class="col border-0 border-bottom">
                 <div class="layer-control-row align-items-center">

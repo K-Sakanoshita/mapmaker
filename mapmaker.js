@@ -41,9 +41,24 @@ class MapMaker {
         searchInput.addEventListener('change', (e) => { mapMaker.searchPoi(e.target.value) });	// Address Search
     }
 
+    layerGroupHeader(panel) {
+        const header = document.createElement('div');
+        header.id = panel.groupGlot;
+        header.className = 'layer-control-columns layer-control-group col-12 d-none';
+        for (const key of [panel.groupGlot, 'layer_column_visibility', 'layer_column_color', 'layer_column_width']) {
+            const label = document.createElement('span');
+            label.textContent = glot.get(key);
+            if (key === panel.groupGlot) label.className = 'layer-control-group-title';
+            header.appendChild(label);
+        }
+        return header;
+    }
+
     previewBusy(busy) {
+        // Initial download, native rendering and rough preview share the loading modal.
+        const showOverlay = busy && !this.loadingMap;
         let status = document.getElementById('mapmakerRenderStatus');
-        if (!status && busy) {
+        if (!status && showOverlay) {
             status = document.createElement('div');
             status.id = 'mapmakerRenderStatus';
             status.className = 'export-processing';
@@ -59,7 +74,7 @@ class MapMaker {
             message.append(spinner, text); status.append(message);
             document.body.append(status);
         }
-        status?.classList.toggle('d-none', !busy);
+        status?.classList.toggle('d-none', !showOverlay);
         map.getContainer().setAttribute('aria-busy', String(busy));
     }
 
@@ -72,6 +87,7 @@ class MapMaker {
     }
 
     queueExportPreview() {
+        if (this.resetting) return;
         if (!map.ready) return;
         if (!this.customMode) {
             this.clearRoughPreview();
@@ -97,7 +113,7 @@ class MapMaker {
             console.error('MapLibre editor failed', error);
             window.alert(glot.get('export_error'));
         }).finally(() => {
-            this.previewBusy(false);
+            if (!this.resetting) this.previewBusy(false);
             if (this.customMode && this.rough_options().enabled) this.queueRoughPreview();
         });
         return rendering;
@@ -105,22 +121,16 @@ class MapMaker {
 
     setRoughPreviewLock(locked) {
         this.roughPreviewLocked = locked;
-        document.getElementById('basemenu')?.classList.toggle('rough-preview-mode', locked);
         if (locked) {
             if (!this.roughPreviewControls) {
                 this.roughPreviewControls = new Map();
-                const controls = document.querySelectorAll('header, #editbar button, #editbar input, #editbar select, #editbar [onclick]');
-                for (const node of controls) {
-                    if (node.closest('#roughControls') || node.closest('.save-download') || /mapMaker\.save\(/.test(node.getAttribute('onclick') || '')) continue;
-                    this.roughPreviewControls.set(node, { disabled: node.disabled, inert: node.inert });
-                }
                 const container = map.getContainer();
                 this.roughPreviewControls.set(container, { disabled: container.disabled, inert: container.inert });
                 map.closePopup();
             }
             for (const node of this.roughPreviewControls.keys()) {
-                node.inert = true;
-                if ('disabled' in node) node.disabled = true;
+                // Menu controls remain usable; manual pin placement also needs map input.
+                node.inert = !(typeof ManualPins !== 'undefined' && ManualPins.active);
             }
         } else if (this.roughPreviewControls) {
             for (const [node, state] of this.roughPreviewControls) {
@@ -134,6 +144,7 @@ class MapMaker {
     clearRoughPreview() {
         this.roughPreviewVersion = (this.roughPreviewVersion || 0) + 1;
         clearTimeout(this.roughPreviewTimer);
+        this.roughPreviewNotBefore = 0;
         document.getElementById('mapmakerRoughPreview')?.remove();
         this.closeRoughPreviewModal();
         map.getContainer().classList.remove('mapmaker-rough-preview');
@@ -155,12 +166,27 @@ class MapMaker {
         this.setRoughPreviewLock(true);
         const version = this.roughPreviewVersion = (this.roughPreviewVersion || 0) + 1;
         clearTimeout(this.roughPreviewTimer);
+        if (this.loadingMap) return;
+        const delay = this.roughPreviewNotBefore ? Math.max(0, this.roughPreviewNotBefore - Date.now()) : 150;
         this.roughPreviewTimer = setTimeout(() => {
+            this.roughPreviewNotBefore = 0;
             const previous = this.roughPreviewTask;
             // Only one SVG worker request may run at a time. Off/rapid changes
             // invalidate the result without letting an old image reappear.
             this.roughPreviewTask = Promise.resolve(previous).catch(() => {}).then(() => this.renderRoughPreview(version));
-        }, 150);
+        }, delay);
+    }
+
+    async finishInitialRoughPreview() {
+        let version;
+        do {
+            if (!this.customMode || !this.rough_options().enabled) return;
+            clearTimeout(this.roughPreviewTimer);
+            version = this.roughPreviewVersion;
+            const previous = this.roughPreviewTask;
+            this.roughPreviewTask = Promise.resolve(previous).catch(() => {}).then(() => this.renderRoughPreview(version));
+            await this.roughPreviewTask;
+        } while (version !== this.roughPreviewVersion);
     }
 
     async renderRoughPreview(version) {
@@ -239,11 +265,14 @@ class MapMaker {
         }
     }
 
-    rough_change() {
+    rough_change(previewDelay = 0) {
         const selected = document.getElementById("rough_enabled")?.checked === true;
+        if (previewDelay > 0 && selected && this.customMode) this.roughPreviewNotBefore = Date.now() + previewDelay;
         if (!selected || !this.customMode) this.clearRoughPreview();
         this.queueExportPreview();
-        document.getElementById("roughParameters")?.classList.toggle("d-none", !selected);
+        if (typeof RoughStylePanel !== 'undefined' && !selected) RoughStylePanel.close(false);
+        document.getElementById("roughParameters")?.classList.toggle("d-none",
+            !selected || typeof RoughStylePanel === 'undefined' || !RoughStylePanel.panel);
         for (const id of ["roughness", "bowing", "rough_fill_style"]) {
             const input = document.getElementById(id);
             if (input) input.disabled = !selected;
@@ -317,15 +346,7 @@ class MapMaker {
 
         console.log("Start: make custom panel.")
         for (let panel of Conf.editPanels) {									    // editPanelsに基づいて編集パネルを作成
-            // パネルタイトルの追加
-            let title = glot.get(panel.groupGlot);
-            let div = document.createElement("div");
-            div.setAttribute("id", panel.groupGlot);
-            div.className = "col ps-1 mt-1 fw-medium text-start border-0 border-bottom bg-light bg-gradient d-none";
-            let span = document.createElement("span");
-            span.innerHTML = title;
-            div.appendChild(span);
-            document.getElementById("customMap").appendChild(div);
+            document.getElementById("customMap").appendChild(this.layerGroupHeader(panel));
 
             for (let key of panel.styles) {
                 let key_layer = `#${key}_layer`;
@@ -415,7 +436,7 @@ class MapMaker {
 
         const updateResizeButton = () => {
             const expanded = this.customMode && this.basemenuWindowMode == "expanded";
-            resizeButton.disabled = !this.customMode || !!this.roughPreviewLocked;
+            resizeButton.disabled = !this.customMode;
             const label = glot.get(expanded ? "basemenu_restore" : "basemenu_expand");
             resizeButton.title = label;
             resizeButton.setAttribute("aria-label", label);
@@ -526,6 +547,7 @@ class MapMaker {
         let nowzoom = this.zoomLevel(), def_msg;
         if (nowzoom < Conf.default.MinZoomLevel) return false;
         if (typeof (query_date) == "undefined") query_date = "";
+        this.loadingMap = true;
         def_msg = glot.get("loading_message");
         winCont.modal_open({ "title": glot.get("loading_title"), "message": def_msg, "mode": "" });
         winCont.spinner(true);
@@ -627,6 +649,7 @@ class MapMaker {
             winCont.modal_text("Map Ordering...", false);
             await waitPaint();
             LayerCont.applyDrawOrder();
+            winCont.modal_text(glot.get("processing_message"), false);
             mapMaker.custom(true);
             await mapMaker.queueExportPreview();
             // sync後に有効化されるベクタースタイルも画面へ反映してから閉じる。
@@ -634,6 +657,7 @@ class MapMaker {
                 map.gl.once('idle', resolve);
                 map.gl.triggerRepaint();
             });
+            await this.finishInitialRoughPreview();
             await winCont.closeModal();
             console.log("mapMaker: make: end");
         }).catch((error) => {
@@ -645,6 +669,9 @@ class MapMaker {
                 "callback_close": () => mapMaker.clearAll()
             };
             winCont.modal_open(modal);
+        }).finally(() => {
+            this.loadingMap = false;
+            if (!this.resetting) this.previewBusy(false);
         });
         return;
     }
@@ -819,9 +846,7 @@ class MapMaker {
                     } else {
                         document.getElementById(panel.groupGlot).classList.add("d-none");
                     }
-                    if (panel.groupGlot == "panelWaters") {
-                        document.getElementById("layerControlColumns").classList.toggle("d-none", !rems);
-                    }
+
                 }
                 customMap.classList.remove("d-none");          // Hide Custom Area
                 makeMap.classList.add("d-none");            // Hide MakeMap button
@@ -846,6 +871,7 @@ class MapMaker {
                 mapMaker.zoomMessage();
                 break;
             case false:
+                if (typeof RoughStylePanel !== 'undefined') RoughStylePanel.close(false);
                 if (typeof ManualPins !== "undefined") ManualPins.stop();
                 if (typeof LineWidthPanel !== "undefined") LineWidthPanel.close(false);
                 this.customMode = mode;
@@ -876,6 +902,7 @@ class MapMaker {
     area_select(mode) {
         this.selectMode = mode;
         LayerCont.area_select(mode);
+        if (this.customMode && this.rough_options().enabled) this.queueExportPreview();
         return mode;
     }
 
@@ -945,17 +972,38 @@ class MapMaker {
             title: glot.get("restart_title"),
             message: glot.get("restart_message"),
             mode: "yesno",
-            callback_yes: () => {
-                mapMaker.custom(false);
-                overPassCont.clear();
-                LayerCont.clearAll();
-                Marker.clearAll();
-                ManualPins.clear();
-                poiCont.clearAll();
-                winCont.closeModal();
-            },
+            callback_yes: () => this.resetMap(),
             callback_no: () => winCont.closeModal()
         });
     }
+
+    async resetMap() {
+        if (this.resetting) return;
+        this.resetting = true;
+        // Stop pending builds and suppress preview work requested by marker removals.
+        this.customMode = false;
+        try {
+            const closing = winCont.closeModal();
+            this.clearRoughPreview();
+            this.clearExportPreview();
+            this.previewBusy(true);
+            await closing;
+            // Paint feedback before starting bulk cleanup.
+            await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+            try { await map.editorRenderer?.pending; } catch (error) { console.error(error); }
+            map.editorRenderer?.clear();
+            this.custom(false);
+            this.previewBusy(true);
+            overPassCont.clear();
+            LayerCont.clearAll();
+            await Marker.clearAll();
+            ManualPins.clear();
+            poiCont.clearAll();
+        } finally {
+            this.resetting = false;
+            this.previewBusy(false);
+        }
+    }
+
 }
 const mapMaker = new MapMaker();

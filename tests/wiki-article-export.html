@@ -1,0 +1,85 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Wikipedia article export regression</title>
+<style>
+body { margin: 0; font: 16px/1.5 Arial; }
+#mapid { position: relative; width: 1000px; height: 700px; margin: 25px; }
+.mapmaker-marker { position: absolute; }
+.d-flex { display: flex; }
+.p-1 { padding: 4px; }
+.p-2 { padding: 8px; }
+.bg-light { background: #fafafa; }
+.qr_code { width: 640px; }
+</style>
+<link rel="stylesheet" href="../css/basemenu.css">
+<div id="mapid"></div><pre id="result">PENDING</pre>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script>
+const Conf = { effect: { text: { color: 'black' } } }, glot = { get: () => ' (Wikipedia)' };
+const map = { closePopup() {}, removeLayer(marker) { marker.remove(); }, getSize: () => ({x:1000,y:700}),
+    options: { crs: { project: p => ({x:p.lng,y:p.lat}) } } };
+const Basic = { ImageToBase64(src, callback) { callback(src); } };
+const MapEngine = {
+    LatLng: class { constructor(lat,lng) { this.lat=lat;this.lng=lng; } },
+    latLng: (lat,lng) => ({lat,lng}), point: (x,y) => ({x,y}), divIcon: o => o,
+    marker(ll, options) {
+        const element = document.createElement('div');
+        element.className = 'mapmaker-marker'; element.style.cssText = 'left:120px;top:80px;width:640px';
+        element.innerHTML = options.icon.html;
+        element.mapmakerMarker = { getLatLng: () => ll };
+        return { addTo() { document.querySelector('#mapid').append(element); }, getElement: () => element,
+            remove() { element.remove(); } };
+    }
+};
+const QRCode = class { svg() { return '<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128"><rect width="128" height="128" fill="black"/></svg>'; } };
+</script>
+<script src="../lib/poislib.js"></script>
+<script src="../lib/svglib.js"></script>
+<script>
+const Marker = new MarkerControl(), SVGCont = new SVGControl();
+(async () => {
+    const checks = [];
+    const check = (name, condition) => { if (!condition) throw Error(name); checks.push(name); };
+    const near = (a,b) => Math.abs(a-b)<0.01;
+    try {
+        const photo = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="160" height="128"><rect width="160" height="128" fill="orange"/></svg>');
+        const ll = {lat:35,lng:135};
+        Marker.markers.wikipedia = [{mapmaker_id:'node/1'}];
+        Marker.qr_add('wikipedia','node/1','https://example.org',ll,
+            ['The Hōzōmon is the inner of two large entrance gates. 日本語の記事でも、表示されている行の折り返しと位置を保持します。 '.repeat(3), {source:photo}]);
+        await Promise.all([...document.images].map(img => img.decode()));
+        const marker = document.querySelector('.mapmaker-marker'), card = marker.querySelector('.qr_code');
+        marker.mapmakerMarker.getLatLng = () => ll;
+        // Exercise the inner anchor offset used by the real MapLibre adapter.
+        const inner = document.createElement('div'); inner.style.cssText='position:relative;left:-12px;top:-7px';
+        inner.append(card); marker.append(inner);
+        for (const scale of [0.2,0.5]) {
+            for (const moved of [false,true]) {
+                if (moved) { marker.style.left='220px'; marker.style.top='140px'; ll.lng=135.2;ll.lat=35.1; }
+                const transform = {toPageMmXY: ([lng,lat]) => [(lng-134)*40,(36-lat)*40]};
+                const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+                svg.setAttribute('width',1000);svg.setAttribute('height',700);svg.setAttribute('viewBox','0 0 250 175');
+                await new Promise(resolve => SVGCont.makeSVG(svg,resolve,{bbox:[134,34,136,36],paperMm:{w:250,h:175},screenMmPerPx:scale,transform}));
+                const origin = marker.getBoundingClientRect(), bounds=card.getBoundingClientRect(), anchor=transform.toPageMmXY([ll.lng,ll.lat]);
+                const position = element => { const r=element.getBoundingClientRect();return [anchor[0]+(r.left-origin.left)*scale,anchor[1]+(r.top-origin.top)*scale]; };
+                const root=svg.firstElementChild, box=root.firstElementChild, [x,y]=position(card);
+                check(`card position and size (${scale}, ${moved})`,near(+box.getAttribute('x'),x)&&near(+box.getAttribute('y'),y)&&near(+box.getAttribute('width'),bounds.width*scale)&&near(+box.getAttribute('height'),bounds.height*scale));
+                const qr=root.querySelector('svg'), [qx,qy]=position(card.querySelector('svg'));
+                check('QR uses screen position',near(+qr.getAttribute('x'),qx)&&near(+qr.getAttribute('y'),qy));
+                const image=root.querySelector('image'), [ix,iy]=position(card.querySelector('img'));
+                check('photo uses screen position',near(+image.getAttribute('x'),ix)&&near(+image.getAttribute('y'),iy));
+                const span=card.querySelector('span'), range=document.createRange();range.selectNodeContents(span);
+                check('text keeps browser line breaks',root.querySelectorAll('text').length===range.getClientRects().length);
+                const outText=new XMLSerializer().serializeToString(svg);
+                check('close button excluded',!outText.includes('✕')&&!outText.includes('wiki-article-close'));
+                const saved=[];
+                SVGCont.buildSVG=async()=>({outText,canvas_width:1000,canvas_height:700});
+                SVGCont._saveBlob=(blob,type)=>saved.push({blob,type});
+                await SVGCont.save({type:'svg'});await SVGCont.save({type:'png'});
+                check('SVG and PNG generated',saved.length===2&&saved[1].blob.type==='image/png'&&saved[1].blob.size>0);
+            }
+        }
+        document.querySelector('#result').textContent='PASS '+JSON.stringify(checks);
+    } catch(error) { document.querySelector('#result').textContent='FAIL '+error.stack; }
+})();
+</script>

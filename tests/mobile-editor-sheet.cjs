@@ -31,7 +31,7 @@ assert.equal(maker.basemenuWindowMode,'expanded','upward drag snaps to expanded'
 sheet.startDrag({button:0,pointerId:2,clientY:200});listeners.get('pointermove')({pointerId:2,clientY:700,preventDefault(){}});listeners.get('pointercancel')({pointerId:2,type:'pointercancel'});
 assert.equal(maker.basemenuWindowMode,'expanded','canceled gesture restores its original state');assert.equal(listeners.size,0);
 sheet.handle.events.keydown({key:'ArrowDown',preventDefault(){}});assert.equal(maker.basemenuWindowMode,'minimized');
-maker.roughPreviewLocked=true;sheet.setMode('normal');assert.equal(maker.basemenuWindowMode,'minimized','rough lock remains enforced');maker.roughPreviewLocked=false;
+maker.roughPreviewLocked=true;sheet.setMode('normal');assert.equal(maker.basemenuWindowMode,'normal','rough preview keeps menu resizing available');maker.roughPreviewLocked=false;
 wide=true;assert.equal(sheet.update(),false);assert.equal(nodes.get('saveMap').parentNode,nodes.get('basemenu'),'desktop restores original left-pane save controls');
 wide=false;maker.customMode=false;assert.equal(sheet.update(),false,'position-selection mode retains original layout');
-console.log('PASS mobile sheet snap states, drag/cancel/keyboard, save-node preservation, rough lock, desktop and position-mode restoration');
+console.log('PASS mobile sheet snap states, drag/cancel/keyboard, save-node preservation, rough preview resizing, desktop and position-mode restoration');
