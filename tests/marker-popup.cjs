@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 (async()=>{
 let tags,popup='',previews=0;
-const box=vm.createContext({console:{log(){}},Conf:{category:{shop:{}},marker:{tag:{shop:{electronics:'shop.svg'}},subtag:{}},icon:{path:'icon'},osm:{shops:{marker:'shop.svg'},wikipedia:{tag:'wikipedia',marker:'wiki.svg'}},effect:{icon:{x:20,y:20,preset:'standard'},text:{size:16,view:true}}},glot:{get:k=>k},map:{closePopup(){},removeLayer(){}},mapMaker:{queueExportPreview(){previews++;}},poiCont:{get_target:()=>({geojson:[{id:'node/1',properties:tags}],latlng:[[35,135]],targets:[['shops']],enable:[true]}),get_osmid:()=>({geojson:{id:'node/1',properties:tags},latlng:[35,135]})},MapEngine:{LatLng:class{constructor(lat,lng){this.lat=lat;this.lng=lng;}},divIcon:o=>o,marker:(position,options)=>({position,options,events:{},addTo(){return this;},on(k,f){this.events[k]=f;return this;},off(){},removeFrom(){},getElement:()=>null,openPopup(){}}),responsivePopup:()=>({setContent(s){popup=s;return this;},setLatLng(){return this;},openOn(){return this;}})}});
+const box=vm.createContext({document:require('./helpers/dom.cjs').document, URL, console:{log(){}},Conf:{category:{shop:{}},marker:{tag:{shop:{electronics:'shop.svg'}},subtag:{}},icon:{path:'icon'},osm:{shops:{marker:'shop.svg'},wikipedia:{tag:'wikipedia',marker:'wiki.svg'}},effect:{icon:{x:20,y:20,preset:'standard'},text:{size:16,view:true}}},glot:{get:k=>k},map:{closePopup(){},removeLayer(){}},mapMaker:{queueExportPreview(){previews++;}},poiCont:{get_target:()=>({geojson:[{id:'node/1',properties:tags}],latlng:[[35,135]],targets:[['shops']],enable:[true]}),get_osmid:()=>({geojson:{id:'node/1',properties:tags},latlng:[35,135]})},MapEngine:{LatLng:class{constructor(lat,lng){this.lat=lat;this.lng=lng;}},divIcon:o=>o,marker:(position,options)=>({position,options,events:{},addTo(){return this;},on(k,f){this.events[k]=f;return this;},off(){},removeFrom(){},getElement:()=>null,openPopup(){}}),responsivePopup:()=>({setContent(s){popup=s.outerHTML;return this;},setLatLng(){return this;},openOn(){return this;}})}});
 vm.runInContext(fs.readFileSync('lib/poislib.js','utf8'),box);
 const marker=box.Marker=vm.runInContext('new MarkerControl()',box);
 for(const english of [undefined,'','  ',null,false,'Nikkori Electronics']){
@@ -16,8 +16,21 @@ marker.changeSize('shops','node/1','1.5');
 marker.change_icon('shops','node/1','icon/custom.svg');await Promise.resolve();
 assert.equal(marker.markers.shops[0].mapmaker_appearance,'subtle');assert.equal(marker.markers.shops[0].mapmaker_lang,'name');
 marker.change_lang('shops','node/1','name:en');await Promise.resolve();
-const changed=marker.markers.shops[0];assert.equal(changed.mapmaker_appearance,'subtle');assert.equal(changed.mapmaker_icon_scale,1.5);assert.equal(changed.mapmaker_icon,'icon/custom.svg');assert.equal(changed.mapmaker_lang,'name:en');changed.events.click({target:changed,latlng:changed.position});assert.ok(popup.includes('marker_to_ja'));assert.ok(!popup.includes('marker_to_en'));assert.match(popup,/<option value="subtle" selected>/);
-assert.match(popup,/<option value="1.5" selected>/);assert.equal(previews,2);
+const changed=marker.markers.shops[0];assert.equal(changed.mapmaker_appearance,'subtle');assert.equal(changed.mapmaker_icon_scale,1.5);assert.equal(changed.mapmaker_icon,'icon/custom.svg');assert.equal(changed.mapmaker_lang,'name:en');changed.events.click({target:changed,latlng:changed.position});assert.ok(popup.includes('marker_to_ja'));assert.ok(!popup.includes('marker_to_en'));assert.match(popup,/<option value="subtle" selected="">/);
+assert.match(popup,/<option value="1.5" selected="">/);assert.equal(previews,2);
+const payload='<img src=x onerror="attack()">\'" & <svg onload="attack()">';
+tags={shop:'electronics',name:payload,'name:en':payload};
+marker.set('shops');await Promise.resolve();
+const hostile=marker.markers.shops[0];
+assert.equal(hostile.options.icon.html.children[0].attributes['icon-name'],payload);
+assert.equal(hostile.options.icon.html.children[1].textContent,payload);
+hostile.events.click({target:hostile,latlng:hostile.position});
+assert.ok(popup.includes('&lt;img'));assert.ok(!popup.includes('<img'));assert.ok(!popup.includes('onclick='));assert.ok(!popup.includes('onchange='));
+marker.change_lang('shops','node/1','name:en');await Promise.resolve();
+assert.equal(marker.markers.shops[0].options.icon.html.children[1].textContent,payload);
+assert.equal(marker.safeImageURL('javascript:attack()'),'');
+assert.equal(marker.safeImageURL('https://evil.test/icon.svg'),'');
+assert.equal(marker.safeImageURL('https://evil.test/x.png',true),'');
 JSON.parse(fs.readFileSync('data/glot.json','utf8'));
 console.log('PASS popup English-name guards, three style options, local-only style, invalid preset rejection, preservation across icon/language changes and selected preset.');
 })().catch(e=>{console.error(e);process.exitCode=1;});

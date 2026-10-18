@@ -8,7 +8,7 @@ const box = vm.createContext({
     LayerCont: { palette: 'color', styles: ['building'] },
     glot: { get: key => key }, winCont: { modal_open() {}, spinner() {} },
     Basic: { getData() {}, retry(fn) { fn(); return new Promise(() => {}); } },
-    overPassCont: { get(value) { targets = [...value]; } },
+    overPassCont: { getRetryCount:()=>5, get(value) { targets = [...value]; } },
     makeMap: { classList: { toggle() {} }, querySelector: () => ({ disabled: false }) },
     document: { getElementById: () => guidance },
     $: () => ({ html: value => output = value })

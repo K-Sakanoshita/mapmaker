@@ -1,0 +1,5 @@
+[
+  {"id":"urban","label":"大阪・梅田の建物密集地相当","center":[135.4983,34.7025],"zoom":17.3,"bearing":0,"pitch":0,"mode":"2d"},
+  {"id":"harbor","label":"横浜・大さん橋の港湾部相当","center":[139.646,35.451],"zoom":17.3,"bearing":28,"pitch":40,"mode":"3d"},
+  {"id":"park","label":"東京・井の頭公園の公園住宅地相当","center":[139.574,35.700],"zoom":17.3,"bearing":12,"pitch":25,"mode":"rough"}
+]

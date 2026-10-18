@@ -13,7 +13,7 @@ const vm = require('node:vm');
             map:{ready:true,editorRenderer:renderer,getCenter:()=>({lng:135,lat:35}),setView(){},getZoom:()=>14,
                 getContainer:()=>({setAttribute(){}}),gl:{once(_type,fn){finishFrame=fn;},triggerRepaint(){events.push('frame');}}},
             Conf:{default:{MinZoomLevel:11}},Layers:{},LayerCont:{styles:[],applyDrawOrder(){}},
-            Basic:{getData(){},retry:fn=>Promise.resolve(fn())},overPassCont:{get:()=>({})},
+            Basic:{getData(){},retry:fn=>Promise.resolve(fn())},overPassCont:{getRetryCount:()=>5,get:()=>({})},
             location:{href:'http://localhost/'},glot:{get:key=>key},
             winCont:{modalMode:true,modal_open(){events.push('open');},spinner(){},modal_text(){},closeModal(){events.push('close');return Promise.resolve();}},
             // Any attempt to create a second progress overlay during initial loading fails.

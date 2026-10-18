@@ -9,7 +9,7 @@ const box = vm.createContext({
     glot: { get: key => key }, location: { href: 'http://localhost/#17/35/139' },
     winCont: { modal_open() {}, spinner() {}, modal_text: text => messages.push(text) },
     Basic: { getData() {}, retry: task => task() },
-    overPassCont: { get: (_targets, callback) => { progress = callback; return new Promise(() => {}); } }
+    overPassCont: { getRetryCount: () => 5, get: (_targets, callback) => { progress = callback; return new Promise(() => {}); } }
 });
 vm.runInContext(fs.readFileSync('mapmaker.js', 'utf8'), box);
 vm.runInContext("mapMaker.make('')", box);

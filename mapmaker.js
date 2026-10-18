@@ -549,7 +549,7 @@ class MapMaker {
         if (typeof (query_date) == "undefined") query_date = "";
         this.loadingMap = true;
         def_msg = glot.get("loading_message");
-        winCont.modal_open({ "title": glot.get("loading_title"), "message": def_msg, "mode": "" });
+        const loadingModal = winCont.modal_open({ "title": glot.get("loading_title"), "message": def_msg, "mode": "" });
         winCont.spinner(true);
 
         // URL logging
@@ -566,7 +566,7 @@ class MapMaker {
             winCont.modal_text(def_msg, false);
         };
         for (let key of LayerCont.styles) if (Conf.style[LayerCont.palette][key].zoom <= nowzoom) targets.push(key);
-        Basic.retry(() => overPassCont.get(targets, progress), 5).then(async (ovanswer) => {
+        Basic.retry(() => overPassCont.get(targets, progress), overPassCont.getRetryCount()).then(async (ovanswer) => {
             winCont.modal_text("Data Loading Complete...", false);
             await waitPaint();
             for (const target of targets) {
@@ -658,18 +658,24 @@ class MapMaker {
                 map.gl.triggerRepaint();
             });
             await this.finishInitialRoughPreview();
+            await loadingModal;
             await winCont.closeModal();
             console.log("mapMaker: make: end");
-        }).catch((error) => {
+        }).catch(async (error) => {
             console.error("mapMaker: make failed", error);
+            winCont.spinner(false);
+            // Bootstrap ignores hide() while the opening transition is running.
+            await loadingModal;
+            await winCont.closeModal();
             const modal = {
                 "title": glot.get("sverror_title"),
                 "message": glot.get("sverror_message"),
                 "mode": "close",
-                "callback_close": () => mapMaker.clearAll()
+                "callback_close": () => winCont.closeModal()
             };
-            winCont.modal_open(modal);
+            await winCont.modal_open(modal);
         }).finally(() => {
+            winCont.spinner(false);
             this.loadingMap = false;
             if (!this.resetting) this.previewBusy(false);
         });
@@ -678,101 +684,112 @@ class MapMaker {
 
     // Search Address(Japan Only)
     searchPoi(keyword) {
-        const errorMsg = function () {
-            winCont.modal_open({
-                title: glot.get("addressnotfound_title"), message: glot.get("addressnotfound_body"),
-                mode: "close", callback_close: () => { winCont.closeModal() }
-            });
-        }
-        if (keyword === "") return;
-        getLatLng(keyword, (latlng) => {
-            if (latlng.level === 0) {                   // 見つからず
-                errorMsg();
-            } else if (latlng.level === 1) {            // 都道府県
-                map.setZoom(Conf.default.SearchZoom - 6);
-                map.panTo(Conf.prefecture[latlng.pref]);
-            } else if (latlng.level === 2) {            // 市区町村
-                const keys = Object.keys(Conf.allPrefecture)
-                const values = Object.values(Conf.allPrefecture)
-                const index = values.findIndex(value =>
-                    value.prefecture === latlng.pref && (
-                        value.city === latlng.city ||
-                        latlng.city.endsWith(`郡${value.city}`) // 郡名が含まれていないため
-                    )
-                )
-                const code = keys[index].substring(0, 5)
-                const endpoint = `https://geolonia.github.io/japanese-admins/${code.substring(0, 2)}/${code}.json`
-                fetch(endpoint).then(res => {
-                    return res.json()
-                }).then(data => {
-                    const center = turf.centroid(data).geometry.coordinates;    // turfで中心を探す
-                    map.setZoom(Conf.default.SearchZoom - 3);
-                    map.panTo([center[1], center[0]]);
-                })
-            } else {                                    // 町名
-                map.setZoom(Conf.default.SearchZoom);
-                map.panTo(latlng);
-            }
-        }, e => {
-            errorMsg();
-        })
+        const errorMsg = error => {
+            if (error) console.error('mapMaker: address search failed', error);
+            winCont.modal_open({ title: glot.get('addressnotfound_title'), message: glot.get('addressnotfound_body'),
+                mode: 'close', callback_close: () => winCont.closeModal() });
+        };
+        if (keyword === '') return;
+        try {
+            getLatLng(keyword, async latlng => {
+                try {
+                    if (latlng.level === 0) { errorMsg(); return; }
+                    if (latlng.level === 1) {
+                        const position = Conf.prefecture[latlng.pref];
+                        if (!position) { errorMsg(); return; }
+                        map.setZoom(Conf.default.SearchZoom - 6);
+                        map.panTo(position);
+                    } else if (latlng.level === 2) {
+                        const entry = Object.entries(Conf.allPrefecture).find(([, value]) =>
+                            value?.prefecture === latlng.pref && (value.city === latlng.city ||
+                                String(latlng.city || '').endsWith(`郡${value.city}`)));
+                        if (!entry || !/^\d{5,6}$/.test(entry[0])) { errorMsg(); return; }
+                        const code = entry[0].substring(0, 5);
+                        const endpoint = `https://geolonia.github.io/japanese-admins/${code.substring(0, 2)}/${code}.json`;
+                        const response = await fetch(endpoint);
+                        if (!response.ok) throw new Error(`Municipality GeoJSON: HTTP ${response.status}`);
+                        const data = await response.json();
+                        const center = turf.centroid(data).geometry.coordinates;
+                        if (!Array.isArray(center) || center.length < 2 || !center.every(Number.isFinite)) throw new Error('Invalid municipality centroid');
+                        map.setZoom(Conf.default.SearchZoom - 3);
+                        map.panTo([center[1], center[0]]);
+                    } else {
+                        map.setZoom(Conf.default.SearchZoom);
+                        map.panTo(latlng);
+                    }
+                } catch (error) { errorMsg(error); }
+            }, errorMsg);
+        } catch (error) { errorMsg(error); }
     }
 
     // 情報（アイコンなど）を地図に追加
-    addPoi(key) {
-        winCont.modal_open({ "title": glot.get("loading_title"), "message": glot.get("loading_message"), "mode": "" }).then(() => {
+    async addPoi(key) {
+        let answer;
+        try {
+            await winCont.modal_open({ title: glot.get("loading_title"), message: glot.get("loading_message"), mode: "" });
             winCont.spinner(true);
-            if (Conf.osm[key].file !== undefined) {		// "file"がある場合(CSVなど)
-                $.get(Conf.osm[key].file).then((csv) => {
-                    let geojsons = GeoCont.csv2geojson(csv, key);
-                    let targets = geojsons.map(() => [key]);
-                    let copyright = Conf.osm[key].copyright;
-                    mapMaker.addCopyright(copyright);
-                    winCont.closeModal().then(() => {
-                        poiset(key, { "geojson": geojsons, "targets": targets });
-                    })
+            if (Conf.osm[key].file !== undefined) {
+                const csv = await new Promise((resolve, reject) => {
+                    $.ajax({ url: Conf.osm[key].file, dataType: 'text', timeout: 30000 })
+                        .done(resolve).fail((jqXHR, statusText, errorThrown) => reject({ jqXHR, statusText, errorThrown }));
                 });
+                const geojsons = GeoCont.csv2geojson(csv, key);
+                answer = { geojson: geojsons, targets: geojsons.map(() => [key]) };
+                mapMaker.addCopyright(Conf.osm[key].copyright);
             } else {
-                Basic.retry(() => overPassCont.get([key]), 5).then((ovanswer) => {
-                    if (!ovanswer || !Array.isArray(ovanswer.geojson) || ovanswer.geojson.length === 0) {
-                        let modal = {
-                            "title": glot.get("nodata_title"), "message": glot.get("nodata_message"),
-                            "mode": "close", "callback_close": () => winCont.closeModal()
-                        };
-                        winCont.modal_open(modal);
-                    } else {
-                        winCont.closeModal().then(() => {
-                            poiset(key, ovanswer);
-                        })
-                    };
-                });
-            };
+                answer = await Basic.retry(() => overPassCont.get([key]), overPassCont.getRetryCount());
+            }
+            if (!Array.isArray(answer?.geojson) || answer.geojson.length === 0) {
+                throw Object.assign(new Error('No POI data'), { noData: true });
+            }
+        } catch (error) {
+            console.error("mapMaker: addPoi failed", error);
+            await winCont.closeModal();
+            await winCont.modal_open({
+                title: glot.get(error.noData ? "nodata_title" : "sverror_title"),
+                message: glot.get(error.noData ? "nodata_message" : "sverror_message"),
+                mode: "close", callback_close: () => winCont.closeModal()
+            });
+            return;
+        } finally {
+            winCont.spinner(false);
+        }
+        await winCont.closeModal();
+        try { await poiset(key, answer); }
+        catch (error) {
+            console.error("mapMaker: POI processing failed", error);
+            if (winCont.modalMode) await winCont.closeModal();
+            await winCont.modal_open({ title: glot.get("sverror_title"), message: glot.get("sverror_message"),
+                mode: "close", callback_close: () => winCont.closeModal() });
+        }
 
-            function poiset(key, answer) {
-                let geojsons = { geojson: [], targets: [] };
-                answer.geojson.forEach((geojson, idx) => {
-                    // POI用のPoint化で描画・保存元のジオメトリを変えない。
-                    geojson = { ...geojson, geometry: { ...geojson.geometry } };
-                    let geo = geojson.geometry;
-                    let cords; // = geo.coordinates;
-                    cords = GeoCont.multi2flat(geo.coordinates, geo.type);	// ネスト構造のデータをフラット化
-                    cords = GeoCont.flat2single(cords, geo.type);			// エリア/ライン => ポイント
-                    cords = GeoCont.bboxclip([cords], true);				// 画面外のPOIは無視したgeojsonを作成
-                    if (cords.length > 0) {
-                        geojson.geometry.type = "Point";
-                        geojson.geometry.coordinates = cords[0];
-                        geojsons.geojson.push(geojson);
-                        geojsons.targets.push(answer.targets[idx]);
-                    };
-                });
-                poiCont.addGeoJSON(geojsons);
-                winCont.modal_select(key).then((slanswer) => {
-                    poiCont.addGeoJSON(slanswer);
-                    Marker.set(key);
-                    console.log(`mapMaker: Add: ${key} end`);
-                }).catch(() => console.log("addPoi: cancel"));
-            };
-        })
+        async function poiset(key, answer) {
+            let geojsons = { geojson: [], targets: [] };
+            answer.geojson.forEach((geojson, idx) => {
+                // POI用のPoint化で描画・保存元のジオメトリを変えない。
+                geojson = { ...geojson, geometry: { ...geojson.geometry } };
+                let geo = geojson.geometry;
+                let cords; // = geo.coordinates;
+                cords = GeoCont.multi2flat(geo.coordinates, geo.type);	// ネスト構造のデータをフラット化
+                cords = GeoCont.flat2single(cords, geo.type);			// エリア/ライン => ポイント
+                cords = GeoCont.bboxclip([cords], true);				// 画面外のPOIは無視したgeojsonを作成
+                if (cords.length > 0) {
+                    geojson.geometry.type = "Point";
+                    geojson.geometry.coordinates = cords[0];
+                    geojsons.geojson.push(geojson);
+                    geojsons.targets.push(answer.targets[idx]);
+                };
+            });
+            poiCont.addGeoJSON(geojsons);
+            let selected;
+            try { selected = await winCont.modal_select(key); }
+            catch (error) {
+                if (error !== undefined) throw error;
+                return; // Selection cancellation is an ordinary outcome.
+            }
+            poiCont.addGeoJSON(selected);
+            Marker.set(key);
+        }
     }
 
     // delete poi
@@ -819,10 +836,15 @@ class MapMaker {
         let marker = Marker.get(target, osmid);
         if (marker !== undefined) {
             let wiki = marker.mapmaker_lang.split(':');
-            let url = encodeURI(`https://${wiki[0]}.${Conf.osm.wikipedia.domain}/wiki/${wiki[1]}`);
+            if (!/^[a-z][a-z0-9-]{0,31}$/.test(wiki[0])) return;
+            wiki = [wiki[0], wiki.slice(1).join(':')];
+            let url = `https://${wiki[0]}.wikipedia.org/wiki/${encodeURIComponent(wiki[1])}`;
             let pix = map.latLngToLayerPoint(marker.getLatLng());
             let ll2 = map.layerPointToLatLng(pix);
-            Basic.getWikipedia(wiki[0], wiki[1]).then(data => Marker.qr_add(target, osmid, url, ll2, data));
+            return Basic.getWikipedia(wiki[0], wiki[1]).then(data => Marker.qr_add(target, osmid, url, ll2, data)).catch(error => {
+                console.error('Wikipedia article failed', error);
+                winCont.modal_open({ title: glot.get('sverror_title'), message: glot.get('sverror_message'), mode: 'close', callback_close: () => winCont.closeModal() });
+            });
         };
     }
 

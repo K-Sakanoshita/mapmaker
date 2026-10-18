@@ -88,44 +88,76 @@ class initialize {
         document.querySelector("#makeMap button")?.addEventListener("click", dismissIntro, { once: true });
     }
 
-    static init() {
-        window.addEventListener("DOMContentLoaded", function () {
-            console.log("Welcome to MapMaker.");
-            let jqXHRs = [];
-            const FILES = [
-                "./basemenu.html", "./modals.html", "./data/config-system.jsonc", "./data/config-user.jsonc",
-                `./data/category-${LANG}.jsonc`, `./data/marker.jsonc`, './data/overpass-system.jsonc', "./data/leyers.jsonc",
-                `./data/datatables-${LANG}.jsonc`, `./data/marker-addtional.jsonc`, `./data/prefecture.jsonc`, `./data/prefecture-all.jsonc`];
-            for (let key in FILES) { jqXHRs.push($.get(FILES[key])) };
-            $.when.apply($, jqXHRs).always(function () {
-                let menuhtml = arguments[0][0];								// Get Menu HTML
-                $("#modals").html(arguments[1][0]);							// Make Modal HTML
-                for (let i = 2; i <= 11; i++) Conf = Object.assign(Conf, JSON5.parse(arguments[i][0]));	// Make Config Object
-                Conf.category_keys = Object.keys(Conf.category); // Make Conf.category_keys
+    static showError(file, error) {
+        console.error(`MapMaker startup failed: ${file}`, error);
+        const panel = document.createElement("div");
+        panel.setAttribute("role", "alert");
+        panel.style.cssText = "position:fixed;inset:20px;z-index:10000;background:white;color:#222;padding:24px;overflow:auto";
+        const message = document.createElement("p");
+        message.textContent = LANG === "en"
+            ? `Could not load ${file}. Check your connection and reload the page.`
+            : `${file} を読み込めませんでした。接続を確認して、再読み込みしてください。`;
+        const detail = document.createElement("p");
+        detail.textContent = String(error?.message || error);
+        const button = document.createElement("button");
+        button.textContent = LANG === "en" ? "Reload" : "再読み込み";
+        button.addEventListener("click", () => window.location.reload());
+        panel.append(message, detail, button);
+        document.body.appendChild(panel);
+    }
 
-                glot.import("./data/glot.json").then(() => {	// Multi-language support
-                    // document.title = glot.get("title");		// Title(no change / Google検索で日本語表示させたいので)
-                    LayerCont.init();							// LayerCont Initialize
-                    mapMaker.init(menuhtml);					// mapMaker Initialize
-                    SVGCont.init();								// Marker Initialize
-                    // Google Analytics
-                    const analyticsHost = window.location.hostname;
-                    if (Conf.default.GoogleAnalytics !== "") {
-                        $('head').append('<script async src="https://www.googletagmanager.com/gtag/js?id=' + Conf.default.GoogleAnalytics + '"></script>');
-                        window.dataLayer = window.dataLayer || [];
-                        function gtag() { dataLayer.push(arguments); };
-                        gtag('js', new Date());
-                        const cookieDomain = Conf.default.GoogleAnalyticsCookieDomain || "";
-                        const analyticsConfig = cookieDomain === analyticsHost
-                            ? { cookie_domain: cookieDomain }
-                            : {};
-                        gtag('config', Conf.default.GoogleAnalytics, analyticsConfig);
-                    };
-                    glot.render();
-                    initialize.initDailyIntro();
-                });
-            });
-        });
+    static async load() {
+        const FILES = [
+            "./basemenu.html", "./modals.html", "./data/config-system.jsonc", "./data/config-user.jsonc",
+            `./data/category-${LANG}.jsonc`, "./data/marker.jsonc", "./data/overpass-system.jsonc", "./data/leyers.jsonc",
+            `./data/datatables-${LANG}.jsonc`, "./data/marker-addtional.jsonc", "./data/prefecture.jsonc", "./data/prefecture-all.jsonc",
+            "./data/glot.json"
+        ];
+        let currentFile = "initialization";
+        try {
+            const values = await Promise.all(FILES.map(async file => {
+                try {
+                    const response = await fetch(file, { signal: AbortSignal.timeout(30000) });
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    const text = await response.text();
+                    return file.endsWith(".html") ? text
+                        : file.endsWith(".jsonc") ? JSON5.parse(text) : JSON.parse(text);
+                } catch (cause) {
+                    throw Object.assign(new Error(`Failed to load ${file}`, { cause }), { file });
+                }
+            }));
+            // Publish configuration only after every HTML/config/language file is valid.
+            const config = Object.assign({}, ...values.slice(2, 12));
+            config.category_keys = Object.keys(config.category);
+            currentFile = "./data/glot.json";
+            for (const [key, translations] of Object.entries(values[12])) glot.assign(key, translations);
+            Conf = config;
+            $("#modals").html(values[1]);
+            currentFile = "initialization";
+            LayerCont.init();
+            mapMaker.init(values[0]);
+            SVGCont.init();
+            const analyticsHost = window.location.hostname;
+            if (Conf.default.GoogleAnalytics !== "") {
+                $('head').append('<script async src="https://www.googletagmanager.com/gtag/js?id=' + Conf.default.GoogleAnalytics + '"></script>');
+                window.dataLayer = window.dataLayer || [];
+                function gtag() { dataLayer.push(arguments); }
+                gtag('js', new Date());
+                const cookieDomain = Conf.default.GoogleAnalyticsCookieDomain || "";
+                gtag('config', Conf.default.GoogleAnalytics, cookieDomain === analyticsHost ? { cookie_domain: cookieDomain } : {});
+            }
+            glot.render();
+            initialize.initDailyIntro();
+            return true;
+        } catch (error) {
+            initialize.showError(error.file || currentFile, error.cause || error);
+            return false;
+        }
+    }
+
+    static init() {
+        const start = () => initialize.load();
+        if (document.readyState === "loading") window.addEventListener("DOMContentLoaded", start, { once: true });
+        else start();
     }
 }
-
