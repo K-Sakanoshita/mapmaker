@@ -1,7 +1,7 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
-const source = fs.readFileSync('lib/maplibre-adapter.js', 'utf8');
+const source = fs.readFileSync('lib/renderers/maplibre/adapter.js', 'utf8');
 const defaults = [{ zoom: 14, pitch: 20 }, { zoom: 16, pitch: 35 }, { zoom: 18, pitch: 50 }];
 function create(stops, restored = { zoom: 18, pitch: 45 }) {
     class NativeMap {

@@ -1,9 +1,12 @@
+const readSource = require('./helpers/lib-source.cjs').read;
 const assert = require('node:assert/strict'), fs = require('node:fs'), vm = require('node:vm');
 const geometry = {type:'Polygon',coordinates:[[[139,35],[139.001,35],[139.001,35.001],[139,35]]]};
 const original = [
     {id:'background',type:'background',paint:{'background-color':'#fafafa'}},
     {id:'building',type:'fill',source:'vector','source-layer':'building',paint:{'fill-color':'#ccc'}},
     {id:'building-3d',type:'fill-extrusion',source:'vector','source-layer':'building',filter:['all',['!has','hide_3d']],paint:{'fill-extrusion-color':'#ccc'}},
+    {id:'road_minor_casing',type:'line',source:'vector','source-layer':'transportation',paint:{'line-color':'#aaa','line-width':1,'line-gap-width':{stops:[[14,2.5],[20,18]]}}},
+    {id:'road_minor',type:'line',source:'vector','source-layer':'transportation',paint:{'line-color':'#fff','line-width':4}},
     {id:'labels',type:'symbol',source:'vector','source-layer':'building',layout:{visibility:'visible'},paint:{'text-color':'#444'}}
 ];
 const layers = new Map(original.map(layer => [layer.id,structuredClone(layer)])), states = new Map(); let sourceAdds = 0;
@@ -20,12 +23,14 @@ const box = vm.createContext({ console, Layers:{background:{color:'#fff',opacity
     Conf:{default:{birdseye:{defaultHeight:3}},style:{color:{building:{}}}},LayerCont:{palette:'color'},
     SVGCont:{svg_style:()=>({color:'#999',fillColor:'#abc',weight:.5})}
 });
-vm.runInContext(fs.readFileSync('lib/geolib.js','utf8'),box);
-vm.runInContext(fs.readFileSync('lib/maplibre-vector-editor.js','utf8'),box);
+vm.runInContext(readSource('@feature-core','utf8'),box);
+vm.runInContext(fs.readFileSync('lib/renderers/maplibre/vector-editor.js','utf8'),box);
 const Vector = vm.runInContext('MapLibreVectorEditor',box), view={gl,threeD:false,vectorBasemapStyleLayers:original}, vector=new Vector(view);
 const bindings=vector.bind(models);
 assert.equal(layers.get('labels').layout.visibility,'visible','existing map stays visible until supplemental data is ready');
 vector.activate(models);
+assert.equal(layers.get('road_minor_casing').paint['line-gap-width'],0,'editing removes inherited casing gap');
+assert.equal(layers.get('road_minor').paint['line-gap-width'],0);
 assert.equal(bindings.has(123),true,'typed base-10 ID is verified against OSM geometry');
 assert.equal(bindings.has(124),true,'legacy base-10 ID is verified against OSM geometry');
 assert.equal(bindings.has(125),false,'unmatched OSM model must be rendered in supplemental data');
@@ -55,11 +60,17 @@ assert.deepEqual(Array.from(layers.get('building-3d').filter[2][2][1]),[],'tile 
 view.threeD=false;
 const ambiguous = new Map([['way/123',[models.get(123)]],['relation/123',[{...models.get(123),feature:{...models.get(123).feature,id:'relation/123'}}]]]);
 assert.equal(vector.match({id:1230,geometry,properties:{}},'building',ambiguous),null,'ambiguous IDs are not bound to a different OSM object');
+for(const layer of [1,2,-1]){
+ const raised={...models.get(123),feature:{...models.get(123).feature,properties:{layer:String(layer)}}};
+ assert.equal(vector.canRender({id:1232,geometry,properties:{}},'building',raised),false,'non-ground levels use authoritative geometry ordering');
+}
 const distant={type:'Polygon',coordinates:[[[140,36],[140.001,36],[140.001,36.001],[140,36]]]};
 assert.equal(vector.match({id:1232,geometry:distant,properties:{}},'building',new Map([['way/123',[models.get(123)]]])),null,'same ID at a different location is rejected');
 assert.deepEqual(JSON.parse(JSON.stringify(Vector.filterExpression(['all',['!has','hide_3d'],['in','class','primary','trunk']]))),
     ['all',['!',['has','hide_3d']],['in',['get','class'],['literal',['primary','trunk']]]]);
 vector.clear();
+assert.deepEqual(layers.get('road_minor_casing').paint['line-gap-width'],original.find(l=>l.id==='road_minor_casing').paint['line-gap-width'],'reset restores original zoom-dependent casing gap');
+assert.equal(layers.get('road_minor').paint['line-gap-width'],null,'unset original gap is restored');
 assert.equal(states.size,0);assert.equal(layers.size,original.length);
 assert.equal(layers.get('building-3d').paint['fill-extrusion-color'],'#ccc');
 assert.equal(layers.get('labels').layout.visibility,'visible');

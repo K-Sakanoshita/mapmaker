@@ -14,7 +14,7 @@
 </div></section><div id="saveMap"><button type="button">Save</button></div></div></section></div>
 <div id="mapid"></div><pre id="result">PENDING</pre>
 <script>const glot={get:key=>({rough_style:'手書き風',button_ok:'OK'}[key]||key)},map={getContainer:()=>document.querySelector('#mapid'),closePopup(){}};</script>
-<script src="../lib/line-width-panel.js"></script><script src="../lib/rough-style-panel.js"></script><script src="../mapmaker.js"></script>
+<script src="../lib/ui/line-width-panel.js"></script><script src="../lib/ui/rough-style-panel.js"></script><script src="../mapmaker.js"></script>
 <script>
 try {
  const checks=[];const check=(name,ok)=>{if(!ok)throw Error(name);checks.push(name)};

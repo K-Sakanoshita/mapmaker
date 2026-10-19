@@ -1,3 +1,4 @@
+const readSource = require('./helpers/lib-source.cjs').read;
 const assert = require('node:assert/strict'), fs = require('node:fs'), vm = require('node:vm');
 (async () => {
     const layers = new Map(), states = new Map(), sources = new Map(), filterCalls = []; let sourceAdds = 0, clicked = 0, diffs = [], holdIdle = false, releaseIdle;
@@ -6,20 +7,20 @@ const assert = require('node:assert/strict'), fs = require('node:fs'), vm = requ
         setPaintProperty(id, key, value) { layers.get(id).paint[key] = value; },
         setLayoutProperty(id, key, value) { (layers.get(id).layout ||= {})[key] = value; }, getLayer: id => layers.get(id),
         addLayer: layer => layers.set(layer.id, layer), removeLayer: id => layers.delete(id),
-        getSource: id => sources.get(id), addSource(id, source) { sourceAdds++; sources.set(id, { ...source, updateData(diff) { diffs.push(diff); } }); },
+        getSource: id => sources.get(id), addSource(id, source) { sourceAdds++; sources.set(id, { ...source, setData(data) { this.data=data; }, updateData(diff) { diffs.push(diff); } }); },
         removeSource: id => sources.delete(id), setFeatureState: (target, state) => states.set(target.id, state),
         queryRenderedFeatures: () => [{ properties: { clickId: 7 } }] };
     const model = { id: 7, feature: { type: 'Feature', properties: { building: 'yes' }, geometry: { type: 'Polygon', coordinates: [[[139,35],[139.001,35],[139,35.001],[139,35]]] } },
         options: { fillColor: '#e5dfdad9', color: '#bbb', opacity: 1, fillOpacity: 1, weight: .8 },
         mapmaker: { key: 'building', id: 0, drawOrder: { osmLayer: 0, styleOrder: 5, passOrder: 0, featureOrder: 0 } }, click() { clicked++; } };
     const view = { gl, features: new Map([[7,model]]), threeD: true };
-    const box = vm.createContext({ console, queueMicrotask, setTimeout, MapLibreBuildingOutlines: class { constructor() { this.id = 'test-outline'; } async prepare() {} update() {} updateMany() {} }, mapMaker: { customMode: true, nativeEditorEnabled: () => true },
+    const box = vm.createContext({ console, queueMicrotask, setTimeout, MapLibreMeshRenderer: class { constructor() { this.id = 'test-outline'; } async prepare() {} update() {} updateMany() {} }, mapMaker: { customMode: true, nativeEditorEnabled: () => true },
         SVGCont: { svg_style: () => ({ fillColor: '#eeeeee', color: '#cccccc', weight: 2 }) },
         LayerCont: { palette: 'color' }, Conf: { default: { birdseye: { defaultHeight: 3 } } }, Layers: { building: { opacity: '', svg: [model] } },
         chroma: value => ({ hex: () => value.slice(0,7), css: () => value, alpha: () => .85 }) });
-    vm.runInContext(fs.readFileSync('lib/geolib.js','utf8'), box);
-    vm.runInContext(fs.readFileSync('lib/maplibre-vector-editor.js','utf8'), box);
-    vm.runInContext(fs.readFileSync('lib/maplibre-editor.js','utf8'), box);
+    vm.runInContext(readSource('@feature-core','utf8'), box);
+    vm.runInContext(fs.readFileSync('lib/renderers/maplibre/vector-editor.js','utf8'), box);
+    vm.runInContext(fs.readFileSync('lib/renderers/maplibre/editor.js','utf8'), box);
     const Renderer = vm.runInContext('MapLibreEditorRenderer', box), renderer = new Renderer(view);
     await renderer.sync();
     assert.equal(sources.get(renderer.sourceId).data.features[0].properties.height, 3);
@@ -44,7 +45,8 @@ const assert = require('node:assert/strict'), fs = require('node:fs'), vm = requ
     assert.equal(view.features.get(7), originalModel, 'category change preserves editable models');
     assert.equal(model.options.fillColor, '#eeeeee', 'export model receives new color');
     const extrusion = [...layers.values()].find(l => l.source === renderer.sourceId && l.type === 'fill-extrusion');
-    assert.equal(extrusion.paint['fill-extrusion-color'], '#eeeeee');
+    assert.ok(JSON.stringify(extrusion.paint['fill-extrusion-color']).includes('feature-state'));
+    assert.equal(states.get(model.id).solidFill, '#eeeeee');
     box.LayerCont.palette = 'coloring'; renderer.refreshCategory('building');
     assert.equal(extrusion.paint['fill-extrusion-opacity'], 0, 'coloring hides roofs and sides');
     box.LayerCont.palette = 'color'; renderer.refreshCategory('building');
@@ -146,13 +148,46 @@ const assert = require('node:assert/strict'), fs = require('node:fs'), vm = requ
     assert.equal(sources.get(renderer.sourceId).data.features[0].geometry.type, 'LineString');
     view.threeD = true;
     console.log('PASS hedge live extrusion, default and explicit height, configured color, hide and flat 2D');
+    const fence = { ...wall, feature: { ...wall.feature, properties: { barrier: 'fence', height: '2.4' } } };
+    view.features = new Map([[9, fence]]); view.threeD = true;
+    let fenceZoom=19.1,fencePitch=25;view.getZoom=()=>fenceZoom;view.getPitch=()=>fencePitch;
+    await renderer.sync();
+    assert.equal(sources.get(renderer.sourceId).data.features[0].properties.height, 2.4);
+    assert.ok(renderer.buildings.has(9));
+    assert.equal(renderer.needsSync(),false);fenceZoom=20;assert.equal(renderer.needsSync(),true);fenceZoom=19.1;
+    fencePitch=40;assert.equal(renderer.needsSync(),true);fencePitch=25;
+    assert.ok(!renderer.entries.some(entry=>entry.group.openBarrier && entry.type==='fill-extrusion'),'fence mesh must not have an opaque native panel');
+    view.threeD = false; await renderer.sync();
+    assert.equal(sources.get(renderer.sourceId).data.features[0].geometry.type,'LineString');
+    view.threeD = true;
+    delete view.getZoom;delete view.getPitch;
+    console.log('PASS fence uses open mesh in 3D, adapts to zoom/pitch and preserves the original 2D line');
+    const rope = { ...wall, feature: { ...wall.feature, properties: { barrier: 'rope' } } };
+    view.features = new Map([[9, rope]]); view.threeD = true;
+    await renderer.sync();
+    assert.equal(sources.get(renderer.sourceId).data.features[0].properties.height,1);
+    assert.ok(!renderer.entries.some(entry=>entry.group.openBarrier&&entry.type==='fill-extrusion'));
+    view.threeD = false; await renderer.sync();
+    assert.equal(sources.get(renderer.sourceId).data.features[0].geometry.type,'LineString');
+    view.threeD = true;
     const retainingWall = { ...wall, feature: { ...wall.feature, properties: { barrier: 'retaining_wall', height: '4' } } };
     view.features = new Map([[9, retainingWall]]);
     await renderer.sync();
-    assert.equal(sources.get(renderer.sourceId).data.features[0].geometry.type, 'LineString');
+    assert.equal(sources.get(renderer.sourceId).data.features[0].geometry.type, 'MultiLineString');
+    assert.equal(sources.get(renderer.sourceId).data.features[1].geometry.type, 'MultiPolygon');
     assert.ok([...layers.values()].some(l => l.source === renderer.sourceId && l.type === 'line'));
+    assert.ok([...layers.values()].some(l => l.source === renderer.sourceId && l.type === 'fill'));
+    const oldCount=sources.get(renderer.sourceId).data.features[1].geometry.coordinates.length;
+    view.getZoom=()=>20;renderer.refreshRetainingSymbols();
+    assert.ok(sources.get(renderer.sourceId).data.features[1].geometry.coordinates.length>oldCount,'zoom regenerates symbol spacing');
+    retainingWall.options.opacity=0;renderer.update(retainingWall);
+    assert.equal(states.get('9-retaining-symbols').fillOpacity,0,'hide applies to the line and triangles');
+    retainingWall.options.opacity=1;renderer.update(retainingWall);
+    view.threeD=false;await renderer.sync();
+    assert.equal(sources.get(renderer.sourceId).data.features.length,2,'2D uses the same line and low-side triangles');
+    view.threeD=true;
     assert.equal([...layers.values()].some(l => l.source === renderer.sourceId && l.type === 'fill-extrusion'), false,
-        'retaining walls stay flat even with a height tag in 3D mode');
+        'retaining walls remain flat symbols in 3D');
     console.log('PASS wall extrusion, default/explicit heights, brown color, hide/restore and original 2D line');
     view.features = new Map([[9, wall], [8, rail]]);
     await renderer.sync();
@@ -182,10 +217,10 @@ const assert = require('node:assert/strict'), fs = require('node:fs'), vm = requ
     box.Layers.garden = { opacity: '', svg: [tree] }; view.features = new Map([[10, tree]]);
     await renderer.sync();
     const treeFeatures = sources.get(renderer.sourceId).data.features;
-    assert.equal(treeFeatures.length, 5, 'one tree produces a trunk and four tapering crown bands');
+    assert.equal(treeFeatures.length, 2, 'one tree produces a trunk and one conical crown');
     const crown = treeFeatures.find(f => f.id === 10), trunk = treeFeatures.find(f => f.id === '10-trunk');
-    assert.ok(Math.abs(treeFeatures.find(f => f.id === '10-crown-3').properties.height - 6) < 1e-12); assert.ok(Math.abs(crown.properties.base - 1.8) < 1e-12);
-    assert.equal(trunk.properties.base, 0); assert.ok(Math.abs(trunk.properties.height - 2.1) < 1e-12);
+    assert.ok(Math.abs(crown.properties.height - 6) < 1e-12); assert.ok(Math.abs(crown.properties.base - 2.7) < 1e-12);
+    assert.equal(trunk.properties.base, 0); assert.ok(Math.abs(trunk.properties.height - 3) < 1e-12);
     assert.equal(trunk.properties.solidFill, '#8b6b4a'); assert.equal(crown.properties.solidFill, '#9fc89d');
     assert.ok(treeFeatures.every(f => f.properties.clickId === 10));
     tree.options.opacity = 0; renderer.update(tree);
@@ -193,15 +228,43 @@ const assert = require('node:assert/strict'), fs = require('node:fs'), vm = requ
     for (const entry of renderer.entries) assert.ok(JSON.stringify(layers.get(entry.id).filter).includes('[10]'));
     tree.options.opacity = 1; renderer.update(tree);
     assert.equal(states.get('10-trunk').opacity, 1);
-    for (const part of ['crown-1','crown-2','crown-3']) assert.equal(states.get(`10-${part}`).opacity, 1);
+    assert.equal(states.get(10).opacity,1);
+    assert.equal(renderer.entries.filter(entry=>entry.type==='fill-extrusion').length,1,'only the trunk uses an extrusion; the crown uses a mesh');
     box.LayerCont.palette = 'mono'; renderer.refreshCategory('garden');
     const trunkEntry = renderer.entries.find(entry => entry.group.treePart === 'trunk');
-    assert.equal(layers.get(trunkEntry.id).paint['fill-extrusion-color'], '#777775');
+    assert.ok(JSON.stringify(layers.get(trunkEntry.id).paint['fill-extrusion-color']).includes('feature-state'));
+    assert.equal(states.get('10-trunk').solidFill, '#777775');
     view.threeD = false; await renderer.sync();
     assert.equal(sources.get(renderer.sourceId).data.features.length, 1, '2D uses the original tree circle only');
     assert.equal([...layers.values()].some(l => l.source === renderer.sourceId && l.type === 'fill-extrusion'), false);
     assert.equal(treePoint.properties.height, '6 m', 'source tags are unchanged');
     console.log('PASS tree trunk/crown, tagged height, edit identity, hide/restore, mono palette and 2D switch');
+    const footprint=[[[139,35],[139.001,35],[139.001,35.001],[139,35.001],[139,35]]];
+    const volume=(id,properties,coordinates=footprint)=>({id,feature:{type:'Feature',id:`way/${id}`,properties,geometry:{type:'Polygon',coordinates}},
+        options:{fillColor:'#ddd',color:'#aaa',opacity:1,fillOpacity:1,weight:1},
+        mapmaker:{key:'building',id:0,drawOrder:{osmLayer:0,styleOrder:5,passOrder:0,featureOrder:id}}});
+    const outlineModel=volume(20,{building:'yes',height:'99'}),partModel=volume(21,{'building:part':'yes',height:'12',min_height:'3'});
+    view.features=new Map([[20,outlineModel],[21,partModel]]);view.threeD=true;
+    await renderer.sync();
+    let volumes=sources.get(renderer.sourceId).data.features;
+    assert.equal(volumes.length,1);assert.equal(volumes[0].properties.modelId,21);assert.equal(volumes[0].properties.base,3);assert.equal(volumes[0].properties.height,12);
+    assert.equal(renderer.needsSync(),false,'suppressed outlines remain accounted for without causing rebuild loops');
+    view.threeD=false;await renderer.sync();
+    volumes=sources.get(renderer.sourceId).data.features;
+    assert.equal(volumes.length,1);assert.equal(volumes[0].properties.modelId,20,'2D restores the outline and hides the contained part');
+    view.threeD=true;await renderer.sync();assert.equal(sources.get(renderer.sourceId).data.features[0].properties.modelId,21);
+    outlineModel.feature.properties.height='30.8';
+    partModel.feature.properties.height='38';partModel.feature.properties.min_height='30.8';
+    view.features=new Map([[20,{...outlineModel}],[21,{...partModel}]]);
+    await renderer.sync();volumes=sources.get(renderer.sourceId).data.features;
+    assert.equal(volumes.length,2,'roof-mounted tower retains the supporting hotel in native rendering');
+    assert.equal(volumes.find(f=>f.properties.modelId===20).properties.height,30.8);
+    assert.equal(volumes.find(f=>f.properties.modelId===21).properties.base,30.8);
+    view.threeD=false;await renderer.sync();
+    assert.equal(sources.get(renderer.sourceId).data.features.length,1,'2D keeps only the supporting footprint');
+    view.threeD=true;await renderer.sync();
+    assert.equal(sources.get(renderer.sourceId).data.features.length,2,'restoring 3D restores both supporting and mounted volumes');
+    console.log('PASS building parts share top/base heights, suppress the parent only in 3D, preserve editor model identity and restore the 2D outline');
     renderer.clear();
     assert.equal(sources.size, 0); assert.equal(layers.size, 0);
     console.log('PASS persistent renderer shares heights, uses feature-state updates, supports 2D/3D, hit testing and cleanup');

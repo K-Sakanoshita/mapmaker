@@ -54,27 +54,42 @@ class MapMaker {
         return header;
     }
 
-    previewBusy(busy) {
-        // Initial download, native rendering and rough preview share the loading modal.
-        const showOverlay = busy && !this.loadingMap;
-        let status = document.getElementById('mapmakerRenderStatus');
-        if (!status && showOverlay) {
-            status = document.createElement('div');
-            status.id = 'mapmakerRenderStatus';
-            status.className = 'export-processing';
-            status.setAttribute('role', 'status');
-            status.setAttribute('aria-live', 'polite');
-            const message = document.createElement('div');
-            message.className = 'export-processing-message';
-            const spinner = document.createElement('span');
-            spinner.className = 'spinner-border spinner-border-sm';
-            spinner.setAttribute('aria-hidden', 'true');
-            const text = document.createElement('span');
-            text.textContent = glot.get('processing_message');
-            message.append(spinner, text); status.append(message);
-            document.body.append(status);
+    beginProcessing(messageKey = 'processing_message') {
+        const token = {};
+        this.processingRequests ||= new Map();
+        this.processingRequests.set(token, messageKey);
+        this.updateProcessingDialog();
+        return token;
+    }
+
+    endProcessing(token) {
+        this.processingRequests?.delete(token);
+        this.updateProcessingDialog();
+    }
+
+    updateProcessingDialog() {
+        const busy = !!this.processingRequests?.size;
+        const dialog = document.getElementById('processingDialog');
+        dialog?.classList.toggle('d-none', !busy);
+        dialog?.setAttribute('aria-busy', String(busy));
+        if (!busy) return;
+        const keys = [...this.processingRequests.values()];
+        const key = keys.includes('export_processing') ? 'export_processing' : keys[keys.length - 1];
+        const message = document.getElementById('processingDialogMessage');
+        if (message) {
+            message.setAttribute('glot-model', key);
+            message.textContent = glot.get(key);
         }
-        status?.classList.toggle('d-none', !showOverlay);
+    }
+
+    previewBusy(busy) {
+        // Acquisition already owns its loading dialog; other rendering uses the shared overlay.
+        const show = busy && !this.loadingMap;
+        if (show && !this.renderProcessingToken) this.renderProcessingToken = this.beginProcessing();
+        if (!show && this.renderProcessingToken) {
+            this.endProcessing(this.renderProcessingToken);
+            this.renderProcessingToken = null;
+        }
         map.getContainer().setAttribute('aria-busy', String(busy));
     }
 
@@ -155,10 +170,8 @@ class MapMaker {
     }
 
     closeRoughPreviewModal() {
-        const modal = this.roughPreviewModal;
-        this.roughPreviewModal = null;
-        // A later dialog may have reused the shared modal; only close our own instance.
-        if (modal && winCont.modal === modal && winCont.modalMode) return winCont.closeModal();
+        this.endProcessing(this.roughPreviewProcessingToken);
+        this.roughPreviewProcessingToken = null;
     }
 
     queueRoughPreview() {
@@ -196,11 +209,9 @@ class MapMaker {
         container.setAttribute('aria-busy', 'true');
         let url;
         try {
-            if (!winCont.modalMode) {
-                const message = `<span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>${glot.get('processing_message')}`;
-                const opening = winCont.modal_open({ title: '', message, mode: '', compact: true });
-                this.roughPreviewModal = winCont.modal;
-                await opening;
+            if (!winCont.modalMode && !this.roughPreviewProcessingToken) {
+                this.roughPreviewProcessingToken = this.beginProcessing();
+                await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
             }
             if (!current()) return;
             // Preview and default downloads cover the same complete map.
@@ -254,15 +265,22 @@ class MapMaker {
             LayerCont.updateLayerVisibility(key, visible);
             return;
         }
-        const message = `<div class="d-flex align-items-center gap-2"><span class="spinner-border spinner-border-sm" aria-hidden="true"></span><span>${glot.get("processing_message")}</span></div>`;
-        await winCont.modal_open({ title: "", message, mode: "", compact: true });
+        const processing = this.beginProcessing();
         await new Promise(resolve => requestAnimationFrame(() => setTimeout(resolve, 0)));
         try {
             LayerCont.updateLayerVisibility(key, visible);
         } finally {
             await new Promise(resolve => requestAnimationFrame(resolve));
-            await winCont.closeModal();
+            this.endProcessing(processing);
         }
+    }
+
+    async season_change(value) {
+        LayerCont.season = Object.hasOwn(Conf.seasons || {},value) ? value : 'normal';
+        document.getElementById('mapSeason').value = LayerCont.season;
+        const select = document.getElementById('mapSeason');
+        select.disabled = true;
+        try { await this.queueExportPreview(); } finally { select.disabled = false; }
     }
 
     rough_change(previewDelay = 0) {
@@ -380,13 +398,13 @@ class MapMaker {
                     Layers[key].opacity = 1;
                     Layers[key].color = ev.hex;
                     Layers[key].color_dark = chroma(ev.hex).darken(Conf.default.ColorDarken).hex();
-                    if (document.getElementById(key + "_line") !== null) Layers[key].width = document.getElementById(key + "_line").value; //width;
+                    if (document.getElementById(key + "_line") !== null) LayerState.setWidth(Layers[key], document.getElementById(key + "_line").value); //width;
                     LayerCont.updateLayer(key);
                 });
 
                 // 幅変更時のイベント定義
                 $(key_line).on('change', (event) => {
-                    Layers[key].width = event.target.value; //width;
+                    LayerState.setWidth(Layers[key], event.target.value); //width;
                     LayerCont.updateLayerWidth(key);
                 });
                 const widthButton = document.getElementById(key + "_line");
@@ -525,11 +543,11 @@ class MapMaker {
     }
 
     positionView(threeD) {
-        map.gl.easeTo({ pitch: threeD ? 30 : 0, duration: 300 });
+        map.setPitch(threeD ? 30 : 0, 300);
     }
 
     syncPositionView() {
-        const threeD = map.gl.getPitch() > 0;
+        const threeD = map.getPitch() > 0;
         for (const [id, active] of [['position2D', !threeD], ['position3D', threeD]]) {
             const button = document.getElementById(id);
             button?.setAttribute('aria-pressed', String(active));
@@ -566,7 +584,7 @@ class MapMaker {
             winCont.modal_text(def_msg, false);
         };
         for (let key of LayerCont.styles) if (Conf.style[LayerCont.palette][key].zoom <= nowzoom) targets.push(key);
-        Basic.retry(() => overPassCont.get(targets, progress), overPassCont.getRetryCount()).then(async (ovanswer) => {
+        Basic.retry(() => overPassCont.get(targets, progress, nowzoom), overPassCont.getRetryCount()).then(async (ovanswer) => {
             winCont.modal_text("Data Loading Complete...", false);
             await waitPaint();
             for (const target of targets) {
@@ -654,8 +672,8 @@ class MapMaker {
             await mapMaker.queueExportPreview();
             // sync後に有効化されるベクタースタイルも画面へ反映してから閉じる。
             await new Promise(resolve => {
-                map.gl.once('idle', resolve);
-                map.gl.triggerRepaint();
+                map.once('idle', resolve);
+                map.repaint();
             });
             await this.finishInitialRoughPreview();
             await loadingModal;
@@ -669,7 +687,7 @@ class MapMaker {
             await winCont.closeModal();
             const modal = {
                 "title": glot.get("sverror_title"),
-                "message": glot.get("sverror_message"),
+                "message": glot.get(error?.code === "MAP_DATA_LIMIT" ? "map_data_limit" : "sverror_message"),
                 "mode": "close",
                 "callback_close": () => winCont.closeModal()
             };
@@ -880,7 +898,7 @@ class MapMaker {
                 ["dragging", "zoomControl", "scrollWheelZoom", "touchZoom"].forEach(key => map[key].disable());
                 $("#search_input").attr('disabled', 'disabled');
                 MapCont.stop();
-                Birdseye.setEnabled(map.gl.getPitch() > 0);
+                Birdseye.setEnabled(map.getPitch() > 0);
                 Object.keys(this.maps).forEach(key => { if (map.hasLayer(this.maps[key])) { Layers["MAP"] = this.maps[key]; map.removeLayer(this.maps[key]) } });	// remove select layer
                 if (Layers.background.opacity === 0) {		// set background
                     $("#mapid").addClass("bg-clear");
@@ -936,11 +954,10 @@ class MapMaker {
 
         // 保存中の全面オーバーレイが地図を覆う前に、地図・用紙の範囲を確定する。
         const exportRect = this.captureExportRect(this.selectMode);
-        const processing = document.getElementById("exportProcessing");
         const saveButtons = document.querySelectorAll('#saveMap button, #controlMenu [onclick="Birdseye.open()"], #birdseyeModal button, #birdseyeModal input');
         const disabledBeforeSave = new Map([...saveButtons].map(button => [button, button.disabled]));
         this.exportInProgress = true;
-        processing?.classList.remove("d-none");
+        const processing = this.beginProcessing('export_processing');
         saveButtons.forEach(button => button.disabled = true);
 
         // オーバーレイを描画してから、重い書き出し処理を始める。
@@ -952,7 +969,7 @@ class MapMaker {
             console.error("save: export failed", error);
             window.alert(glot.get("export_error"));
         } finally {
-            processing?.classList.add("d-none");
+            this.endProcessing(processing);
             saveButtons.forEach(button => button.disabled = disabledBeforeSave.get(button));
             if (this.roughPreviewLocked) this.setRoughPreviewLock(true);
             this.exportInProgress = false;

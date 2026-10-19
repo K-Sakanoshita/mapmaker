@@ -119,25 +119,41 @@
                             <input type="checkbox" id="modal_select_facility">
                             <label for="modal_select_facility" id="modal_select_facilityname"></label>
                         </div>
-                        <div class="d-flex align-items-center gap-2">
-                            <label for="modal_select_size" glot-model="icon_text_size"></label>
-                            <select class="form-control icon-text-size" id="modal_select_size">
-                            <option value="9">9</option>
-                            <option value="10">10</option>
-                            <option value="12">12</option>
-                            <option value="14">14</option>
-                            <option value="16">16</option>
-                            <option value="18">18</option>
-                            <option value="20">20</option>
-                            <option value="24">24</option>
-                            <option value="32">32</option>
-                            <option value="42">42</option>
-                            <option value="54">54</option>
-                            <option value="68">68</option>
-                            <option value="84">84</option>
-                            <option value="102">102</option>
+                    </div>
+                    <div class="icon-size-options">
+                        <label for="modal_select_size_preset" glot-model="icon_text_size"></label>
+                        <select class="form-select" id="modal_select_size_preset">
+                            <option value="12" glot-model="marker_size_small"></option>
+                            <option value="14" glot-model="marker_size_standard"></option>
+                            <option value="18" glot-model="marker_size_large"></option>
+                            <option value="custom" glot-model="icon_size_custom"></option>
                         </select>
+                        <div class="icon-size-preview" role="img" id="modal_select_size_preview">
+                            <img id="modal_select_preview_icon" alt="">
+                            <span class="icon" id="modal_select_preview_name"></span>
                         </div>
+                        <details id="modal_select_size_details">
+                            <summary glot-model="icon_size_details"></summary>
+                            <div class="d-flex align-items-center gap-2 mt-1">
+                                <label for="modal_select_size" glot-model="icon_size_pixels"></label>
+                                <select class="form-select icon-text-size" id="modal_select_size">
+                                    <option value="9">9px</option>
+                                    <option value="10">10px</option>
+                                    <option value="12">12px</option>
+                                    <option value="14">14px</option>
+                                    <option value="16">16px</option>
+                                    <option value="18">18px</option>
+                                    <option value="20">20px</option>
+                                    <option value="24">24px</option>
+                                    <option value="32">32px</option>
+                                    <option value="42">42px</option>
+                                    <option value="54">54px</option>
+                                    <option value="68">68px</option>
+                                    <option value="84">84px</option>
+                                    <option value="102">102px</option>
+                                </select>
+                            </div>
+                        </details>
                     </div>
                     <div class="icon-selection-actions d-flex gap-2">
                         <button type="button" id="modal_select_all_select" class="btn btn-light"
@@ -179,9 +195,19 @@
             </select>
         </div>
         <section class="col-12 rough-controls d-none" id="roughControls">
-            <div class="rough-controls-toggle form-check form-switch d-flex align-items-center justify-content-between">
-                <button type="button" id="roughSettingsButton" class="rough-settings-button fw-medium" aria-haspopup="dialog" aria-expanded="false" onclick="RoughStylePanel.open()" glot-model="rough_style"></button>
-                <input class="form-check-input float-none m-0" type="checkbox" role="switch" id="rough_enabled" aria-labelledby="roughSettingsButton" onchange="RoughStylePanel.toggle()">
+            <div class="map-style-controls">
+                <div class="map-style-row rough-controls-toggle form-check form-switch">
+                    <button type="button" id="roughSettingsButton" class="rough-settings-button fw-medium" aria-haspopup="dialog" aria-expanded="false" onclick="RoughStylePanel.open()" glot-model="rough_style"></button>
+                    <input class="form-check-input float-none m-0" type="checkbox" role="switch" id="rough_enabled" aria-labelledby="roughSettingsButton" onchange="RoughStylePanel.toggle()">
+                </div>
+                <div class="map-style-row">
+                    <label for="mapSeason" class="text-nowrap" glot-model="map_season">季節</label>
+                    <select id="mapSeason" class="form-select form-select-sm w-auto" onchange="mapMaker.season_change(this.value)">
+                        <option value="normal" glot-model="season_normal" selected>通常</option>
+                        <option value="spring" glot-model="season_spring">春</option>
+                        <option value="autumn" glot-model="season_autumn">秋</option>
+                    </select>
+                </div>
             </div>
             <div id="roughParameters" class="d-none">
                 <div class="px-2 py-1 border-bottom">

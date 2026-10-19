@@ -1,3 +1,4 @@
+const readSource = require('./helpers/lib-source.cjs').read;
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 (async()=>{
  let bounds={west:135,south:34,east:135.02,north:34.02};
@@ -5,7 +6,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
  const node=id=>{if(!nodes.has(id)){const classes=new Set();nodes.set(id,{value:'',checked:false,textContent:'',classList:{add:c=>classes.add(c),remove:c=>classes.delete(c),contains:c=>classes.has(c)},setAttribute(){}});}return nodes.get(id);};
  const box=vm.createContext({console:{log(){}},map:{getBounds:()=>({getNorthWest:()=>({lng:bounds.west,lat:bounds.north}),getSouthEast:()=>({lng:bounds.east,lat:bounds.south})})},document:{getElementById:node},glot:{get:k=>k==='icon_limit_message'?'limit={limit};count={count}':k},Conf:{default:{text:{size:16,view:true}},effect:{icon:{preset:'standard'}},icon:{maxCount:1}},mapMaker:{basemenuWindowMode:'normal',applyBasemenuWindowSize(){}},Marker:{set_size(){},setAppearance(){}}});
  for(const name of ['modal_select_facilityname','modal_select_size','modal_select_facility','modal_select_all_select','modal_select_all_deselect','modal_select_error','modal_select_ok','modal_select_cancel'])box[name]=node(name);
- for(const name of ['lib/geolib.js','lib/poislib.js','lib/winlib.js'])vm.runInContext(fs.readFileSync(name,'utf8'),box);
+ for(const name of ['@feature-core','lib/application/poi-controller.js','lib/ui/window-controller.js'])vm.runInContext(readSource(name,'utf8'),box);
  box.GeoCont=vm.runInContext('new GeoControl()',box);
  const pois=box.poiCont=vm.runInContext('new poiControl()',box);pois.getCatnames=()=>['shop','',''];
  const point=(id,lng,lat)=>({type:'Feature',id,properties:{name:id,shop:'electronics'},geometry:{type:'Point',coordinates:[lng,lat]}});
@@ -27,6 +28,8 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
  let currentRows;
  box.DataList={init(){},view_select:target=>{currentRows=pois.list(target);},table:()=>({rows:()=>({data:()=>({toArray:()=>currentRows})}),columns:{adjust(){}}}),indexes:()=>currentRows.filter(r=>r.osmid==='inside-b')};
  const win=vm.runInContext('new WinCont()',box);
+ // Size preview is exercised with the real DOM in browser-icon-size.cjs.
+ win.setupIconSize=()=>{};
  const pending=win.modal_select('shop');
  node('modal_select_ok').onclick();
  assert.match(node('modal_select_error').textContent,/limit=1;count=2/,'off-screen placed icons must still count toward the limit');

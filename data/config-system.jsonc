@@ -5,6 +5,23 @@
         "maxCount": 100
     },
     "system": {
+        "MapData": {
+            "lowZoomBelow": 14,
+            "timeoutMs": 150000,
+            "limits": {
+                "responseBytes": 16777216,
+                "elements": 120000,
+                "coordinates": 240000,
+                "outputCoordinates": 180000
+            },
+            "simplify": {
+                "belowZoom": 14,
+                "tolerancePx": 0.5,
+                "maxExportDpi": 300,
+                "maxPaperLongMm": 420,
+                "topologyChecks": 300000
+            }
+        },
         "OverPassServer": [
             "https://armd-01.sakura.ne.jp/api/interpreter",
             "https://overpass-api.de/api/interpreter",
@@ -62,7 +79,7 @@
             "y": 0
         },
         "text": {
-            "size": 12,
+            "size": 14,
             "view": true
         }
     },

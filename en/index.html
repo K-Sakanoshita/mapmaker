@@ -6,6 +6,7 @@
         content="width=device-width, user-scalable=yes, initial-scale=1, maximum-scale=1, minimum-scale=1" />
     <meta charset="utf-8" />
     <base href="/">
+    <script src="./lib/application/language-router.js?v=language-1"></script>
     <link rel="canonical" href="https://mapmaker.openacrossbase.net/en/">
     <link rel="alternate" hreflang="ja" href="https://mapmaker.openacrossbase.net/">
     <link rel="alternate" hreflang="en" href="https://mapmaker.openacrossbase.net/en/">
@@ -37,7 +38,7 @@
     <meta name="twitter:description" content="Create freely editable and reusable map images." />
     <meta name="twitter:image" content="https://mapmaker.openacrossbase.net/image/ogimage_en.png" />
     <link rel="shortcut icon" href="favicon.ico" />
-    <link rel="stylesheet" href="./css/basemenu.css?v=maplibre-65" />
+    <link rel="stylesheet" href="./css/basemenu.css?v=maplibre-71" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@5.20.0/dist/maplibre-gl.css" />
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/v/bs5/dt-3.0.3/sl-4.0.1/datatables.min.css">
@@ -50,32 +51,54 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.1.0/chroma.min.js" defer></script>
     <script src="https://cdn.datatables.net/v/bs5/dt-3.0.3/sl-4.0.1/datatables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@5.20.0/dist/maplibre-gl.js" defer></script>
-    <script src="./lib/maplibre-adapter.js?v=maplibre-28" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode-svg@1.1.0/lib/qrcode.min.js" defer></script>
     <script src="https://community-geocoder.geolonia.com/api.js" defer></script>
     <script src="https://unpkg.com/glottologist@2.0.3/dist/glottologist.min.js" defer></script>
     <script src="https://unpkg.com/@turf/turf/turf.min.js"></script>
     <script src="https://unpkg.com/svg2roughjs@3.2.3/dist/svg2roughjs.umd.min.js" defer></script>
-    <script src="./lib/osmtogeojson.js" defer></script>
-    <script src="./lib/basiclib.js?v=maplibre-1" defer></script>
-    <script src="./lib/winlib.js?v=maplibre-7" defer></script>
-    <script src="./lib/svglib.js?v=maplibre-32" defer></script>
-    <script src="./lib/geolib.js?v=maplibre-23" defer></script>
-    <script src="./lib/geolib_coastline.js" defer></script>
-    <script src="./lib/overpasslib.js?v=maplibre-24" defer></script>
-    <script src="./lib/poislib.js?v=maplibre-11" defer></script>
-    <script src="./lib/layerlib.js?v=maplibre-32" defer></script>
-    <script src="./lib/listtable.js?v=maplibre-1" defer></script>
-    <script src="./lib/maplibre-building-outlines.js?v=25" defer></script>
-    <script src="./lib/maplibre-vector-editor.js?v=11" defer></script>
-    <script src="./lib/maplibre-editor.js?v=42" defer></script>
-    <script src="./lib/manual-pins.js?v=8" defer></script>
-    <script src="./lib/line-width-panel.js?v=1" defer></script>
-    <script src="./lib/rough-style-panel.js?v=2" defer></script>
-    <script src="./lib/mobile-editor-sheet.js?v=3" defer></script>
-    <script src="./mapmaker.js?v=maplibre-60" defer></script>
-    <script src="./lib/birdseye.js?v=maplibre-16" defer></script>
-    <script src="./initialize.js?v=maplibre-1" defer></script>
+    <script src="./lib/domain/feature-tags.js?v=layout-1" defer></script>
+    <script src="./lib/domain/model-rules.js?v=layout-3" defer></script>
+    <script src="./lib/domain/styles.js?v=layout-2" defer></script>
+    <script src="./lib/geometry/buildings.js?v=layout-2" defer></script>
+    <script src="./lib/geometry/roofs.js?v=layout-1" defer></script>
+    <script src="./lib/geometry/barriers.js?v=layout-6" defer></script>
+    <script src="./lib/geometry/trees.js?v=layout-1" defer></script>
+    <script src="./lib/geometry/point-models.js?v=layout-1" defer></script>
+    <script src="./lib/export/svg-features.js?v=layout-8" defer></script>
+    <script src="./lib/domain/layer-state.js?v=layout-1" defer></script>
+    <script src="./lib/application/layer-render-registry.js?v=layout-1" defer></script>
+    <script src="./lib/application/export-snapshot.js?v=layout-1" defer></script>
+    <script src="./lib/application/feature-context.js?v=layout-4" defer></script>
+    <script src="./lib/geometry/coordinates.js?v=layout-2" defer></script>
+    <script src="./lib/application/map-controls.js?v=layout-2" defer></script>
+    <script src="./lib/osm/csv.js?v=layout-1" defer></script>
+    <script src="./lib/renderers/maplibre/adapter.js?v=layout-2" defer></script>
+    <script src="./lib/application/browser-services.js?v=layout-2" defer></script>
+    <script src="./lib/ui/window-controller.js?v=layout-5" defer></script>
+    <script src="./lib/application/svg-worker-client.js?v=layout-8" defer></script>
+    <script src="./lib/export/svg-text.js?v=layout-1" defer></script>
+    <script src="./lib/export/png.js?v=layout-1" defer></script>
+    <script src="./lib/export/svg-document.js?v=layout-3" defer></script>
+    <script src="./lib/geometry/coastline.js?v=layout-1" defer></script>
+    <script src="./lib/vendor/osmtogeojson.js?v=layout-1" defer></script>
+    <script src="./lib/osm/classifier.js?v=layout-1" defer></script>
+    <script src="./lib/application/map-data-worker-client.js?v=layout-1" defer></script>
+    <script src="./lib/osm/query.js?v=layout-1" defer></script>
+    <script src="./lib/application/overpass-controller.js?v=layout-2" defer></script>
+    <script src="./lib/application/poi-controller.js?v=layout-1" defer></script>
+    <script src="./lib/ui/layer-panel.js?v=layout-1" defer></script>
+    <script src="./lib/application/layer-controller.js?v=layout-2" defer></script>
+    <script src="./lib/ui/list-table.js?v=layout-1" defer></script>
+    <script src="./lib/renderers/maplibre/mesh-renderer.js?v=layout-7" defer></script>
+    <script src="./lib/renderers/maplibre/vector-editor.js?v=layout-1" defer></script>
+    <script src="./lib/renderers/maplibre/editor.js?v=layout-5" defer></script>
+    <script src="./lib/ui/manual-pins.js?v=layout-1" defer></script>
+    <script src="./lib/ui/line-width-panel.js?v=layout-1" defer></script>
+    <script src="./lib/ui/rough-style-panel.js?v=layout-1" defer></script>
+    <script src="./lib/ui/mobile-editor-sheet.js?v=layout-1" defer></script>
+    <script src="./mapmaker.js?v=layout-1" defer></script>
+    <script src="./lib/ui/birdseye.js?v=layout-1" defer></script>
+    <script src="./initialize.js?v=layout-1" defer></script>
     <script type="module">
         import JSON5 from 'https://unpkg.com/json5@2/dist/index.min.mjs'
         window.JSON5 = JSON5;
@@ -85,10 +108,10 @@
 
 <body ontouchstart="">
 
-    <div id="exportProcessing" class="export-processing d-none" role="status" aria-live="assertive" aria-busy="true">
-        <div class="export-processing-message">
+    <div id="processingDialog" class="processing-overlay d-none" role="status" aria-live="assertive" aria-busy="false">
+        <div class="processing-overlay-message">
             <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
-            <span glot-model="export_processing">Preparing the download. Please wait.</span>
+            <span id="processingDialogMessage" glot-model="export_processing">Preparing the download. Please wait.</span>
         </div>
     </div>
 
@@ -96,8 +119,18 @@
         <!-- Fixed title menu -->
         <header class="border-bottom">
             <div class="row g-0 align-items-center">
-                <div class="col-6 col-lg-7 p-0 h-100">
-                    <div class="d-flex">
+                <div class="col-7 p-0 h-100">
+                    <div class="d-flex align-items-center">
+                        <div class="dropdown app-main-menu">
+                            <button type="button" class="btn btn-sm menu" data-bs-toggle="dropdown"
+                                aria-expanded="false" aria-controls="temp_menu" aria-label="Menu">
+                                <i class="fas fa-bars fa"></i></button>
+                            <div class="dropdown-menu" style="z-index: 1020;" id="temp_menu">
+                                <a class="dropdown-item"><span></span></a>
+                                <span class="dropdown-item"></span>
+                                <div class="dropdown-divider"></div>
+                            </div>
+                        </div>
                         <a class="title title d-flex align-items-center text-decoration-none"
                             href="javascript:mapMaker.licence()">
                             <img src="image/mapmaker.svg" class="ms-1" style="height:36px" />
@@ -109,15 +142,7 @@
                     <div>
                     </div>
                 </div>
-                <div class="col-6 col-lg-5 p-0 pe-1 d-flex flex-row-reverse h-100 align-items-center">
-                    <button type="button" class="btn btn-sm float-right menu ms-2" data-bs-toggle="dropdown"
-                        aria-expanded="true">
-                        <i class="fas fa-bars fa"></i></button>
-                    <div class="dropdown-menu dropdown-menu-end" style="z-index: 1020;" id="temp_menu">
-                        <a class="dropdown-item"><span></span></a>
-                        <span class="dropdown-item"></span>
-                        <div class="dropdown-divider"></div>
-                    </div>
+                <div class="col-5 p-0 pe-1 d-flex flex-row-reverse h-100 align-items-center">
                     <button type="button" class="btn btn-light address-search-button"
                         onclick="mapMaker.searchPoi(search_input.value)">
                         <i class="fas fa-search" aria-hidden="true"></i>

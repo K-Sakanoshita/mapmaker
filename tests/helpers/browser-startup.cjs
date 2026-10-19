@@ -13,7 +13,7 @@ module.exports=async(browser,base)=>{
     if(url.includes('googletagmanager.com'))return route.fulfill({body:''});
     return route.continue();
    });
-   await page.goto(base+(lang==='en'?'/en/':'/'),{waitUntil:'domcontentloaded'});
+   await page.goto(base+(lang==='en'?'/en/':'/')+'?lang='+lang,{waitUntil:'domcontentloaded'});
    if(failure==='ok')await page.waitForFunction(()=>typeof map!=='undefined'&&!!map?.gl,null,{timeout:60000});
    else {
     await page.locator('[role="alert"]').waitFor({timeout:60000});

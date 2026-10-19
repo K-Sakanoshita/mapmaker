@@ -1,3 +1,4 @@
+const readSource = require('./helpers/lib-source.cjs').read;
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
@@ -15,7 +16,7 @@ const vm = require('node:vm');
             removeLayer(marker){removed++;clock++;box.maker.queueExportPreview();},
             editorRenderer:{clear(){clears++;}},},
     });
-    for (const file of ['mapmaker.js','lib/layerlib.js','lib/poislib.js']) vm.runInContext(fs.readFileSync(file,'utf8'),box);
+    for (const file of ['mapmaker.js','@layer-controller','lib/application/poi-controller.js']) vm.runInContext(readSource(file,'utf8'),box);
     box.maker = vm.runInContext('mapMaker',box);
     box.LayerCont = vm.runInContext('new LayerControl()',box);
     box.LayerCont.init = () => {initialized++;};

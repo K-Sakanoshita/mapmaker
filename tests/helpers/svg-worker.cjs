@@ -3,8 +3,8 @@ const fs = require('node:fs'), vm = require('node:vm'), path = require('node:pat
 module.exports = class SVGWorker {
     constructor() {
         this.box = vm.createContext({ console, self: { postMessage: data => queueMicrotask(() => this.onmessage?.({data: structuredClone(data)})) } });
-        this.box.importScripts = (...files) => files.forEach(file => vm.runInContext(fs.readFileSync(path.join('lib', file.split('?')[0]), 'utf8'), this.box));
-        vm.runInContext(fs.readFileSync('lib/svg-export-worker.js', 'utf8'), this.box);
+        this.box.importScripts = (...files) => files.forEach(file => vm.runInContext(fs.readFileSync(path.join('lib/workers', file.split('?')[0]), 'utf8'), this.box));
+        vm.runInContext(fs.readFileSync('lib/workers/svg-export.js', 'utf8'), this.box);
     }
     postMessage(data) { const copy = structuredClone(data); queueMicrotask(() => this.box.self.onmessage({data: copy})); }
     terminate() {}

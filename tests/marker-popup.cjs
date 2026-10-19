@@ -2,7 +2,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
 (async()=>{
 let tags,popup='',previews=0;
 const box=vm.createContext({document:require('./helpers/dom.cjs').document, URL, console:{log(){}},Conf:{category:{shop:{}},marker:{tag:{shop:{electronics:'shop.svg'}},subtag:{}},icon:{path:'icon'},osm:{shops:{marker:'shop.svg'},wikipedia:{tag:'wikipedia',marker:'wiki.svg'}},effect:{icon:{x:20,y:20,preset:'standard'},text:{size:16,view:true}}},glot:{get:k=>k},map:{closePopup(){},removeLayer(){}},mapMaker:{queueExportPreview(){previews++;}},poiCont:{get_target:()=>({geojson:[{id:'node/1',properties:tags}],latlng:[[35,135]],targets:[['shops']],enable:[true]}),get_osmid:()=>({geojson:{id:'node/1',properties:tags},latlng:[35,135]})},MapEngine:{LatLng:class{constructor(lat,lng){this.lat=lat;this.lng=lng;}},divIcon:o=>o,marker:(position,options)=>({position,options,events:{},addTo(){return this;},on(k,f){this.events[k]=f;return this;},off(){},removeFrom(){},getElement:()=>null,openPopup(){}}),responsivePopup:()=>({setContent(s){popup=s.outerHTML;return this;},setLatLng(){return this;},openOn(){return this;}})}});
-vm.runInContext(fs.readFileSync('lib/poislib.js','utf8'),box);
+vm.runInContext(fs.readFileSync('lib/application/poi-controller.js','utf8'),box);
 const marker=box.Marker=vm.runInContext('new MarkerControl()',box);
 for(const english of [undefined,'','  ',null,false,'Nikkori Electronics']){
  tags={name:'にっこり電器 千里店',shop:'electronics'};if(english!==undefined)tags['name:en']=english;

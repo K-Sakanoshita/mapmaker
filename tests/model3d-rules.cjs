@@ -1,0 +1,78 @@
+const readSource = require('./helpers/lib-source.cjs').read;
+const assert = require('node:assert/strict'), fs = require('node:fs'), vm = require('node:vm');
+(async () => {
+    const config = JSON.parse(fs.readFileSync('data/leyers.jsonc', 'utf8'));
+    const box = vm.createContext({ Conf: { ...config, default: { Palette: 'color' } },
+        LayerCont: { palette: 'color', styles: ['barrier'] }, Layers: {}, console: { log() {} } });
+    vm.runInContext(readSource('@feature-core', 'utf8'), box);
+    const select = vm.runInContext('getMapMaker3DModel', box);
+    const matches = vm.runInContext('matchesMapMaker3DCondition', box);
+    const feature = properties => ({ type: 'Feature', id: 'way/test', properties,
+        geometry: { type: 'LineString', coordinates: [[139,35],[139.0003,35.0003]] } });
+    const fence = feature({ tags: { barrier: 'fence', material: ' Wood ' } });
+    const before = JSON.stringify(fence);
+    const woodenFence = { all: [{ tag: 'barrier', values: ['fence'] }, { tag: 'material', values: ['wood'] }] };
+    assert.ok(matches(fence, woodenFence));
+    assert.ok(matches(fence, { any: [{ tag: 'height', exists: true }, woodenFence] }));
+    assert.ok(matches(fence, { not: { tag: 'height', exists: true } }));
+    assert.ok(matches(fence, { tag: 'height', exists: false }));
+    assert.ok(matches(fence, { tags: ['species', 'material'], patterns: ['^wo+d$'] }));
+    assert.equal(matches(fence, { tag: 'height', patterns: ['.*'] }), false);
+    assert.equal(matches(fence, { tag: 'material', patterns: ['['] }), false);
+    for (const invalid of [{}, { all: [] }, { any: [] }, { not: {} }, { tag: 'material' },
+        { tag: 'material', values: 'wood' }, { tags: [], exists: false },
+        { tag: 'material', values: ['wood'], typo: true }]) assert.equal(matches(fence, invalid), false);
+    assert.equal(select(feature({barrier:'wall'}), 'barrier'), 'wall');
+    assert.equal(select(feature({barrier:'hedge'}), 'barrier'), 'hedge');
+    assert.equal(select(fence, 'barrier'), 'fence');
+    assert.equal(select(fence, 'unknown'), null);
+    box.Conf.model3D.barrier.rules.unshift({ model: 'unknown', when: woodenFence },
+        { model: 'wall', when: woodenFence });
+    assert.equal(select(fence, 'barrier'), 'wall', 'unsupported models skipped; first supported match wins');
+    assert.equal(vm.runInContext('getMapMakerBuildingHeight', box)(fence), 1.5);
+    assert.equal(vm.runInContext('isMapMakerExtrudedBarrier', box)(fence), true);
+    box.Layers.barrier = { geojson: [fence], opacity: 1 };
+    box.SVGCont = { svg_style: () => ({ color:'#b8b3ad', weight:.5, opacity:1, fillOpacity:0 }) };
+    vm.runInContext(readSource('@svg-document', 'utf8'), box);
+    const control = vm.runInContext('new SVGControl()', box);
+    control.svg_style = box.SVGCont.svg_style;
+    const state = await control.previewState();
+    assert.equal(state.context.config.model3D, box.Conf.model3D, 'actual Worker state includes model rules');
+    const exporter = vm.runInContext('new PrintSVGExporter({paper:"A4"})', box);
+    const bbox = [138.9999,34.9999,139.0005,35.0005], options = { birdseye: { tilt:45 } };
+    const svg = exporter.toSVGFromLayers(bbox, options);
+    assert.match(svg, /data-height-m="1.5"/);
+    assert.doesNotMatch(exporter.toSVGFromLayers(bbox), /data-height-m/);
+    const messages = [];
+    box.self = { postMessage: value => messages.push(value) }; box.importScripts = () => {};
+    vm.runInContext(fs.readFileSync('lib/workers/svg-export.js', 'utf8'), box);
+    box.self.onmessage({ data: { id:1, snapshot:state, exporterOptions:exporter.opts, bbox, options } });
+    assert.equal(messages[0].svgText, svg, 'configured fence model survives Worker export');
+    assert.equal(JSON.stringify(fence), before, 'source tags and geometry preserved');
+    box.Conf.model3D.tree = { defaultModel: 'ginkgo', rules: [] };
+    assert.equal(select(feature({species:'Cherry'}), 'tree'), 'ginkgo');
+    box.Conf.model3D.tree.defaultModel = 'unknown';
+    assert.equal(select(fence, 'tree'), 'cone');
+    box.Conf.model3D.roof = { rules: [{ model:'hipped', when:{tag:'building',values:['house']} }] };
+    assert.equal(select(feature({building:'house','roof:shape':'gabled'}), 'roof'), 'hipped');
+    const house = feature({building:'house',height:'12','roof:height':'3'});
+    house.geometry = {type:'Polygon',coordinates:[[[139,35],[139.0003,35],[139.0003,35.0003],[139,35.0003],[139,35]]]};
+    assert.equal(vm.runInContext('getMapMakerRoofMesh',box)(house).shape, 'hipped', 'custom roof rules reach shared mesh generation');
+    box.Conf.model3D.barrier = { defaultModel: 'wall', rules: [] };
+    const extrudes = vm.runInContext('isMapMakerExtrudedBarrier', box);
+    assert.equal(extrudes(fence), true);
+    const retaining = feature({barrier:'retaining_wall'});
+    assert.equal(extrudes(retaining), true);
+    assert.equal(vm.runInContext('isMapMakerRetainingWall',box)(retaining), false, '3D override replaces flat retaining symbols');
+    assert.equal(extrudes(feature({highway:'residential'})), false, 'barrier defaults do not extrude roads');
+    assert.equal(extrudes(feature({building:'yes'})), false, 'barrier defaults do not reclassify buildings');
+    box.Conf.model3D.barrier = { rules: [] };
+    assert.equal(select(feature({barrier:'wall'}), 'barrier'), 'flat', 'empty rules disable built-in rules');
+    delete box.Conf.model3D;
+    box.Conf.pointStyle.tree.shapeTags = ['species'];
+    box.Conf.pointStyle.tree.shapeRules = [{shape:'cherry', values:['Cherry']}];
+    assert.equal(select(feature({species:'Cherry'}), 'tree'), 'cherry', 'legacy tree rules retained');
+    assert.equal(select(feature({'roof:shape':'gabled'}), 'roof'), 'gabled');
+    assert.equal(select(feature({barrier:'wall'}), 'barrier'), 'wall');
+    console.log('PASS model rule priority, AND/OR/NOT, nested tags, invalid conditions, defaults, legacy config, editable SVG and actual Worker state parity');
+})().catch(error => { console.error(error); process.exitCode = 1; });

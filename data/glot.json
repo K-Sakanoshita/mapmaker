@@ -1,4 +1,24 @@
 {
+    "map_data_limit": {
+        "ja": "地図データが多すぎるため処理を中止しました。ズームを上げて範囲を狭めてください。",
+        "en": "There is too much map data. Zoom in to a smaller area and try again."
+    },
+    "map_season": {
+        "ja": "季節",
+        "en": "Season"
+    },
+    "season_normal": {
+        "ja": "通常",
+        "en": "Normal"
+    },
+    "season_spring": {
+        "ja": "春",
+        "en": "Spring"
+    },
+    "season_autumn": {
+        "ja": "秋",
+        "en": "Autumn"
+    },
     "save_menu": {"ja": "保存", "en": "Save"},
     "save_png": {"ja": "PNG画像を保存", "en": "Save PNG image"},
     "save_svg": {"ja": "SVG画像を保存（編集可能）", "en": "Save editable SVG image"},
@@ -171,8 +191,28 @@
         "en": "Show names"
     },
     "icon_text_size": {
-        "ja": "文字サイズ",
-        "en": "Text size"
+        "ja": "アイコンと文字の大きさ",
+        "en": "Icon and text size"
+    },
+    "icon_size_custom": {
+        "ja": "詳細指定",
+        "en": "Custom"
+    },
+    "icon_size_details": {
+        "ja": "詳細設定",
+        "en": "Advanced settings"
+    },
+    "icon_size_pixels": {
+        "ja": "サイズ（px）",
+        "en": "Size (px)"
+    },
+    "icon_size_sample": {
+        "ja": "公園",
+        "en": "Park"
+    },
+    "icon_size_preview": {
+        "ja": "大きさのプレビュー",
+        "en": "Size preview"
     },
     "facilityname": {
         "ja": "施設名",

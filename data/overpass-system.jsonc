@@ -1,6 +1,12 @@
 {
     "osm": {
         "sea": {
+            "tagsLowZoom": [
+                "natural=coastline"
+            ],
+            "overpassLowZoom": [
+                "wr[\"natural\"=\"coastline\"]"
+            ],
             "overpass": [
                 "nwr[\"natural\"]"
             ],
@@ -49,6 +55,7 @@
                 "amenity=fountain",
                 "amenity=drinking_water",
                 "man_made=tower",
+                "man_made=flagpole",
                 "tower:type=bell_tower",
                 "landuse=recreation_ground",
                 "leisure=pitch",
@@ -69,6 +76,8 @@
             ]
         },
         "wetland": {
+            "tagsLowZoom": [],
+            "overpassLowZoom": [],
             "overpass": [
                 "nwr[\"natural\"]"
             ],
@@ -77,6 +86,10 @@
             ]
         },
         "waterArea": {
+            "overpassLowZoom": [
+                "wr[\"natural\"=\"water\"][\"water\"!~\"^(pond|swimming_pool|wastewater)$\"]",
+                "wr[\"landuse\"=\"reservoir\"]"
+            ],
             "overpass": [
                 "nwr[\"leisure\"]",
                 "nwr[\"landuse\"]",
@@ -90,6 +103,13 @@
             ]
         },
         "waterLine": {
+            "tagsLowZoom": [
+                "waterway=river",
+                "waterway=canal"
+            ],
+            "overpassLowZoom": [
+                "way[\"waterway\"~\"^(river|canal)$\"]"
+            ],
             "overpass": [
                 "nwr[\"waterway\"]"
             ],
@@ -110,6 +130,14 @@
             ]
         },
         "forest": {
+            "tagsLowZoom": [
+                "natural=wood",
+                "landuse=forest"
+            ],
+            "overpassLowZoom": [
+                "wr[\"natural\"=\"wood\"]",
+                "wr[\"landuse\"=\"forest\"]"
+            ],
             "overpass": [
                 "nwr[\"natural\"]",
                 "nwr[\"landuse\"]"
@@ -159,6 +187,14 @@
             ]
         },
         "railway": {
+            "tagsLowZoom": [
+                "railway=rail",
+                "railway=light_rail",
+                "railway=narrow_gauge"
+            ],
+            "overpassLowZoom": [
+                "way[\"railway\"~\"^(rail|light_rail|narrow_gauge)$\"][\"service\"!~\"^(yard|siding|spur|crossover)$\"][\"tunnel\"!~\"^(yes|culvert)$\"]"
+            ],
             "overpass": [
                 "nwr[\"railway\"][\"tunnel\"!~\".*\"]",
                 "nwr[\"service\"=\"yard\"]",
@@ -222,6 +258,9 @@
             ]
         },
         "highway_primary": {
+            "overpassLowZoom": [
+                "way[\"highway\"~\"^(trunk|trunk_link|primary|primary_link)$\"]"
+            ],
             "overpass": [
                 "nwr[\"highway\"]"
             ],
@@ -233,6 +272,9 @@
             ]
         },
         "highway_motorway": {
+            "overpassLowZoom": [
+                "way[\"highway\"~\"^(motorway|motorway_link)$\"]"
+            ],
             "overpass": [
                 "nwr[\"highway\"]"
             ],
@@ -245,12 +287,15 @@
         "building": {
             "overpass": [
                 "nwr[\"building\"]",
+                "nwr[\"building:part\"]",
+                "rel[\"type\"=\"building\"]",
                 "nwr[\"man_made\"]",
                 "nwr[\"waterway\"]",
                 "node[\"entrance\"]"
             ],
             "tags": [
                 "building",
+                "building:part",
                 "man_made=breakwater",
                 "waterway=dam",
                 "entrance"
@@ -264,6 +309,7 @@
             "tags": [
                 "barrier=wall",
                 "barrier=fence",
+                "barrier=rope",
                 "barrier=kerb",
                 "barrier=retaining_wall",
                 "man_made=embankment"

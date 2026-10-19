@@ -1,0 +1,20 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const box=vm.createContext({});vm.runInContext(fs.readFileSync('lib/geometry/simplify.js','utf8'),box);const simplify=vm.runInContext('simplifyMapData',box);
+const equal=(a,b,msg)=>assert.equal(JSON.stringify(a),JSON.stringify(b),msg);
+const line=coordinates=>({type:'Feature',properties:{highway:'primary'},geometry:{type:'LineString',coordinates}});
+const config={belowZoom:14,tolerancePx:1,maxExportDpi:72,maxPaperLongMm:10,topologyChecks:100000};
+const original=Array.from({length:101},(_,i)=>[135+i*.00001,35+(i%2)*.0000002]);
+const road=line(structuredClone(original)),branch=line([[135.0005,35],[135.0005,35.001]]),data=[road,branch];
+const stats=simplify(data,13,[1000,800],config);assert.ok(stats.after<stats.before/4);assert.ok(road.geometry.coordinates.some(p=>p[0]===135.0005),'shared junction remains');equal(road.geometry.coordinates[0],original[0]);equal(road.geometry.coordinates.at(-1),original.at(-1));
+const world=512*2**13,project=p=>[world*(p[0]+180)/360,world*(1-Math.log(Math.tan(Math.PI/4+p[1]*Math.PI/360))/Math.PI)/2];
+const distance=(p,a,b)=>{const dx=b[0]-a[0],dy=b[1]-a[1],t=Math.max(0,Math.min(1,((p[0]-a[0])*dx+(p[1]-a[1])*dy)/(dx*dx+dy*dy)));return Math.hypot(p[0]-a[0]-t*dx,p[1]-a[1]-t*dy);};
+const reduced=road.geometry.coordinates.map(project);for(const point of original.map(project)){const d=Math.min(...reduced.slice(1).map((b,i)=>distance(point,reduced[i],b)));assert.ok(d<=stats.tolerancePx+1e-8,'deviation stays inside pixel budget');}
+const snapshot=JSON.stringify(data);simplify(data,14,[1000,800],config);assert.equal(JSON.stringify(data),snapshot,'14 and above remain unchanged');
+const ring=[[135,35],[135.0005,35],[135.001,35],[135.001,35.001],[135,35.001],[135,35]],hole=[[135.0003,35.0003],[135.0003,35.0007],[135.0007,35.0007],[135.0007,35.0003],[135.0003,35.0003]];
+const polygon={type:'Feature',properties:{natural:'wood'},geometry:{type:'Polygon',coordinates:[structuredClone(ring),structuredClone(hole)]}};
+simplify([polygon],13,[1000,800],config);assert.equal(polygon.geometry.coordinates[0].length,5);equal(polygon.geometry.coordinates[1],hole);equal(polygon.geometry.coordinates[0][0],polygon.geometry.coordinates[0].at(-1));
+const extreme=structuredClone(polygon);simplify([extreme],1,[1000,800],config);equal(extreme.geometry.coordinates,polygon.geometry.coordinates,'reject collapsed polygon');
+const a=line(structuredClone(original));const b=line(structuredClone(original));simplify([a,b],13,[1000,800],config);equal(a.geometry.coordinates,original,'shared boundaries are pinned');
+const exportSafe=simplify([line(structuredClone(original))],13,[390,844],{...config,maxExportDpi:300,maxPaperLongMm:420});assert.ok(exportSafe.tolerancePx<.1,'print resolution imposes a stricter screen tolerance');
+const budget=line(structuredClone(original));simplify([budget],13,[1000,800],{...config,topologyChecks:1});equal(budget.geometry.coordinates,original,'budget exhaustion falls back without partial corruption');
+console.log('PASS shared junctions/endpoints, low zoom only, polygon closure/holes/collapse guards, shared boundaries, print tolerance and bounded computation');

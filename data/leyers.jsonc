@@ -39,7 +39,168 @@
             ]
         }
     ],
+    "seasons": {
+        "normal": {},
+        "spring": {
+            "trees": {
+                "cherry": "#efc5d2",
+                "ginkgo": "#aad181"
+            },
+            "forest": {
+                "color": "#b5d39b",
+                "amount": {
+                    "evergreen": 0,
+                    "deciduous": 0.14,
+                    "mixed": 0.08,
+                    "unknown": 0.08
+                }
+            }
+        },
+        "autumn": {
+            "trees": {
+                "cherry": "#bd886d",
+                "ginkgo": "#e1c65c"
+            },
+            "forest": {
+                "color": "#b8aa72",
+                "amount": {
+                    "evergreen": 0,
+                    "deciduous": 0.3,
+                    "mixed": 0.12,
+                    "unknown": 0.12
+                }
+            }
+        }
+    },
+    "model3D": {
+        "tree": {
+            "defaultModel": "cone",
+            "rules": [
+                {
+                    "model": "ginkgo",
+                    "when": {
+                        "tags": [
+                            "species",
+                            "species:en",
+                            "species:ja",
+                            "genus",
+                            "genus:en",
+                            "genus:ja"
+                        ],
+                        "values": [
+                            "Ginkgo",
+                            "Ginkgo biloba",
+                            "Ginkgo tree",
+                            "イチョウ",
+                            "銀杏"
+                        ]
+                    }
+                },
+                {
+                    "model": "cherry",
+                    "when": {
+                        "tags": [
+                            "species",
+                            "species:en",
+                            "species:ja",
+                            "genus",
+                            "genus:en",
+                            "genus:ja"
+                        ],
+                        "values": [
+                            "Cherry",
+                            "Cherry blossom",
+                            "Cherry tree",
+                            "Japanese cherry",
+                            "サクラ",
+                            "桜",
+                            "ソメイヨシノ",
+                            "染井吉野",
+                            "ヤマザクラ",
+                            "シダレザクラ"
+                        ],
+                        "patterns": [
+                            "^cerasus(?:\\s|$)",
+                            "^prunus\\s+(?:[×x]\\s*)?(?:yedoensis|serrulata|subhirtella|itosakura|sargentii|speciosa)(?:\\s|$)"
+                        ]
+                    }
+                }
+            ]
+        },
+        "roof": {
+            "defaultModel": "flat",
+            "rules": [
+                {
+                    "model": "gabled",
+                    "when": {
+                        "tag": "roof:shape",
+                        "values": [
+                            "gabled"
+                        ]
+                    }
+                },
+                {
+                    "model": "hipped",
+                    "when": {
+                        "tag": "roof:shape",
+                        "values": [
+                            "hipped"
+                        ]
+                    }
+                },
+                {
+                    "model": "pyramidal",
+                    "when": {
+                        "tag": "roof:shape",
+                        "values": [
+                            "pyramidal"
+                        ]
+                    }
+                }
+            ]
+        },
+        "barrier": {
+            "defaultModel": "flat",
+            "rules": [
+                {
+                    "model": "rope",
+                    "when": { "tag": "barrier", "values": ["rope"] }
+                },
+                {
+                    "model": "fence",
+                    "when": { "tag": "barrier", "values": ["fence"] }
+                },
+                {
+                    "model": "wall",
+                    "when": {
+                        "tag": "barrier",
+                        "values": [
+                            "wall"
+                        ]
+                    }
+                },
+                {
+                    "model": "hedge",
+                    "when": {
+                        "tag": "barrier",
+                        "values": [
+                            "hedge"
+                        ]
+                    }
+                }
+            ]
+        }
+    },
     "pointStyle": {
+        "flagpole": {
+            "radius": 0.16,
+            "height": 6,
+            "palette": {
+                "color": { "lineColor": "#737b83", "fillColor": "#e7c56a", "width": 0.5 },
+                "mono": { "lineColor": "#777777", "fillColor": "#dddddd", "width": 0.5 },
+                "coloring": { "lineColor": "#444444", "fillColor": "#ffffff", "width": 0.5 }
+            }
+        },
         "tree": {
             "radius": 1.2,
             "palette": {
@@ -285,7 +446,7 @@
             "barrier": {
                 "zoom": 17,
                 "type": "line",
-                "color": "#aaa09a",
+                "color": "#b8b3ad",
                 "width": 0.5,
                 "dashArray": null,
                 "linecap": "round"

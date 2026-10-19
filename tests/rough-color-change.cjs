@@ -1,9 +1,10 @@
+const readSource = require('./helpers/lib-source.cjs').read;
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 const refreshed=[],previews=[];
 let rough=true;
 const box=vm.createContext({console,Layers:{road:{}},map:{editorRenderer:{active:true,refreshCategory:key=>refreshed.push(key),setCategoryVisibility:key=>refreshed.push(key)}},
  mapMaker:{rough_options:()=>({enabled:rough}),rough_change:()=>previews.push([...refreshed])}});
-vm.runInContext(fs.readFileSync('lib/layerlib.js','utf8'),box);
+vm.runInContext(readSource('@layer-controller','utf8'),box);
 const control=vm.runInContext('new LayerControl()',box);control.styles=['building','road'];
 control.updateLayer('building');
 assert.deepEqual(refreshed,['building']);assert.equal(previews.length,1);

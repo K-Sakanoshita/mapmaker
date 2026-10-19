@@ -1,11 +1,12 @@
+const readSource = require('./helpers/lib-source.cjs').read;
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 (async()=>{
  const delays=[];
- const box=vm.createContext({console:{log(){},error(){}},setTimeout:(fn,ms)=>{delays.push(ms);queueMicrotask(fn);},Conf:{system:{OverPassServer:['a','b']},osm:{test:{overpass:['nwr;']}}},GeoCont:{get_L:()=>({SE:{lat:1,lng:2},NW:{lat:3,lng:4}})},glot:{get:k=>k},winCont:{modal_text(){}}});
- vm.runInContext(fs.readFileSync('lib/basiclib.js','utf8'),box);vm.runInContext(fs.readFileSync('lib/overpasslib.js','utf8'),box);
+ const box=vm.createContext({console:{log(){},error(){}},setTimeout:(fn,ms)=>{delays.push(ms);queueMicrotask(fn);},Conf:{system:{OverPassServer:['a','b']},osm:{test:{overpass:['nwr;']}}},map:{getZoom:()=>13,getSize:()=>({x:1000,y:800})},GeoCont:{get_L:()=>({SE:{lat:1,lng:2},NW:{lat:3,lng:4}})},glot:{get:k=>k},winCont:{modal_text(){}}});
+ vm.runInContext(fs.readFileSync('lib/application/browser-services.js','utf8'),box);vm.runInContext(readSource('@overpass-client','utf8'),box);
  const control=box.overPassCont=vm.runInContext('new OverPassControl()',box);let attempts=0;
  for(const status of [0,429,503,404]){
- box.$={ajax:opts=>{assert.equal(opts.timeout,150000);attempts++;return {done(){return this;},fail(fn){queueMicrotask(()=>fn({status},status===0?'timeout':'error','failed'));return this;}};}};
+ control.runDataWorker=async request=>{attempts++;assert.ok(request.url.includes('data='));throw {retryable:status!==404};};
  attempts=0;await assert.rejects(vm.runInContext('Basic.retry(()=>overPassCont.get(["test"]),overPassCont.getRetryCount())',box));assert.equal(attempts,status===404?1:4);
  }
  let calls=0;const api=vm.runInContext('Basic',box);await assert.rejects(api.retry(()=>{calls++;throw new Error('sync');},2));assert.equal(calls,3);

@@ -1,3 +1,4 @@
+const readSource = require('./helpers/lib-source.cjs').read;
 const fs = require('node:fs');
 const vm = require('node:vm');
 const assert = require('node:assert/strict');
@@ -29,8 +30,8 @@ const box = vm.createContext({ console, LANG: 'ja', requestAnimationFrame: fn =>
     chroma: color => ({ alpha: () => color.length === 9 ? Math.round(parseInt(color.slice(7), 16) / 255 * 100) / 100 : 1, hex: () => color.slice(0, 7) }),
     Conf: { tile: {}, default: { birdseye: { defaultHeight: 3 } } }, Layers: { building: { opacity: '' } }
 });
-vm.runInContext(fs.readFileSync('lib/geolib.js', 'utf8'), box);
-vm.runInContext(fs.readFileSync('lib/maplibre-adapter.js', 'utf8'), box);
+vm.runInContext(readSource('@feature-core', 'utf8'), box);
+vm.runInContext(fs.readFileSync('lib/renderers/maplibre/adapter.js', 'utf8'), box);
 const api = vm.runInContext('MapEngine', box);
 const map = api.map('mapid', { center: [35, 139], zoom: 17 });
 map.gl.events.load();

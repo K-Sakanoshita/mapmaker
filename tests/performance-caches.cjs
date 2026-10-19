@@ -1,8 +1,9 @@
+const readSource = require('./helpers/lib-source.cjs').read;
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 let conversions=0;
 const box=vm.createContext({console,Conf:{pointStyle:{tree:{radius:1.2}}},LayerCont:{palette:'color'},
  chroma: color=>{conversions++;if(color==='invalid')throw Error('invalid');return{css:()=>`css:${color}`,hex:()=>`hex:${color}`};}});
-for(const f of ['lib/geolib.js','lib/maplibre-editor.js','lib/overpasslib.js'])vm.runInContext(fs.readFileSync(f,'utf8'),box);
+for(const f of ['@feature-core','lib/renderers/maplibre/editor.js','@overpass-client'])vm.runInContext(readSource(f,'utf8'),box);
 const proto=vm.runInContext('MapLibreEditorRenderer.prototype',box),renderer=Object.create(proto);
 assert.equal(renderer.color('#abc'),'css:#abc');assert.equal(renderer.color('#abc'),'css:#abc');assert.equal(conversions,1);
 assert.equal(renderer.color('#abc',true),'hex:#abc');assert.equal(conversions,2);
@@ -16,7 +17,7 @@ box.Conf.pointStyle.tree.radius=2;assert.notEqual(partsFor(tree),moved);
 const Controller=vm.runInContext('OverPassControl',box),controller=new Controller();box.overPassCont=controller;
 const feature=(id,level)=>({id,properties:level===undefined?{}:{level}}),a=feature(1),b=feature(2,'-1;0'),c=feature(3,'0'),d={id:4,properties:{tags:{level:'-2'}}};
 const answer={geojson:[a,b,c,d],targets:[['park','park','building'],['park'],['building','park'],['park']]};
-let checks=0;const check=controller.hasNegativeLevel.bind(controller);controller.hasNegativeLevel=f=>{checks++;return check(f);};
+let checks=0;const check=controller.isUnderground.bind(controller);controller.isUnderground=f=>{checks++;return check(f);};
 assert.deepEqual(Array.from(controller.get_target(answer,'park')),[a,c]);assert.equal(checks,4);
 assert.deepEqual(Array.from(controller.get_target(answer,'building')),[a,c]);assert.equal(checks,4,'subsequent categories do not scan all features again');
 const result=controller.get_target(answer,'park');result.pop();assert.equal(controller.get_target(answer,'park').length,2);

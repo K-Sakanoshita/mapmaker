@@ -1,6 +1,6 @@
 // Global Variable
-var map;				// leaflet map object
-var Layers = {};		// Layer Status,geojson,svglayer
+var map;				// application map view
+var Layers = {};		// Plain category data and edit state
 var Conf = {};			// Config Praams
 const LANG = document.documentElement.lang.toLowerCase() === "en" ? "en" : "ja";
 const glot = new Glottologist();
@@ -12,7 +12,7 @@ const Marker = new MarkerControl();
 const LayerCont = new LayerControl();
 const SVGCont = new SVGControl();
 const overPassCont = new OverPassControl();
-const CoastLine = new GeoCoastline();
+const CoastLine = new CoastlineController();
 const GeoCont = new GeoControl();
 
 // initialize MapMaker

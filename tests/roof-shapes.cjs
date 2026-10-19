@@ -1,0 +1,58 @@
+const readSource = require('./helpers/lib-source.cjs').read;
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+(async()=>{
+ const box=vm.createContext({console:{log(){}},setTimeout,Conf:{default:{birdseye:{}},style:{color:{building:{type:'area'}}}},LayerCont:{palette:'color',styles:['building']},Layers:{building:{opacity:1}},SVGCont:{svg_style:()=>({fillColor:'#aabbcc',color:'#334455',weight:1,fillOpacity:1,opacity:1})},chroma:()=>({rgba:()=>[170,187,204,1]}),maplibregl:{MercatorCoordinate:{fromLngLat:(ll,z=0)=>({x:ll.lng??ll[0],y:ll.lat??ll[1],z})}}});
+ for(const f of ['@feature-core','lib/renderers/maplibre/mesh-renderer.js'])vm.runInContext(readSource(f,'utf8'),box);
+ const rectangle=[[[135,35],[135.002,35],[135.002,35.001],[135,35.001],[135,35]]];
+ const make=(shape,tags={},geometry={type:'Polygon',coordinates:rectangle})=>({type:'Feature',id:'way/roof',properties:{'building:part':'yes','roof:shape':shape,height:'12','roof:height':'3',...tags},geometry});
+ const mesh=(feature)=>{box.feature=feature;return vm.runInContext('getMapMakerRoofMesh(feature)',box);};
+ for(const shape of ['gabled','hipped','pyramidal']){
+  const feature=make(shape),roof=mesh(feature);assert.ok(roof);assert.equal(roof.height,12);assert.equal(roof.wallHeight,9);assert.equal(roof.faces.length,4);
+  assert.ok(roof.faces.filter(f=>f.kind==='roof').every(f=>f.normal[2]>0&&f.shade>=.96&&f.shade<=1));
+  assert.ok(new Set(roof.faces.filter(f=>f.kind==='roof').map(f=>f.shade.toFixed(5))).size>1,'slopes receive subtle distinct shades without darkening roofs by more than 4 percent');
+  assert.ok(roof.faces.every(f=>f.points.every(p=>p.every(Number.isFinite)&&p[2]>=9&&p[2]<=12)));
+  box.Layers.building.geojson=[feature];
+  const exporter=vm.runInContext('new PrintSVGExporter({paper:"A4"})',box),bbox=[134.999,34.999,135.003,35.002];
+  const svg=exporter.toSVGFromLayers(bbox,{birdseye:{tilt:45,bearing:30}});assert.match(svg,new RegExp(`data-roof-shape="${shape}"`));assert.match(svg,/data-building-face="roof"/);assert.doesNotMatch(svg,/NaN|Infinity/);
+  const visible=(svg.match(/data-roof-shade=/g)||[]).length;
+  assert.ok(visible>0 && visible<=roof.faces.length,'visible roof faces remain');
+  if(shape==='gabled')assert.ok(visible<roof.faces.length,'SVG culls the rear gable');
+  assert.equal((svg.match(/data-building-edges="roof"/g)||[]).length,1,'one deduplicated roof/body edge path');
+  assert.doesNotMatch(exporter.toSVGFromLayers(bbox),/data-roof-shape|data-building-face/,'2D remains flat');
+  const model={id:1,feature,mapmaker:{key:'building'},options:{fillColor:'#aabbcc',color:'#334455',weight:1,opacity:1}};
+  box.model=model;const outline=vm.runInContext('new MapLibreMeshRenderer({getCenter:()=>({lng:135,lat:35})})',box);
+  await outline.prepare([model]);assert.ok(outline.fillCount>0);assert.equal(outline.fillCount,roof.faces.reduce((sum,f)=>sum+(f.points.length-2)*3,0));
+  assert.ok([...outline.fillData].every(Number.isFinite));
+  const expected=outline.fillStyle(model,roof.faces[0]);
+  assert.ok(Math.abs(expected[0]-170/255*roof.faces[0].shade)<1e-6,'GPU uses the shared shade');
+  assert.equal(expected[3],1,'shade does not change opacity');
+  const heights=[];for(let i=2;i<outline.fillData.length;i+=7)heights.push(outline.fillData[i]);assert.ok(heights.includes(12)&&heights.includes(9));
+  model.options.opacity=0;outline.update(model);for(let i=6;i<outline.fillData.length;i+=7)assert.equal(outline.fillData[i],0,'hide roof faces');
+  model.options.opacity=1;outline.update(model);assert.equal(outline.fillData[6],1);
+ }
+ assert.equal(vm.runInContext("getMapMakerRoofShadeColor('#aabbcc88',.5)",box),'#555e6688');
+ assert.equal(vm.runInContext("getMapMakerRoofShadeColor('#abc8',.5)",box),'#555e6688');
+ assert.equal(vm.runInContext("getMapMakerRoofShadeColor('rgba(100,150,200,0.4)',.8)",box),'rgba(80,120,160,0.4)');
+ for(const shape of ['gabled','hipped','pyramidal']) {
+  const standard=mesh(make(shape)),reversed=mesh(make(shape,{}, {type:'Polygon',coordinates:[rectangle[0].slice().reverse()]}));
+  const shades=r=>r.faces.map(f=>f.shade.toFixed(5)).sort();
+  assert.deepEqual(shades(reversed),shades(standard),'ring winding does not change illumination');
+ }
+ const along=mesh(make('gabled')),across=mesh(make('gabled',{'roof:orientation':'across'}));
+ const ridge=r=>r.edges.find(([a,b])=>a[2]===12&&b[2]===12);
+ assert.ok(Math.abs(ridge(along)[1][0]-ridge(along)[0][0])>.001);
+ assert.ok(Math.abs(ridge(across)[1][1]-ridge(across)[0][1])>.0005);
+ assert.deepEqual(JSON.parse(JSON.stringify(ridge(mesh(make('gabled',{'roof:direction':'N'}))))),JSON.parse(JSON.stringify(ridge(along))));
+ assert.deepEqual(JSON.parse(JSON.stringify(ridge(mesh(make('gabled',{'roof:direction':'90'}))))),JSON.parse(JSON.stringify(ridge(across))));
+ const levels=make('gabled',{'height':undefined,'building:levels':'2','roof:height':undefined,'roof:levels':'1'});assert.equal(mesh(levels).height,9);assert.equal(mesh(levels).wallHeight,6);
+ assert.equal(mesh(make('gabled',{'roof:height':'10 ft'})).wallHeight,12-3.048);
+ for(const shape of ['flat','dome','bad'])assert.equal(mesh(make(shape)),null);
+ assert.equal(mesh(make('gabled',{'roof:height':'20'})),null);
+ assert.equal(mesh(make('gabled',{'building:part':'roof'})).base,9,'roof-only parts have no ground-to-eave walls');
+ assert.equal(mesh(make('gabled',{'min_height':'5'})).base,5);
+ assert.equal(mesh(make('gabled',{}, {type:'Polygon',coordinates:[...rectangle,rectangle[0]]})),null,'courtyard fallback');
+ assert.equal(mesh(make('gabled',{}, {type:'Polygon',coordinates:[[[135,35],[135.002,35],[135.001,35.001],[135,35]]]})),null,'triangle fallback');
+ assert.ok(mesh(make('gabled',{}, {type:'MultiPolygon',coordinates:[rectangle,rectangle]})));
+ const original=JSON.stringify(levels);mesh(levels);assert.equal(JSON.stringify(levels),original,'source geometry and tags unchanged');
+ console.log('PASS shared roof meshes, gabled/hipped/pyramidal SVG and GPU vertices, direction/orientation, heights/levels/units, building parts, hide/restore, 2D and invalid/complex fallback');
+})().catch(e=>{console.error(e);process.exitCode=1;});

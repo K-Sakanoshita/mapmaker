@@ -12,7 +12,7 @@ const box = vm.createContext({
         }
     }
 });
-vm.runInContext(fs.readFileSync('lib/poislib.js', 'utf8'), box);
+vm.runInContext(fs.readFileSync('lib/application/poi-controller.js', 'utf8'), box);
 const marker = box.Marker = vm.runInContext('new MarkerControl()', box);
 const original = { mapmaker_id: 'node/1' };
 marker.markers.wikipedia = [original];

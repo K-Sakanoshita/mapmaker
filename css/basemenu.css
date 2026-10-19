@@ -51,7 +51,7 @@ body {
     z-index: 0;
 }
 
-.export-processing {
+.processing-overlay {
     position: fixed;
     inset: 0;
     z-index: 2000;
@@ -62,7 +62,7 @@ body {
     background: rgba(0, 0, 0, 0.35);
 }
 
-.export-processing-message {
+.processing-overlay-message {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -82,12 +82,15 @@ body {
     max-width: calc(100vw - 16px);
     margin-inline: auto;
 }
-#modal_window.processing-compact #modal_window_message,
-.export-processing-message {
+#modal_window.processing-compact #modal_window_message {
     white-space: nowrap;
     font-size: clamp(11px, 3.2vw, 16px);
 }
-.export-processing-message .spinner-border { flex-shrink: 0; }
+.processing-overlay-message {
+    font-size: clamp(11px, 3.2vw, 16px);
+}
+#processingDialogMessage { min-width: 0; overflow-wrap: anywhere; }
+.processing-overlay-message .spinner-border { flex-shrink: 0; }
 
 .mapmaker-intro {
     position: absolute;
@@ -233,6 +236,10 @@ p {
     line-height: 1.5;
 }
 
+.app-main-menu { flex: 0 0 auto; position: relative; }
+.app-main-menu > .menu { min-width: 36px; height: 36px; margin: 2px 0; }
+.app-main-menu .dropdown-menu { max-width: calc(100vw - 8px); }
+
 a.title {
     color: #213502;
 
@@ -352,14 +359,25 @@ table.dataTable tbody>tr>.selected {
 .layer-control-row > :not(:first-child) { justify-self: center; }
 .layer-control-row .del_button { margin: 0 !important; }
 #roughControls { margin-bottom: 4px; }
-.rough-controls-toggle.form-switch {
+.map-style-controls {
     margin: 0 8px 4px;
-    padding: 8px 10px;
     border: 1px solid #d7dce1;
     border-radius: 6px;
     background: #fff;
     font-size: 14px;
 }
+.map-style-row,
+.map-style-row.form-switch {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-height: 38px;
+    margin: 0;
+    padding: 6px 10px;
+}
+#basemenu .map-style-row :is(button, label, select) { font: inherit; }
+.map-style-row > label { font-weight: 500; }
 
 .layer-control-columns span:not(:first-child) {
     text-align: center;
@@ -465,6 +483,14 @@ button:active {
     border-width: 1px;
     border-style: solid;
     text-align: right;
+}
+
+@media (min-width: 992px) {
+    .layer-control-row .line_text {
+        padding: 1px 6px;
+        line-height: 20px;
+        text-align: center;
+    }
 }
 
 .drop_button {
@@ -629,7 +655,8 @@ img.icon_normal {
 }
 
 @media (min-width: 992px), (min-width: 768px) and (orientation: landscape) {
-    #mapid .leaflet-left {
+    #mapid .leaflet-left,
+    #editbar #mapid .maplibregl-ctrl-bottom-left {
         left: clamp(var(--basemenu-min-width), var(--basemenu-width, var(--basemenu-min-width)), calc(100% - 260px));
     }
 }
@@ -859,7 +886,14 @@ img.icon_normal {
 .icon-select-toolbar { overflow: visible; }
 .icon-select-footer { flex: 0 0 auto; }
 .icon-select-fields { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
-.icon-select-toolbar .icon-text-size { width: 64px; }
+.icon-select-toolbar .icon-text-size { width: 90px; }
+.icon-size-options { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 10px; align-items: center; }
+.icon-size-options > label, .icon-size-options > details { grid-column: 1 / -1; }
+.icon-size-options > select { width: 100%; min-width: 0; }
+.icon-size-options summary { cursor: pointer; font-size: .875rem; }
+.icon-size-preview { display: flex; align-items: center; gap: 4px; max-width: 160px; min-height: 34px; overflow: hidden; }
+.icon-size-preview img { box-sizing: border-box; object-fit: contain; flex-shrink: 0; background-size: 100% 100%; }
+.icon-size-preview span { white-space: nowrap; }
 .icon-select-toolbar .icon-appearance-select { width: auto; min-width: 0; flex-shrink: 0; }
 .icon-select-toolbar label[for="modal_select_appearance"] { white-space: nowrap; }
 .icon-select-body { overflow: visible; }

@@ -16,7 +16,7 @@ nodes.get('saveMap').parentNode=nodes.get('basemenu');nodes.get('modal_select').
 const box=vm.createContext({document:{getElementById:id=>nodes.get(id),createComment:()=>new Node('placeholder'),createElement:()=>new Node('mobileSaveBar')},
     window:{matchMedia:()=>({matches:wide}),addEventListener:(type,fn)=>listeners.set(type,fn),removeEventListener:type=>listeners.delete(type)},
     getComputedStyle:()=>({paddingBottom:'0px'}),glot:{get:key=>key}});
-vm.runInContext(fs.readFileSync('lib/mobile-editor-sheet.js','utf8'),box);
+vm.runInContext(fs.readFileSync('lib/ui/mobile-editor-sheet.js','utf8'),box);
 const Sheet=vm.runInContext('MobileEditorSheet',box);
 const maker={customMode:true,basemenuWindowMode:'minimized',applyBasemenuWindowSize(){sheet.update();}};
 const sheet=new Sheet(maker);assert.equal(sheet.update(),true);

@@ -1,3 +1,4 @@
+const readSource = require('./helpers/lib-source.cjs').read;
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 (async()=>{
  const config=JSON.parse(fs.readFileSync('data/leyers.jsonc','utf8'));
@@ -7,9 +8,9 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
  const box=vm.createContext({console:{log(){}},Conf:{...config,default:{ColorDarken:1,Palette:'color'}},Layers:{background:{}},
  map:{threeD:true,getZoom:()=>17},document:{getElementById:()=>null},$:()=>dom,
  Birdseye:{setEnabled(enabled){flatCalls++;box.map.threeD=enabled;}},
- chroma:()=>({darken:()=>({hex:()=> '#999999'})}),setTimeout,URL,
+ chroma:()=>({darken:()=>({hex:()=> '#999999'})}),setTimeout,clearTimeout,URL,
  Worker:require('./helpers/svg-worker.cjs')});
- for(const file of ['lib/geolib.js','lib/layerlib.js','lib/svglib.js'])vm.runInContext(fs.readFileSync(file,'utf8'),box);
+ for(const file of ['@feature-core','@layer-controller','@svg-document'])vm.runInContext(readSource(file,'utf8'),box);
  box.LayerCont=vm.runInContext('new LayerControl()',box);box.SVGCont=vm.runInContext('new SVGControl()',box);
  box.document.baseURI='http://localhost/index.html';box.LayerCont.styles=Object.keys(config.style.color);
  box.LayerCont.setStyle('coloring');assert.equal(flatCalls,0);assert.equal(box.map.threeD,true);

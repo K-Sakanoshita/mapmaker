@@ -9,7 +9,20 @@ node tests/marker-popup.cjs
 node tests/wiki-article-close.cjs
 node tests/request-failures.cjs
 node tests/startup-failures.cjs
+node tests/language-routing.cjs
 node tests/address-search.cjs
+node tests/roof-shapes.cjs
+node tests/model3d-rules.cjs
+node tests/source-boundaries.cjs
+node tests/building-parts.cjs
+node tests/fence3d.cjs
+node tests/rope3d.cjs
+node tests/flagpole3d.cjs
+node tests/retaining-wall.cjs
+node tests/map-data-acquisition.cjs
+node tests/map-data-simplify.cjs
+node tests/seasons.cjs
+node tests/palette-processing.cjs
 ```
 
 実ブラウザーは Playwright と Chromium を使用。別ターミナルでリポジトリを配信してから実行する。
@@ -20,6 +33,7 @@ python3 -m http.server 8765 --bind 127.0.0.1
 npm install --prefix /tmp/mapmaker-test-deps playwright
 NODE_PATH=/tmp/mapmaker-test-deps/node_modules node tests/browser-smoke.cjs
 NODE_PATH=/tmp/mapmaker-test-deps/node_modules node tests/browser-smoke.cjs --startup
+NODE_PATH=/tmp/mapmaker-test-deps/node_modules node tests/browser-smoke.cjs --language
 # 復帰シナリオだけを再確認する場合
 NODE_PATH=/tmp/mapmaker-test-deps/node_modules node tests/browser-smoke.cjs --recovery
 ```
@@ -28,6 +42,16 @@ NODE_PATH=/tmp/mapmaker-test-deps/node_modules node tests/browser-smoke.cjs --re
 
 - PC 1280×900 / スマートフォン相当 390×844 のChromium。
 - 2D・3D・手書き風で作成→建物の色/線幅編集→A4/A3縦横のSVG/PNG保存→リセット→再作成。
+- 手書き風・保存・描画待機が同じ処理中DOMを使うこと、同時処理の一方の終了で閉じないこと、キャンセル・失敗時の解放とPC/スマホでの表示範囲を検査。
+- 屋上から始まる塔がある場合も土台の建物を残すことを、共通判定・ネイティブ画面・SVGで検査。京都タワー周辺の実データでも画面とSVG/PNGを確認。
+- 部分の上端/下端、階数・単位、外周との2D/3D切替、中庭・単なる重なり・単独部分、実データWorkerのリレーション保持を検査。ブラウザーでは張り出しを含む外周＋低層部＋地上4mから始まる高層部を確認。
+- 同じ外周の部分どうしで、交差する面の手前側だけをマスクすること、未塗り面が他の面を隠さないこと、回転・入力順によらず隠面マスクを出力することを検査。国会議事堂の中央塔・左右の屋根を実データの通常／手書き風SVG/PNGで確認。手書き変換後も、見える面と隠れた面の画素色をブラウザーで検査。
+- 3Dモデル選択の優先順、複数タグのAND／OR／NOT、不正条件、既定モデル、旧設定互換、タグ・座標の保持と実際のWorker状態によるSVG一致を検査。
+- 樹冠の斜面と丸い先端、外向き法線、全高・幹の寸法維持、GPUとSVGの高さ一致、非表示・復元、2D維持とWorker出力一致を検査。
+- 擁壁の右側を指す三角、ウェイ反転・折れ曲がり・重複点、ズーム時の間隔更新、高さ非依存、破線、非表示、2D/3Dの共通記号を検査。
+- 屋根の法線・共通陰影・RGBのみの明度変更・透明度保持・輪郭の集約と背面除外をNodeで検査。
+- 切妻・寄棟・ピラミッド型とbuilding:partを含む固定地物で、通常3DのSVGに屋根形状の識別属性が残ることを検査。手書き風は変換後のパスと保存画像で確認する。
+- 砂場・すべり台・遊具の実アイコンをSVGとPNGへ保存し、キャッシュ利用時にベクター形状を保つこと、画像代替時にも透明度と図柄の白い抜けを保ち、黒い四角にならないことを画素で検査。
 - SVGのXML解析・地物パス・変更色・NaN不在、PNGシグネチャ・用紙寸法（72dpi）と保存UIの復帰を検査。
 - `--startup` では日本語/英語ページでHTML・設定・言語データ404、設定破損、通信失敗と通常起動を実ブラウザーでも検査。
 - 即時HTTP 503後のエラーダイアログ終了と再作成、保存失敗後の再保存を検査。
@@ -53,3 +77,7 @@ NODE_PATH=/tmp/mapmaker-test-deps/node_modules node tests/browser-smoke.cjs --re
 5. 開発者ツールでOverpassのオフライン/タイムアウト、CSV 404を再現し、処理中表示が消え、閉じる・再試行を操作できることを確認する。
 
 厳密な3D遮蔽・地形・立体交差はREADME記載の未対応仕様に従って判断する。フォント/OS差や手書き風の変動を無条件のピクセル不一致エラーにしない。fixtureや期待寸法を更新するときは、変更理由と前後の画面/保存画像を確認し、`report.json` と共に記録する。
+
+季節表示は「通常→春→秋→通常」で桜・イチョウと森林の色を比較する。常緑林は維持、落葉林は強め、指定なしは控えめに変わり、草地は変わらないことを確認する。2D・3D・SVG/PNG・手書き風、PCとスマートフォンの色・線幅パネルを確認し、モノクロ・ぬりえでは季節色を適用しない。
+
+旗竿の実ブラウザー確認は、ローカルサーバー起動後に `node tests/flagpole-browser.cjs` を実行する（PlaywrightとChromeが必要）。既定の確認先は `http://127.0.0.1:8765/`、変更する場合は `MAPMAKER_TEST_URL` を指定する。PC・スマートフォン幅で、自動取得、支柱・旗の共通メッシュ、非表示／復元、SVG・PNG保存、2D切り替えを確認し、画像は `/tmp/mapmaker-flagpole-*` に出力する。

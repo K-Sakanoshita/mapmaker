@@ -13,7 +13,7 @@ const assert = require('node:assert/strict'), fs = require('node:fs'), vm = requ
     };
     const box = vm.createContext({ console, setTimeout: fn => setImmediate(fn), requestAnimationFrame: fn => setImmediate(fn),
         map: { ready: true, editorRenderer: renderer, getCenter: () => ({ lng: 135, lat: 35 }), setView() {}, getZoom: () => 14,
-            gl: { once(type, fn) { assert.equal(type, 'idle'); finishFrame = fn; }, triggerRepaint() { events.push('repaint'); } } },
+            once(type, fn) { assert.equal(type, 'idle'); finishFrame = fn; }, repaint() { events.push('repaint'); } },
         location: { href: 'http://localhost/' }, Conf: { default: { MinZoomLevel: 11 } },
         LayerCont: { styles: [], applyDrawOrder() {} }, Layers: {},
         Basic: { getData() {}, retry: fn => Promise.resolve(fn()) }, overPassCont: { getRetryCount: () => 5, get: () => ({}) },

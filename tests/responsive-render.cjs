@@ -1,3 +1,4 @@
+const readSource = require('./helpers/lib-source.cjs').read;
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
@@ -5,7 +6,7 @@ const vm = require('node:vm');
     let ticks = 0, clock = 0;
     const box = vm.createContext({ console, performance: { now: () => ++clock },
         setTimeout: fn => setTimeout(() => { ticks++; fn(); }, 0), Layers: { building: { geojson: Array(1000) } } });
-    vm.runInContext(fs.readFileSync('lib/layerlib.js', 'utf8'), box);
+    vm.runInContext(readSource('@layer-controller', 'utf8'), box);
     const layers = vm.runInContext('new LayerControl()', box);
     let processed = 0;
     layers.layerSteps = function* () { for (let i = 0; i < 1000; i++) { processed++; yield i; } };
@@ -15,10 +16,10 @@ const vm = require('node:vm');
     assert.ok(ticks > 50 && progress > 50, 'large creation yields to browser events and reports progress');
     let response;
     const worker = vm.createContext({ console: { log() {} }, self: { postMessage: data => response = data },
-        importScripts: (...paths) => paths.forEach(path => vm.runInContext(fs.readFileSync('lib/' + path.replace('./', '').split('?')[0], 'utf8'), worker)) });
+        importScripts: (...paths) => paths.forEach(path => vm.runInContext(fs.readFileSync('lib/workers/' + path.split('?')[0], 'utf8'), worker)) });
     worker.postMessage = data => response = data;
     worker.self = worker;
-    vm.runInContext(fs.readFileSync('lib/map-data-worker.js', 'utf8'), worker);
+    vm.runInContext(fs.readFileSync('lib/workers/map-data.js', 'utf8'), worker);
     worker.self.onmessage({ data: { osm: { building: { tags: ['building='] } }, osmxml: { elements: [
         { type: 'node', id: 1, lat: 35, lon: 139, tags: { building: 'yes' } }
     ] } } });

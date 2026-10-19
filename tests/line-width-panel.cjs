@@ -18,7 +18,7 @@ const box = vm.createContext({ document: {...target,body:new Element('body'),cre
     innerWidth:390,innerHeight:844,Event,glot:{get:key=>key},
     setTimeout(fn) { timers.set(++timerId,fn); return timerId; },setInterval(fn) { timers.set(++timerId,fn); return timerId; },
     clearTimeout:id=>timers.delete(id),clearInterval:id=>timers.delete(id) });
-vm.runInContext(fs.readFileSync('lib/line-width-panel.js','utf8'),box);
+vm.runInContext(fs.readFileSync('lib/ui/line-width-panel.js','utf8'),box);
 const panel = vm.runInContext('LineWidthPanel',box), anchor = new Element('anchor'); anchor.value = '.8';
 panel.open('building',anchor);
 assert.equal(panel.input.value,'.8'); assert.equal(panel.input.selected,undefined,'opening panel does not focus numeric input or summon keyboard');

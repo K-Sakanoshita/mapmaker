@@ -1,6 +1,6 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 const box=vm.createContext({Conf:{effect:{icon:{x:20,y:20}}}});
-vm.runInContext(fs.readFileSync('lib/poislib.js','utf8'),box);
+vm.runInContext(fs.readFileSync('lib/application/poi-controller.js','utf8'),box);
 const marker=vm.runInContext('new MarkerControl()',box);
 const base=marker.iconStyle(20,false,'standard'),bare=marker.iconStyle(20,false,'unframed'),subtle=marker.iconStyle(20,false,'subtle');
 assert.equal(base.size,20);assert.equal(base.glyphSize,12);assert.equal(bare.glyphSize,base.glyphSize);assert.equal(bare.padding,0);assert.equal(bare.framed,false);

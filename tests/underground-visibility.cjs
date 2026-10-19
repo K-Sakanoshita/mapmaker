@@ -1,6 +1,7 @@
+const readSource = require('./helpers/lib-source.cjs').read;
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 const box=vm.createContext({console:{log(){}}});
-vm.runInContext(fs.readFileSync('lib/overpasslib.js','utf8'),box);
+vm.runInContext(readSource('@overpass-client','utf8'),box);
 const controller=vm.runInContext('new OverPassControl()',box);
 const cases=[
  ['surface road',{highway:'tertiary'},false],

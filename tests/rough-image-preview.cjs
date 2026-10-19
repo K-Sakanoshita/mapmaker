@@ -8,6 +8,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
   appendChild(node){this.children.push(node);node.parent=this;if(node.id)ids.set(node.id,node);}
   remove(){ids.delete(this.id);if(this.parent)this.parent.children=this.parent.children.filter(x=>x!==this);}
  }
+ const processing=new Element('processingDialog'),message=new Element('processingDialogMessage');processing.classList.add('d-none');
  const menu=new Element('basemenu');
  const container=new Element('mapid'),toggle=new Element('rough_enabled');toggle.checked=true;toggle.rough=true;
  const color=new Element('color'),reset=new Element('reset'),save=new Element('save'),threeD=new Element('3d'),disabled=new Element('already-disabled');
@@ -25,8 +26,8 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
  const maker=vm.runInContext('mapMaker',box);maker.customMode=true;maker.queueExportPreview=()=>{};
  const render=async()=>{maker.setRoughPreviewLock(true);await maker.renderRoughPreview(maker.roughPreviewVersion=(maker.roughPreviewVersion||0)+1);};
  await render();
- assert.equal(modals[0][1].compact,true);assert.equal(modals[0][1].mode,'');assert.match(modals[0][1].message,/processing_message/);
- assert.equal(modals.at(-1)[0],'close');assert.equal(box.winCont.modalMode,false);
+ assert.equal(message.textContent,'processing_message');assert.equal(modals.length,0,'rough preview uses the shared processing overlay');
+ assert.equal(processing.classList.contains('d-none'),true);assert.equal(box.winCont.modalMode,false);
  assert.equal(ids.has('mapmakerRoughStatus'),false,'processing uses shared modal instead of a status element');
  assert.equal(menu.classList.contains('rough-preview-mode'),false,'rough preview preserves the normal menu layout');
  assert.equal(container.inert,true);assert.equal(color.disabled,false);assert.equal(reset.disabled,false);assert.equal(threeD.disabled,false);assert.equal(toggle.disabled,false);assert.equal(save.disabled,false);
@@ -46,8 +47,25 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
  // Consecutive versions keep the shared processing modal open until the latest image is ready.
  const first=render();await new Promise(setImmediate);const staleRelease=releaseBuild;
  const secondVersion=++maker.roughPreviewVersion;staleRelease();await first;
- assert.equal(box.winCont.modalMode,true,'stale completion cannot dismiss a newer pending render');
- delay=false;await maker.renderRoughPreview(secondVersion);assert.equal(box.winCont.modalMode,false);
+ assert.equal(processing.classList.contains('d-none'),false,'stale completion cannot dismiss a newer pending render');
+ delay=false;await maker.renderRoughPreview(secondVersion);assert.equal(processing.classList.contains('d-none'),true);
+ // Overlapping rough generation and saving own independent tokens on the same DOM.
+ delay=true;const roughPending=render();await new Promise(setImmediate);
+ let releaseSave;box.SVGCont.save=async()=>new Promise(resolve=>releaseSave=resolve);
+ const saving=maker.save('svg');await new Promise(setImmediate);
+ assert.equal(maker.processingRequests.size,2);assert.equal(message.textContent,'export_processing');
+ releaseBuild();await roughPending;
+ assert.equal(processing.classList.contains('d-none'),false,'rough completion cannot hide an active save');
+ releaseSave();await saving;
+ assert.equal(maker.processingRequests.size,0);assert.equal(processing.classList.contains('d-none'),true);
+ assert.equal(processing.getAttribute('aria-busy'),'false');
+ box.SVGCont.save=async()=>{throw new Error('expected save failure');};await maker.save('png');
+ assert.equal(processing.classList.contains('d-none'),true,'failed save releases its request');assert.equal(save.disabled,false);
+ assert.equal(alerts.pop(),'export_error');box.SVGCont.save=async()=>{};delay=false;
+ maker.previewBusy(true);maker.previewBusy(true);assert.equal(maker.processingRequests.size,1,'render busy is idempotent');
+ const exportToken=maker.beginProcessing('export_processing');maker.previewBusy(false);
+ assert.equal(processing.classList.contains('d-none'),false);maker.endProcessing(exportToken);
+ assert.equal(processing.classList.contains('d-none'),true);
  // Existing dialogs are neither replaced nor dismissed by the preview.
  const external={};box.winCont.modal=external;box.winCont.modalMode=true;const count=modals.length;
  await render();assert.equal(box.winCont.modal,external);assert.equal(box.winCont.modalMode,true);assert.equal(modals.length,count);

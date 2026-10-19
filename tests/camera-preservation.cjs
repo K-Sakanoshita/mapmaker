@@ -1,3 +1,4 @@
+const readSource = require('./helpers/lib-source.cjs').read;
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
@@ -6,7 +7,7 @@ const before = JSON.stringify(camera);
 const handler = () => ({ enabled: true, enable() { this.enabled = true; }, disable() { this.enabled = false; } });
 const controls = new Map();
 const navigationClasses = new Set();
-const navigationGroup = { classList: { add: name => navigationClasses.add(name), remove: name => navigationClasses.delete(name) } };
+const navigationGroup = { classList: { add: name => navigationClasses.add(name), remove: name => navigationClasses.delete(name), toggle: (name,on) => on ? navigationClasses.add(name) : navigationClasses.delete(name) } };
 const container = { querySelector: selector => { if (!controls.has(selector)) controls.set(selector, { disabled: true, closest: () => navigationGroup }); return controls.get(selector); } };
 const box = vm.createContext({
     map: { threeD: false, schedule() {}, setBasemap() {},
@@ -17,8 +18,11 @@ const box = vm.createContext({
             jumpTo: () => assert.fail('return to position selection must preserve the selected camera') }
     }, mapMaker: { customMode: true, zoomMessage() {}, rough_options: () => ({ enabled: false }) }
 });
-vm.runInContext(fs.readFileSync('lib/geolib.js', 'utf8'), box);
-vm.runInContext(fs.readFileSync('lib/birdseye.js', 'utf8'), box);
+vm.runInContext(fs.readFileSync('lib/renderers/maplibre/adapter.js','utf8').replace('    return {\n        map:', '    globalThis.NavigationView = MapView;\n    return {\n        map:'),box);
+Object.assign(box.map.gl,{dragPan:box.map.dragging,touchZoomRotate:box.map.touchZoom,doubleClickZoom:box.map.doubleClickZoom,scrollZoom:box.map.scrollWheelZoom,getBearing:()=>camera.bearing});
+for(const name of ['setNavigationEnabled','getPitch','getBearing','setPitch'])box.map[name]=vm.runInContext('NavigationView.prototype.'+name,box);
+vm.runInContext(readSource('@feature-core', 'utf8'), box);
+vm.runInContext(fs.readFileSync('lib/ui/birdseye.js', 'utf8'), box);
 vm.runInContext('Birdseye.sync = () => {}; Birdseye.open();', box);
 assert.equal(box.map.threeD, true);
 assert.equal(container.querySelector('.maplibregl-ctrl-compass').disabled, true);

@@ -11,7 +11,7 @@ const vm = require('node:vm');
         const box=vm.createContext({console,clearTimeout,setTimeout(fn,delay){if(delay===150)scheduledRough++;return setImmediate(fn);},
             requestAnimationFrame:fn=>setImmediate(fn),
             map:{ready:true,editorRenderer:renderer,getCenter:()=>({lng:135,lat:35}),setView(){},getZoom:()=>14,
-                getContainer:()=>({setAttribute(){}}),gl:{once(_type,fn){finishFrame=fn;},triggerRepaint(){events.push('frame');}}},
+                getContainer:()=>({setAttribute(){}}),once(_type,fn){finishFrame=fn;},repaint(){events.push('frame');}},
             Conf:{default:{MinZoomLevel:11}},Layers:{},LayerCont:{styles:[],applyDrawOrder(){}},
             Basic:{getData(){},retry:fn=>Promise.resolve(fn())},overPassCont:{getRetryCount:()=>5,get:()=>({})},
             location:{href:'http://localhost/'},glot:{get:key=>key},

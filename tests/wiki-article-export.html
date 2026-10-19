@@ -25,7 +25,8 @@ const MapEngine = {
     marker(ll, options) {
         const element = document.createElement('div');
         element.className = 'mapmaker-marker'; element.style.cssText = 'left:120px;top:80px;width:640px';
-        element.innerHTML = options.icon.html;
+        if (options.icon.html instanceof Node) element.append(options.icon.html);
+        else element.innerHTML = options.icon.html;
         element.mapmakerMarker = { getLatLng: () => ll };
         return { addTo() { document.querySelector('#mapid').append(element); }, getElement: () => element,
             remove() { element.remove(); } };
@@ -33,8 +34,10 @@ const MapEngine = {
 };
 const QRCode = class { svg() { return '<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128"><rect width="128" height="128" fill="black"/></svg>'; } };
 </script>
-<script src="../lib/poislib.js"></script>
-<script src="../lib/svglib.js"></script>
+<script src="../lib/application/poi-controller.js"></script>
+<script src="../lib/export/svg-text.js"></script>
+<script src="../lib/export/png.js"></script>
+<script src="../lib/export/svg-document.js"></script>
 <script>
 const Marker = new MarkerControl(), SVGCont = new SVGControl();
 (async () => {
@@ -43,6 +46,9 @@ const Marker = new MarkerControl(), SVGCont = new SVGControl();
     const near = (a,b) => Math.abs(a-b)<0.01;
     try {
         const photo = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="160" height="128"><rect width="160" height="128" fill="orange"/></svg>');
+        // This layout fixture uses only its own in-memory image; URL security is tested separately.
+        const safeImage = Marker.safeImageURL.bind(Marker);
+        Marker.safeImageURL = (value, wikipedia) => value === photo ? photo : safeImage(value, wikipedia);
         const ll = {lat:35,lng:135};
         Marker.markers.wikipedia = [{mapmaker_id:'node/1'}];
         Marker.qr_add('wikipedia','node/1','https://example.org',ll,

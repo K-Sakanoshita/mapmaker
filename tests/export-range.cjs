@@ -1,3 +1,4 @@
+const readSource = require('./helpers/lib-source.cjs').read;
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
@@ -6,19 +7,19 @@ const vm = require('node:vm');
     const rect = { x1: 0, y1: 0, x2: 1920, y2: 966, width: 1920, height: 966 };
     const button = { disabled: false };
     const box = vm.createContext({ console: { log() {}, error: console.error },
-        Worker: require('./helpers/svg-worker.cjs'), URL, setTimeout,
+        Worker: require('./helpers/svg-worker.cjs'), URL, setTimeout, clearTimeout,
         document: { baseURI: 'http://localhost/index.html',
-            getElementById: () => ({ classList: { remove: () => { covered = true; }, add: () => { covered = false; } } }),
+            getElementById: id => id==='processingDialog'?{classList:{toggle:(_name,hidden)=>{covered=!hidden;}},setAttribute(){}}:id==='processingDialogMessage'?{setAttribute(){}}:null,
             querySelectorAll: () => [button], createElementNS: () => ({ appendChild() {}, setAttribute() {} })
         },
-        requestAnimationFrame: fn => fn(),
+        glot: { get: key => key }, requestAnimationFrame: fn => fn(),
         map: { getContainer: () => ({inert:false}), getSize: () => ({ x: 1920, y: 966 }), containerPointToLatLng: ([x, y]) => ({ lng: 135 + x / 100000, lat: 35 - y / 100000 }) },
         Conf: { default: { Paper: { dpi: 300 }, credit: { text: '', size: 8, font: 'sans-serif' } }, style: { color: {} } },
         Layers: { background: { opacity: 1, color: '#ffffff' } }, LayerCont: { palette: 'color', styles: [] },
         Birdseye: { exportOptions: () => ({}) },
         window: { alert: () => assert.fail('export should succeed') }
     });
-    for (const file of ['lib/geolib.js', 'lib/svglib.js', 'mapmaker.js']) vm.runInContext(fs.readFileSync(file, 'utf8'), box);
+    for (const file of ['@feature-core', '@svg-document', 'mapmaker.js']) vm.runInContext(readSource(file, 'utf8'), box);
     box.rect = rect;
     box.getRect = () => {
         assert.equal(covered, false, 'capture must precede the processing overlay');
@@ -27,7 +28,6 @@ const vm = require('node:vm');
     vm.runInContext(`
         const SVGCont = new SVGControl();
         const actualExportRect = SVGCont._getExportRectPx.bind(SVGCont);
-        SVGCont._getVisibleScreenRectPx = () => { throw new Error('menus must not crop downloaded maps'); };
         SVGCont._getA4MaskRectPx = () => null;
         SVGCont._getExportRectPx = mode => { getRect(); return actualExportRect(mode); };
         SVGCont._svgTextToDom = text => ({ text, appendChild() {} });

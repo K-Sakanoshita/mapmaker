@@ -5,7 +5,7 @@ const box = vm.createContext({
     turf: { circle(coordinates, radius, options) { return { type: 'Feature', geometry: { type: 'Polygon', coordinates }, radius, options }; } },
     setTimeout(fn) { timers.set(++timerId, fn); return timerId; }, clearTimeout(id) { timers.delete(id); }
 });
-vm.runInContext(fs.readFileSync('lib/maplibre-adapter.js', 'utf8').replace(
+vm.runInContext(fs.readFileSync('lib/renderers/maplibre/adapter.js', 'utf8').replace(
     '    return {\n        map:', '    globalThis.View = MapView;\n    return {\n        map:'), box);
 const view = Object.create(box.View.prototype);
 view.features = new Map([[1, { mapmaker: {} }]]);
@@ -28,6 +28,6 @@ assert.equal(view.features.size, 1); assert.equal(schedules, 0);
 box.Conf = { default: { Circle: { ...style } } };
 box.map = view; view.getZoom = () => 18;
 box.poiCont = { get_osmid: () => ({ latlng: [35, 139] }) };
-vm.runInContext(fs.readFileSync('lib/poislib.js', 'utf8') + '\nnew MarkerControl().center("node/1");', box);
+vm.runInContext(fs.readFileSync('lib/application/poi-controller.js', 'utf8') + '\nnew MarkerControl().center("node/1");', box);
 assert.equal(view.features.size, 1); assert.equal(schedules, 0);
 console.log('PASS dedicated location layers, source reuse, timer replacement, cleanup, Marker.center and no editor reconstruction');

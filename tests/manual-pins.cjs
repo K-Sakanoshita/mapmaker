@@ -14,12 +14,12 @@ const document = { createElement: tag => new Element(tag), createElementNS: (_ns
     addEventListener: (type,fn) => events.set(type,fn), removeEventListener: type => events.delete(type) };
 const box = vm.createContext({ document, DOMParser: class { parseFromString(svg) { return { documentElement: { children: [{svg}] } }; } },
     glot: { get: key => key }, SVGCont: {}, mapMaker: { customMode: true, queueExportPreview() { previews++; } },
-    map: { getContainer: () => container, closePopup() {}, gl: { on: (type,fn) => events.set('map:'+type,fn), off: type => events.delete('map:'+type) } },
+    map: { getContainer: () => container, closePopup() {}, on: (type,fn) => events.set('map:'+type,fn), off: type => events.delete('map:'+type) },
     MapEngine: { divIcon: value => value, marker: (position,options) => ({ position: {...position}, options, removed:false,
         addTo() { return this; }, on(type,fn) { this.click = fn; return this; }, getLatLng() { return this.position; }, remove() { this.removed = true; } }),
         responsivePopup: () => ({ setContent(value) { popup=value; return this; }, setLatLng() { return this; }, openOn() {} }) }
 });
-vm.runInContext(fs.readFileSync('lib/manual-pins.js','utf8'), box);
+vm.runInContext(fs.readFileSync('lib/ui/manual-pins.js','utf8'), box);
 const pins = vm.runInContext('ManualPins',box);
 pins.start(); pins.start();
 assert.equal(container.children.length,1,'repeated start adds neither toolbar nor handlers');

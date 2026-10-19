@@ -1,7 +1,8 @@
+const readSource = require('./helpers/lib-source.cjs').read;
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
-const source = fs.readFileSync('lib/geolib.js', 'utf8');
+const source = readSource('@feature-core', 'utf8');
 const polygon = (id, x, tags = {}) => ({ type: 'Feature', id, properties: {building:"yes", ...tags},
     geometry: { type: 'Polygon', coordinates: [[[x,35],[x+.0003,35],[x+.0003,35.0003],[x,35.0003],[x,35]]] } });
 const fixtures = [polygon('unknown',139), polygon('levels',139.0004,{'building:levels':'2'}), polygon('height',139.0008,{height:'12 m','building:levels': '2'})];
@@ -75,14 +76,13 @@ if (process.env.BIRDSEYE_BASELINE) {
 const options = {birdseye:{tilt:45,bearing:30}};
 const expectedWorkerSVG = box.exporter.toSVGFromLayers(bbox,options);
 const messages = [];
-const workerState = {Conf:box.Conf,Layers:box.Layers,LayerCont:box.LayerCont,
-    styles:{road:[box.SVGCont.svg_style(),null],building:[box.SVGCont.svg_style(),null]}};
+const workerState = vm.runInContext('captureMapMakerExportSnapshot()',box);
 box.self = {postMessage:message=>messages.push(message)};
 box.importScripts = () => {};
-vm.runInContext(fs.readFileSync('lib/svg-export-worker.js','utf8'),box);
-box.self.onmessage({data:{id:1,state:workerState,exporterOptions:box.exporter.opts,bbox,options}});
+vm.runInContext(fs.readFileSync('lib/workers/svg-export.js','utf8'),box);
+box.self.onmessage({data:{id:1,snapshot:workerState,exporterOptions:box.exporter.opts,bbox,options}});
 assert.equal(messages[0].svgText,expectedWorkerSVG);
-box.self.onmessage({data:{id:2,exporterOptions:box.exporter.opts,bbox,options:{...options,birdseye:{tilt:45,bearing:90}}}});
+box.self.onmessage({data:{id:2,snapshot:workerState,exporterOptions:box.exporter.opts,bbox,options:{...options,birdseye:{tilt:45,bearing:90}}}});
 assert.equal(messages[1].svgText,box.exporter.toSVGFromLayers(bbox,{...options,birdseye:{tilt:45,bearing:90}}));
 assert.equal(messages[1].id,2);
 if(process.env.BIRDSEYE_FIXTURE) fs.writeFileSync(process.env.BIRDSEYE_FIXTURE,output);
@@ -177,7 +177,10 @@ assert.match(wallOutput(), /data-height-m="3.048"/);
 wallLine.properties = { barrier: 'wall', height: 'invalid', 'building:levels': '8' };
 assert.match(wallOutput(), /data-height-m="1.5"/);
 assert.doesNotMatch(wallBox.exporter.toSVGFromLayers(bbox), /data-height-m/);
-for (const barrier of ['fence','kerb','retaining_wall']) {
+wallLine.properties = { barrier: 'fence' };
+assert.match(wallOutput(), /data-fence-mesh="true"/);
+assert.doesNotMatch(wallOutput(), /data-building-face="wall"/);
+for (const barrier of ['kerb']) {
     wallLine.properties = { barrier };
     assert.doesNotMatch(wallOutput(), /data-height-m/);
 }
@@ -186,7 +189,7 @@ wallLine.geometry = { type: 'MultiLineString', coordinates: [wallLine.geometry.c
 assert.doesNotMatch(wallOutput(), /NaN|Infinity/);
 wallBox.Layers.barrier.opacity = 0;
 assert.doesNotMatch(wallOutput(), /data-height-m/);
-console.log('PASS wall SVG height/units/fallback, color, multiline/duplicate points, hidden category and unchanged fences/2D');
+console.log('PASS wall SVG height/units/fallback, color, multiline/duplicate points, hidden category, separate fence mesh and unchanged 2D');
 
 const hedgeBox = context(source);
 const hedge = { type: 'Feature', id: 'hedge', properties: { barrier: 'hedge' },
