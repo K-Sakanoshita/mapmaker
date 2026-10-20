@@ -1065,13 +1065,21 @@ class MapMaker {
 
     acquisitionZoom() {
         if (this.customMode && Number.isFinite(this.acquiredZoom)) return this.acquiredZoom;
-        const config = Conf.system?.MapData?.viewportZoom;
-        if (config?.enabled !== true) return this.zoomLevel();
-        const size = map.getSize?.();
-        const bounds = map.getBounds?.();
-        const nw = bounds?.getNorthWest?.(), se = bounds?.getSouthEast?.();
-        return mapDataAcquisitionZoom(map.getZoom(), [size?.x ?? size?.width, size?.y ?? size?.height], config,
-            nw && se ? {west:nw.lng, north:nw.lat, east:se.lng, south:se.lat} : null);
+        const settings = Conf.system?.MapData;
+        const config = settings?.viewportZoom;
+        let zoom = this.zoomLevel();
+        if (config?.enabled === true) {
+            const size = map.getSize?.();
+            const bounds = map.getBounds?.();
+            const nw = bounds?.getNorthWest?.(), se = bounds?.getSouthEast?.();
+            zoom = mapDataAcquisitionZoom(map.getZoom(), [size?.x ?? size?.width, size?.y ?? size?.height], config,
+                nw && se ? {west:nw.lng, north:nw.lat, east:se.lng, south:se.lat} : null);
+        }
+        // A higher decision zoom starts all categories earlier, while keeping
+        // the real map zoom unchanged for drawing and geometry simplification.
+        const offset = Number(settings?.desktopZoomOffset ?? 0);
+        if (Number.isFinite(offset) && offset !== 0 && !isMapDataMobileDevice()) zoom += offset;
+        return Number(zoom.toFixed(1));
     }
 
     // View Zoom Level & Status Comment

@@ -20,6 +20,24 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
   return {message:await result,messages};
  }
  const ok=await run(new Response(JSON.stringify(fixture)));assert.ok(ok.message.result.geojson.length);assert.ok(ok.messages.some(m=>m.stage==='converting'));assert.ok(ok.messages.some(m=>m.progress>0));
+ // Exercise the streamed boundary at a small explicit cap, without allocating
+ // 100MiB of padding for each device profile.
+ const json=JSON.stringify(fixture),cap=Buffer.byteLength(json)+4096;
+ const boundary=json+' '.repeat(cap-Buffer.byteLength(json));
+ const boundaryConfig={...system.MapData,limits:{...system.MapData.limits,responseBytes:cap}};
+ const exact=await run(new Response(boundary),boundaryConfig);assert.ok(exact.message.result);
+ const extra=await run(new Response(boundary+' '),boundaryConfig);
+ assert.equal(extra.message.code,'MAP_DATA_LIMIT');assert.equal(extra.message.retryable,false);
+ assert.ok(!extra.messages.some(m=>m.stage==='converting'));
+ // Declared-size checks cover both configured device caps and the worker fallback.
+ const mobile={...system.MapData,limits:{...system.MapData.limits,...system.MapData.mobileLimits}};
+ for(const config of [system.MapData,mobile,{}]){
+  const size=config.limits?.responseBytes ?? system.MapData.limits.responseBytes;
+  const exact=await run(new Response(json,{headers:{'Content-Length':String(size)}}),config);
+  assert.ok(exact.message.result);
+  const extra=await run(new Response(json,{headers:{'Content-Length':String(size+1)}}),config);
+  assert.equal(extra.message.code,'MAP_DATA_LIMIT');assert.equal(extra.message.retryable,false);
+ }
  for(const [limits,response] of [[{responseBytes:2},new Response(JSON.stringify(fixture))],[{elements:1},new Response(JSON.stringify(fixture))],[{coordinates:1},new Response(JSON.stringify(fixture))],[{outputCoordinates:1},new Response(JSON.stringify(fixture))],[{responseBytes:2},new Response('{}',{headers:{'Content-Length':'30'}})]]){
   const r=await run(response,{limits});assert.equal(r.message.code,'MAP_DATA_LIMIT');assert.equal(r.message.retryable,false);
  }

@@ -6,6 +6,7 @@
     },
     "system": {
         "MapData": {
+            "desktopZoomOffset": 1,
             "lowZoomBelow": 14,
             "viewportZoom": {
                 "enabled": true,
@@ -15,10 +16,16 @@
             },
             "timeoutMs": 150000,
             "limits": {
-                "responseBytes": 33554432,
-                "elements": 400000,
-                "coordinates": 480000,
-                "outputCoordinates": 360000
+                "responseBytes": 104857600,
+                "elements": 1250000,
+                "coordinates": 1500000,
+                "outputCoordinates": 1125000
+            },
+            "mobileLimits": {
+                "responseBytes": 52428800,
+                "elements": 625000,
+                "coordinates": 750000,
+                "outputCoordinates": 562500
             },
             "simplify": {
                 "belowZoom": 14,

@@ -1,10 +1,11 @@
-const {chromium}=require('playwright'),assert=require('node:assert/strict');
+const {chromium,devices}=require('playwright'),assert=require('node:assert/strict');
 const fixture=require('./helpers/osm-fixture.cjs');
 (async()=>{
  const browser=await chromium.launch({executablePath:'/usr/bin/google-chrome',headless:true,args:['--no-sandbox','--enable-unsafe-swiftshader']});
  try{
  for(const [lang,viewport] of [['ja',{width:390,height:844}],['en',{width:1280,height:900}]]){
-  const page=await browser.newPage({viewport,ignoreHTTPSErrors:true}),errors=[];
+  const mobile=viewport.width<992;
+  const page=await browser.newPage({...mobile?devices['Pixel 7']:{},viewport,ignoreHTTPSErrors:true}),errors=[];
   page.setDefaultTimeout(30000);page.on('pageerror',error=>errors.push(error.message));
   const osm=fixture([135.432,34.665]);osm.elements.push({type:'node',id:990001,lon:135.4315,lat:34.665},{type:'node',id:990002,lon:135.4325,lat:34.665},{type:'way',id:990003,nodes:[990001,990002],tags:{waterway:'stream',name:'Viewport stream'}});
   await page.route('**/*',route=>{
@@ -19,9 +20,13 @@ const fixture=require('./helpers/osm-fixture.cjs');
   await page.evaluate(()=>{document.getElementById('mapMakerIntroClose')?.click();window.__requests=[];
    const run=overPassCont.runDataWorker.bind(overPassCont);overPassCont.runDataWorker=(data,...args)=>{__requests.push({zoom:data.zoom,viewport:data.viewport,keys:Object.keys(data.osm),streams:data.osm.waterLine?.tags.includes('waterway=stream')});return run(data,...args);};
   });
-  const initial=await page.evaluate(()=>({real:mapMaker.zoomLevel(),detail:mapMaker.acquisitionZoom(),building:Conf.style[LayerCont.palette].building.zoom,guidance:document.getElementById('morezoomFeatures').textContent,exampleName:glot.get('menu_farmland'),display:document.getElementById('zoomlevelValue').textContent}));
+  const initial=await page.evaluate(()=>{
+   const settings=Conf.system.MapData,offset=settings.desktopZoomOffset;settings.desktopZoomOffset=0;
+   const before=mapMaker.acquisitionZoom();settings.desktopZoomOffset=offset;
+   return {before,real:mapMaker.zoomLevel(),detail:mapMaker.acquisitionZoom(),building:Conf.style[LayerCont.palette].building.zoom,guidance:document.getElementById('morezoomFeatures').textContent,exampleName:glot.get('menu_farmland'),display:document.getElementById('zoomlevelValue').textContent};
+  });
   const includesBuilding=initial.detail>=initial.building;
-  assert.equal(includesBuilding,viewport.width<992);assert.ok(initial.display.includes('13.8'));
+  assert.equal(Number((initial.detail-initial.before).toFixed(1)),mobile?0:1);assert.equal(includesBuilding,true);assert.ok(initial.display.includes('13.8'));
   assert.equal(initial.guidance.includes(initial.exampleName),!includesBuilding,JSON.stringify(initial));
   await page.evaluate(()=>map.gl.jumpTo({bearing:45,pitch:25}));
   const tilted=await page.evaluate(()=>mapMaker.acquisitionZoom());assert.ok(tilted<=initial.detail);
@@ -43,7 +48,7 @@ const fixture=require('./helpers/osm-fixture.cjs');
   const reset=await page.evaluate(()=>({detail:mapMaker.acquisitionZoom(),stored:mapMaker.acquiredZoom}));
   assert.equal(reset.stored,undefined);assert.notEqual(reset.detail,made.detail,'reset resumes calculation for the resized map');
   await page.evaluate(()=>{Conf.system.MapData.viewportZoom.enabled=false;mapMaker.zoomMessage();});
-  assert.equal(await page.evaluate(()=>mapMaker.acquisitionZoom()),13.8);
+  assert.equal(await page.evaluate(()=>mapMaker.acquisitionZoom()),mobile?13.8:14.8);
   assert.deepEqual(errors,[]);console.log('PASS',lang,viewport,initial,{tilted,made,reset},'actual request/guidance/menu, pitch/bearing, frozen sheet/resize, reset and disabled config');
   await page.close();
  }

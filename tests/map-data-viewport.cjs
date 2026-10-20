@@ -22,7 +22,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
  let zoom=13.4,size=[512,384],selected,display,request;
  const guidance={classList:{toggle(){}},textContent:''},button={disabled:false};
  const config=JSON.parse(fs.readFileSync('data/config-system.jsonc')).system.MapData;
- const box=vm.createContext({console:{log(){}},map:{getZoom:()=>zoom,getSize:()=>({x:size[0],y:size[1]}),getCenter:()=>({lng:135,lat:35}),setView(){}},
+ const box=vm.createContext({console:{log(){}},navigator:{userAgent:'Mozilla/5.0 (Linux; Android 14) Mobile'},map:{getZoom:()=>zoom,getSize:()=>({x:size[0],y:size[1]}),getCenter:()=>({lng:135,lat:35}),setView(){}},
   location:{href:'http://localhost/'},Conf:{default:{MinZoomLevel:11,LimitZoomLevel:15},system:{MapData:config},style:{color:{building:{zoom:14}}}},
   LayerCont:{palette:'color',styles:['building']},glot:{get:key=>key},winCont:{modal_open(){},spinner(){}},
   Basic:{getData(){},retry(fn){fn();return new Promise(()=>{});}},
