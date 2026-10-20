@@ -23,6 +23,13 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
  for(const [limits,response] of [[{responseBytes:2},new Response(JSON.stringify(fixture))],[{elements:1},new Response(JSON.stringify(fixture))],[{coordinates:1},new Response(JSON.stringify(fixture))],[{outputCoordinates:1},new Response(JSON.stringify(fixture))],[{responseBytes:2},new Response('{}',{headers:{'Content-Length':'30'}})]]){
   const r=await run(response,{limits});assert.equal(r.message.code,'MAP_DATA_LIMIT');assert.equal(r.message.retryable,false);
  }
+ // A real fetch stream errors when its signal is aborted. Cancelling that
+ // already-aborted reader must not replace the limit with a retryable AbortError.
+ const abortedLimit=await run(({signal})=>new Response(new ReadableStream({start(controller){
+  controller.enqueue(new TextEncoder().encode('too large'));
+  signal.addEventListener('abort',()=>controller.error(Object.assign(new Error('aborted'),{name:'AbortError'})));
+ }})),{limits:{responseBytes:2}});
+ assert.equal(abortedLimit.message.code,'MAP_DATA_LIMIT');assert.equal(abortedLimit.message.retryable,false);
  for(const status of [404,429,503]){const r=await run(new Response('',{status,headers:{'Retry-After':'120'}}));assert.equal(r.message.retryable,status!==404);assert.equal(r.message.retryAfter,'120');}
  const timeout=await run(({signal})=>new Promise((resolve,reject)=>signal.addEventListener('abort',()=>reject(Object.assign(new Error('timeout'),{name:'AbortError'})))),{timeoutMs:1});assert.equal(timeout.message.retryable,true);
  const malformed=await run(new Response('not json'));assert.ok(malformed.message.error);assert.equal(malformed.message.retryable,false);

@@ -15,10 +15,10 @@
             },
             "timeoutMs": 150000,
             "limits": {
-                "responseBytes": 16777216,
-                "elements": 120000,
-                "coordinates": 240000,
-                "outputCoordinates": 180000
+                "responseBytes": 33554432,
+                "elements": 240000,
+                "coordinates": 480000,
+                "outputCoordinates": 360000
             },
             "simplify": {
                 "belowZoom": 14,
