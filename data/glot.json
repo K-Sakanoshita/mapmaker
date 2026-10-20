@@ -98,8 +98,8 @@
         "en": "Create a map with Walking Map Maker"
     },
     "intro_message": {
-        "ja": "場所を検索してズームし、「マップを作る」を押すと、自由に加工・印刷できる地図画像を作成できます。",
-        "en": "Search for a place, zoom in, and select “Create Map” to make a map image you can freely edit and print."
+        "ja": "場所を検索してズームし、「マップを作る」を押すと、自由に加工・印刷できる地図画像を作成できます。画面下部のボタンが見えない場合は、ChromeやSafariなどで開いてください。",
+        "en": "Search for a place, zoom in, and select “Create Map” to make a map image you can freely edit and print. If the buttons at the bottom of the screen are hidden, open this page in Chrome or Safari."
     },
     "intro_close": {
         "ja": "案内を閉じる",
