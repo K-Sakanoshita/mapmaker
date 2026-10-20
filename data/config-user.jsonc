@@ -18,9 +18,9 @@
         "ZoomSnap": 0.25,
         // ズーム別の傾き上限（度）。点の間は線形補間し、範囲外は端の値を使用。
         "maxPitchByZoom": [
-            { "zoom": 14, "pitch": 20 },
-            { "zoom": 16, "pitch": 35 },
-            { "zoom": 18, "pitch": 50 }
+            { "zoom": 14, "pitch": 25 },
+            { "zoom": 16, "pitch": 40 },
+            { "zoom": 18, "pitch": 55 }
         ],
         "MinZoomLevel": 11,
         "LimitZoomLevel": 15,
@@ -128,7 +128,7 @@
         },
         "credit": {
             "text": "© OpenStreetMap",
-            "size": 9, // 単位:pt
+            "size": 8, // 単位:pt
             "anchor": "start",
             "font": "Helvetica"
         },
@@ -152,6 +152,22 @@
     "gas": {
         "url": "https://script.google.com/macros/s/AKfycbx-MjivzIWzTZWQHcq-bXqQkkrsPwKzualpqndicwxQE-3BN6OoOdBVADGDAbN4umRLaA/exec?name=John&age=30"
     },
+    "mapPresets": {
+        "expo2025": {
+            "center": [34.64973, 135.38306],
+            "zoom": 15,
+            "asOf": "2025-10-13",
+            "statusLabel": "expo2025_mode",
+            "maxBounds": [[135.36, 34.625], [135.42, 34.68]],
+            "style": "./tiles/japan-20251013.json?v=expo-3",
+            "pmtiles": true,
+            "dataSource": {
+                "url": "https://k-sakanoshita.github.io/expo2025-maniacs/data/releases/2026-10-19-4/expo2025.osm.json",
+                "attribution": "EXPO2025 万博マニアックマップ",
+                "documentation": "https://k-sakanoshita.github.io/expo2025-maniacs/data.html"
+            }
+        }
+    },
     "menu": [
         {
             "glot-model": "licence_title",
@@ -171,6 +187,16 @@
         {
             "glot-model": "openstreetmap",
             "linkto": "https://www.openstreetmap.org/about",
+            "divider": false
+        },
+        {
+            "glot-model": "menu_normal_map",
+            "linkto": "javascript:MapPresets.open()",
+            "divider": false
+        },
+        {
+            "glot-model": "menu_expo2025",
+            "linkto": "javascript:MapPresets.open('expo2025')",
             "divider": false
         }
     ],

@@ -1,4 +1,8 @@
 {
+    "expo2025_mode": { "ja": "EXPO2025 万博マップモード中", "en": "EXPO2025 map mode" },
+    "menu_expo2025": { "ja": "EXPO2025 万博の地図", "en": "EXPO2025 map" },
+    "menu_normal_map": { "ja": "通常の地図", "en": "Regular map" },
+    "menu_preset_source": { "ja": "万博データの出典", "en": "Expo map data source" },
     "map_data_limit": {
         "ja": "地図データが多すぎるため処理を中止しました。ズームを上げて範囲を狭めてください。",
         "en": "There is too much map data. Zoom in to a smaller area and try again."
@@ -51,16 +55,16 @@
     "birdseye_note": {"ja": "右ボタンまたはCtrl＋ドラッグで回転・傾斜。", "en": "Right-drag or Ctrl-drag to rotate and tilt."},
 
     "about": {
-        "ja": "まち歩きマップメーカーについて",
-        "en": "about Walking Map Maker"
+        "ja": "このサイトについて",
+        "en": "About this site"
     },
     "about-bg": {
         "ja": "ヘッダー部の背景画像について",
         "en": "about background image of header"
     },
     "owner": {
-        "ja": "開発サイト",
-        "en": "development site"
+        "ja": "GitHub（ソースコード）",
+        "en": "GitHub (source code)"
     },
     "openstreetmap": {
         "ja": "OpenStreetMapについて",
@@ -127,8 +131,12 @@
         "en": "(TEST)Acquisition Date: "
     },
     "makemap": {
-        "ja": "マップを作る",
-        "en": "Create Map"
+        "ja": "地図をカスタマイズ",
+        "en": "Customize map"
+    },
+    "customize_hint": {
+        "ja": "色・線幅を変える／アイコンを追加",
+        "en": "Change colors and line widths / Add icons"
     },
     "controlmenu": {
         "ja": "マップを編集する",
@@ -137,6 +145,10 @@
     "address": {
         "ja": "住所検索（日本国内のみ）",
         "en": "Address Search(Only Japan)"
+    },
+    "language": {
+        "ja": "言語",
+        "en": "Language"
     },
     "search": {
         "ja": "検索",
@@ -307,32 +319,37 @@
         "en": "deselection"
     },
     "select_size": {
-        "ja": "大きさ",
-        "en": "Size"
+        "ja": "用紙サイズ",
+        "en": "Paper size"
+    },
+    "paper_full_view": {
+        "ja": "画面全体",
+        "en": "Current view"
     },
     "add_icon": {
         "ja": "アイコン",
         "en": "Add Icon"
     },
+    "select_palette": {"ja": "パレット", "en": "Palette"},
     "select_color": {
         "ja": "色選択",
         "en": "Select color"
     },
     "area_A4": {
-        "ja": "A4縦サイズ",
-        "en": "A4 portrait size"
+        "ja": "A4縦",
+        "en": "A4 portrait"
     },
     "area_A4_landscape": {
-        "ja": "A4横サイズ",
-        "en": "A4 landscape size"
+        "ja": "A4横",
+        "en": "A4 landscape"
     },
     "area_A3": {
-        "ja": "A3縦サイズ",
-        "en": "A3 portrait size"
+        "ja": "A3縦",
+        "en": "A3 portrait"
     },
     "area_A3_landscape": {
-        "ja": "A3横サイズ",
-        "en": "A3 landscape size"
+        "ja": "A3横",
+        "en": "A3 landscape"
     },
     "color_palette": {
         "ja": "カラーパレット",
@@ -365,6 +382,38 @@
     "rough_style": {
         "ja": "手書き風",
         "en": "Hand-drawn"
+    },
+    "rough_fill_none": {
+        "ja": "なし",
+        "en": "None"
+    },
+    "rough_fill_solid": {
+        "ja": "ベタ塗り",
+        "en": "Solid"
+    },
+    "rough_fill_hachure": {
+        "ja": "斜線",
+        "en": "Hachure"
+    },
+    "rough_fill_zigzag": {
+        "ja": "ジグザグ",
+        "en": "Zigzag"
+    },
+    "rough_fill_cross_hatch": {
+        "ja": "格子",
+        "en": "Cross-hatch"
+    },
+    "rough_fill_dots": {
+        "ja": "点",
+        "en": "Dots"
+    },
+    "rough_fill_dashed": {
+        "ja": "破線",
+        "en": "Dashed"
+    },
+    "rough_fill_zigzag_line": {
+        "ja": "ジグザグ線",
+        "en": "Zigzag-line"
     },
     "rough_roughness": {
         "ja": "粗さ",

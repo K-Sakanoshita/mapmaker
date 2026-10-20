@@ -3,6 +3,7 @@ const fs = require('node:fs');
 const groups = {
     "@feature-core": [
         "lib/domain/feature-tags.js",
+        "lib/domain/flags.js",
         "lib/domain/model-rules.js",
         "lib/domain/styles.js",
         "lib/geometry/buildings.js",
@@ -10,6 +11,7 @@ const groups = {
         "lib/geometry/barriers.js",
         "lib/geometry/trees.js",
         "lib/geometry/point-models.js",
+        "lib/geometry/elevated-paths.js",
         "lib/export/svg-features.js",
         "lib/domain/layer-state.js",
         "lib/application/layer-render-registry.js",
@@ -20,6 +22,7 @@ const groups = {
         "lib/osm/csv.js"
     ],
     "@svg-document": [
+        "lib/application/flag-assets.js",
         "lib/application/svg-worker-client.js",
         "lib/export/svg-text.js",
         "lib/export/png.js",

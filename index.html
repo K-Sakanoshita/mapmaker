@@ -37,7 +37,7 @@
     <meta name="twitter:description" content="自由に加工＆使える地図画像を作るサイト" />
     <meta name="twitter:image" content="https://mapmaker.openacrossbase.net/image/ogimage.png" />
     <link rel="shortcut icon" href="favicon.ico" />
-    <link rel="stylesheet" href="./css/basemenu.css?v=maplibre-71" />
+    <link rel="stylesheet" href="./css/basemenu.css?v=maplibre-84" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@5.20.0/dist/maplibre-gl.css" />
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/v/bs5/dt-3.0.3/sl-4.0.1/datatables.min.css">
@@ -50,54 +50,59 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.1.0/chroma.min.js" defer></script>
     <script src="https://cdn.datatables.net/v/bs5/dt-3.0.3/sl-4.0.1/datatables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@5.20.0/dist/maplibre-gl.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/pmtiles@4.3.0/dist/pmtiles.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode-svg@1.1.0/lib/qrcode.min.js" defer></script>
     <script src="https://community-geocoder.geolonia.com/api.js" defer></script>
     <script src="https://unpkg.com/glottologist@2.0.3/dist/glottologist.min.js" defer></script>
     <script src="https://unpkg.com/@turf/turf/turf.min.js"></script>
     <script src="https://unpkg.com/svg2roughjs@3.2.3/dist/svg2roughjs.umd.min.js" defer></script>
     <script src="./lib/domain/feature-tags.js?v=layout-1" defer></script>
+    <script src="./lib/domain/flags.js?v=flags-1" defer></script>
     <script src="./lib/domain/model-rules.js?v=layout-3" defer></script>
-    <script src="./lib/domain/styles.js?v=layout-2" defer></script>
-    <script src="./lib/geometry/buildings.js?v=layout-2" defer></script>
+    <script src="./lib/domain/styles.js?v=layout-3" defer></script>
+    <script src="./lib/geometry/buildings.js?v=layout-3" defer></script>
     <script src="./lib/geometry/roofs.js?v=layout-1" defer></script>
     <script src="./lib/geometry/barriers.js?v=layout-6" defer></script>
     <script src="./lib/geometry/trees.js?v=layout-1" defer></script>
-    <script src="./lib/geometry/point-models.js?v=layout-1" defer></script>
-    <script src="./lib/export/svg-features.js?v=layout-8" defer></script>
+    <script src="./lib/geometry/point-models.js?v=layout-2" defer></script>
+    <script src="./lib/geometry/elevated-paths.js?v=paths-2" defer></script>
+    <script src="./lib/export/svg-features.js?v=layout-14" defer></script>
     <script src="./lib/domain/layer-state.js?v=layout-1" defer></script>
     <script src="./lib/application/layer-render-registry.js?v=layout-1" defer></script>
-    <script src="./lib/application/export-snapshot.js?v=layout-1" defer></script>
+    <script src="./lib/application/flag-assets.js?v=flags-1" defer></script>
+    <script src="./lib/application/export-snapshot.js?v=layout-2" defer></script>
+    <script src="./lib/application/map-presets.js?v=presets-2" defer></script>
     <script src="./lib/application/feature-context.js?v=layout-4" defer></script>
     <script src="./lib/geometry/coordinates.js?v=layout-2" defer></script>
-    <script src="./lib/application/map-controls.js?v=layout-2" defer></script>
+    <script src="./lib/application/map-controls.js?v=layout-3" defer></script>
     <script src="./lib/osm/csv.js?v=layout-1" defer></script>
-    <script src="./lib/renderers/maplibre/adapter.js?v=layout-2" defer></script>
+    <script src="./lib/renderers/maplibre/adapter.js?v=layout-5" defer></script>
     <script src="./lib/application/browser-services.js?v=layout-2" defer></script>
-    <script src="./lib/ui/window-controller.js?v=layout-5" defer></script>
-    <script src="./lib/application/svg-worker-client.js?v=layout-8" defer></script>
+    <script src="./lib/ui/window-controller.js?v=layout-8" defer></script>
+    <script src="./lib/application/svg-worker-client.js?v=layout-15" defer></script>
     <script src="./lib/export/svg-text.js?v=layout-1" defer></script>
     <script src="./lib/export/png.js?v=layout-1" defer></script>
-    <script src="./lib/export/svg-document.js?v=layout-3" defer></script>
+    <script src="./lib/export/svg-document.js?v=layout-5" defer></script>
     <script src="./lib/geometry/coastline.js?v=layout-1" defer></script>
     <script src="./lib/vendor/osmtogeojson.js?v=layout-1" defer></script>
     <script src="./lib/osm/classifier.js?v=layout-1" defer></script>
     <script src="./lib/application/map-data-worker-client.js?v=layout-1" defer></script>
     <script src="./lib/osm/query.js?v=layout-1" defer></script>
-    <script src="./lib/application/overpass-controller.js?v=layout-2" defer></script>
+    <script src="./lib/application/overpass-controller.js?v=layout-3" defer></script>
     <script src="./lib/application/poi-controller.js?v=layout-1" defer></script>
     <script src="./lib/ui/layer-panel.js?v=layout-1" defer></script>
     <script src="./lib/application/layer-controller.js?v=layout-2" defer></script>
-    <script src="./lib/ui/list-table.js?v=layout-1" defer></script>
-    <script src="./lib/renderers/maplibre/mesh-renderer.js?v=layout-7" defer></script>
-    <script src="./lib/renderers/maplibre/vector-editor.js?v=layout-1" defer></script>
-    <script src="./lib/renderers/maplibre/editor.js?v=layout-5" defer></script>
+    <script src="./lib/ui/list-table.js?v=layout-2" defer></script>
+    <script src="./lib/renderers/maplibre/mesh-renderer.js?v=layout-13" defer></script>
+    <script src="./lib/renderers/maplibre/vector-editor.js?v=layout-3" defer></script>
+    <script src="./lib/renderers/maplibre/editor.js?v=layout-8" defer></script>
     <script src="./lib/ui/manual-pins.js?v=layout-1" defer></script>
     <script src="./lib/ui/line-width-panel.js?v=layout-1" defer></script>
-    <script src="./lib/ui/rough-style-panel.js?v=layout-1" defer></script>
-    <script src="./lib/ui/mobile-editor-sheet.js?v=layout-1" defer></script>
-    <script src="./mapmaker.js?v=layout-1" defer></script>
+    <script src="./lib/ui/rough-style-panel.js?v=layout-5" defer></script>
+    <script src="./lib/ui/mobile-editor-sheet.js?v=layout-2" defer></script>
+    <script src="./mapmaker.js?v=layout-11" defer></script>
     <script src="./lib/ui/birdseye.js?v=layout-1" defer></script>
-    <script src="./initialize.js?v=layout-1" defer></script>
+    <script src="./initialize.js?v=layout-3" defer></script>
     <script type="module">
         import JSON5 from 'https://unpkg.com/json5@2/dist/index.min.mjs'
         window.JSON5 = JSON5;
@@ -118,10 +123,10 @@
         <!-- タイトルメニュー（固定） -->
         <header class="border-bottom">
             <div class="row g-0 align-items-center">
-                <div class="col-7 p-0 h-100">
+                <div class="app-header-brand p-0 h-100">
                     <div class="d-flex align-items-center">
                         <div class="dropdown app-main-menu">
-                            <button type="button" class="btn btn-sm menu" data-bs-toggle="dropdown"
+                            <button type="button" class="btn btn-light btn-sm menu" data-bs-toggle="dropdown"
                                 aria-expanded="false" aria-controls="temp_menu" aria-label="メニュー">
                                 <i class="fas fa-bars fa"></i></button>
                             <div class="dropdown-menu" style="z-index: 1020;" id="temp_menu">
@@ -132,7 +137,7 @@
                         </div>
                         <a class="title title d-flex align-items-center text-decoration-none"
                             href="javascript:mapMaker.licence()">
-                            <img src="image/mapmaker.svg" class="ms-1" style="height:36px" />
+                            <img src="image/mapmaker.svg" class="ms-1" style="height:32px" />
                             <span class="title" glot-model="title"></span>
                             <span class="subtitle" glot-model="subtitle"></span>
                             <span class="subtitle" glot-model="licence"></span>
@@ -141,12 +146,16 @@
                     <div>
                     </div>
                 </div>
-                <div class="col-5 p-0 pe-1 d-flex flex-row-reverse h-100 align-items-center">
-                    <button type="button" class="btn btn-light address-search-button"
-                        onclick="mapMaker.searchPoi(search_input.value)">
+                <div class="app-header-tools pe-1 d-flex h-100 align-items-center">
+                    <div class="dropdown">
+                        <button type="button" id="languageMenuButton" class="btn btn-light btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" aria-controls="languageMenu">
+                            <i class="fas fa-globe" aria-hidden="true"></i> <span>日本語</span>
+                        </button>
+                        <div id="languageMenu" class="dropdown-menu dropdown-menu-end" aria-labelledby="languageMenuButton"></div>
+                    </div>
+                    <button type="button" id="addressSearchButton" class="btn btn-light address-search-button" data-bs-toggle="modal" data-bs-target="#addressSearchDialog">
                         <i class="fas fa-search" aria-hidden="true"></i>
                     </button>
-                    <input type='search' id='search_input' class='form-control flex-grow-1 h-75 me-2'></input>
                 </div>
             </div>
         </header>

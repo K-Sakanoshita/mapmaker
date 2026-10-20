@@ -34,11 +34,26 @@ class MapMaker {
         this.syncPositionView();
         map.on('zoomend', () => mapMaker.zoomMessage());										// ズーム終了時に表示更新
         const searchInput = document.getElementById("search_input");
-        const searchButton = searchInput.previousElementSibling;
+        const searchButton = document.getElementById("addressSearchButton");
+        const searchDialog = document.getElementById("addressSearchDialog");
         searchInput.placeholder = glot.get("address");
         searchButton.title = glot.get("search");
         searchButton.setAttribute("aria-label", glot.get("search"));
-        searchInput.addEventListener('change', (e) => { mapMaker.searchPoi(e.target.value) });	// Address Search
+        document.getElementById("languageMenuButton").setAttribute("aria-label", glot.get("language"));
+        searchDialog.querySelector('.btn-close').setAttribute('aria-label', glot.get('button_close'));
+        searchDialog.addEventListener('show.bs.modal', () => searchDialog.removeAttribute('inert'));
+        searchDialog.addEventListener('shown.bs.modal', () => searchInput.focus());
+        searchDialog.addEventListener('hide.bs.modal', () => {
+            if (searchDialog.contains(document.activeElement)) document.activeElement.blur();
+            searchDialog.setAttribute('inert', '');
+        });
+        document.getElementById('addressSearchForm').addEventListener('submit', event => {
+            event.preventDefault();
+            const keyword = searchInput.value.trim();
+            if (!keyword || !searchDialog.classList.contains('show')) return;
+            searchDialog.addEventListener('hidden.bs.modal', () => this.searchPoi(keyword), { once: true });
+            bootstrap.Modal.getInstance(searchDialog).hide();
+        });
     }
 
     layerGroupHeader(panel) {
@@ -285,13 +300,19 @@ class MapMaker {
 
     rough_change(previewDelay = 0) {
         const selected = document.getElementById("rough_enabled")?.checked === true;
+        const fillSelect = document.getElementById("rough_fill_style");
+        if (fillSelect) {
+            if (!selected) fillSelect.value = "none";
+            else if (fillSelect.value === "none") fillSelect.value = "solid";
+            fillSelect.disabled = false;
+        }
         if (previewDelay > 0 && selected && this.customMode) this.roughPreviewNotBefore = Date.now() + previewDelay;
         if (!selected || !this.customMode) this.clearRoughPreview();
         this.queueExportPreview();
         if (typeof RoughStylePanel !== 'undefined' && !selected) RoughStylePanel.close(false);
         document.getElementById("roughParameters")?.classList.toggle("d-none",
             !selected || typeof RoughStylePanel === 'undefined' || !RoughStylePanel.panel);
-        for (const id of ["roughness", "bowing", "rough_fill_style"]) {
+        for (const id of ["roughness", "bowing"]) {
             const input = document.getElementById(id);
             if (input) input.disabled = !selected;
         }
@@ -474,8 +495,9 @@ class MapMaker {
             const menuMinimum = parseFloat(getComputedStyle(editbar).getPropertyValue("--basemenu-min-width")) || 260;
             const visibleControls = [makeMap, saveMap, controlMenu]
                 .filter(element => element && !element.classList.contains("d-none"));
+            const menuTop = document.getElementById("basemenu").getBoundingClientRect().top;
             const controlsBottom = visibleControls.reduce((bottom, element) => {
-                return Math.max(bottom, element.getBoundingClientRect().bottom - rect.top);
+                return Math.max(bottom, element.getBoundingClientRect().bottom - menuTop);
             }, 0);
             const layoutKey = `${wideLayout ? `wide-${menuMinimum}` : portrait ? 'portrait' : 'landscape'}:${this.customMode ? 'edit' : 'position'}`;
             const measuredMinimum = wideLayout ? menuMinimum : Math.max(120, Math.ceil(controlsBottom + 4));
@@ -521,7 +543,10 @@ class MapMaker {
     addCopyright(text) { this.copyrights = [...new Set([...this.copyrights, text])] }
 
     // 利用しているデータセットをCopyright表示用に返す
-    getCopyright() { return this.copyrights.length > 0 ? " | " + this.copyrights.join(' ') : "" }
+    getCopyright() {
+        const sources = [...new Set(this.copyrights.filter(Boolean))];
+        return sources.length ? " | " + sources.join(' ') : "";
+    }
 
     // Clear Menu
     clearMenu() {
@@ -551,6 +576,7 @@ class MapMaker {
         for (const [id, active] of [['position2D', !threeD], ['position3D', threeD]]) {
             const button = document.getElementById(id);
             button?.setAttribute('aria-pressed', String(active));
+            button?.setAttribute('aria-label', glot.get(id === 'position2D' ? 'position_2d' : 'position_3d'));
             button?.classList.toggle('active', active);
         }
     }
@@ -896,7 +922,7 @@ class MapMaker {
                 requestAnimationFrame(() => this.applyBasemenuWindowSize?.());
                 //clearMap.classList.remove("d-none");           // Hide Clear Button
                 ["dragging", "zoomControl", "scrollWheelZoom", "touchZoom"].forEach(key => map[key].disable());
-                $("#search_input").attr('disabled', 'disabled');
+                $("#search_input, #addressSearchButton").attr('disabled', 'disabled');
                 MapCont.stop();
                 Birdseye.setEnabled(map.getPitch() > 0);
                 Object.keys(this.maps).forEach(key => { if (map.hasLayer(this.maps[key])) { Layers["MAP"] = this.maps[key]; map.removeLayer(this.maps[key]) } });	// remove select layer
@@ -911,9 +937,9 @@ class MapMaker {
                 mapMaker.zoomMessage();
                 break;
             case false:
-                if (typeof RoughStylePanel !== 'undefined') RoughStylePanel.close(false);
                 if (typeof ManualPins !== "undefined") ManualPins.stop();
                 if (typeof LineWidthPanel !== "undefined") LineWidthPanel.close(false);
+                if (typeof RoughStylePanel !== "undefined") RoughStylePanel.close(false);
                 this.customMode = mode;
                 makeMap.classList.remove("d-none");         // Show MakeMap button
                 controlMenu.classList.add("d-none");        // Hide Control Menu
@@ -926,7 +952,7 @@ class MapMaker {
                 map.doubleClickZoom.enable();
                 MapCont.start();
                 ["dragging", "zoomControl", "scrollWheelZoom", "touchZoom"].forEach(key => map[key].enable());
-                $("#search_input").attr('disabled', false);
+                $("#search_input, #addressSearchButton").attr('disabled', false);
                 $("#mapid").removeClass("bg-clear");
                 $("#mapid").css('background-color', "");
                 $("#background_color").css('background-color', "");
@@ -941,6 +967,8 @@ class MapMaker {
     // Area Select(A4)
     area_select(mode) {
         this.selectMode = mode;
+        const paperSelect = document.getElementById("paperSizeSelect");
+        if (paperSelect) paperSelect.value = mode;
         LayerCont.area_select(mode);
         if (this.customMode && this.rough_options().enabled) this.queueExportPreview();
         return mode;
@@ -982,7 +1010,7 @@ class MapMaker {
     // View Zoom Level & Status Comment
     zoomMessage() {
         let nowzoom = this.zoomLevel();
-        let message = `${glot.get("zoomlevel")}${nowzoom} `;
+        let message = `<span class="zoom-value">${glot.get("zoomlevel")}${nowzoom} </span>`;
         const needsZoom = nowzoom < Conf.default.MinZoomLevel;
         makeMap.classList.toggle("d-none", mapMaker.custom());
         makeMap.querySelector("button").disabled = needsZoom;
@@ -1001,8 +1029,9 @@ class MapMaker {
             if (hiddenFeatures.length > 3) examples.push(glot.get("morezoom_etc"));
             featureList.textContent = `${glot.get("morezoom_example")} ${examples.join(" ")}`;
         }
-        if (mapMaker.custom() && !map.threeD) message += `<br>${glot.get("custommode")}`;
-        $("#zoomlevelValue").html("<h2 class='zoom'>" + message + "</h2>");
+        if (mapMaker.custom() && !map.threeD) message += `<span>${glot.get("custommode")}</span>`;
+        if (Conf.mapPreset?.statusLabel) message += `<span class="map-preset-status">${glot.get(Conf.mapPreset.statusLabel)}</span>`;
+        $("#zoomlevelValue").html("<div class='zoom'>" + message + "</div>");
     }
 
     // Try Again

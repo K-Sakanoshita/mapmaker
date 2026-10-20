@@ -3,12 +3,14 @@ const {document:dom}=require('./helpers/dom.cjs');
 (async()=>{
 for(const lang of ['ja','en'])for(const failure of ['html404','config404','network','parse','language','ok']){
  let initialized=0,errors=[],panel;
- const box=vm.createContext({console:{error:(...e)=>errors.push(e)},AbortSignal,document:{...dom,documentElement:{lang},body:{appendChild:p=>panel=p}},window:{location:{hostname:'localhost'}},
+ const box=vm.createContext({console:{error:(...e)=>errors.push(e)},AbortSignal,URL,document:{...dom,documentElement:{lang},body:{appendChild:p=>panel=p}},window:{location:{hostname:'localhost',href:'http://localhost/'}},
  Glottologist:class {locale(){} assign(){} render(){}},poiControl:class{},MarkerControl:class{},LayerControl:class {init(){initialized++;}},SVGControl:class {init(){}},OverPassControl:class{},CoastlineController:class{},GeoControl:class{},
- JSON5:JSON,$:()=>({html(){},append(){}}),mapMaker:{init(){initialized++;}},fetch:async file=>{
+ JSON5:JSON,$:()=>({html(){},append(){}}),mapMaker:{init(){initialized++;}},fetch:async (file,options)=>{
+ assert.equal(options.cache,"no-cache","HTML/config must revalidate cached content after an update");
  if(failure==='network'&&file.includes('marker.jsonc'))throw new Error('offline');
  return {ok:!((failure==='html404'&&file.endsWith('basemenu.html'))||(failure==='config404'&&file.includes('config-system'))||(failure==='language'&&file.endsWith('glot.json'))),status:404,text:async()=>failure==='parse'&&file.includes('config-user')?'broken':file.endsWith('.html')?'<div>menu</div>':file.includes('config-system')?JSON.stringify({category:{},default:{GoogleAnalytics:''}}):'{}'};
  }});
+ vm.runInContext(fs.readFileSync('lib/application/map-presets.js','utf8'),box);
  vm.runInContext(fs.readFileSync('initialize.js','utf8'),box);
  vm.runInContext('initialize.initDailyIntro=()=>{}',box);
  const result=await vm.runInContext('initialize.load()',box);

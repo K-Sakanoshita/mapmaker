@@ -117,7 +117,7 @@ class initialize {
         try {
             const values = await Promise.all(FILES.map(async file => {
                 try {
-                    const response = await fetch(file, { signal: AbortSignal.timeout(30000) });
+                    const response = await fetch(file, { cache: "no-cache", signal: AbortSignal.timeout(30000) });
                     if (!response.ok) throw new Error(`HTTP ${response.status}`);
                     const text = await response.text();
                     return file.endsWith(".html") ? text
@@ -128,6 +128,7 @@ class initialize {
             }));
             // Publish configuration only after every HTML/config/language file is valid.
             const config = Object.assign({}, ...values.slice(2, 12));
+            MapPresets.apply(config);
             config.category_keys = Object.keys(config.category);
             currentFile = "./data/glot.json";
             for (const [key, translations] of Object.entries(values[12])) glot.assign(key, translations);

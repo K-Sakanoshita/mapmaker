@@ -55,7 +55,21 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
  const mountedSvg=exporter.toSVGFromLayers(bbox,{birdseye:{tilt:30,bearing:0}});
  for(const id of ['hotel','mounted','antenna'])assert.ok(mountedSvg.includes(`data-building-id="${id}"`));
  assert.match(mountedSvg,/<mask id="building-visibility-/,'support and rooftop parts share depth masks');
- assert.equal(run('getMapMakerBuildingParts(data)',{data:[hotel,{...mounted,properties:{...mounted.properties,min_height:'20'}}]}).outlines.has('hotel'),true,'overlapping vertical ranges still replace an outline');
+ assert.equal(run('getMapMakerBuildingParts(data)',{data:[hotel,{...mounted,properties:{...mounted.properties,min_height:'20'}}]}).outlines.has('hotel'),false,'elevated parts inside the height range still preserve the supporting volume');
+ // An annular roof with small elevated parts must keep its full outline and courtyard.
+ const ring=feature('annular-roof',[...rect(0,0,10,10),...rect(2,2,6,6)],{building:'roof',height:'20'});
+ const roofPart=feature('raised-roof-part',rect(.2,.2,1,1),{'building:part':'yes',height:'20',min_height:'17.8'});
+ const roofData=[ring,roofPart],roofBefore=JSON.stringify(roofData);
+ const roofContext=run('getMapMakerBuildingParts(data)',{data:roofData});
+ assert.equal(roofContext.outlines.has(ring.id),false,'upper details cannot erase an annular roof');
+ assert.equal(roofContext.parents.get(roofPart.id),ring.id,'raised parts retain the parent association');
+ assert.equal(run('shouldRenderMapMakerBuilding(feature,true,parts)',{feature:ring,parts:roofContext}),true);
+ context.Layers.building.geojson=roofData;
+ const roofSvg=exporter.toSVGFromLayers(bbox,{birdseye:{tilt:30,bearing:0}});
+ assert.match(roofSvg,/data-building-id="annular-roof"/);assert.match(roofSvg,/data-building-id="raised-roof-part"/);
+ assert.equal(JSON.stringify(roofData),roofBefore,'shared selection leaves geometry and heights untouched');
+ const fullRoof={...roofPart,id:'full-roof-part',geometry:ring.geometry};
+ assert.equal(run('getMapMakerBuildingParts(data)',{data:[ring,fullRoof]}).outlines.has(ring.id),true,'a full-footprint part still replaces the outline');
  context.Layers.building.geojson=data;
  // Intersecting projected planes hide only the region that is actually nearer.
  const maskExporter=run('new PrintSVGExporter({paper:"A4"})');
@@ -68,6 +82,8 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
  assert.ok(numbers.filter((_,i)=>i%2===0).every(x=>x<=5.00001),'only the near half of an intersecting face occludes');
  assert.match(crossing.svg,/M5 /,'the other half occludes the crossing face');
  assert.match(behind.svg,/<g id="target"\/>/,'original editable surface survives the mask');
+ assert.doesNotMatch(behind.svg,/width="20000"/,'compound parts do not allocate giant PNG raster masks');
+ assert.match(behind.svg,/<mask[^>]*width="14"[^>]*height="14"/,'mask bounds follow the projected surface plus stroke padding');
  const unfilled={serial:102,svg:'wire',surfaces:[{...crossing.surfaces[0],svg:'wire',opaque:false}]};
  const visible={...behind,svg:'<g id="target"/>'};
  maskExporter._maskBuildingParts([visible,unfilled],{camera:true,toPageMmXY:p=>p,depthAt:(_,z)=>z},maskExporter.opts);

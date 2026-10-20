@@ -26,6 +26,9 @@ const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/st
   const expected=outline.fillStyle(model,roof.faces[0]);
   assert.ok(Math.abs(expected[0]-170/255*roof.faces[0].shade)<1e-6,'GPU uses the shared shade');
   assert.equal(expected[3],1,'shade does not change opacity');
+  box.LayerCont.palette='coloring';outline.update(model);
+  for(let i=6;i<outline.fillData.length;i+=7)assert.equal(outline.fillData[i],1,'coloring roof faces remain opaque to hide rear geometry like SVG');
+  box.LayerCont.palette='color';outline.update(model);
   const heights=[];for(let i=2;i<outline.fillData.length;i+=7)heights.push(outline.fillData[i]);assert.ok(heights.includes(12)&&heights.includes(9));
   model.options.opacity=0;outline.update(model);for(let i=6;i<outline.fillData.length;i+=7)assert.equal(outline.fillData[i],0,'hide roof faces');
   model.options.opacity=1;outline.update(model);assert.equal(outline.fillData[6],1);

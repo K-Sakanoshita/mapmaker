@@ -27,7 +27,7 @@ module.exports = async (browser, base) => {
                 await page.evaluate(()=>map.gl.jumpTo({center:[139.1,35.1],zoom:17,bearing:20,pitch:30}));
                 await page.waitForFunction(()=>location.hash.startsWith('#17/35.1/139.1'));
                 const hash = new URL(page.url()).hash;
-                await page.locator('header button[data-bs-toggle="dropdown"]').click();
+                await page.locator('#languageMenuButton').click();
                 await page.locator(`[data-site-language="${target}"]`).click();
                 await ready(target);
                 assert.equal(new URL(page.url()).hash,hash,'manual switch retains the latest map camera');
@@ -37,7 +37,7 @@ module.exports = async (browser, base) => {
                 await ready(target);
                 assert.equal(new URL(page.url()).pathname,target==='en'?'/en/':'/');
             }
-            await page.locator('header button[data-bs-toggle="dropdown"]').click();
+            await page.locator('#languageMenuButton').click();
             await page.screenshot({path:`/tmp/mapmaker-language-${locale}-${width}.png`});
         }
         assert.deepEqual(errors,[]);

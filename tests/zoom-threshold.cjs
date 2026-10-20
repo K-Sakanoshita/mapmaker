@@ -21,4 +21,11 @@ for (const [actual, displayed, included] of [[13.94,13.9,false],[13.98,14,true],
     assert.ok(output.includes(`zoomlevel${displayed} `), `display at actual zoom ${actual}`);
     assert.equal(guidance.textContent.includes('menu_building'), !included, 'guidance matches acquired features');
 }
+assert.doesNotMatch(output,/map-preset-status/,'regular maps have no preset status');
+box.Conf.mapPreset={statusLabel:'expo2025_mode'};
+vm.runInContext('mapMaker.zoomMessage()',box);
+assert.match(output,/<span class="map-preset-status">expo2025_mode<\/span>/);
+delete box.Conf.mapPreset;
+vm.runInContext('mapMaker.zoomMessage()',box);
+assert.doesNotMatch(output,/map-preset-status/);
 console.log('PASS displayed zoom and building acquisition agree at 13.9/14.0/14.1, including rounded 13.98');

@@ -6,6 +6,7 @@
 lib/
   domain/                 タグ・モデル選択・スタイル・編集状態
     feature-tags.js       タグ取得、単位、建物の基本判定
+    flags.js              国旗タグと対応する国コードの判定
     model-rules.js        設定による3Dモデル選択
     styles.js             季節色、ポイント・カテゴリのスタイル、描画順
     layer-state.js        表示・線幅・パレット・地物ごとの編集記録
@@ -15,6 +16,7 @@ lib/
     barriers.js           壁・生垣・擁壁・金網フェンス・ロープの形状
     trees.js              幹・樹冠の共有メッシュとキャッシュ
     point-models.js       樹木・旗竿の3D部品と旗竿の共有メッシュ
+    elevated-paths.js      屋上通路・階段の高さ接続と共有メッシュ
     coordinates.js        座標配列のクリップ・平坦化・代表点
     coastline.js          明示された範囲内での海岸線処理（Turfを注入）
     simplify.js           取得したGeoJSONの簡略化
@@ -38,8 +40,10 @@ lib/
     svg-export.js         保存スナップショットからSVGを生成して返却
   application/            画面と共有処理の接続・進行管理
     language-router.js    初回言語判定・明示指定・選択した言語の保持
+    map-presets.js        プリセットURL・初期地図・データ取得先の選択
     feature-context.js    既存のgetMapMaker* API・PrintSVGExporterとの互換接続
     export-snapshot.js    保存用データの取り出し
+    flag-assets.js        必要な国旗SVGの取得・埋め込みと画像アトラス
     layer-controller.js   カテゴリ操作と描画更新の進行管理
     layer-render-registry.js  編集状態と分離した描画オブジェクトの管理
     map-data-worker-client.js 取得用Workerの通信・タイムアウト・解放
@@ -103,3 +107,5 @@ Workerは`{id, revision, svgText}`または`{id, revision, error}`を返しま�
 `tests/helpers/lib-source.cjs`のソースグループは、従来のVMテストに分割後のファイルを読み込ませるためのテスト専用補助です。製品側のローダーや互換ファイルではありません。
 
 `node tests/source-boundaries.cjs`で、共有処理の単独実行、編集状態の分離、実Workerとの出力一致、古い応答・キャンセル、日英ページの参照先を検査します。形状・取得・保存・ブラウザーの確認方法は[回帰確認](../tests/REGRESSION.md)を参照してください。
+
+国旗素材は`image/flags/`に同梱し、ライセンスと取得元も同じ場所に置きます。国旗の判定と折れ目のUVは共有処理に置き、GPUは画像アトラス、SVGは同じSVG素材を埋め込んで描画します。保存スナップショットの`context.config.flagImages`には使用する国のデータURIだけを追加し、WorkerからHTTP取得は行いません。

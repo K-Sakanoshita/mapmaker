@@ -48,7 +48,7 @@ const assert = require('node:assert/strict'), fs = require('node:fs'), vm = requ
     assert.ok(JSON.stringify(extrusion.paint['fill-extrusion-color']).includes('feature-state'));
     assert.equal(states.get(model.id).solidFill, '#eeeeee');
     box.LayerCont.palette = 'coloring'; renderer.refreshCategory('building');
-    assert.equal(extrusion.paint['fill-extrusion-opacity'], 0, 'coloring hides roofs and sides');
+    assert.ok(extrusion.paint['fill-extrusion-opacity'] > 0, 'coloring keeps solid roofs and sides to occlude rear edges like SVG/PNG');
     box.LayerCont.palette = 'color'; renderer.refreshCategory('building');
     assert.ok(extrusion.paint['fill-extrusion-opacity'] > 0, 'other palettes restore building fill');
 
@@ -264,6 +264,13 @@ const assert = require('node:assert/strict'), fs = require('node:fs'), vm = requ
     assert.equal(sources.get(renderer.sourceId).data.features.length,1,'2D keeps only the supporting footprint');
     view.threeD=true;await renderer.sync();
     assert.equal(sources.get(renderer.sourceId).data.features.length,2,'restoring 3D restores both supporting and mounted volumes');
+    const annulus=volume(30,{building:'roof',height:'20'},[...footprint,[[139.0002,35.0002],[139.0002,35.0008],[139.0008,35.0008],[139.0008,35.0002],[139.0002,35.0002]]]);
+    const elevated=volume(31,{'building:part':'yes',height:'20',min_height:'17.8'},[[[139.00002,35.00002],[139.0001,35.00002],[139.0001,35.0001],[139.00002,35.0001],[139.00002,35.00002]]]);
+    view.features=new Map([[30,annulus],[31,elevated]]);view.threeD=true;await renderer.sync();
+    volumes=sources.get(renderer.sourceId).data.features;
+    assert.equal(volumes.length,2,'small elevated details keep the whole annular roof in live 3D');
+    assert.equal(volumes.find(f=>f.properties.modelId===30).geometry.coordinates.length,2,'courtyard remains a hole');
+    assert.equal(volumes.find(f=>f.properties.modelId===31).properties.base,17.8);
     console.log('PASS building parts share top/base heights, suppress the parent only in 3D, preserve editor model identity and restore the 2D outline');
     renderer.clear();
     assert.equal(sources.size, 0); assert.equal(layers.size, 0);

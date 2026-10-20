@@ -1,8 +1,8 @@
 const readSource = require('./helpers/lib-source.cjs').read;
 const assert = require('node:assert/strict'), fs = require('node:fs'), vm = require('node:vm'), path = require('node:path');
 (async () => {
-    const core = ['domain/feature-tags.js','domain/model-rules.js','domain/styles.js',
-        'geometry/buildings.js','geometry/roofs.js','geometry/barriers.js','geometry/trees.js','geometry/point-models.js','export/svg-features.js'];
+    const core = ['domain/feature-tags.js','domain/flags.js','domain/model-rules.js','domain/styles.js',
+        'geometry/buildings.js','geometry/roofs.js','geometry/barriers.js','geometry/trees.js','geometry/point-models.js','geometry/elevated-paths.js','export/svg-features.js'];
     const isolated = vm.createContext({});
     for (const file of core) vm.runInContext(fs.readFileSync('lib/' + file, 'utf8'), isolated, {filename:file});
     const config = JSON.parse(fs.readFileSync('data/leyers.jsonc', 'utf8'));

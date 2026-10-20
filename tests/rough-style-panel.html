@@ -4,13 +4,13 @@
 <style>#basemenu{position:relative;width:300px;height:600px}#mapid{position:absolute;left:310px;top:0;width:100px;height:100px}</style>
 <div id="editbar"><section id="basemenu"><div class="container-fluid">
 <div id="controlMenu"><button type="button">Existing controls</button></div>
-<section id="roughControls"><div class="form-check form-switch d-flex justify-content-between align-items-center">
-<button id="roughSettingsButton" type="button" class="rough-settings-button" aria-haspopup="dialog" aria-expanded="false" onclick="RoughStylePanel.open()">手書き風</button>
-<input id="rough_enabled" type="checkbox" role="switch" class="form-check-input" aria-labelledby="roughSettingsButton" onchange="RoughStylePanel.toggle()"></div>
+<section id="roughControls"><div class="d-flex justify-content-between align-items-center">
+<label id="roughSettingsButton" for="rough_fill_style">手書き風</label>
+<input id="rough_enabled" type="checkbox" hidden><select id="rough_fill_style" aria-labelledby="roughSettingsButton" onchange="RoughStylePanel.selectFill()"><option value="none" selected>なし</option><option value="solid">Solid</option><option value="hachure">Hachure</option></select></div>
 <div id="roughParameters" class="d-none">
 <label for="roughness">粗さ</label><output id="roughness_value">1.0</output><input id="roughness" class="form-range" type="range" min="0" max="10" step="0.1" value="1" oninput="mapMaker.rough_change(1000)" disabled>
 <label for="bowing">ゆがみ</label><output id="bowing_value">1.0</output><input id="bowing" class="form-range" type="range" min="0" max="10" step="0.1" value="1" oninput="mapMaker.rough_change(1000)" disabled>
-<label for="rough_fill_style">塗り方</label><select id="rough_fill_style" class="form-select rough-fill-select" onchange="mapMaker.rough_change()" disabled><option value="solid">Solid</option><option value="hachure">Hachure</option></select>
+
 </div></section><div id="saveMap"><button type="button">Save</button></div></div></section></div>
 <div id="mapid"></div><pre id="result">PENDING</pre>
 <script>const glot={get:key=>({rough_style:'手書き風',button_ok:'OK'}[key]||key)},map={getContainer:()=>document.querySelector('#mapid'),closePopup(){}};</script>
@@ -22,23 +22,25 @@ try {
  mapMaker.queueExportPreview=()=>{updates++;mapMaker.setRoughPreviewLock(mapMaker.rough_options().enabled)};
  mapMaker.clearRoughPreview=()=>mapMaker.setRoughPreviewLock(false);
  const menu=document.querySelector('#basemenu'), toggle=document.querySelector('#rough_enabled'), home=document.querySelector('#roughControls'), anchor=document.querySelector('#roughSettingsButton');
- const before=menu.getBoundingClientRect();
- toggle.click();
- check('On opens dialog',!!RoughStylePanel.panel && toggle.checked && anchor.getAttribute('aria-expanded')==='true');
- check('menu layout stays unchanged',menu.getBoundingClientRect().height===before.height && getComputedStyle(document.querySelector('#controlMenu')).display!=='none');
- check('parameters move into shared panel style',document.querySelector('#roughParameters').parentNode===RoughStylePanel.panel && RoughStylePanel.panel.classList.contains('line-width-panel'));
+ const parameters=document.querySelector('#roughParameters'),fill=document.querySelector('#rough_fill_style');
+ const choose=value=>{fill.value=value;fill.dispatchEvent(new Event('change',{bubbles:true}))};
+ check('None initially hides parameters',parameters.classList.contains('d-none'));
+ choose('hachure');
+ check('selection opens adjustment dialog',toggle.checked && mapMaker.rough_options().fillStyle==='hachure' && !parameters.classList.contains('d-none') && parameters.parentNode===RoughStylePanel.panel);
  const rect=RoughStylePanel.panel.getBoundingClientRect();check('dialog fits viewport',rect.left>=0 && rect.right<=innerWidth && rect.top>=0 && rect.bottom<=innerHeight);
- check('menu editing remains available during rough preview',!document.querySelector('#controlMenu button').disabled && !toggle.disabled && !document.querySelector('#roughness').disabled);
+ check('parameters leave scrollable settings panel',!home.contains(parameters));
+ check('editing remains available',!document.querySelector('#controlMenu button').disabled && !document.querySelector('#roughness').disabled);
  document.querySelector('#roughness').value='2.4';document.querySelector('#roughness').dispatchEvent(new Event('input',{bubbles:true}));
  check('live controls update values',mapMaker.rough_options().roughness===2.4 && document.querySelector('#roughness_value').value==='2.4');
- check('no confirmation button',!RoughStylePanel.panel.querySelector('button'));
- document.body.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true}));
- check('closing preserves On and restores hidden controls home',!RoughStylePanel.panel && toggle.checked && document.querySelector('#roughParameters').parentNode===home && document.querySelector('#roughParameters').classList.contains('d-none'));
- anchor.click();check('heading reopens with values preserved',!!RoughStylePanel.panel && document.querySelector('#roughness').value==='2.4');
- document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}));check('Escape closes and restores focus',!RoughStylePanel.panel && document.activeElement===anchor);
- anchor.click();document.body.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true}));check('outside pointer closes',!RoughStylePanel.panel);
- anchor.click();toggle.click();check('Off closes and restores editing',!toggle.checked && !RoughStylePanel.panel && !document.querySelector('#controlMenu button').disabled && !document.querySelector('#mapid').inert);
- check('updates reached preview',updates>=3);
+ const currentPanel=RoughStylePanel.panel;choose('solid');check('changing fill keeps dialog open',RoughStylePanel.panel===currentPanel && mapMaker.rough_options().fillStyle==='solid');
+ document.querySelector('#roughStylePanel .btn-close').click();check('close preserves style and hides sliders',toggle.checked && mapMaker.rough_options().roughness===2.4 && !RoughStylePanel.panel && parameters.parentNode===home && parameters.classList.contains('d-none'));
+ choose('hachure');check('selection reopens dialog',!!RoughStylePanel.panel);
+ document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}));check('Escape closes with focus on selector',!RoughStylePanel.panel && document.activeElement===fill);
+ choose('solid');
+ choose('none');check('None hides parameters and restores regular map',!toggle.checked && parameters.classList.contains('d-none') && !document.querySelector('#mapid').inert);
+ check('fill select stays enabled',!fill.disabled);
+ choose('hachure');check('re-enable retains slider values',!!RoughStylePanel.panel && !parameters.classList.contains('d-none') && mapMaker.rough_options().roughness===2.4);
+ check('updates reached preview',updates>=4);
  document.querySelector('#result').textContent='PASS '+JSON.stringify(checks);
 } catch(error){document.querySelector('#result').textContent='FAIL '+error.stack;}
 </script>

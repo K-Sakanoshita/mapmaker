@@ -11,14 +11,15 @@
     <div class="row g-0" id="makeMap">
         <div class="col p-1 m-0">
             <div class="make-map-action">
-            <button class="btn btn-primary w-100" aria-describedby="morezoom" disabled onclick="mapMaker.make(Basic.getdate())">
+            <button class="btn btn-primary w-100" aria-describedby="customizeHint morezoom" disabled onclick="mapMaker.make(Basic.getdate())">
                 <i class="fas fa-map me-2"></i><span glot-model="makemap" class="ms-2"></span>
             </button>
             </div>
-            <div class="d-flex gap-1 mt-2">
-                <button type="button" id="position2D" class="btn btn-outline-secondary w-50" onclick="mapMaker.positionView(false)" glot-model="position_2d">2D地図</button>
-                <button type="button" id="position3D" class="btn btn-outline-secondary w-50" onclick="mapMaker.positionView(true)" glot-model="position_3d">3D地図</button>
+            <div class="btn-group position-view-toggle" role="group">
+                <button type="button" id="position2D" class="btn btn-outline-primary" onclick="mapMaker.positionView(false)">2D</button>
+                <button type="button" id="position3D" class="btn btn-outline-primary" onclick="mapMaker.positionView(true)">3D</button>
             </div>
+            <small id="customizeHint" class="customize-hint" glot-model="customize_hint"></small>
             <small id="birdseyeGesture" class="d-none d-lg-block text-muted mt-2" glot-model="birdseye_note">右ボタンまたはCtrl＋ドラッグで回転・傾斜。</small>
         </div>
     </div>
@@ -80,7 +81,7 @@
         </div>
 
         <div class="col-6 p-1 m-0" id="colorMenu">
-            <button type="button" id="mobileStylesTab" class="btn btn-light w-100" aria-controls="customMap" aria-expanded="false"><i class="fas fa-palette" aria-hidden="true"></i><span glot-model="sheet_styles">色・線幅</span></button>
+            <button type="button" id="mobileStylesTab" class="btn btn-light w-100" aria-controls="customMap" aria-expanded="false"><i class="fas fa-sliders-h" aria-hidden="true"></i><span glot-model="sheet_styles">色・線幅</span></button>
             <button class="btn btn-light ps-0 pe-0 dropdown-toggle w-100" id="ColorSelect" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-palette"></i>
                 <span class="menu-button-label" glot-model="select_color"></span>
@@ -196,9 +197,45 @@
         </div>
         <section class="col-12 rough-controls d-none" id="roughControls">
             <div class="map-style-controls">
-                <div class="map-style-row rough-controls-toggle form-check form-switch">
-                    <button type="button" id="roughSettingsButton" class="rough-settings-button fw-medium" aria-haspopup="dialog" aria-expanded="false" onclick="RoughStylePanel.open()" glot-model="rough_style"></button>
-                    <input class="form-check-input float-none m-0" type="checkbox" role="switch" id="rough_enabled" aria-labelledby="roughSettingsButton" onchange="RoughStylePanel.toggle()">
+                <div class="map-style-row mobile-paper-size">
+                    <label for="paperSizeSelect" glot-model="select_size">用紙サイズ</label>
+                    <select id="paperSizeSelect" class="form-select form-select-sm w-auto" onchange="mapMaker.area_select(this.value)">
+                        <option value="" glot-model="paper_full_view" selected>画面全体</option>
+                        <option value="A4" glot-model="area_A4">A4縦</option>
+                        <option value="A4_landscape" glot-model="area_A4_landscape">A4横</option>
+                        <option value="A3" glot-model="area_A3">A3縦</option>
+                        <option value="A3_landscape" glot-model="area_A3_landscape">A3横</option>
+                    </select>
+                </div>
+                <div class="map-style-row rough-controls-toggle">
+                    <label id="roughSettingsButton" for="rough_fill_style" glot-model="rough_style"></label>
+                    <input type="checkbox" id="rough_enabled" hidden>
+                    <select class="form-select form-select-sm w-auto rough-fill-select" id="rough_fill_style" aria-labelledby="roughSettingsButton" onchange="RoughStylePanel.selectFill()">
+                        <option value="none" glot-model="rough_fill_none" selected>なし</option>
+                        <option value="solid" glot-model="rough_fill_solid">ベタ塗り</option>
+                        <option value="hachure" glot-model="rough_fill_hachure">斜線</option>
+                        <option value="zigzag" glot-model="rough_fill_zigzag">ジグザグ</option>
+                        <option value="cross-hatch" glot-model="rough_fill_cross_hatch">格子</option>
+                        <option value="dots" glot-model="rough_fill_dots">点</option>
+                        <option value="dashed" glot-model="rough_fill_dashed">破線</option>
+                        <option value="zigzag-line" glot-model="rough_fill_zigzag_line">ジグザグ線</option>
+                    </select>
+                </div>
+                <div id="roughParameters" class="d-none">
+                    <div class="px-2 py-1 border-bottom">
+                        <div class="d-flex justify-content-between">
+                            <label for="roughness" glot-model="rough_roughness"></label>
+                            <output id="roughness_value" for="roughness">1.0</output>
+                        </div>
+                        <input class="form-range rough-range" type="range" id="roughness" min="0" max="10" step="0.1" value="1" oninput="mapMaker.rough_change(1000)" disabled>
+                    </div>
+                    <div class="px-2 py-1 border-bottom">
+                        <div class="d-flex justify-content-between">
+                            <label for="bowing" glot-model="rough_bowing"></label>
+                            <output id="bowing_value" for="bowing">1.0</output>
+                        </div>
+                        <input class="form-range rough-range" type="range" id="bowing" min="0" max="10" step="0.1" value="1" oninput="mapMaker.rough_change(1000)" disabled>
+                    </div>
                 </div>
                 <div class="map-style-row">
                     <label for="mapSeason" class="text-nowrap" glot-model="map_season">季節</label>
@@ -206,34 +243,6 @@
                         <option value="normal" glot-model="season_normal" selected>通常</option>
                         <option value="spring" glot-model="season_spring">春</option>
                         <option value="autumn" glot-model="season_autumn">秋</option>
-                    </select>
-                </div>
-            </div>
-            <div id="roughParameters" class="d-none">
-                <div class="px-2 py-1 border-bottom">
-                    <div class="d-flex justify-content-between">
-                        <label for="roughness" glot-model="rough_roughness"></label>
-                        <output id="roughness_value" for="roughness">1.0</output>
-                    </div>
-                    <input class="form-range rough-range" type="range" id="roughness" min="0" max="10" step="0.1" value="1" oninput="mapMaker.rough_change(1000)" disabled>
-                </div>
-                <div class="px-2 py-1 border-bottom">
-                    <div class="d-flex justify-content-between">
-                        <label for="bowing" glot-model="rough_bowing"></label>
-                        <output id="bowing_value" for="bowing">1.0</output>
-                    </div>
-                    <input class="form-range rough-range" type="range" id="bowing" min="0" max="10" step="0.1" value="1" oninput="mapMaker.rough_change(1000)" disabled>
-                </div>
-                <div class="d-flex justify-content-between align-items-center px-2 py-1">
-                    <label for="rough_fill_style" class="text-nowrap me-2" glot-model="rough_fill"></label>
-                    <select class="form-select form-select-sm rough-fill-select" id="rough_fill_style" onchange="mapMaker.rough_change()" disabled>
-                        <option value="hachure">Hachure</option>
-                        <option value="solid" selected>Solid</option>
-                        <option value="zigzag">Zigzag</option>
-                        <option value="cross-hatch">Cross-hatch</option>
-                        <option value="dots">Dots</option>
-                        <option value="dashed">Dashed</option>
-                        <option value="zigzag-line">Zigzag-line</option>
                     </select>
                 </div>
             </div>
