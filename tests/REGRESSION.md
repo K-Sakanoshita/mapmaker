@@ -9,6 +9,7 @@ node tests/marker-popup.cjs
 node tests/wiki-article-close.cjs
 node tests/request-failures.cjs
 node tests/startup-failures.cjs
+node tests/startup-resources.cjs
 node tests/language-routing.cjs
 node tests/address-search.cjs
 node tests/roof-shapes.cjs
@@ -16,6 +17,7 @@ node tests/model3d-rules.cjs
 node tests/source-boundaries.cjs
 node tests/building-parts.cjs
 node tests/elevated-paths.cjs
+node tests/recreation-track.cjs
 node tests/fence3d.cjs
 node tests/rope3d.cjs
 node tests/flagpole3d.cjs
@@ -23,6 +25,7 @@ node tests/national-flags.cjs
 node tests/map-presets.cjs
 node tests/retaining-wall.cjs
 node tests/map-data-acquisition.cjs
+node tests/map-data-viewport.cjs
 node tests/map-data-simplify.cjs
 node tests/seasons.cjs
 node tests/palette-processing.cjs
@@ -37,11 +40,17 @@ python3 -m http.server 8765 --bind 127.0.0.1
 npm install --prefix /tmp/mapmaker-test-deps playwright
 NODE_PATH=/tmp/mapmaker-test-deps/node_modules node tests/browser-smoke.cjs
 NODE_PATH=/tmp/mapmaker-test-deps/node_modules node tests/browser-smoke.cjs --startup
+NODE_PATH=/tmp/mapmaker-test-deps/node_modules node tests/map-data-viewport-browser.cjs
+NODE_PATH=/tmp/mapmaker-test-deps/node_modules node tests/ui-clarity-browser.cjs
+NODE_PATH=/tmp/mapmaker-test-deps/node_modules node tests/startup-resources-browser.cjs
 NODE_PATH=/tmp/mapmaker-test-deps/node_modules node tests/browser-smoke.cjs --language
 # 独自のローカルサーバーで旧HTMLのHTTPキャッシュを作り、更新後のアイコン追加を確認
 NODE_PATH=/tmp/mapmaker-test-deps/node_modules node tests/startup-cache-browser.cjs
 # 万博実データの屋上通路・階段、3D画面とSVG/PNG保存、2D復帰
 NODE_PATH=/tmp/mapmaker-test-deps/node_modules node tests/elevated-paths-browser.cjs
+# 遊戯・競技コースと鉄道の分類・線種・共通編集・SVG/PNG保存
+NODE_PATH=/tmp/mapmaker-test-deps/node_modules node tests/recreation-track-browser.cjs
+# COURSE_OSM_FIXTURE=/path/to/input.osm.json と COURSE_CENTER='[経度,緯度]' で実データを確認
 # 塗り絵の3D屋根・壁の不透明表示、PNG保存、表示とパレットの切替
 NODE_PATH=/tmp/mapmaker-test-deps/node_modules node tests/coloring-3d-browser.cjs
 # 7680×4088 PNG保存時の応答性、局所マスク、アイコン名前空間と隠面の画素
@@ -69,6 +78,7 @@ NODE_PATH=/tmp/mapmaker-test-deps/node_modules node tests/browser-smoke.cjs --re
 - 切妻・寄棟・ピラミッド型とbuilding:partを含む固定地物で、通常3DのSVGに屋根形状の識別属性が残ることを検査。手書き風は変換後のパスと保存画像で確認する。
 - 砂場・すべり台・遊具の実アイコンをSVGとPNGへ保存し、キャッシュ利用時にベクター形状を保つこと、画像代替時にも透明度と図柄の白い抜けを保ち、黒い四角にならないことを画素で検査。
 - SVGのXML解析・地物パス・変更色・NaN不在、PNGシグネチャ・用紙寸法（72dpi）と保存UIの復帰を検査。
+- `startup-resources` は補助ライブラリの同時要求共有・失敗後の再試行・住所データの一括反映を検査。実ブラウザー版では起動時の未取得、初回の色選択・パレット反映・住所検索の失敗からの回復を日英・PC／スマートフォンで確認。
 - `--startup` では日本語/英語ページでHTML・設定・言語データ404、設定破損、通信失敗と通常起動を実ブラウザーでも検査。
 - 即時HTTP 503後のエラーダイアログ終了と再作成、保存失敗後の再保存を検査。
 - マーカー名/属性、Wikipediaポップアップ/記事にHTML・引用符・イベント属性相当の文字列を渡し、実DOMで文字として残ることと不正画像URLの拒否を検査。
@@ -107,3 +117,7 @@ NODE_PATH=/tmp/mapmaker-test-deps/node_modules node tests/browser-smoke.cjs --re
 国旗の実ブラウザー確認は`node tests/national-flags-browser.cjs`で実行する（ローカルサーバー・Playwright・Chromeが必要）。PCとスマートフォン幅で日本・カナダ・ベトナムなど12種類、素材404時の単色復帰、団体旗・国コードのみの除外、配色変更・非表示復元と手書き風の図柄保持を確認し、埋め込みSVGとPNGを`/tmp/mapmaker-national-flags-*`へ保存する。
 
 アイコン一覧の種類フィルターは`node tests/list-category-browser.cjs`で確認する（Playwright・Chromeと外部CDNへの接続が必要）。種類列の完全一致、名前に同じ文字を含む別種類の除外、括弧を含む種類名、キーワードとの併用、各フィルターの解除、表示結果の全選択を実ブラウザーで検証する。
+
+画面サイズ補正は`map-data-viewport`で検査します。基準・小画面・大画面、補正上限、傾き／回転で広がる取得bbox、不正設定、無効化、編集時の判定保持と通常表示への復帰を確認します。実ブラウザーでは同じ表示ズーム13.8で、スマートフォンとPCの建物・小河川の取得、拡大案内、編集項目が一致することを確認します。`browser-smoke`の固定地物描画・保存シナリオは、元のズーム条件で全モデルを取得するため補正を無効にします。
+
+`ui-clarity-browser.cjs` はスマホ日本語・PC英語で、地物と背景の表示切替、範囲を選び直す操作の取消／確定、翻訳された読み込み表示、仕上げ・保存設定の分類、実際の設定色による配色見本、地物カテゴリのマウス・キーボードでの折りたたみを確認する。

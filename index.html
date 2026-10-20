@@ -37,25 +37,19 @@
     <meta name="twitter:description" content="自由に加工＆使える地図画像を作るサイト" />
     <meta name="twitter:image" content="https://mapmaker.openacrossbase.net/image/ogimage.png" />
     <link rel="shortcut icon" href="favicon.ico" />
-    <link rel="stylesheet" href="./css/basemenu.css?v=maplibre-84" />
+    <link rel="stylesheet" href="./css/basemenu.css?v=maplibre-92" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@5.20.0/dist/maplibre-gl.css" />
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/v/bs5/dt-3.0.3/sl-4.0.1/datatables.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alwan@2.2.0/dist/css/alwan.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/alwan@2.2.0/dist/js/alwan.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" defer></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.1.0/chroma.min.js" defer></script>
-    <script src="https://cdn.datatables.net/v/bs5/dt-3.0.3/sl-4.0.1/datatables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@5.20.0/dist/maplibre-gl.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/pmtiles@4.3.0/dist/pmtiles.js" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode-svg@1.1.0/lib/qrcode.min.js" defer></script>
-    <script src="https://community-geocoder.geolonia.com/api.js" defer></script>
     <script src="https://unpkg.com/glottologist@2.0.3/dist/glottologist.min.js" defer></script>
-    <script src="https://unpkg.com/@turf/turf/turf.min.js"></script>
-    <script src="https://unpkg.com/svg2roughjs@3.2.3/dist/svg2roughjs.umd.min.js" defer></script>
+    <script src="./lib/application/resource-loader.js?v=resources-1" defer></script>
     <script src="./lib/domain/feature-tags.js?v=layout-1" defer></script>
     <script src="./lib/domain/flags.js?v=flags-1" defer></script>
     <script src="./lib/domain/model-rules.js?v=layout-3" defer></script>
@@ -78,19 +72,19 @@
     <script src="./lib/osm/csv.js?v=layout-1" defer></script>
     <script src="./lib/renderers/maplibre/adapter.js?v=layout-5" defer></script>
     <script src="./lib/application/browser-services.js?v=layout-2" defer></script>
-    <script src="./lib/ui/window-controller.js?v=layout-8" defer></script>
+    <script src="./lib/ui/window-controller.js?v=layout-9" defer></script>
     <script src="./lib/application/svg-worker-client.js?v=layout-15" defer></script>
     <script src="./lib/export/svg-text.js?v=layout-1" defer></script>
     <script src="./lib/export/png.js?v=layout-1" defer></script>
-    <script src="./lib/export/svg-document.js?v=layout-5" defer></script>
+    <script src="./lib/export/svg-document.js?v=layout-6" defer></script>
     <script src="./lib/geometry/coastline.js?v=layout-1" defer></script>
     <script src="./lib/vendor/osmtogeojson.js?v=layout-1" defer></script>
-    <script src="./lib/osm/classifier.js?v=layout-1" defer></script>
-    <script src="./lib/application/map-data-worker-client.js?v=layout-1" defer></script>
-    <script src="./lib/osm/query.js?v=layout-1" defer></script>
-    <script src="./lib/application/overpass-controller.js?v=layout-3" defer></script>
+    <script src="./lib/osm/classifier.js?v=layout-3" defer></script>
+    <script src="./lib/application/map-data-worker-client.js?v=layout-3" defer></script>
+    <script src="./lib/osm/query.js?v=layout-2" defer></script>
+    <script src="./lib/application/overpass-controller.js?v=layout-4" defer></script>
     <script src="./lib/application/poi-controller.js?v=layout-1" defer></script>
-    <script src="./lib/ui/layer-panel.js?v=layout-1" defer></script>
+    <script src="./lib/ui/layer-panel.js?v=layout-3" defer></script>
     <script src="./lib/application/layer-controller.js?v=layout-2" defer></script>
     <script src="./lib/ui/list-table.js?v=layout-2" defer></script>
     <script src="./lib/renderers/maplibre/mesh-renderer.js?v=layout-13" defer></script>
@@ -100,9 +94,9 @@
     <script src="./lib/ui/line-width-panel.js?v=layout-1" defer></script>
     <script src="./lib/ui/rough-style-panel.js?v=layout-5" defer></script>
     <script src="./lib/ui/mobile-editor-sheet.js?v=layout-2" defer></script>
-    <script src="./mapmaker.js?v=layout-11" defer></script>
+    <script src="./mapmaker.js?v=layout-15" defer></script>
     <script src="./lib/ui/birdseye.js?v=layout-1" defer></script>
-    <script src="./initialize.js?v=layout-3" defer></script>
+    <script src="./initialize.js?v=layout-4" defer></script>
     <script type="module">
         import JSON5 from 'https://unpkg.com/json5@2/dist/index.min.mjs'
         window.JSON5 = JSON5;

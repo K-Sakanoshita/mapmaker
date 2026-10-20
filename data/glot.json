@@ -1,4 +1,19 @@
 {
+    "sheet_adjust": {"ja": "調整", "en": "Adjust"},
+    "settings_finish_hint": {"ja": "手書き風・季節", "en": "Hand-drawn style / Season"},
+    "editor_heading": {"ja": "地図の編集", "en": "Edit map"},
+    "settings_finish": {"ja": "仕上げ", "en": "Finish"},
+    "settings_export": {"ja": "保存設定", "en": "Export settings"},
+    "settings_features": {"ja": "地物の調整", "en": "Map features"},
+
+    "layer_hide": {"ja": "非表示にする", "en": "Hide"},
+    "layer_show": {"ja": "表示する", "en": "Show"},
+    "loading_bytes": {"ja": "地図データを取得中：", "en": "Downloading map data: "},
+    "loading_prepare": {"ja": "地図データを整理中", "en": "Preparing map data"},
+    "loading_clip": {"ja": "表示範囲を整理中：", "en": "Preparing area: "},
+    "loading_draw": {"ja": "地図を描画中：", "en": "Drawing map: "},
+    "loading_order": {"ja": "地図の重なりを調整中", "en": "Arranging map layers"},
+
     "expo2025_mode": { "ja": "EXPO2025 万博マップモード中", "en": "EXPO2025 map mode" },
     "menu_expo2025": { "ja": "EXPO2025 万博の地図", "en": "EXPO2025 map" },
     "menu_normal_map": { "ja": "通常の地図", "en": "Regular map" },
@@ -26,8 +41,8 @@
     "save_menu": {"ja": "保存", "en": "Save"},
     "save_png": {"ja": "PNG画像を保存", "en": "Save PNG image"},
     "save_svg": {"ja": "SVG画像を保存（編集可能）", "en": "Save editable SVG image"},
-    "save_reset_label": {"ja": "戻る", "en": "Start over"},
-    "sheet_styles": {"ja": "色・線幅", "en": "Style"},
+    "save_reset_label": {"ja": "再選択", "en": "Reselect area"},
+    "sheet_styles": {"ja": "地図の調整", "en": "Adjust map"},
     "sheet_facilities": {"ja": "施設選択", "en": "Select places"},
     "sheet_open": {"ja": "編集パネルを開く", "en": "Open editing panel"},
     "sheet_collapse": {"ja": "編集パネルを閉じる", "en": "Collapse editing panel"},
@@ -134,10 +149,7 @@
         "ja": "地図をカスタマイズ",
         "en": "Customize map"
     },
-    "customize_hint": {
-        "ja": "色・線幅を変える／アイコンを追加",
-        "en": "Change colors and line widths / Add icons"
-    },
+    "customize_hint": {"ja": "表示中の範囲から、色や線を変えられる地図を作成", "en": "Create a map of this area with editable colors and lines"},
     "controlmenu": {
         "ja": "マップを編集する",
         "en": "Edit the map"
@@ -258,14 +270,8 @@
         "ja": "切り替え先の言語がありません。",
         "en": "There is no language to switch to."
     },
-    "loading_title": {
-        "ja": "マップデータのロード中",
-        "en": "Loading map data"
-    },
-    "loading_message": {
-        "ja": "サーバーからダウンロード中です。しばらくお待ちください。",
-        "en": "Loading... Please wait a moment."
-    },
+    "loading_title": {"ja": "編集用の地図を作成中", "en": "Creating your editable map"},
+    "loading_message": {"ja": "地図データを取得中です。しばらくお待ちください。", "en": "Downloading map data. Please wait."},
     "processing_message": {
         "ja": "処理中です。しばらくお待ちください。",
         "en": "Processing... Please wait a moment."
@@ -278,10 +284,7 @@
         "ja": "ダウンロードデータの作成に失敗しました。もう一度お試しください。",
         "en": "Failed to prepare the download. Please try again."
     },
-    "restart_title": {
-        "ja": "リセット",
-        "en": "Reset"
-    },
+    "restart_title": {"ja": "範囲を選び直す", "en": "Choose area again"},
     "location": {
         "ja": "現在地を表示",
         "en": "Show current location."
@@ -294,10 +297,7 @@
         "ja": "サーバーからのデータ取得に失敗しました。2分程待ってからやり直してください。",
         "en": "Failed to retrieve data from the server. Please wait about 2 minutes and try again."
     },
-    "restart_message": {
-        "ja": "ダウンロードしたデータを消して、最初からやり直しますか？",
-        "en": "Do you want to delete the downloaded data and start over?"
-    },
+    "restart_message": {"ja": "編集中の内容を破棄して、地図の範囲選択に戻りますか？", "en": "Discard your edits and return to choosing the map area?"},
     "nodata_title": {
         "ja": "データが見つかりません",
         "en": "Data not found."
@@ -330,11 +330,8 @@
         "ja": "アイコン",
         "en": "Add Icon"
     },
-    "select_palette": {"ja": "パレット", "en": "Palette"},
-    "select_color": {
-        "ja": "色選択",
-        "en": "Select color"
-    },
+    "select_palette": {"ja": "配色", "en": "Palette"},
+    "select_color": {"ja": "配色", "en": "Palette"},
     "area_A4": {
         "ja": "A4縦",
         "en": "A4 portrait"
@@ -564,8 +561,12 @@
         "en": "Green line"
     },
     "menu_railway": {
-        "ja": "レール類",
+        "ja": "鉄道",
         "en": "Railway"
+    },
+    "menu_recreation_track": {
+        "ja": "遊戯・競技コース",
+        "en": "Rides / race courses"
     },
     "menu_highway_alley": {
         "ja": "路地小道",

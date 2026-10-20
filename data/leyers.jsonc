@@ -30,6 +30,7 @@
             "groupGlot": "panelWays",
             "styles": [
                 "railway",
+                "recreation_track",
                 "highway_motorway",
                 "highway_primary",
                 "highway_standard",
@@ -362,6 +363,14 @@
                     "linecap": "butt"
                 }
             },
+            "recreation_track": {
+                "zoom": 14,
+                "type": "line",
+                "color": "#a9847d",
+                "width": 1.0,
+                "dashArray": null,
+                "linecap": "round"
+            },
             "highway_alley": {
                 "zoom": 15.5,
                 "type": "line",
@@ -578,6 +587,14 @@
                     "dashArray": "6 5",
                     "linecap": "butt"
                 }
+            },
+            "recreation_track": {
+                "zoom": 14,
+                "type": "line",
+                "color": "#686868",
+                "width": 1.0,
+                "dashArray": null,
+                "linecap": "round"
             },
             "highway_alley": {
                 "zoom": 16,
@@ -805,6 +822,14 @@
                     "dashArray": "6 5",
                     "linecap": "butt"
                 }
+            },
+            "recreation_track": {
+                "zoom": 14,
+                "type": "line",
+                "color": "#444444",
+                "width": 1.0,
+                "dashArray": null,
+                "linecap": "round"
             },
             "highway_alley": {
                 "zoom": 15.5,

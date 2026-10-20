@@ -1,4 +1,6 @@
 <div class="container-fluid text-center m-0 p-1">
+    <div class="editor-heading">
+    <h2 glot-model="editor_heading">地図の編集</h2>
     <div class="basemenu-window-controls btn-group" role="group">
         <button type="button" id="basemenuMinimize" class="btn btn-light basemenu-window-button" aria-label="最小化" aria-controls="customMap">
             <i class="fas fa-minus" aria-hidden="true"></i>
@@ -6,6 +8,8 @@
         <button type="button" id="basemenuResize" class="btn btn-light basemenu-window-button basemenu-resize" aria-label="拡大" aria-controls="customMap" aria-expanded="false">
             <i class="far fa-window-maximize" aria-hidden="true"></i>
         </button>
+    </div>
+
     </div>
 
     <div class="row g-0" id="makeMap">
@@ -26,8 +30,8 @@
 
     <div class="row gx-0 mt-0" id="saveMap">
         <div class="col-4 p-1 m-0 save-reset">
-            <button type="button" class="btn btn-light w-100" onclick="mapMaker.clearAll()" aria-label="戻る">
-                <i class="fas fa-undo" aria-hidden="true"></i>
+            <button type="button" class="btn btn-light w-100" onclick="mapMaker.clearAll()" aria-label="再選択">
+                <i class="fas fa-vector-square me-1" aria-hidden="true"></i><span glot-model="save_reset_label">再選択</span>
             </button>
         </div>
         <div class="col-8 p-1 m-0 dropdown save-download">
@@ -60,7 +64,7 @@
         </div>
         <div class="col-6 p-1 m-0 editor-size-tab">
             <button class="btn btn-light ps-0 pe-0 dropdown-toggle w-100" id="AreaSelect1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="fas fa-vector-square"></i>
+                <i class="far fa-file"></i>
                 <span class="menu-button-label" glot-model="select_size"></span>
             </button>
             <div class="dropdown-menu" aria-labelledby="AreaSelect1">
@@ -81,20 +85,20 @@
         </div>
 
         <div class="col-6 p-1 m-0" id="colorMenu">
-            <button type="button" id="mobileStylesTab" class="btn btn-light w-100" aria-controls="customMap" aria-expanded="false"><i class="fas fa-sliders-h" aria-hidden="true"></i><span glot-model="sheet_styles">色・線幅</span></button>
+            <button type="button" id="mobileStylesTab" class="btn btn-light w-100" aria-controls="customMap" aria-expanded="false"><i class="fas fa-sliders-h" aria-hidden="true"></i><span glot-model="sheet_adjust">調整</span></button>
             <button class="btn btn-light ps-0 pe-0 dropdown-toggle w-100" id="ColorSelect" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-palette"></i>
                 <span class="menu-button-label" glot-model="select_color"></span>
             </button>
             <div class="dropdown-menu" aria-labelledby="ColorSelect">
                 <span class="dropdown-item btn ps-1 me-1" onclick="LayerCont.setStyle('color')">
-                    <i class="fas fa-swatchbook ms-2 me-1"></i>
+                    <span class="palette-preview" data-palette="color" aria-hidden="true"></span>
                     <span glot-model="color_palette"></span></span>
                 <span class="dropdown-item btn ps-1 me-1" onclick="LayerCont.setStyle('mono')">
-                    <i class="fas fa-swatchbook ms-2 me-1"></i>
+                    <span class="palette-preview" data-palette="mono" aria-hidden="true"></span>
                     <span glot-model="mono_palette"></span></span>
                 <span class="dropdown-item btn ps-1 me-1" onclick="LayerCont.setStyle('coloring')">
-                    <i class="fas fa-swatchbook ms-2 me-1"></i>
+                    <span class="palette-preview" data-palette="coloring" aria-hidden="true"></span>
                     <span glot-model="coloring_palette"></span></span>
             </div>
         </div>
@@ -195,18 +199,9 @@
                 <option value="coloring" glot-model="coloring_palette"></option>
             </select>
         </div>
-        <section class="col-12 rough-controls d-none" id="roughControls">
+        <details class="col-12 rough-controls d-none settings-group" id="roughControls">
+            <summary><span glot-model="settings_finish">仕上げ</span><small glot-model="settings_finish_hint">手書き風・季節</small></summary>
             <div class="map-style-controls">
-                <div class="map-style-row mobile-paper-size">
-                    <label for="paperSizeSelect" glot-model="select_size">用紙サイズ</label>
-                    <select id="paperSizeSelect" class="form-select form-select-sm w-auto" onchange="mapMaker.area_select(this.value)">
-                        <option value="" glot-model="paper_full_view" selected>画面全体</option>
-                        <option value="A4" glot-model="area_A4">A4縦</option>
-                        <option value="A4_landscape" glot-model="area_A4_landscape">A4横</option>
-                        <option value="A3" glot-model="area_A3">A3縦</option>
-                        <option value="A3_landscape" glot-model="area_A3_landscape">A3横</option>
-                    </select>
-                </div>
                 <div class="map-style-row rough-controls-toggle">
                     <label id="roughSettingsButton" for="rough_fill_style" glot-model="rough_style"></label>
                     <input type="checkbox" id="rough_enabled" hidden>
@@ -246,13 +241,29 @@
                     </select>
                 </div>
             </div>
-        </section>
+        </details>
+        <details id="exportSettings" class="col-12 settings-group mobile-export-settings">
+            <summary glot-model="settings_export">保存設定</summary>
+            <div class="map-style-controls">
+                <div class="map-style-row mobile-paper-size">
+                    <label for="paperSizeSelect" glot-model="select_size">用紙サイズ</label>
+                    <select id="paperSizeSelect" class="form-select form-select-sm w-auto" onchange="mapMaker.area_select(this.value)">
+                        <option value="" glot-model="paper_full_view" selected>画面全体</option>
+                        <option value="A4" glot-model="area_A4">A4縦</option>
+                        <option value="A4_landscape" glot-model="area_A4_landscape">A4横</option>
+                        <option value="A3" glot-model="area_A3">A3縦</option>
+                        <option value="A3_landscape" glot-model="area_A3_landscape">A3横</option>
+                    </select>
+                </div>
+            </div>
+        </details>
+        <h3 class="settings-layer-heading" glot-model="settings_features">地物の調整</h3>
         <fieldset id="AAA" class="d-none">
             <div class="col border-0 border-bottom">
                 <div class="layer-control-row align-items-center">
                     <span class="layer-control-label"></span>
                     <button id="AAA_layer" class="del_button me-1">
-                        <i class="fas fa-trash-alt me-1"></i></button>
+                        <i class="fas fa-eye me-1"></i></button>
                     <input type="button" id="AAA_color">
                     <input type="button" id="AAA_line" class="line_text" aria-haspopup="dialog" aria-expanded="false">
                 </div>

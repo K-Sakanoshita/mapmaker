@@ -24,15 +24,16 @@ class MapMaker {
             </div>`, "");
         mapMaker.makemenu(menuhtml);										// Make edit menu
         this.mobileSheet ||= new MobileEditorSheet(this);
-        mapMaker.initBasemenuWindow();
         winCont.menulist_make();
+        glot.render();
+        mapMaker.initBasemenuWindow();
         mapMaker.zoomMessage();																// Zoom 
         map.on('movestart', () => this.clearExportPreview());
         map.on('moveend resize', () => this.queueExportPreview());
         map.on('moveend', () => { if (this.customMode && this.rough_options().enabled) this.rough_change(); });
         map.on('pitchend', () => this.syncPositionView());
         this.syncPositionView();
-        map.on('zoomend', () => mapMaker.zoomMessage());										// ズーム終了時に表示更新
+        map.on('zoomend moveend resize', () => mapMaker.zoomMessage());										// ズーム終了時に表示更新
         const searchInput = document.getElementById("search_input");
         const searchButton = document.getElementById("addressSearchButton");
         const searchDialog = document.getElementById("addressSearchDialog");
@@ -57,16 +58,20 @@ class MapMaker {
     }
 
     layerGroupHeader(panel) {
-        const header = document.createElement('div');
-        header.id = panel.groupGlot;
-        header.className = 'layer-control-columns layer-control-group col-12 d-none';
+        const group = document.createElement('details');
+        group.id = panel.groupGlot;
+        group.className = 'layer-category col-12 d-none';
+        group.open = true;
+        const header = document.createElement('summary');
+        header.className = 'layer-control-columns layer-control-group';
         for (const key of [panel.groupGlot, 'layer_column_visibility', 'layer_column_color', 'layer_column_width']) {
             const label = document.createElement('span');
             label.textContent = glot.get(key);
             if (key === panel.groupGlot) label.className = 'layer-control-group-title';
             header.appendChild(label);
         }
-        return header;
+        group.appendChild(header);
+        return group;
     }
 
     beginProcessing(messageKey = 'processing_message') {
@@ -385,7 +390,8 @@ class MapMaker {
 
         console.log("Start: make custom panel.")
         for (let panel of Conf.editPanels) {									    // editPanelsに基づいて編集パネルを作成
-            document.getElementById("customMap").appendChild(this.layerGroupHeader(panel));
+            const categoryGroup = this.layerGroupHeader(panel);
+            document.getElementById("customMap").appendChild(categoryGroup);
 
             for (let key of panel.styles) {
                 let key_layer = `#${key}_layer`;
@@ -398,30 +404,14 @@ class MapMaker {
                 copyobj.querySelector('#AAA_layer').setAttribute('id', key + "_layer");
                 if (key == "background") copyobj.querySelector(key_line).outerHTML = "<span class='input-hidden'></span>";
                 copyobj.setAttribute('id', key);
-                document.getElementById("customMap").appendChild(copyobj);
+                categoryGroup.appendChild(copyobj);
 
-                // カラーピッカー追加
-                this.colorPicker[key] = new Alwan(`#${key}_color`, {
-                    preview: false, copy: false,
-                    inputs: { hex: false, rgb: true, hsl: false }, color: Layers[key].color,
-                    classname: "colorPalette", swatches: LayerCont.colorSwatches()
-                });
-
-                // 色変更時のイベント定義
-                this.colorPicker[key].on('change', (ev) => {
-                    Layers[key].color = ev.hex;
-                    if (key_layer.indexOf("background") > -1) {
-                        document.getElementById("mapid").style.backgroundColor = ev.hex;
-                        document.getElementById("mapid").classList.remove("bg-clear");
-                    };
-                    $(`#${key}_color`).attr('value', ev.hex);
-                    $(`#${key}_color`).removeClass('bg-clear');
-                    Layers[key].opacity = 1;
-                    Layers[key].color = ev.hex;
-                    Layers[key].color_dark = chroma(ev.hex).darken(Conf.default.ColorDarken).hex();
-                    if (document.getElementById(key + "_line") !== null) LayerState.setWidth(Layers[key], document.getElementById(key + "_line").value); //width;
-                    LayerCont.updateLayer(key);
-                });
+                const colorButton = document.getElementById(key + '_color');
+                colorButton.classList.add('colorPalette');
+                colorButton.style.backgroundColor = Layers[key].color;
+                colorButton.style.fontSize = '0';
+                colorButton.setAttribute('aria-label', `${glot.get("menu_" + key)} — ${glot.get("layer_column_color")}`);
+                colorButton.addEventListener('click', () => this.openColorPicker(key, colorButton));
 
                 // 幅変更時のイベント定義
                 $(key_line).on('change', (event) => {
@@ -433,21 +423,17 @@ class MapMaker {
                     widthButton.setAttribute('aria-label', `${glot.get("menu_" + key)} — ${glot.get("layer_column_width")}`);
                     widthButton.addEventListener('click', () => LineWidthPanel.open(key, widthButton));
                 }
+                LayerPanel.reflectVisibility(key, LayerState.visible(Layers[key]));
                 // 表示変更時のイベント定義
                 $(`#${key}_layer`).on('click', async function () {
-                    if (key_layer.indexOf("background") > -1) { // 地面の処理
-                        $("#mapid").css('background-color', "");
-                        $("#mapid").addClass("bg-clear");
-                        $("#background_color").css('background-color', "");
-                        $("#background_color").addClass("bg-clear");
-                        Layers["background"].opacity = 0;
-                    } else {    // その他レイヤの処理
-                        let view = $(key_layer).children().attr("class").indexOf("fa-trash-alt") > 0 ? false : true;    // 現在の状態を判定
-                        $(key_layer).children().toggleClass("fa-trash-alt fa-undo");
-                        if (Layers[key].geojson) {
-                            await mapMaker.toggleLayerVisibility(key, view);
-                        };
+                    const visible = !LayerState.visible(Layers[key]);
+                    if (key === 'background') {
+                        Layers[key].opacity = visible ? 1 : 0;
+                        $('#mapid, #background_color').css('background-color', visible ? Layers[key].color : '').toggleClass('bg-clear', !visible);
+                    } else if (Layers[key].geojson) {
+                        await mapMaker.toggleLayerVisibility(key, visible);
                     }
+                    LayerPanel.reflectVisibility(key, LayerState.visible(Layers[key]));
                     // 削除・復活後の表示状態を手書きプレビューにも反映する。
                     if (mapMaker.rough_options().enabled) mapMaker.rough_change();
                 });
@@ -455,13 +441,68 @@ class MapMaker {
         };
         $("#AAA").remove();
 
-        console.log("Start: make glot render.")
-        glot.render();
         document.querySelector('.save-reset button').setAttribute('aria-label', glot.get('save_reset_label'));
         document.getElementById('mobilePaletteSelect').value = LayerCont.palette;
+        for (const preview of document.querySelectorAll('.palette-preview')) {
+            for (const key of ['background', 'park', 'waterArea', 'highway_primary', 'building']) {
+                const chip = document.createElement('span');
+                chip.style.backgroundColor = Conf.style[preview.dataset.palette][key]?.color || '#ffffff';
+                preview.appendChild(chip);
+            }
+        }
 
         mapMaker.custom(false);	// カスタムモードOFF
         console.log("End: make menu.")
+    }
+
+    async openColorPicker(key, button) {
+        if (this.colorPicker[key]) return;
+        if (button.disabled) return;
+        button.disabled = true;
+        button.setAttribute('aria-busy', 'true');
+        try {
+            await MapMakerResources.script('alwan');
+            button.disabled = false;
+            const key_layer = `#${key}_layer`;
+            this.colorPicker[key] = new Alwan(button, {
+                preview: false, copy: false,
+                inputs: { hex: false, rgb: true, hsl: false }, color: Layers[key].color,
+                classname: "colorPalette", swatches: LayerCont.colorSwatches()
+            });
+            this.colorPicker[key].on('change', (ev) => {
+                Layers[key].color = ev.hex;
+                if (key_layer.indexOf("background") > -1) {
+                    document.getElementById("mapid").style.backgroundColor = ev.hex;
+                    document.getElementById("mapid").classList.remove("bg-clear");
+                };
+                $(`#${key}_color`).attr('value', ev.hex);
+                $(`#${key}_color`).removeClass('bg-clear');
+                Layers[key].opacity = 1;
+                LayerPanel.reflectVisibility(key, true);
+                Layers[key].color = ev.hex;
+                Layers[key].color_dark = chroma(ev.hex).darken(Conf.default.ColorDarken).hex();
+                if (document.getElementById(key + "_line") !== null) LayerState.setWidth(Layers[key], document.getElementById(key + "_line").value); //width;
+                LayerCont.updateLayer(key);
+            });
+
+            const reference = document.getElementById(key + '_color');
+            reference.setAttribute('aria-label', button.getAttribute('aria-label'));
+            // Alwan observes its replacement button before it can open the popover.
+            const visible = await new Promise(resolve => {
+                const observer = new IntersectionObserver(([entry]) => {
+                    observer.disconnect(); setTimeout(() => resolve(entry.isIntersecting), 0);
+                });
+                observer.observe(reference);
+            });
+            if (visible) this.colorPicker[key].open();
+        } catch (error) {
+            console.error('Color picker failed', error);
+            winCont.modal_open({ title: glot.get('sverror_title'), message: glot.get('sverror_message'),
+                mode: 'close', callback_close: () => winCont.closeModal() });
+        } finally {
+            button.disabled = false;
+            button.removeAttribute('aria-busy');
+        }
     }
 
     initBasemenuWindow() {
@@ -551,7 +592,11 @@ class MapMaker {
     // Clear Menu
     clearMenu() {
         for (let key of LayerCont.styles) {
-            this.colorPicker[key].setColor(Layers[key].color);
+            LayerPanel.reflectVisibility(key, LayerState.visible(Layers[key]));
+            this.colorPicker[key]?.setColor(Layers[key].color);
+            const color = document.getElementById(`${key}_color`);
+            color.setAttribute('value', Layers[key].color);
+            if (!this.colorPicker[key]) color.style.backgroundColor = Layers[key].color;
             if (key !== "background") {
                 document.getElementById(`${key}_line`).value = Layers[key].width;
             }
@@ -589,7 +634,8 @@ class MapMaker {
         while (latlng.lng <= -180) latlng.lng += 360;
         map.setView(latlng);    // 経度を-180～180に変換してからセット（OverpassAPIの仕様に合わせるため）
         let nowzoom = this.zoomLevel(), def_msg;
-        if (nowzoom < Conf.default.MinZoomLevel) return false;
+        const acquisitionZoom = this.acquisitionZoom();
+        if (acquisitionZoom < Conf.default.MinZoomLevel) return false;
         if (typeof (query_date) == "undefined") query_date = "";
         this.loadingMap = true;
         def_msg = glot.get("loading_message");
@@ -606,15 +652,18 @@ class MapMaker {
             const tenths = Math.floor(data_length / (1024 * 1024) * 10);
             if (tenths === lastProgressTenths) return;
             lastProgressTenths = tenths;
-            def_msg = "Data Loading... " + (tenths / 10).toFixed(1) + "MB.";
+            def_msg = glot.get("loading_bytes") + (tenths / 10).toFixed(1) + "MB.";
             winCont.modal_text(def_msg, false);
         };
-        for (let key of LayerCont.styles) if (Conf.style[LayerCont.palette][key].zoom <= nowzoom) targets.push(key);
-        Basic.retry(() => overPassCont.get(targets, progress, nowzoom), overPassCont.getRetryCount()).then(async (ovanswer) => {
-            winCont.modal_text("Data Loading Complete...", false);
+        for (let key of LayerCont.styles) if (Conf.style[LayerCont.palette][key].zoom <= acquisitionZoom) targets.push(key);
+        const dataRequest = Basic.retry(() => overPassCont.get(targets, progress, nowzoom, acquisitionZoom), overPassCont.getRetryCount());
+        const ready = typeof MapMakerResources === 'undefined' ? dataRequest
+            : Promise.all([dataRequest, MapMakerResources.script('turf')]).then(([data]) => data);
+        ready.then(async (ovanswer) => {
+            winCont.modal_text(glot.get("loading_prepare"), false);
             await waitPaint();
             for (const target of targets) {
-                winCont.modal_text(`Layer Cliping... ${target}`, false);
+                winCont.modal_text(glot.get("loading_clip") + glot.get("menu_" + target), false);
                 await waitPaint();
 
                 let geojson = overPassCont.get_target(ovanswer, target);
@@ -683,17 +732,18 @@ class MapMaker {
 
             for (let key of LayerCont.styles) {
                 if (Layers[key].geojson) {
-                    winCont.modal_text(`Map Writeing... ${key}`, false);
+                    winCont.modal_text(glot.get("loading_draw") + glot.get("menu_" + key), false);
                     await waitPaint();
                     await LayerCont.makeLayerAsync(key, undefined, false, (done, total) => {
-                        winCont.modal_text(`Map Writing... ${key} ${done}/${total}`, false);
+                        winCont.modal_text(glot.get("loading_draw") + glot.get("menu_" + key) + ` ${done}/${total}`, false);
                     });   // 指定したkeyレイヤーを作成
                 };
             };
-            winCont.modal_text("Map Ordering...", false);
+            winCont.modal_text(glot.get("loading_order"), false);
             await waitPaint();
             LayerCont.applyDrawOrder();
             winCont.modal_text(glot.get("processing_message"), false);
+            this.acquiredZoom = acquisitionZoom;
             mapMaker.custom(true);
             await mapMaker.queueExportPreview();
             // sync後に有効化されるベクタースタイルも画面へ反映してから閉じる。
@@ -727,7 +777,7 @@ class MapMaker {
     }
 
     // Search Address(Japan Only)
-    searchPoi(keyword) {
+    async searchPoi(keyword) {
         const errorMsg = error => {
             if (error) console.error('mapMaker: address search failed', error);
             winCont.modal_open({ title: glot.get('addressnotfound_title'), message: glot.get('addressnotfound_body'),
@@ -735,6 +785,7 @@ class MapMaker {
         };
         if (keyword === '') return;
         try {
+            if (typeof MapMakerResources !== 'undefined') await MapMakerResources.address();
             getLatLng(keyword, async latlng => {
                 try {
                     if (latlng.level === 0) { errorMsg(); return; }
@@ -753,6 +804,7 @@ class MapMaker {
                         const response = await fetch(endpoint);
                         if (!response.ok) throw new Error(`Municipality GeoJSON: HTTP ${response.status}`);
                         const data = await response.json();
+                        if (typeof MapMakerResources !== 'undefined') await MapMakerResources.script('turf');
                         const center = turf.centroid(data).geometry.coordinates;
                         if (!Array.isArray(center) || center.length < 2 || !center.every(Number.isFinite)) throw new Error('Invalid municipality centroid');
                         map.setZoom(Conf.default.SearchZoom - 3);
@@ -772,6 +824,7 @@ class MapMaker {
         try {
             await winCont.modal_open({ title: glot.get("loading_title"), message: glot.get("loading_message"), mode: "" });
             winCont.spinner(true);
+            if (typeof MapMakerResources !== 'undefined') await MapMakerResources.script('turf');
             if (Conf.osm[key].file !== undefined) {
                 const csv = await new Promise((resolve, reject) => {
                     $.ajax({ url: Conf.osm[key].file, dataType: 'text', timeout: 30000 })
@@ -786,6 +839,7 @@ class MapMaker {
             if (!Array.isArray(answer?.geojson) || answer.geojson.length === 0) {
                 throw Object.assign(new Error('No POI data'), { noData: true });
             }
+            if (typeof MapMakerResources !== 'undefined') await MapMakerResources.script('datatables');
         } catch (error) {
             console.error("mapMaker: addPoi failed", error);
             await winCont.closeModal();
@@ -885,7 +939,8 @@ class MapMaker {
             let url = `https://${wiki[0]}.wikipedia.org/wiki/${encodeURIComponent(wiki[1])}`;
             let pix = map.latLngToLayerPoint(marker.getLatLng());
             let ll2 = map.layerPointToLatLng(pix);
-            return Basic.getWikipedia(wiki[0], wiki[1]).then(data => Marker.qr_add(target, osmid, url, ll2, data)).catch(error => {
+            const ready = typeof MapMakerResources === 'undefined' ? Promise.resolve() : MapMakerResources.script('qrcode');
+            return ready.then(() => Basic.getWikipedia(wiki[0], wiki[1])).then(data => Marker.qr_add(target, osmid, url, ll2, data)).catch(error => {
                 console.error('Wikipedia article failed', error);
                 winCont.modal_open({ title: glot.get('sverror_title'), message: glot.get('sverror_message'), mode: 'close', callback_close: () => winCont.closeModal() });
             });
@@ -903,7 +958,7 @@ class MapMaker {
                     let rems = false;
                     for (let key of panel.styles) {
                         let zoom = palette[key].zoom == undefined ? 0 : palette[key].zoom;
-                        let disabled = zoom <= this.zoomLevel() ? "remove" : "add";
+                        let disabled = zoom <= this.acquisitionZoom() ? "remove" : "add";
                         rems = rems || disabled == "remove";    // どれか一つでも表示可能なレイヤーがあればパネルを表示
                         document.getElementById(key).classList[disabled]("d-none");
                     }
@@ -937,6 +992,7 @@ class MapMaker {
                 mapMaker.zoomMessage();
                 break;
             case false:
+                this.acquiredZoom = undefined;
                 if (typeof ManualPins !== "undefined") ManualPins.stop();
                 if (typeof LineWidthPanel !== "undefined") LineWidthPanel.close(false);
                 if (typeof RoughStylePanel !== "undefined") RoughStylePanel.close(false);
@@ -1004,25 +1060,37 @@ class MapMaker {
         }
     }
 
-    // 表示と地物の取得・メニューの判定で同じ小数1桁のズーム値を使う。
+    // 表示・描画のズーム値。取得開始の判定は acquisitionZoom() で補正する。
     zoomLevel() { return Number(map.getZoom().toFixed(1)); }
+
+    acquisitionZoom() {
+        if (this.customMode && Number.isFinite(this.acquiredZoom)) return this.acquiredZoom;
+        const config = Conf.system?.MapData?.viewportZoom;
+        if (config?.enabled !== true) return this.zoomLevel();
+        const size = map.getSize?.();
+        const bounds = map.getBounds?.();
+        const nw = bounds?.getNorthWest?.(), se = bounds?.getSouthEast?.();
+        return mapDataAcquisitionZoom(map.getZoom(), [size?.x ?? size?.width, size?.y ?? size?.height], config,
+            nw && se ? {west:nw.lng, north:nw.lat, east:se.lng, south:se.lat} : null);
+    }
 
     // View Zoom Level & Status Comment
     zoomMessage() {
         let nowzoom = this.zoomLevel();
+        const acquisitionZoom = this.acquisitionZoom();
         let message = `<span class="zoom-value">${glot.get("zoomlevel")}${nowzoom} </span>`;
-        const needsZoom = nowzoom < Conf.default.MinZoomLevel;
+        const needsZoom = acquisitionZoom < Conf.default.MinZoomLevel;
         makeMap.classList.toggle("d-none", mapMaker.custom());
         makeMap.querySelector("button").disabled = needsZoom;
         const zoomGuidance = document.getElementById("morezoom");
-        zoomGuidance.classList.toggle("d-none", nowzoom >= Conf.default.LimitZoomLevel);
+        zoomGuidance.classList.toggle("d-none", acquisitionZoom >= Conf.default.LimitZoomLevel);
         const featureList = document.getElementById("morezoomFeatures");
         featureList.textContent = "";
-        if (nowzoom < Conf.default.LimitZoomLevel) {
+        if (acquisitionZoom < Conf.default.LimitZoomLevel) {
             const hiddenFeatures = LayerCont.styles
                 .filter(key => {
                     const zoom = Conf.style[LayerCont.palette][key].zoom;
-                    return zoom > nowzoom && zoom <= Conf.default.LimitZoomLevel;
+                    return zoom > acquisitionZoom && zoom <= Conf.default.LimitZoomLevel;
                 })
                 .sort((a, b) => Conf.style[LayerCont.palette][a].zoom - Conf.style[LayerCont.palette][b].zoom);
             const examples = hiddenFeatures.slice(0, 3).map(key => glot.get(`menu_${key}`));

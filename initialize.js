@@ -110,7 +110,7 @@ class initialize {
         const FILES = [
             "./basemenu.html", "./modals.html", "./data/config-system.jsonc", "./data/config-user.jsonc",
             `./data/category-${LANG}.jsonc`, "./data/marker.jsonc", "./data/overpass-system.jsonc", "./data/leyers.jsonc",
-            `./data/datatables-${LANG}.jsonc`, "./data/marker-addtional.jsonc", "./data/prefecture.jsonc", "./data/prefecture-all.jsonc",
+            `./data/datatables-${LANG}.jsonc`, "./data/marker-addtional.jsonc",
             "./data/glot.json"
         ];
         let currentFile = "initialization";
@@ -127,11 +127,11 @@ class initialize {
                 }
             }));
             // Publish configuration only after every HTML/config/language file is valid.
-            const config = Object.assign({}, ...values.slice(2, 12));
+            const config = Object.assign({}, ...values.slice(2, -1));
             MapPresets.apply(config);
             config.category_keys = Object.keys(config.category);
             currentFile = "./data/glot.json";
-            for (const [key, translations] of Object.entries(values[12])) glot.assign(key, translations);
+            for (const [key, translations] of Object.entries(values[FILES.length - 1])) glot.assign(key, translations);
             Conf = config;
             $("#modals").html(values[1]);
             currentFile = "initialization";
@@ -147,7 +147,6 @@ class initialize {
                 const cookieDomain = Conf.default.GoogleAnalyticsCookieDomain || "";
                 gtag('config', Conf.default.GoogleAnalytics, cookieDomain === analyticsHost ? { cookie_domain: cookieDomain } : {});
             }
-            glot.render();
             initialize.initDailyIntro();
             return true;
         } catch (error) {

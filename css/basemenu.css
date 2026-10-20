@@ -582,6 +582,9 @@ img.icon_normal {
     height: 100%;
 }
 
+/* Avoid painting the empty menu before its asynchronous content arrives. */
+#basemenu:empty { visibility: hidden; }
+
 .pane-menu {
     position: absolute;
     top: 0;
@@ -606,7 +609,7 @@ img.icon_normal {
     --menu-window-size: 17px;
     font-size: var(--menu-text-size);
 }
-#basemenu .btn, #mobileSaveBar .save-reset > .btn { --bs-btn-font-size: var(--menu-text-size); }
+#basemenu .btn, #mobileSaveBar .btn { --bs-btn-font-size: var(--menu-text-size); }
 #basemenu .form-control,
 #basemenu .form-select { font-size: var(--menu-text-size); }
 #basemenu button > i, #mobileSaveBar .save-reset > button > i { font-size: var(--menu-icon-scale); }
@@ -615,14 +618,13 @@ img.icon_normal {
 #basemenu .basemenu-window-controls {
     display: inline-flex;
     align-items: stretch;
-    position: absolute;
+    position: static;
+    align-self: flex-end;
     width: 82px;
     height: 40px;
     flex: none;
-    top: 8px;
-    right: 8px;
     z-index: 2;
-    margin: 0;
+    margin: 4px 4px 8px;
     border: 1px solid #7b838a;
     border-radius: 6px;
     overflow: hidden;
@@ -710,7 +712,7 @@ img.icon_normal {
 /* 82pxの操作ボタンと、誤タップを防ぐ16px以上の間隔。 */
 #makeMap .make-map-action,
 #saveMap {
-    padding-right: 98px;
+    padding-right: 0;
     min-height: 40px;
 }
 #basemenu:has(#makeMap:not(.d-none)) .basemenu-window-controls { display: none; }
@@ -1021,9 +1023,9 @@ img.icon_normal {
         display: flex; position: absolute; z-index: 810; top: 0; left: 0; right: 0;
         background: rgba(250,248,248,.96); padding: 4px 8px;
     }
-    .mobile-editor #saveMap { display: flex; width: 100%; padding: 0; min-height: 44px; align-items: center; }
-    .mobile-editor #saveMap .save-reset { width: 48px; padding: 0 !important; }
-    .mobile-editor #saveMap .save-download { width: auto; min-width: 124px; padding: 0 !important; margin-left: auto !important; }
+    .mobile-editor #saveMap { display: flex; column-gap: 8px; width: 100%; padding: 0; min-height: 44px; align-items: center; }
+    .mobile-editor #saveMap .save-reset { flex: 0 1 auto; min-width: 0; width: auto; max-width: none; padding: 0 !important; }
+    .mobile-editor #saveMap .save-download { flex: 1 1 0; width: auto; min-width: 0; padding: 0 !important; margin-left: auto !important; }
     .mobile-editor #saveMap > div > button { min-height: 44px; }
     .mobile-editor #saveMap .dropdown-menu { min-width: 240px; }
     .mobile-editor #saveMap .dropdown-item { min-height: 48px; font-size: 16px; }
@@ -1041,7 +1043,6 @@ img.icon_normal {
     .mobile-editor #controlMenu > div { width: 25%; padding: 3px !important; }
     .mobile-editor #controlMenu > div > button { flex-direction: column; min-height: 54px; gap: 3px; padding: 4px 0; }
     .mobile-editor #controlMenu > div > button,
-    .mobile-editor #saveMap .save-reset > button { font-size: 14px; }
     .mobile-editor #controlMenu .menu-button-label { font-size: 12px; }
     .mobile-editor #controlMenu .dropdown-toggle::after { display: none; }
     .mobile-editor #colorMenu { order: 0; }
@@ -1062,4 +1063,38 @@ img.icon_normal {
     .mobile-editor .icon-select-scroll { overscroll-behavior: contain; }
     .mobile-editor #mapid .maplibregl-ctrl-bottom-left,
     .mobile-editor #mapid .maplibregl-ctrl-bottom-right { bottom: calc(var(--basemenu-height, 90px) + 2px); }
+    .mobile-editor #mapid .maplibregl-ctrl-bottom-left #zoomlevel { margin-left: 4px; margin-bottom: 8px; }
+    .mobile-editor #mapid:has(.maplibregl-ctrl-attrib.maplibregl-compact-show) .maplibregl-ctrl-bottom-left #zoomlevel { margin-bottom: 40px; }
 }
+
+/* Keep category names legible while indicating hidden content. */
+.is-layer-hidden .layer-control-label { opacity: .55; }
+.save-reset > button { white-space: nowrap; }
+#saveMap { flex-shrink: 0; flex-wrap: nowrap; gap: 8px; align-items: stretch; padding: 0 4px; }
+#saveMap .save-reset { flex: 0 1 auto; width: auto; min-width: 0; padding: 0 !important; }
+#saveMap .save-download { flex: 1 1 0; width: auto; min-width: 0; padding: 0 !important; }
+#saveMap > div > button { height: 100%; min-height: 44px; }
+
+/* Separate the editor heading and task-specific settings. */
+.editor-heading { display: flex; align-items: center; justify-content: space-between; flex: 0 0 auto; padding: 4px; margin-bottom: 8px; }
+.editor-heading h2 { font-size: 16px; margin: 0; font-weight: 600; }
+#basemenu .editor-heading .basemenu-window-controls { margin: 0; }
+#basemenu:has(#makeMap:not(.d-none)) .editor-heading { display: none; }
+.settings-group { margin: 4px 0 8px; border: 1px solid #dee2e6; border-radius: 6px; text-align: left; }
+.settings-group > summary { padding: 10px 12px; cursor: pointer; font-size: 16px; font-weight: 600; }
+.settings-group .map-style-controls { border: 0; margin: 0; }
+.settings-layer-heading { flex: 0 0 auto; text-align: left; font-size: 16px; margin: 12px 0 6px; padding: 0 8px; font-weight: 600; }
+.mobile-export-settings { display: none; }
+@media (max-width: 767.98px), (max-width: 991.98px) and (orientation: portrait) {
+    .mobile-editor .editor-heading { display: none; }
+    .mobile-editor .mobile-export-settings { display: block; }
+}
+
+.settings-group > summary small { display: block; margin: 4px 0 0 18px; color: #666; font-size: 12px; font-weight: normal; }
+.palette-preview { display: inline-flex; width: 65px; height: 20px; margin-right: 8px; border: 1px solid #999; vertical-align: middle; }
+.palette-preview > span { flex: 1; }
+.layer-category > summary { cursor: pointer; list-style: none; }
+.layer-category > summary::-webkit-details-marker { display: none; }
+.layer-category > summary .layer-control-group-title::before { content: '▸'; display: inline-block; margin-right: 5px; }
+.layer-category[open] > summary .layer-control-group-title::before { transform: rotate(90deg); }
+.layer-category > summary:focus-visible { outline: 2px solid #198754; outline-offset: -2px; }

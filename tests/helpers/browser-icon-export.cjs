@@ -2,7 +2,6 @@ const assert = require('node:assert/strict'), fs = require('node:fs/promises'), 
 
 // Exercise the real icon cache, marker DOM, SVG composition and PNG save path.
 module.exports = async (page, output) => {
-    await page.waitForFunction(() => ['sandbox','slide','playground'].every(name => SVGCont.SvgIcon['icon/'+name+'.png']), null, {timeout:60000});
     const results = await page.evaluate(async () => {
         const results = [], originalBuild = SVGCont.buildSVG, originalSave = SVGCont._saveBlob;
         const originalSize = [Conf.effect.icon.x,Conf.effect.icon.y];
@@ -17,8 +16,9 @@ module.exports = async (page, output) => {
         try {
             for (const name of ['sandbox','slide','playground']) for (const fallback of [false,true]) {
                 const filename = 'icon/'+name+'.png', absolute = new URL(filename,document.baseURI).href;
+                const originalLoadIcon = SVGCont.loadIcon;
                 const savedCache = [SVGCont.SvgIcon[filename],SVGCont.SvgIcon[absolute]];
-                if (fallback) { delete SVGCont.SvgIcon[filename]; delete SVGCont.SvgIcon[absolute]; }
+                if (fallback) { SVGCont.loadIcon = async () => null; delete SVGCont.SvgIcon[filename]; delete SVGCont.SvgIcon[absolute]; }
                 try {
                     const content = Marker.markerContent('',filename);
                     content.querySelector('img').dataset.iconPreset = 'standard';
@@ -49,6 +49,7 @@ module.exports = async (page, output) => {
                         svg:text,png:Array.from(new Uint8Array(await saved.arrayBuffer()))});
                 } finally {
                     marker?.remove(); marker=null;
+                    SVGCont.loadIcon = originalLoadIcon;
                     for(const [i,key] of [filename,absolute].entries()) {
                         if(savedCache[i]===undefined)delete SVGCont.SvgIcon[key];else SVGCont.SvgIcon[key]=savedCache[i];
                     }

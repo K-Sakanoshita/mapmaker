@@ -12,6 +12,7 @@ module.exports=async page=>{
   element.dispatchEvent(new MouseEvent('click',{bubbles:true}));
   const popup=document.querySelector('.maplibregl-popup-content');
   const popupLiteral=popup.querySelector('span').textContent==='ja:'+payload&&!popup.querySelector('img,svg,[onclick],[onchange]');
+  await MapMakerResources.script('qrcode');
   Marker.qr_add('wikipedia',feature.id,'https://ja.wikipedia.org/wiki/Test',{lat:center.lat,lng:center.lng},[payload,{source:'javascript:window.__injected=1'}]);
   const qr=Marker.markers.wikipedia[0][1].getElement();
   const articleLiteral=qr.querySelector('span').textContent.startsWith(payload)&&qr.querySelectorAll('img').length===0;

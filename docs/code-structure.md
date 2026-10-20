@@ -39,6 +39,7 @@ lib/
     map-data.js           取得処理の呼び出しと進捗・結果・エラー返却
     svg-export.js         保存スナップショットからSVGを生成して返却
   application/            画面と共有処理の接続・進行管理
+    resource-loader.js    補助ライブラリと住所検索データの初回読み込み・再試行
     language-router.js    初回言語判定・明示指定・選択した言語の保持
     map-presets.js        プリセットURL・初期地図・データ取得先の選択
     feature-context.js    既存のgetMapMaker* API・PrintSVGExporterとの互換接続
@@ -109,3 +110,5 @@ Workerは`{id, revision, svgText}`または`{id, revision, error}`を返しま�
 `node tests/source-boundaries.cjs`で、共有処理の単独実行、編集状態の分離、実Workerとの出力一致、古い応答・キャンセル、日英ページの参照先を検査します。形状・取得・保存・ブラウザーの確認方法は[回帰確認](../tests/REGRESSION.md)を参照してください。
 
 国旗素材は`image/flags/`に同梱し、ライセンスと取得元も同じ場所に置きます。国旗の判定と折れ目のUVは共有処理に置き、GPUは画像アトラス、SVGは同じSVG素材を埋め込んで描画します。保存スナップショットの`context.config.flagImages`には使用する国のデータURIだけを追加し、WorkerからHTTP取得は行いません。
+
+補助ライブラリ（Turf、住所検索、施設一覧、色選択、手書き、QRコード）は各機能の初回利用時に読み込み、同時要求を共有します。失敗時は次の操作で再試行できます。SVGアイコンは保存前に表示中の種類だけ読み込み、取得できなければ元の画像へフォールバックします。

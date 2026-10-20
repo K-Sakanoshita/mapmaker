@@ -27,7 +27,7 @@ const output=process.env.MAPMAKER_ARTIFACTS||'/tmp/mapmaker-regression';
  });
  await page.goto(base,{waitUntil:'domcontentloaded'});
  await page.waitForFunction(()=>typeof map!=='undefined'&&map?.gl?.isStyleLoaded(),null,{timeout:60000});
- await page.evaluate(()=>{Conf.default.Paper.dpi=72;document.getElementById('mapMakerIntroClose')?.click();Basic.retry=Basic.retry.bind(Basic);window.__alerts=[];window.alert=text=>__alerts.push(text);});
+ await page.evaluate(()=>{Conf.system.MapData.viewportZoom.enabled=false;Conf.default.Paper.dpi=72;document.getElementById('mapMakerIntroClose')?.click();Basic.retry=Basic.retry.bind(Basic);window.__alerts=[];window.alert=text=>__alerts.push(text);});
  await require('./helpers/browser-icon-export.cjs')(page,path.join(output,`${viewport.width}-icons`));
  await require('./helpers/browser-security.cjs')(page);
  await require('./helpers/browser-building-occlusion.cjs')(page);

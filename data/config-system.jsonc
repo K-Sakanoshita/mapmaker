@@ -7,6 +7,12 @@
     "system": {
         "MapData": {
             "lowZoomBelow": 14,
+            "viewportZoom": {
+                "enabled": true,
+                "referenceWidth": 1024,
+                "referenceHeight": 768,
+                "maxAdjustment": 1
+            },
             "timeoutMs": 150000,
             "limits": {
                 "responseBytes": 16777216,

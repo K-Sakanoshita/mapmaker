@@ -197,8 +197,7 @@
             ],
             "overpass": [
                 "nwr[\"railway\"][\"tunnel\"!~\".*\"]",
-                "nwr[\"service\"=\"yard\"]",
-                "nwr[\"roller_coaster\"]"
+                "nwr[\"service\"=\"yard\"]"
             ],
             "tags": [
                 "railway=construction",
@@ -210,8 +209,25 @@
                 "railway=rail",
                 "railway=subway",
                 "railway=tram",
-                "service=yard",
-                "roller_coaster=track"
+                "service=yard"
+            ]
+        },
+        "recreation_track": {
+            "overpass": [
+                "nwr[\"roller_coaster\"=\"track\"]",
+                "nwr[\"highway\"=\"raceway\"]",
+                "nwr[\"sport\"=\"karting\"]",
+                "nwr[\"attraction\"~\"^(alpine_coaster|summer_toboggan|water_slide|log_flume|dark_ride)$\"]"
+            ],
+            "tags": [
+                "roller_coaster=track",
+                "highway=raceway",
+                "sport=karting",
+                "attraction=alpine_coaster",
+                "attraction=summer_toboggan",
+                "attraction=water_slide",
+                "attraction=log_flume",
+                "attraction=dark_ride"
             ]
         },
         "highway_alley": {
@@ -279,7 +295,6 @@
                 "nwr[\"highway\"]"
             ],
             "tags": [
-                "highway=raceway",
                 "highway=motorway",
                 "highway=motorway_link"
             ]
