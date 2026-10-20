@@ -16,7 +16,7 @@
             "timeoutMs": 150000,
             "limits": {
                 "responseBytes": 33554432,
-                "elements": 240000,
+                "elements": 400000,
                 "coordinates": 480000,
                 "outputCoordinates": 360000
             },
