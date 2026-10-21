@@ -2,7 +2,7 @@ const readSource = require('./helpers/lib-source.cjs').read;
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
 (async()=>{
  const model={id:5,mapmaker:{key:'building'},options:{color:'#aaaaaa',opacity:1,weight:.8},feature:{properties:{building:'yes'},geometry:{type:'Polygon',coordinates:[[[139,35],[139.001,35],[139.001,35.001],[139,35.001],[139,35]]]}}};
- const box=vm.createContext({setTimeout,Conf:{default:{birdseye:{defaultHeight:3}}},Layers:{building:{opacity:''}},LayerCont:{palette:'color'},
+ const box=vm.createContext({performance,setTimeout,Conf:{default:{birdseye:{defaultHeight:3}}},Layers:{building:{opacity:''}},LayerCont:{palette:'color'},
   chroma:()=>({rgba:()=>[170,170,170,.85]}),maplibregl:{MercatorCoordinate:{fromLngLat(ll,height=0){if(!Array.isArray(ll))ll=[ll.lng,ll.lat];return{x:ll[0]/360,y:ll[1]/360,z:height/40030228.884};}}}});
  vm.runInContext(readSource('@feature-core','utf8'),box);
  vm.runInContext(fs.readFileSync('lib/renderers/maplibre/mesh-renderer.js','utf8'),box);

@@ -52,6 +52,14 @@ const vm = require('node:vm');
     vm.runInContext("mapMaker.selectMode = 'A4_landscape'", box);
     await vm.runInContext("mapMaker.save('svg')", box);
     assert.match(box.results[2].outText, /viewBox="0 0 297 210"/, 'paper export keeps selected paper dimensions');
-    assert.equal(box.results[2].canvas_width, Math.round(300 * 297 / 25.4));
+    assert.equal(box.results[2].canvas_width, Math.round(150 * 297 / 25.4), 'SVG keeps a stable style reference independent of PNG precision');
+    for (const dpi of [150,600]) {
+        box.Conf.default.Paper.dpi=dpi;
+        await vm.runInContext("mapMaker.save('png')",box);
+        const result=box.results.at(-1);
+        assert.equal(result.canvas_width,Math.round(dpi*297/25.4));
+        assert.equal(result.params.dpi,dpi,'save captures selected precision before async work');
+        assert.equal(result.outText,box.results[2].outText,'raster precision preserves line/label/dash geometry');
+    }
     console.log('PASS PNG/SVG export the entire map behind menus, capture before overlay, and preserve paper dimensions');
 })().catch(error => { console.error(error); process.exitCode = 1; });

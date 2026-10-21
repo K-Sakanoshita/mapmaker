@@ -2,7 +2,7 @@ const readSource = require('./helpers/lib-source.cjs').read;
 const assert = require('node:assert/strict'), fs = require('node:fs'), vm = require('node:vm');
 (async()=>{
 const tree = { type: 'Feature', id: 'node/1', properties: { natural: 'tree' }, geometry: { type: 'Point', coordinates: [139,35] } };
-const box = vm.createContext({ console: { log() {} },
+const box = vm.createContext({ performance, setTimeout, console: { log() {} },
     Conf: { default: { Palette: 'color' }, pointStyle: { tree: { radius: 1.2, palette: { color: { lineColor: '#75a873', fillColor: '#9fc89d', width: 0 } } } },
         style: { color: { garden: { type: 'area' } } } },
     LayerCont: { palette: 'color', styles: ['garden'] },

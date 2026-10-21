@@ -6,6 +6,7 @@
 <div id="controlMenu"><button type="button">Existing controls</button></div>
 <section id="roughControls"><div class="d-flex justify-content-between align-items-center">
 <label id="roughSettingsButton" for="rough_fill_style">手書き風</label>
+<button type="button" id="roughDetailsButton" disabled aria-haspopup="dialog" aria-expanded="false" onclick="RoughStylePanel.open()">詳細</button>
 <input id="rough_enabled" type="checkbox" hidden><select id="rough_fill_style" aria-labelledby="roughSettingsButton" onchange="RoughStylePanel.selectFill()"><option value="none" selected>なし</option><option value="solid">Solid</option><option value="hachure">Hachure</option></select></div>
 <div id="roughParameters" class="d-none">
 <label for="roughness">粗さ</label><output id="roughness_value">1.0</output><input id="roughness" class="form-range" type="range" min="0" max="10" step="0.1" value="1" oninput="mapMaker.rough_change(1000)" disabled>
@@ -22,9 +23,9 @@ try {
  mapMaker.queueExportPreview=()=>{updates++;mapMaker.setRoughPreviewLock(mapMaker.rough_options().enabled)};
  mapMaker.clearRoughPreview=()=>mapMaker.setRoughPreviewLock(false);
  const menu=document.querySelector('#basemenu'), toggle=document.querySelector('#rough_enabled'), home=document.querySelector('#roughControls'), anchor=document.querySelector('#roughSettingsButton');
- const parameters=document.querySelector('#roughParameters'),fill=document.querySelector('#rough_fill_style');
+ const parameters=document.querySelector('#roughParameters'),fill=document.querySelector('#rough_fill_style'),details=document.querySelector('#roughDetailsButton');
  const choose=value=>{fill.value=value;fill.dispatchEvent(new Event('change',{bubbles:true}))};
- check('None initially hides parameters',parameters.classList.contains('d-none'));
+ check('None initially hides parameters',parameters.classList.contains('d-none') && details.disabled);
  choose('hachure');
  check('selection opens adjustment dialog',toggle.checked && mapMaker.rough_options().fillStyle==='hachure' && !parameters.classList.contains('d-none') && parameters.parentNode===RoughStylePanel.panel);
  const rect=RoughStylePanel.panel.getBoundingClientRect();check('dialog fits viewport',rect.left>=0 && rect.right<=innerWidth && rect.top>=0 && rect.bottom<=innerHeight);
@@ -34,11 +35,14 @@ try {
  check('live controls update values',mapMaker.rough_options().roughness===2.4 && document.querySelector('#roughness_value').value==='2.4');
  const currentPanel=RoughStylePanel.panel;choose('solid');check('changing fill keeps dialog open',RoughStylePanel.panel===currentPanel && mapMaker.rough_options().fillStyle==='solid');
  document.querySelector('#roughStylePanel .btn-close').click();check('close preserves style and hides sliders',toggle.checked && mapMaker.rough_options().roughness===2.4 && !RoughStylePanel.panel && parameters.parentNode===home && parameters.classList.contains('d-none'));
+ const beforeReopen=updates;details.click();check('details reopens without changing fill or redrawing',!!RoughStylePanel.panel && fill.value==='solid' && mapMaker.rough_options().roughness===2.4 && updates===beforeReopen && details.getAttribute('aria-expanded')==='true');
+ document.querySelector('#roughStylePanel .btn-close').click();
  choose('hachure');check('selection reopens dialog',!!RoughStylePanel.panel);
- document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}));check('Escape closes with focus on selector',!RoughStylePanel.panel && document.activeElement===fill);
+ document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}));check('Escape closes with focus on details',!RoughStylePanel.panel && document.activeElement===details && details.getAttribute('aria-expanded')==='false');
  choose('solid');
  choose('none');check('None hides parameters and restores regular map',!toggle.checked && parameters.classList.contains('d-none') && !document.querySelector('#mapid').inert);
- check('fill select stays enabled',!fill.disabled);
+ check('fill select stays enabled and details is disabled for None',!fill.disabled && details.disabled);
+ details.click();check('None cannot open details',!RoughStylePanel.panel);
  choose('hachure');check('re-enable retains slider values',!!RoughStylePanel.panel && !parameters.classList.contains('d-none') && mapMaker.rough_options().roughness===2.4);
  check('updates reached preview',updates>=4);
  document.querySelector('#result').textContent='PASS '+JSON.stringify(checks);

@@ -26,6 +26,7 @@ class MapMaker {
         this.mobileSheet ||= new MobileEditorSheet(this);
         winCont.menulist_make();
         glot.render();
+        ExportSettings.init(this);
         mapMaker.initBasemenuWindow();
         mapMaker.zoomMessage();																// Zoom 
         map.on('movestart', () => this.clearExportPreview());
@@ -311,6 +312,8 @@ class MapMaker {
             else if (fillSelect.value === "none") fillSelect.value = "solid";
             fillSelect.disabled = false;
         }
+        const roughDetails = document.getElementById("roughDetailsButton");
+        if (roughDetails) roughDetails.disabled = !selected;
         if (previewDelay > 0 && selected && this.customMode) this.roughPreviewNotBefore = Date.now() + previewDelay;
         if (!selected || !this.customMode) this.clearRoughPreview();
         this.queueExportPreview();
@@ -442,7 +445,6 @@ class MapMaker {
         $("#AAA").remove();
 
         document.querySelector('.save-reset button').setAttribute('aria-label', glot.get('save_reset_label'));
-        document.getElementById('mobilePaletteSelect').value = LayerCont.palette;
         for (const preview of document.querySelectorAll('.palette-preview')) {
             for (const key of ['background', 'park', 'waterArea', 'highway_primary', 'building']) {
                 const chip = document.createElement('span');
@@ -742,15 +744,21 @@ class MapMaker {
             winCont.modal_text(glot.get("loading_order"), false);
             await waitPaint();
             LayerCont.applyDrawOrder();
-            winCont.modal_text(glot.get("processing_message"), false);
+            winCont.modal_text(glot.get("loading_editor"), false);
+            await waitPaint();
             this.acquiredZoom = acquisitionZoom;
             mapMaker.custom(true);
             await mapMaker.queueExportPreview();
+            winCont.modal_text(glot.get("loading_display"), false);
             // sync後に有効化されるベクタースタイルも画面へ反映してから閉じる。
             await new Promise(resolve => {
                 map.once('idle', resolve);
                 map.repaint();
             });
+            if (this.rough_options().enabled) {
+                winCont.modal_text(glot.get("loading_rough"), false);
+                await waitPaint();
+            }
             await this.finishInitialRoughPreview();
             await loadingModal;
             await winCont.closeModal();
@@ -1023,9 +1031,8 @@ class MapMaker {
     // Area Select(A4)
     area_select(mode) {
         this.selectMode = mode;
-        const paperSelect = document.getElementById("paperSizeSelect");
-        if (paperSelect) paperSelect.value = mode;
         LayerCont.area_select(mode);
+        if (typeof ExportSettings !== 'undefined') ExportSettings.update();
         if (this.customMode && this.rough_options().enabled) this.queueExportPreview();
         return mode;
     }
@@ -1037,8 +1044,9 @@ class MapMaker {
         if (downloadMenu && typeof bootstrap !== 'undefined') bootstrap.Dropdown.getInstance(downloadMenu)?.hide();
 
         // 保存中の全面オーバーレイが地図を覆う前に、地図・用紙の範囲を確定する。
-        const exportRect = this.captureExportRect(this.selectMode);
-        const saveButtons = document.querySelectorAll('#saveMap button, #controlMenu [onclick="Birdseye.open()"], #birdseyeModal button, #birdseyeModal input');
+        const mode = this.selectMode, dpi = Conf.default.Paper.dpi;
+        const exportRect = this.captureExportRect(mode);
+        const saveButtons = document.querySelectorAll('#saveMap button, #saveMap select, #birdseyeEnabled, #birdseyeModal button, #birdseyeModal input');
         const disabledBeforeSave = new Map([...saveButtons].map(button => [button, button.disabled]));
         this.exportInProgress = true;
         const processing = this.beginProcessing('export_processing');
@@ -1048,7 +1056,7 @@ class MapMaker {
         await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 
         try {
-            await SVGCont.save({ type: type, mode: this.selectMode, birdseye, exportRect });
+            await SVGCont.save({ type: type, mode, dpi, birdseye, exportRect });
         } catch (error) {
             console.error("save: export failed", error);
             window.alert(glot.get("export_error"));

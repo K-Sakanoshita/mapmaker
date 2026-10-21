@@ -1,7 +1,14 @@
 {
+    "export_quality": {"ja": "PNGの精細さ", "en": "PNG detail"},
+    "export_quality_standard": {"ja": "標準", "en": "Standard"},
+    "export_quality_high": {"ja": "高精細", "en": "High"},
+    "export_quality_highest": {"ja": "最高精細", "en": "Highest"},
+    "export_pixels": {"ja": "出力サイズ", "en": "Image size"},
+    "export_quality_note": {"ja": "保存に時間がかかる場合があります。", "en": "Saving may take longer."},
     "sheet_adjust": {"ja": "調整", "en": "Adjust"},
     "settings_finish_hint": {"ja": "手書き風・季節", "en": "Hand-drawn style / Season"},
     "editor_heading": {"ja": "地図の編集", "en": "Edit map"},
+    "settings_advanced": {"ja": "詳細設定", "en": "Advanced settings"},
     "settings_finish": {"ja": "仕上げ", "en": "Finish"},
     "settings_export": {"ja": "保存設定", "en": "Export settings"},
     "settings_features": {"ja": "地物の調整", "en": "Map features"},
@@ -9,6 +16,13 @@
     "layer_hide": {"ja": "非表示にする", "en": "Hide"},
     "layer_show": {"ja": "表示する", "en": "Show"},
     "loading_bytes": {"ja": "地図データを取得中：", "en": "Downloading map data: "},
+    "loading_parse": {"ja": "受信した地図データを読み取り中", "en": "Reading downloaded map data"},
+    "loading_convert": {"ja": "地図データの形状を変換中", "en": "Converting map geometry"},
+    "loading_classify": {"ja": "建物・道路などの種類を分類中", "en": "Classifying buildings, roads and other features"},
+    "loading_simplify": {"ja": "地図の形状を整理中", "en": "Simplifying map geometry"},
+    "loading_editor": {"ja": "編集用の地図を構成中", "en": "Preparing the editable map"},
+    "loading_display": {"ja": "地図の表示を反映中", "en": "Updating the map display"},
+    "loading_rough": {"ja": "手書き風の地図を描画中", "en": "Drawing the hand-drawn map"},
     "loading_prepare": {"ja": "地図データを整理中", "en": "Preparing map data"},
     "loading_clip": {"ja": "表示範囲を整理中：", "en": "Preparing area: "},
     "loading_draw": {"ja": "地図を描画中：", "en": "Drawing map: "},
@@ -64,6 +78,7 @@
     "manual_pin_delete": {"ja": "このピンを削除", "en": "Delete this pin"},
     "position_2d": {"ja": "2D地図", "en": "2D map"},
     "position_3d": {"ja": "3D地図", "en": "3D map"},
+    "birdseye_display": {"ja": "3D表示", "en": "3D view"},
     "birdseye_open": {"ja": "3D化", "en": "3D guide map"},
     "birdseye_bearing": {"ja": "地図の向き", "en": "Map rotation"},
     "birdseye_tilt": {"ja": "地図の傾き", "en": "Map tilt"},
@@ -146,10 +161,9 @@
         "en": "(TEST)Acquisition Date: "
     },
     "makemap": {
-        "ja": "地図をカスタマイズ",
-        "en": "Customize map"
+        "ja": "マップを作る",
+        "en": "Create Map"
     },
-    "customize_hint": {"ja": "表示中の範囲から、色や線を変えられる地図を作成", "en": "Create a map of this area with editable colors and lines"},
     "controlmenu": {
         "ja": "マップを編集する",
         "en": "Edit the map"
@@ -327,8 +341,8 @@
         "en": "Current view"
     },
     "add_icon": {
-        "ja": "アイコン",
-        "en": "Add Icon"
+        "ja": "目印",
+        "en": "Markers"
     },
     "select_palette": {"ja": "配色", "en": "Palette"},
     "select_color": {"ja": "配色", "en": "Palette"},
@@ -376,6 +390,7 @@
         "ja": "モノクロパレット",
         "en": "mono palette"
     },
+    "rough_details": {"ja": "詳細", "en": "Details"},
     "rough_style": {
         "ja": "手書き風",
         "en": "Hand-drawn"

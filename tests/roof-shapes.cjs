@@ -1,7 +1,7 @@
 const readSource = require('./helpers/lib-source.cjs').read;
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
 (async()=>{
- const box=vm.createContext({console:{log(){}},setTimeout,Conf:{default:{birdseye:{}},style:{color:{building:{type:'area'}}}},LayerCont:{palette:'color',styles:['building']},Layers:{building:{opacity:1}},SVGCont:{svg_style:()=>({fillColor:'#aabbcc',color:'#334455',weight:1,fillOpacity:1,opacity:1})},chroma:()=>({rgba:()=>[170,187,204,1]}),maplibregl:{MercatorCoordinate:{fromLngLat:(ll,z=0)=>({x:ll.lng??ll[0],y:ll.lat??ll[1],z})}}});
+ const box=vm.createContext({performance,console:{log(){}},setTimeout,Conf:{default:{birdseye:{}},style:{color:{building:{type:'area'}}}},LayerCont:{palette:'color',styles:['building']},Layers:{building:{opacity:1}},SVGCont:{svg_style:()=>({fillColor:'#aabbcc',color:'#334455',weight:1,fillOpacity:1,opacity:1})},chroma:()=>({rgba:()=>[170,187,204,1]}),maplibregl:{MercatorCoordinate:{fromLngLat:(ll,z=0)=>({x:ll.lng??ll[0],y:ll.lat??ll[1],z})}}});
  for(const f of ['@feature-core','lib/renderers/maplibre/mesh-renderer.js'])vm.runInContext(readSource(f,'utf8'),box);
  const rectangle=[[[135,35],[135.002,35],[135.002,35.001],[135,35.001],[135,35]]];
  const make=(shape,tags={},geometry={type:'Polygon',coordinates:rectangle})=>({type:'Feature',id:'way/roof',properties:{'building:part':'yes','roof:shape':shape,height:'12','roof:height':'3',...tags},geometry});
@@ -33,6 +33,18 @@ const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/st
   model.options.opacity=0;outline.update(model);for(let i=6;i<outline.fillData.length;i+=7)assert.equal(outline.fillData[i],0,'hide roof faces');
   model.options.opacity=1;outline.update(model);assert.equal(outline.fillData[6],1);
  }
+ // Count calls only inside a single SVG building emission, excluding camera bounds.
+ const geometry=vm.runInContext('MapMakerGeometry',box),Exporter=vm.runInContext('SVGFeatureExporter',box);
+ const savedRoof=geometry.roofMesh,savedBuilding=Exporter.prototype._buildingSVG;
+ let emissionCalls=[];
+ Exporter.prototype._buildingSVG=function(...args){let calls=0;const previous=geometry.roofMesh;geometry.roofMesh=(...a)=>{calls++;return previous(...a);};try{return savedBuilding.apply(this,args);}finally{geometry.roofMesh=previous;emissionCalls.push(calls);}};
+ for(const shape of ['gabled','flat','dome']){
+  box.Layers.building.geojson=[make(shape)];emissionCalls=[];
+  const exporter=vm.runInContext('new PrintSVGExporter({paper:"A4"})',box);
+  exporter.toSVGFromLayers([134.999,34.999,135.003,35.002],{birdseye:{tilt:45,bearing:30}});
+  assert.ok(emissionCalls.length>0);assert.ok(emissionCalls.every(n=>n===1),'SVG roof and flat fallback are each computed once per emission');
+ }
+ Exporter.prototype._buildingSVG=savedBuilding;geometry.roofMesh=savedRoof;
  assert.equal(vm.runInContext("getMapMakerRoofShadeColor('#aabbcc88',.5)",box),'#555e6688');
  assert.equal(vm.runInContext("getMapMakerRoofShadeColor('#abc8',.5)",box),'#555e6688');
  assert.equal(vm.runInContext("getMapMakerRoofShadeColor('rgba(100,150,200,0.4)',.8)",box),'rgba(80,120,160,0.4)');

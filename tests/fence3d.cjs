@@ -2,7 +2,7 @@ const fs=require('node:fs'), vm=require('node:vm'), assert=require('node:assert/
 const read=require('./helpers/lib-source.cjs').read;
 (async()=>{
  const Conf=JSON.parse(fs.readFileSync('data/leyers.jsonc','utf8'));Conf.default={birdseye:{}};
- const box=vm.createContext({Conf,console:{log(){}},setTimeout,LayerCont:{palette:'color',styles:['barrier']},
+ const box=vm.createContext({performance,Conf,console:{log(){}},setTimeout,LayerCont:{palette:'color',styles:['barrier']},
   Layers:{barrier:{opacity:1}},SVGCont:{svg_style:()=>({color:'#597569',weight:1,opacity:1,fillOpacity:0})},
   chroma:()=>({rgba:()=>[89,117,105,1]}),maplibregl:{MercatorCoordinate:{fromLngLat(ll,height=0){return{x:ll[0]/360,y:ll[1]/360,z:height/40030228.884};}}}});
  vm.runInContext(read('@feature-core'),box);

@@ -15,7 +15,7 @@
     <div class="row g-0" id="makeMap">
         <div class="col p-1 m-0">
             <div class="make-map-action">
-            <button class="btn btn-primary w-100" aria-describedby="customizeHint morezoom" disabled onclick="mapMaker.make(Basic.getdate())">
+            <button class="btn btn-primary w-100" aria-describedby="morezoom" disabled onclick="mapMaker.make(Basic.getdate())">
                 <i class="fas fa-map me-2"></i><span glot-model="makemap" class="ms-2"></span>
             </button>
             </div>
@@ -23,7 +23,6 @@
                 <button type="button" id="position2D" class="btn btn-outline-primary" onclick="mapMaker.positionView(false)">2D</button>
                 <button type="button" id="position3D" class="btn btn-outline-primary" onclick="mapMaker.positionView(true)">3D</button>
             </div>
-            <small id="customizeHint" class="customize-hint" glot-model="customize_hint"></small>
             <small id="birdseyeGesture" class="d-none d-lg-block text-muted mt-2" glot-model="birdseye_note">右ボタンまたはCtrl＋ドラッグで回転・傾斜。</small>
         </div>
     </div>
@@ -35,10 +34,29 @@
             </button>
         </div>
         <div class="col-8 p-1 m-0 dropdown save-download">
-            <button type="button" class="btn btn-success dropdown-toggle w-100" id="saveDownloadMenu" data-bs-toggle="dropdown" aria-expanded="false">
+            <button type="button" class="btn btn-success dropdown-toggle w-100" id="saveDownloadMenu" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
                 <i class="fas fa-file-download me-1" aria-hidden="true"></i><span glot-model="save_menu">保存</span>
             </button>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="saveDownloadMenu">
+            <ul id="exportSaveMenu" class="dropdown-menu dropdown-menu-end export-save-menu" aria-labelledby="saveDownloadMenu">
+                <li class="export-save-settings">
+                    <label for="exportPaperSize" glot-model="select_size">用紙サイズ</label>
+                    <select id="exportPaperSize" class="form-select form-select-sm">
+                        <option value="" glot-model="paper_full_view">画面全体</option>
+                        <option value="A4" glot-model="area_A4">A4縦</option>
+                        <option value="A4_landscape" glot-model="area_A4_landscape">A4横</option>
+                        <option value="A3" glot-model="area_A3">A3縦</option>
+                        <option value="A3_landscape" glot-model="area_A3_landscape">A3横</option>
+                    </select>
+                    <label for="exportQuality" glot-model="export_quality">PNGの精細さ</label>
+                    <select id="exportQuality" class="form-select form-select-sm" aria-describedby="exportQualityNote">
+                        <option value="150">標準</option>
+                        <option value="300" selected>高精細</option>
+                        <option value="600">最高精細</option>
+                    </select>
+                    <div class="export-pixel-size" role="status"><span glot-model="export_pixels">出力サイズ</span>：<output id="exportPixelSize"></output></div>
+                    <small id="exportQualityNote" class="d-none text-muted" glot-model="export_quality_note">保存に時間がかかる場合があります。</small>
+                </li>
+                <li><hr class="dropdown-divider"></li>
                 <li><button type="button" class="dropdown-item" onclick="mapMaker.save('png');" glot-model="save_png">PNG画像を保存</button></li>
                 <li><button type="button" class="dropdown-item" onclick="mapMaker.save('svg');" glot-model="save_svg">SVG画像を保存（編集可能）</button></li>
             </ul>
@@ -47,7 +65,7 @@
 
     <div id="mobileSheetHeader" class="mobile-sheet-header">
         <button type="button" id="mobileSheetHandle" class="mobile-sheet-handle" aria-controls="customMap modal_select" aria-expanded="false">
-            <span class="mobile-sheet-grip" aria-hidden="true"></span><span id="mobileSheetTitle" glot-model="sheet_styles">色・線幅</span>
+            <span class="mobile-sheet-grip" aria-hidden="true"></span>
         </button>
         <div class="mobile-sheet-window-controls btn-group" role="group">
             <button type="button" id="mobileSheetClose" class="btn btn-light mobile-sheet-window-button" aria-label="最小化"><i class="fas fa-minus" aria-hidden="true"></i></button>
@@ -56,26 +74,6 @@
     </div>
 
     <div class="row row-cols-2 gy-0 gx-0 mt-2" id="controlMenu">
-        <div class="col-6 p-1 m-0 editor-3d-tab">
-            <button class="btn btn-light w-100 h-100" onclick="Birdseye.open()">
-                <i class="fas fa-cube"></i>
-                <span class="menu-button-label" glot-model="birdseye_open">3D化</span>
-            </button>
-        </div>
-        <div class="col-6 p-1 m-0 editor-size-tab">
-            <button class="btn btn-light ps-0 pe-0 dropdown-toggle w-100" id="AreaSelect1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="far fa-file"></i>
-                <span class="menu-button-label" glot-model="select_size"></span>
-            </button>
-            <div class="dropdown-menu" aria-labelledby="AreaSelect1">
-                <span class="dropdown-item btn ps-1 me-1" onclick="mapMaker.area_select('A4')"><i class="fas fa-arrows-alt-v ms-1 pe-1 ms-2"></i><span glot-model="area_A4" class="ms-2"></span></span>
-                <span class="dropdown-item btn ps-1 me-1" onclick="mapMaker.area_select('A4_landscape')"><i class="fas fa-arrows-alt-h ms-2"></i><span glot-model="area_A4_landscape" class="ms-2"></span></span>
-                <span class="dropdown-item btn ps-1 me-1" onclick="mapMaker.area_select('A3')"><i class="fas fa-arrows-alt-v ms-1 pe-1 ms-2"></i><span glot-model="area_A3" class="ms-2"></span></span>
-                <span class="dropdown-item btn ps-1 me-1" onclick="mapMaker.area_select('A3_landscape')"><i class="fas fa-arrows-alt-h ms-2"></i><span glot-model="area_A3_landscape" class="ms-2"></span></span>
-                <span class="dropdown-item btn ps-1 me-1" onclick="mapMaker.area_select('')"><i class="fas fa-vector-square ms-2"></i><span glot-model="area_deselect" class="ms-2"></span></span>
-            </div>
-        </div>
-
         <div class="col-6 p-1 m-0" id="editMenu">
             <button class="btn btn-light ps-0 pe-0 dropdown-toggle w-100" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-map-marker"></i>
@@ -102,6 +100,7 @@
                     <span glot-model="coloring_palette"></span></span>
             </div>
         </div>
+        <div class="col-6 p-1 m-0 mobile-palette-tab" id="mobilePaletteTab"></div>
     </div>
 
 <div id="modal_select" class="icon-select-panel d-none" aria-label="施設選択">
@@ -191,69 +190,61 @@
 </div>
 
     <div class="row g-0 mt-2 overflow-y-scroll" id="customMap">
-        <div class="mobile-palette-select col-12 px-2 py-2">
-            <label for="mobilePaletteSelect" glot-model="select_color">色選択</label>
-            <select id="mobilePaletteSelect" class="form-select" onchange="LayerCont.setStyle(this.value)">
-                <option value="color" glot-model="color_palette"></option>
-                <option value="mono" glot-model="mono_palette"></option>
-                <option value="coloring" glot-model="coloring_palette"></option>
-            </select>
-        </div>
-        <details class="col-12 rough-controls d-none settings-group" id="roughControls">
-            <summary><span glot-model="settings_finish">仕上げ</span><small glot-model="settings_finish_hint">手書き風・季節</small></summary>
-            <div class="map-style-controls">
-                <div class="map-style-row rough-controls-toggle">
-                    <label id="roughSettingsButton" for="rough_fill_style" glot-model="rough_style"></label>
-                    <input type="checkbox" id="rough_enabled" hidden>
-                    <select class="form-select form-select-sm w-auto rough-fill-select" id="rough_fill_style" aria-labelledby="roughSettingsButton" onchange="RoughStylePanel.selectFill()">
-                        <option value="none" glot-model="rough_fill_none" selected>なし</option>
-                        <option value="solid" glot-model="rough_fill_solid">ベタ塗り</option>
-                        <option value="hachure" glot-model="rough_fill_hachure">斜線</option>
-                        <option value="zigzag" glot-model="rough_fill_zigzag">ジグザグ</option>
-                        <option value="cross-hatch" glot-model="rough_fill_cross_hatch">格子</option>
-                        <option value="dots" glot-model="rough_fill_dots">点</option>
-                        <option value="dashed" glot-model="rough_fill_dashed">破線</option>
-                        <option value="zigzag-line" glot-model="rough_fill_zigzag_line">ジグザグ線</option>
-                    </select>
-                </div>
-                <div id="roughParameters" class="d-none">
-                    <div class="px-2 py-1 border-bottom">
-                        <div class="d-flex justify-content-between">
-                            <label for="roughness" glot-model="rough_roughness"></label>
-                            <output id="roughness_value" for="roughness">1.0</output>
+        <details id="advancedSettings" class="col-12 settings-group">
+            <summary glot-model="settings_advanced">詳細設定</summary>
+            <div class="col-12">
+                <div class="map-style-controls">
+                    <div class="map-style-row">
+                        <label for="birdseyeEnabled" glot-model="birdseye_display">3D表示</label>
+                        <div class="form-check form-switch m-0">
+                            <input type="checkbox" class="form-check-input" role="switch" id="birdseyeEnabled" onchange="Birdseye.setEnabled(this.checked)">
                         </div>
-                        <input class="form-range rough-range" type="range" id="roughness" min="0" max="10" step="0.1" value="1" oninput="mapMaker.rough_change(1000)" disabled>
                     </div>
-                    <div class="px-2 py-1 border-bottom">
-                        <div class="d-flex justify-content-between">
-                            <label for="bowing" glot-model="rough_bowing"></label>
-                            <output id="bowing_value" for="bowing">1.0</output>
-                        </div>
-                        <input class="form-range rough-range" type="range" id="bowing" min="0" max="10" step="0.1" value="1" oninput="mapMaker.rough_change(1000)" disabled>
-                    </div>
-                </div>
-                <div class="map-style-row">
-                    <label for="mapSeason" class="text-nowrap" glot-model="map_season">季節</label>
-                    <select id="mapSeason" class="form-select form-select-sm w-auto" onchange="mapMaker.season_change(this.value)">
-                        <option value="normal" glot-model="season_normal" selected>通常</option>
-                        <option value="spring" glot-model="season_spring">春</option>
-                        <option value="autumn" glot-model="season_autumn">秋</option>
-                    </select>
                 </div>
             </div>
-        </details>
-        <details id="exportSettings" class="col-12 settings-group mobile-export-settings">
-            <summary glot-model="settings_export">保存設定</summary>
-            <div class="map-style-controls">
-                <div class="map-style-row mobile-paper-size">
-                    <label for="paperSizeSelect" glot-model="select_size">用紙サイズ</label>
-                    <select id="paperSizeSelect" class="form-select form-select-sm w-auto" onchange="mapMaker.area_select(this.value)">
-                        <option value="" glot-model="paper_full_view" selected>画面全体</option>
-                        <option value="A4" glot-model="area_A4">A4縦</option>
-                        <option value="A4_landscape" glot-model="area_A4_landscape">A4横</option>
-                        <option value="A3" glot-model="area_A3">A3縦</option>
-                        <option value="A3_landscape" glot-model="area_A3_landscape">A3横</option>
-                    </select>
+            <div class="rough-controls d-none" id="roughControls">
+                <div class="map-style-controls">
+                    <div class="map-style-row rough-controls-toggle">
+                        <label id="roughSettingsButton" for="rough_fill_style" glot-model="rough_style"></label>
+                        <input type="checkbox" id="rough_enabled" hidden>
+                        <div class="rough-style-actions">
+                            <select class="form-select form-select-sm w-auto rough-fill-select" id="rough_fill_style" aria-labelledby="roughSettingsButton" onchange="RoughStylePanel.selectFill()">
+                                <option value="none" glot-model="rough_fill_none" selected>なし</option>
+                                <option value="solid" glot-model="rough_fill_solid">ベタ塗り</option>
+                                <option value="hachure" glot-model="rough_fill_hachure">斜線</option>
+                                <option value="zigzag" glot-model="rough_fill_zigzag">ジグザグ</option>
+                                <option value="cross-hatch" glot-model="rough_fill_cross_hatch">格子</option>
+                                <option value="dots" glot-model="rough_fill_dots">点</option>
+                                <option value="dashed" glot-model="rough_fill_dashed">破線</option>
+                                <option value="zigzag-line" glot-model="rough_fill_zigzag_line">ジグザグ線</option>
+                            </select>
+                            <button type="button" id="roughDetailsButton" class="btn btn-outline-primary btn-sm" glot-model="rough_details" aria-haspopup="dialog" aria-expanded="false" onclick="RoughStylePanel.open()" disabled>詳細</button>
+                        </div>
+                    </div>
+                    <div id="roughParameters" class="d-none">
+                        <div class="px-2 py-1 border-bottom">
+                            <div class="d-flex justify-content-between">
+                                <label for="roughness" glot-model="rough_roughness"></label>
+                                <output id="roughness_value" for="roughness">1.0</output>
+                            </div>
+                            <input class="form-range rough-range" type="range" id="roughness" min="0" max="10" step="0.1" value="1" oninput="mapMaker.rough_change(1000)" disabled>
+                        </div>
+                        <div class="px-2 py-1 border-bottom">
+                            <div class="d-flex justify-content-between">
+                                <label for="bowing" glot-model="rough_bowing"></label>
+                                <output id="bowing_value" for="bowing">1.0</output>
+                            </div>
+                            <input class="form-range rough-range" type="range" id="bowing" min="0" max="10" step="0.1" value="1" oninput="mapMaker.rough_change(1000)" disabled>
+                        </div>
+                    </div>
+                    <div class="map-style-row">
+                        <label for="mapSeason" class="text-nowrap" glot-model="map_season">季節</label>
+                        <select id="mapSeason" class="form-select form-select-sm w-auto" onchange="mapMaker.season_change(this.value)">
+                            <option value="normal" glot-model="season_normal" selected>通常</option>
+                            <option value="spring" glot-model="season_spring">春</option>
+                            <option value="autumn" glot-model="season_autumn">秋</option>
+                        </select>
+                    </div>
                 </div>
             </div>
         </details>

@@ -2,7 +2,7 @@ const readSource = require('./helpers/lib-source.cjs').read;
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
 (async()=>{
  const osm=JSON.parse(fs.readFileSync('data/overpass-system.jsonc')).osm,system=JSON.parse(fs.readFileSync('data/config-system.jsonc')).system;
- const box=vm.createContext({Conf:{osm,system}});vm.runInContext(readSource('@overpass-client','utf8'),box);
+ const box=vm.createContext({Conf:{osm,system},URLSearchParams});vm.runInContext(readSource('@overpass-client','utf8'),box);
  const control=vm.runInContext('new OverPassControl()',box),keys=['sea','waterArea','waterLine','wetland','forest','railway','highway_primary','highway_motorway'];
  const low=control.acquisition(keys,13.99),normal=control.acquisition(keys,14);
  for(const broad of ['nwr["highway"]','nwr["natural"]','nwr["landuse"]']){assert.ok(!low.selectors.includes(broad));assert.ok(normal.selectors.includes(broad));}
@@ -20,6 +20,10 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
   return {message:await result,messages};
  }
  const ok=await run(new Response(JSON.stringify(fixture)));assert.ok(ok.message.result.geojson.length);assert.ok(ok.messages.some(m=>m.stage==='converting'));assert.ok(ok.messages.some(m=>m.progress>0));
+ assert.deepEqual(ok.messages.filter(m=>m.stage).map(m=>m.stage),['parsing','converting','classifying','simplifying'],'worker reports actual conversion phases in order');
+ const noCaps=vm.runInContext('mapDataConfigForDevice({...Conf.system.MapData, limits:{responseBytes:1,elements:1,coordinates:1,outputCoordinates:1}}, false, "?dataLimits=off")',box);
+ const unlimited=await run(new Response(JSON.stringify(fixture)),structuredClone(noCaps));
+ assert.ok(unlimited.message.result.geojson.length,'URL override bypasses byte, element, reference and output-coordinate checks in the real Worker');
  // Exercise the streamed boundary at a small explicit cap, without allocating
  // 100MiB of padding for each device profile.
  const json=JSON.stringify(fixture),cap=Buffer.byteLength(json)+4096;

@@ -3,7 +3,7 @@ const read=require('./helpers/lib-source.cjs').read;
 (async()=>{
  const config=JSON.parse(fs.readFileSync('data/leyers.jsonc','utf8'));
  const flag={type:'Feature',id:'node/1',properties:{man_made:'flagpole',country:'JP','flag:type':'national'},geometry:{type:'Point',coordinates:[139,35]}};
- const box=vm.createContext({console:{log(){}},Conf:{...config,default:{Palette:'color'},flagImages:{}},LayerCont:{palette:'color',styles:['park']},Layers:{park:{opacity:1,geojson:[flag]}},SVGCont:{svg_style:()=>({opacity:1,fillOpacity:1})}});
+ const box=vm.createContext({performance,console:{log(){}},Conf:{...config,default:{Palette:'color'},flagImages:{}},LayerCont:{palette:'color',styles:['park']},Layers:{park:{opacity:1,geojson:[flag]}},SVGCont:{svg_style:()=>({opacity:1,fillOpacity:1})}});
  vm.runInContext(read('@feature-core'),box);
  const code=vm.runInContext('MapMakerDomain.nationalFlagCode',box),parts=vm.runInContext('getMapMakerPointParts',box);
  for(const country of ['JP','CA','VN','US','OM','BR','NP','GB','XK'])assert.equal(code({...flag,properties:{tags:{man_made:'flagpole',country,'flag:type':'national'}}}),country);

@@ -366,7 +366,7 @@ table.dataTable tbody>tr>.selected {
 .layer-control-row { min-height: 30px; padding-left: 8px; text-align: left; }
 .layer-control-row > :not(:first-child) { justify-self: center; }
 .layer-control-row .del_button { margin: 0 !important; }
-#roughControls { margin-bottom: 4px; }
+#roughControls { margin-bottom: 0; }
 .map-style-controls {
     margin: 0 8px 4px;
     border: 1px solid #d7dce1;
@@ -719,10 +719,15 @@ img.icon_normal {
 #makeMap .make-map-action { padding-right: 0; }
 #makeMap > .col { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 8px; }
 #makeMap .make-map-action > button { min-height: 44px; }
-#basemenu #makeMap .position-view-toggle { width: 92px; }
-#basemenu #makeMap .position-view-toggle > button { font-size: 14px; min-width: 44px; padding: 4px; box-shadow: none; }
-#makeMap .customize-hint { grid-column: 1 / -1; font-size: 12px; line-height: 1.4; color: #495057; text-align: center; }
+#basemenu #makeMap .position-view-toggle { width: 112px; }
+#basemenu #makeMap .position-view-toggle > button { font-size: 16px; min-width: 56px; padding: 4px; box-shadow: none; }
 #makeMap #birdseyeGesture { grid-column: 1 / -1; }
+
+@media (min-width: 992px), (min-width: 768px) and (orientation: landscape) {
+    #makeMap > .col { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+    #basemenu #makeMap .position-view-toggle { width: 100%; }
+    #basemenu #makeMap .position-view-toggle > button { min-width: 0; min-height: 36px; }
+}
 
 #makeMap .make-map-action > button {
     white-space: nowrap;
@@ -740,6 +745,10 @@ img.icon_normal {
     #makeMap .make-map-action > button > span {
         margin-left: 0 !important;
     }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) and (orientation: landscape) {
+    #makeMap .make-map-action > button { white-space: normal; }
 }
 
 #customMap {
@@ -830,8 +839,12 @@ img.icon_normal {
     margin-bottom: 3px;
 }
 
+.rough-style-actions { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.rough-style-actions > button { flex: 0 0 auto; white-space: nowrap; min-height: 44px; }
+.rough-controls-toggle > label { flex: 0 0 auto; }
+
 .rough-fill-select {
-    flex: 0 0 125px;
+    flex: 0 1 125px;
     width: 125px;
     min-width: 0;
 }
@@ -989,12 +1002,12 @@ img.icon_normal {
 }
 
 .mobile-save-bar, .mobile-sheet-header, .mobile-palette-select { display: none; }
-#basemenu .mobile-paper-size { display: none; }
+#controlMenu .mobile-palette-tab { display: none; }
 #controlMenu #mobileStylesTab { display: none; }
 @media (max-width: 767.98px), (max-width: 991.98px) and (orientation: portrait) {
     #mapid .maplibregl-ctrl-bottom-left #zoomlevel { margin-bottom: 56px; }
     /* Keep positioning and editing controls in the same bottom area. */
-    #editbar { --mobile-position-height: calc(76px + env(safe-area-inset-bottom, 0px)); }
+    #editbar { --mobile-position-height: calc(56px + env(safe-area-inset-bottom, 0px)); }
     #basemenu:has(#makeMap:not(.d-none)) {
         top: auto; bottom: 0; height: var(--mobile-position-height) !important;
         padding-bottom: env(safe-area-inset-bottom, 0px);
@@ -1010,18 +1023,24 @@ img.icon_normal {
     #editbar:has(#makeMap:not(.d-none)) #mapid .leaflet-top { top: 10px; }
     #editbar:has(#makeMap:not(.d-none)) #mapid .leaflet-bottom { bottom: var(--mobile-position-height); }
     #editbar.mobile-editor #basemenu {
-        top: auto; bottom: 0; width: 100%;
-        height: var(--basemenu-height, 90px) !important; max-height: calc(100% - 100px);
-        border-radius: 14px 14px 0 0; padding-bottom: env(safe-area-inset-bottom, 0px);
+        top: auto; bottom: var(--mobile-save-height, 62px); width: 100%;
+        height: var(--basemenu-height, 90px) !important; max-height: calc(100% - var(--mobile-save-height, 62px) - 100px);
+        border-radius: 14px 14px 0 0; padding-bottom: 0;
         box-shadow: 0 -3px 14px #0003;
     }
-    /* Dropdowns must escape the sheet stacking order above the save bar (810). */
+    /* Keep open sheet dropdowns above other map controls. */
     #editbar.mobile-editor #basemenu:has(.dropdown-menu.show) { z-index: 820; }
-    .mobile-editor #basemenu > .container-fluid { padding: 0 4px 4px !important; }
+    .mobile-editor #basemenu > .container-fluid { padding: 0 4px !important; }
     .mobile-editor .basemenu-window-controls { display: none !important; }
     .mobile-editor .mobile-save-bar {
-        display: flex; position: absolute; z-index: 810; top: 0; left: 0; right: 0;
-        background: rgba(250,248,248,.96); padding: 4px 8px;
+        display: flex; position: absolute; z-index: 830; left: 8px; right: 8px;
+        bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+        background: #faf8f8; padding: 4px;
+    }
+    .mobile-editor .mobile-save-bar::before {
+        content: ""; position: absolute; z-index: -1;
+        inset: -2px -8px calc(-8px - env(safe-area-inset-bottom, 0px));
+        background: #faf8f8;
     }
     .mobile-editor #saveMap { display: flex; column-gap: 8px; width: 100%; padding: 0; min-height: 44px; align-items: center; }
     .mobile-editor #saveMap .save-reset { flex: 0 1 auto; min-width: 0; width: auto; max-width: none; padding: 0 !important; }
@@ -1030,39 +1049,36 @@ img.icon_normal {
     .mobile-editor #saveMap .dropdown-menu { min-width: 240px; }
     .mobile-editor #saveMap .dropdown-item { min-height: 48px; font-size: 16px; }
     .mobile-editor .mobile-sheet-header { display: flex; flex: 0 0 auto; align-items: center; gap: 6px; min-height: 44px; }
-    .mobile-sheet-window-controls { flex: 0 0 auto; margin: 6px 8px 6px 4px; }
+    .mobile-sheet-window-controls { flex: 0 0 auto; margin: 0 8px 0 4px; }
     .mobile-sheet-window-controls .mobile-sheet-window-button { width: 44px; height: 44px; padding: 0; font-size: 17px !important; }
     #mobileSheetClose i { transform: translateY(7px); }
     .mobile-sheet-handle { flex: 1; min-width: 0; min-height: 44px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; background: transparent; box-shadow: none; font-size: 14px; touch-action: none; user-select: none; }
     .mobile-sheet-grip { width: 38px; height: 4px; border-radius: 3px; background: #adb5bd; }
-    .mobile-editor #basemenu.is-minimized .mobile-sheet-window-controls,
-    .mobile-editor #basemenu.is-minimized #mobileSheetTitle { display: none; }
+    .mobile-editor #basemenu.is-minimized .mobile-sheet-window-controls { display: none; }
     .mobile-editor #basemenu.is-minimized .mobile-sheet-header,
     .mobile-editor #basemenu.is-minimized .mobile-sheet-handle { min-height: 24px; }
     .mobile-editor #controlMenu { flex: 0 0 auto; margin-top: 0 !important; flex-wrap: nowrap; }
-    .mobile-editor #controlMenu > div { width: 25%; padding: 3px !important; }
-    .mobile-editor #controlMenu > div > button { flex-direction: column; min-height: 54px; gap: 3px; padding: 4px 0; }
+    .mobile-editor #controlMenu > div { width: calc(100% / 3); padding: 3px !important; }
+    .mobile-editor #controlMenu > div > button { flex-direction: row; min-height: 44px; gap: 6px; padding: 4px 2px; }
     .mobile-editor #controlMenu > div > button,
-    .mobile-editor #controlMenu .menu-button-label { font-size: 12px; }
+    .mobile-editor #controlMenu .menu-button-label { font-size: var(--menu-text-size); }
     .mobile-editor #controlMenu .dropdown-toggle::after { display: none; }
     .mobile-editor #colorMenu { order: 0; }
     .mobile-editor #editMenu { order: 1; }
-    .mobile-editor .editor-size-tab { order: 2; }
-    .mobile-editor .editor-3d-tab { order: 3; }
+    .mobile-editor #controlMenu .mobile-palette-tab { display: block; order: 2; }
     .mobile-editor #mobilePaletteSelect { display: none; }
     .mobile-editor #controlMenu #mobileStylesTab { display: inline-flex; }
-    .mobile-editor #mobileStylesTab span { font-size: 12px; }
+    .mobile-editor #mobileStylesTab span { font-size: var(--menu-text-size); }
     .mobile-editor #controlMenu .dropdown-item { min-height: 44px; }
     .mobile-editor #customMap { margin-top: 0 !important; overscroll-behavior: contain; }
     .mobile-editor #basemenu.is-minimized #customMap { display: none !important; }
     .mobile-editor .mobile-palette-select { display: none; }
-    .mobile-editor #basemenu .mobile-paper-size { display: flex; }
     .mobile-editor .mobile-palette-select > label { display: none; }
     .mobile-palette-select label { white-space: nowrap; font-size: 14px; }
     .mobile-editor .icon-select-panel { margin-top: 0; }
     .mobile-editor .icon-select-scroll { overscroll-behavior: contain; }
     .mobile-editor #mapid .maplibregl-ctrl-bottom-left,
-    .mobile-editor #mapid .maplibregl-ctrl-bottom-right { bottom: calc(var(--basemenu-height, 90px) + 2px); }
+    .mobile-editor #mapid .maplibregl-ctrl-bottom-right { bottom: calc(var(--basemenu-height, 90px) + var(--mobile-save-height, 62px) + 2px); }
     .mobile-editor #mapid .maplibregl-ctrl-bottom-left #zoomlevel { margin-left: 4px; margin-bottom: 8px; }
     .mobile-editor #mapid:has(.maplibregl-ctrl-attrib.maplibregl-compact-show) .maplibregl-ctrl-bottom-left #zoomlevel { margin-bottom: 40px; }
 }
@@ -1098,3 +1114,22 @@ img.icon_normal {
 .layer-category > summary .layer-control-group-title::before { content: '▸'; display: inline-block; margin-right: 5px; }
 .layer-category[open] > summary .layer-control-group-title::before { transform: rotate(90deg); }
 .layer-category > summary:focus-visible { outline: 2px solid #198754; outline-offset: -2px; }
+
+/* Save settings stay together on desktop dropdowns and mobile dropups. */
+#saveMap .export-save-menu { width: 290px; min-width: 0; max-width: calc(100vw - 16px); max-height: calc(100dvh - 100px); overflow-y: auto; }
+.export-save-settings { padding: 6px 14px; text-align: left; font-size: 14px; }
+.export-save-settings label { display: block; margin: 6px 0 4px; }
+.export-save-settings select { width: 100%; min-height: 38px; }
+.export-pixel-size { margin-top: 12px; font-size: 13px; white-space: nowrap; }
+#exportQualityNote { display: block; margin-top: 6px; }
+
+
+@media (min-width: 992px), (min-width: 768px) and (orientation: landscape) {
+    #controlMenu > div { width: 50%; }
+    #controlMenu > div > button { min-height: 44px; font-size: var(--menu-text-size); gap: 6px; padding: 6px 4px; }
+    #controlMenu .menu-button-label { font-size: inherit; }
+    #controlMenu > div > button > i { flex-basis: 20px; font-size: 18px; }
+}
+@media (min-width: 768px) and (max-width: 991.98px) and (orientation: landscape) {
+    #controlMenu .dropdown-toggle::after { display: none; }
+}

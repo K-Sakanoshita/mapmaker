@@ -68,6 +68,16 @@ const distant={type:'Polygon',coordinates:[[[140,36],[140.001,36],[140.001,36.00
 assert.equal(vector.match({id:1232,geometry:distant,properties:{}},'building',new Map([['way/123',[models.get(123)]]])),null,'same ID at a different location is rejected');
 assert.deepEqual(JSON.parse(JSON.stringify(Vector.filterExpression(['all',['!has','hide_3d'],['in','class','primary','trunk']]))),
     ['all',['!',['has','hide_3d']],['in',['get','class'],['literal',['primary','trunk']]]]);
+const paintChanges=[],setPaint=gl.setPaintProperty,setFilter=gl.setFilter,setLayout=gl.setLayoutProperty;
+gl.setPaintProperty=(id,key,val)=>{paintChanges.push([id,key]);setPaint.call(gl,id,key,val);};
+gl.setFilter=()=>{throw Error('width changes must not rebuild native filters');};
+gl.setLayoutProperty=()=>{throw Error('width changes must not change visibility');};
+box.Layers.highway_substandard={opacity:1};
+box.SVGCont.svg_style=()=>({color:'#999',fillColor:'#abc',weight:1.7});
+vector.refreshWidth('highway_substandard');
+assert.ok(paintChanges.length>0);assert.ok(paintChanges.every(([,key])=>key==='line-width'));
+assert.ok(JSON.stringify(layers.get('road_minor').paint['line-width']).includes('1.7'));
+gl.setPaintProperty=setPaint;gl.setFilter=setFilter;gl.setLayoutProperty=setLayout;
 vector.clear();
 assert.deepEqual(layers.get('road_minor_casing').paint['line-gap-width'],original.find(l=>l.id==='road_minor_casing').paint['line-gap-width'],'reset restores original zoom-dependent casing gap');
 assert.equal(layers.get('road_minor').paint['line-gap-width'],null,'unset original gap is restored');

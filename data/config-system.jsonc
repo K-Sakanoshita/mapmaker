@@ -30,7 +30,7 @@
             "simplify": {
                 "belowZoom": 14,
                 "tolerancePx": 0.5,
-                "maxExportDpi": 300,
+                "maxExportDpi": 600,
                 "maxPaperLongMm": 420,
                 "topologyChecks": 300000
             }

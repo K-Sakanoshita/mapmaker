@@ -22,6 +22,7 @@ const groups = {
         "lib/osm/csv.js"
     ],
     "@svg-document": [
+        "lib/ui/export-settings.js",
         "lib/application/flag-assets.js",
         "lib/application/svg-worker-client.js",
         "lib/export/svg-text.js",

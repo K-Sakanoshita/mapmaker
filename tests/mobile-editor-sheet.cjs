@@ -11,8 +11,8 @@ class Node {
     setAttribute(key,value) { this.attrs[key]=value; }
     getBoundingClientRect() { return {height:this.id==='editbar'?804:this.id==='basemenu'?parseFloat(nodes.get('editbar').style.getPropertyValue('--basemenu-height'))||92:52}; }
 }
-for(const id of ['editbar','basemenu','saveMap','mobileSheetHandle','mobileSheetHeader','mobileSheetExpand','mobileSheetClose','mobileStylesTab','controlMenu','modal_select','mobileSheetTitle'])nodes.set(id,new Node(id));
-nodes.get('saveMap').parentNode=nodes.get('basemenu');nodes.get('modal_select').classList.add('d-none');nodes.get('controlMenu').offsetHeight=60;nodes.get('mobileSheetHeader').offsetHeight=24;
+for(const id of ['editbar','basemenu','saveMap','mobileSheetHandle','mobileSheetHeader','mobileSheetExpand','mobileSheetClose','mobileStylesTab','controlMenu','modal_select'])nodes.set(id,new Node(id));
+nodes.get('mobileSheetHeader').parentNode=nodes.get('basemenu');nodes.get('saveMap').parentNode=nodes.get('basemenu');nodes.get('modal_select').classList.add('d-none');nodes.get('controlMenu').offsetHeight=60;nodes.get('mobileSheetHeader').offsetHeight=24;
 const box=vm.createContext({document:{getElementById:id=>nodes.get(id),createComment:()=>new Node('placeholder'),createElement:()=>new Node('mobileSaveBar')},
     window:{matchMedia:()=>({matches:wide}),addEventListener:(type,fn)=>listeners.set(type,fn),removeEventListener:type=>listeners.delete(type)},
     getComputedStyle:()=>({paddingBottom:'0px'}),glot:{get:key=>key}});
@@ -20,8 +20,11 @@ vm.runInContext(fs.readFileSync('lib/ui/mobile-editor-sheet.js','utf8'),box);
 const Sheet=vm.runInContext('MobileEditorSheet',box);
 const maker={customMode:true,basemenuWindowMode:'minimized',applyBasemenuWindowSize(){sheet.update();}};
 const sheet=new Sheet(maker);assert.equal(sheet.update(),true);
-assert.equal(nodes.get('saveMap').parentNode,sheet.topbar,'same save controls move to upper bar');
+assert.equal(nodes.get('saveMap').parentNode,sheet.topbar,'same save controls move to sheet action bar');
 assert.equal(nodes.get('mobileSheetHandle').attrs['aria-expanded'],'false');
+assert.equal(sheet.topbar.parentNode,nodes.get('editbar'),'save bar floats independently of sheet');
+assert.equal(sheet.sizes().minimized,84,'collapsed sheet excludes independent save bar');
+assert.equal(sheet.sizes().expanded,658,'expanded sheet reserves space for floating save bar and map');
 sheet.setMode('normal');assert.equal(nodes.get('editbar').style.getPropertyValue('--basemenu-height'),'402px');
 assert.match(nodes.get('mobileSheetExpand').innerHTML,/fa-window-maximize/);
 assert.equal(nodes.get('mobileSheetClose').attrs['aria-label'],'basemenu_minimize');

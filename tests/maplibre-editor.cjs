@@ -9,7 +9,7 @@ const assert = require('node:assert/strict'), fs = require('node:fs'), vm = requ
         addLayer: layer => layers.set(layer.id, layer), removeLayer: id => layers.delete(id),
         getSource: id => sources.get(id), addSource(id, source) { sourceAdds++; sources.set(id, { ...source, setData(data) { this.data=data; }, updateData(diff) { diffs.push(diff); } }); },
         removeSource: id => sources.delete(id), setFeatureState: (target, state) => states.set(target.id, state),
-        queryRenderedFeatures: () => [{ properties: { clickId: 7 } }] };
+        removeFeatureState() {}, queryRenderedFeatures: () => [{ properties: { clickId: 7 } }] };
     const model = { id: 7, feature: { type: 'Feature', properties: { building: 'yes' }, geometry: { type: 'Polygon', coordinates: [[[139,35],[139.001,35],[139,35.001],[139,35]]] } },
         options: { fillColor: '#e5dfdad9', color: '#bbb', opacity: 1, fillOpacity: 1, weight: .8 },
         mapmaker: { key: 'building', id: 0, drawOrder: { osmLayer: 0, styleOrder: 5, passOrder: 0, featureOrder: 0 } }, click() { clicked++; } };
@@ -24,13 +24,15 @@ const assert = require('node:assert/strict'), fs = require('node:fs'), vm = requ
     const Renderer = vm.runInContext('MapLibreEditorRenderer', box), renderer = new Renderer(view);
     await renderer.sync();
     assert.equal(sources.get(renderer.sourceId).data.features[0].properties.height, 3);
+    assert.equal(layers.get(renderer.hitLayerId).source, renderer.sourceId, 'display and restoration share a single geometry source');
     assert.ok([...layers.values()].some(layer => layer.type === 'fill-extrusion'));
-    assert.ok([...layers.values()].some(layer => layer.source === renderer.hitSourceId && layer.paint['fill-extrusion-opacity'] === 0), 'hidden roofs remain selectable at their original height');
+    assert.ok([...layers.values()].some(layer => layer.id === renderer.hitLayerId && layer.paint['fill-extrusion-opacity'] === 0), 'hidden roofs remain selectable at their original height');
     assert.deepEqual(Array.from(layers.get(renderer.hitLayerId).filter[2][1]), [], 'visible roofs never enter the restoration layer');
     model.options.opacity = 0; model.options.fillOpacity = 0;
     assert.equal(renderer.update(model), true);
-    assert.equal(sourceAdds, 2, 'one feature edit does not regenerate or replace GeoJSON source');
+    assert.equal(sourceAdds, 1, 'one feature edit does not regenerate or replace GeoJSON source');
     assert.equal(states.get(7).opacity, 0);
+    assert.equal(sources.get(renderer.sourceId).data.features[0].properties.height, 3, 'hiding preserves the raw restoration height');
     assert.deepEqual(Array.from(layers.get(renderer.hitLayerId).filter[2][1]), [7], 'restoration targets only the hidden roof');
     assert.equal(diffs.length, 0, 'hide does not mutate GeoJSON');
     assert.ok(JSON.stringify([...layers.values()].find(l => l.source === renderer.sourceId).filter).includes('[7]'));
@@ -39,7 +41,7 @@ const assert = require('node:assert/strict'), fs = require('node:fs'), vm = requ
     assert.deepEqual(Array.from(layers.get(renderer.hitLayerId).filter[2][1]), [], 'restored roofs leave the hit layer');
     const source = sources.get(renderer.sourceId), originalModel = view.features.get(7);
     await renderer.sync();
-    assert.equal(sourceAdds, 2, 'no-op sync preserves sources');
+    assert.equal(sourceAdds, 1, 'no-op sync preserves sources');
     renderer.refreshCategory('building');
     assert.equal(sources.get(renderer.sourceId), source);
     assert.equal(view.features.get(7), originalModel, 'category change preserves editable models');
@@ -56,7 +58,7 @@ const assert = require('node:assert/strict'), fs = require('node:fs'), vm = requ
     assert.equal(extrusion.layout.visibility, 'none');
     box.Layers.building.opacity = 1; renderer.refreshCategory('building');
     assert.equal(extrusion.layout.visibility, 'visible');
-    assert.equal(sourceAdds, 2); assert.equal(diffs.length, 0);
+    assert.equal(sourceAdds, 1); assert.equal(diffs.length, 0);
     box.Layers.building.opacity = 0;
     const originalPaint = JSON.stringify(extrusion.paint);
     renderer.setCategoryVisibility('building');
@@ -73,7 +75,7 @@ const assert = require('node:assert/strict'), fs = require('node:fs'), vm = requ
     renderer.click({ point: { x: 20, y: 30 }, lngLat: { lat: 35, lng: 139 } });
     assert.equal(clicked, 0, 'pin placement must not toggle map features beneath the pin');
     box.ManualPins.active = false;
-    gl.queryRenderedFeatures = originalQuery; view.threeD = false;
+    gl.queryRenderedFeatures = () => [{ layer: { id: renderer.entries[0].id, source: renderer.sourceId }, properties: { clickId: 7 } }]; view.threeD = false;
     renderer.click({ point: { x: 20, y: 30 }, lngLat: { lat: 35, lng: 139 } });
     assert.equal(clicked, 1);
     const query = gl.queryRenderedFeatures;
@@ -81,7 +83,7 @@ const assert = require('node:assert/strict'), fs = require('node:fs'), vm = requ
     model.options.opacity = 0;
     gl.queryRenderedFeatures = () => [
         { properties: { clickId: 8 } },
-        { layer: { source: renderer.hitSourceId }, properties: { clickId: 7 } }
+        { layer: { id: renderer.hitLayerId, source: renderer.sourceId }, properties: { clickId: 7 } }
     ];
     renderer.click({ point: { x: 20, y: 30 }, lngLat: { lat: 35, lng: 139 } });
     assert.equal(clicked, 2, 'hidden roof restoration takes priority over geometry beneath it');
@@ -93,11 +95,11 @@ const assert = require('node:assert/strict'), fs = require('node:fs'), vm = requ
     await new Promise(setImmediate);
     assert.ok(sources.has(oldSourceId), 'old supplemental data stays on screen while the new source is loading');
     assert.ok(oldLayerIds.every(id => layers.has(id)), 'old rendered geometry is not cleared before the new render');
-    assert.equal(sources.size, 4, 'two source generations coexist during replacement');
+    assert.equal(sources.size, 2, 'two source generations coexist during replacement');
     holdIdle = false; releaseIdle(); await switching;
     assert.equal(sources.has(oldSourceId), false, 'old source is retired only after new rendering completes');
-    assert.equal([...layers.values()].some(layer => layer.type === 'fill-extrusion' && layer.source === renderer.sourceId), false);
-    assert.equal(sources.size, 2);
+    assert.equal([...layers.values()].some(layer => layer.type === 'fill-extrusion' && layer.id !== renderer.hitLayerId && layer.source === renderer.sourceId), false);
+    assert.equal(sources.size, 1);
     const rail = { ...model, id: 8, feature: { type:'Feature', properties:{railway:'rail'},
         geometry:{type:'LineString',coordinates:[[139,35],[139.001,35.001]]} },
         mapmaker:{...model.mapmaker,key:'railway'}, options:{color:'#686866',weight:2.68,opacity:1,fillOpacity:0,dashArray:'0'} };
@@ -186,7 +188,7 @@ const assert = require('node:assert/strict'), fs = require('node:fs'), vm = requ
     view.threeD=false;await renderer.sync();
     assert.equal(sources.get(renderer.sourceId).data.features.length,2,'2D uses the same line and low-side triangles');
     view.threeD=true;
-    assert.equal([...layers.values()].some(l => l.source === renderer.sourceId && l.type === 'fill-extrusion'), false,
+    assert.equal([...layers.values()].some(l => l.source === renderer.sourceId && l.type === 'fill-extrusion' && l.id !== renderer.hitLayerId), false,
         'retaining walls remain flat symbols in 3D');
     console.log('PASS wall extrusion, default/explicit heights, brown color, hide/restore and original 2D line');
     view.features = new Map([[9, wall], [8, rail]]);
@@ -236,7 +238,7 @@ const assert = require('node:assert/strict'), fs = require('node:fs'), vm = requ
     assert.equal(states.get('10-trunk').solidFill, '#777775');
     view.threeD = false; await renderer.sync();
     assert.equal(sources.get(renderer.sourceId).data.features.length, 1, '2D uses the original tree circle only');
-    assert.equal([...layers.values()].some(l => l.source === renderer.sourceId && l.type === 'fill-extrusion'), false);
+    assert.equal([...layers.values()].some(l => l.source === renderer.sourceId && l.type === 'fill-extrusion' && l.id !== renderer.hitLayerId), false);
     assert.equal(treePoint.properties.height, '6 m', 'source tags are unchanged');
     console.log('PASS tree trunk/crown, tagged height, edit identity, hide/restore, mono palette and 2D switch');
     const footprint=[[[139,35],[139.001,35],[139.001,35.001],[139,35.001],[139,35]]];
@@ -272,7 +274,51 @@ const assert = require('node:assert/strict'), fs = require('node:fs'), vm = requ
     assert.equal(volumes.find(f=>f.properties.modelId===30).geometry.coordinates.length,2,'courtyard remains a hole');
     assert.equal(volumes.find(f=>f.properties.modelId===31).properties.base,17.8);
     console.log('PASS building parts share top/base heights, suppress the parent only in 3D, preserve editor model identity and restore the 2D outline');
+    // Category edits must not upload the whole fill buffer once per building.
+    const dense = Array.from({length:1000},(_,i)=>volume(1000+i,{building:'yes',height:'9'}));
+    dense.forEach((m,i)=>{m.options.opacity=i%2;});
+    view.features=new Map(dense.map(m=>[m.id,m]));view.threeD=true;
+    await renderer.sync();
+    let singleMeshUpdates=0,batchMeshUpdates=0;
+    renderer.outlines.update=()=>singleMeshUpdates++;
+    renderer.outlines.updateMany=models=>{batchMeshUpdates++;assert.equal(models.length,dense.length);};
+    box.SVGCont.svg_style=()=>({fillColor:'#eeeeee',color:'#cccccc',weight:1.2,opacity:1,fillOpacity:1});
+    filterCalls.length=0;
+    renderer.refreshCategory('building');
+    assert.equal(singleMeshUpdates,0,'category edits defer all per-model mesh uploads');
+    assert.equal(batchMeshUpdates,1,'one mesh batch handles the whole category');
+    assert.equal(renderer.hidden.size,0,'batched edits preserve visibility restoration');
+    assert.ok(filterCalls.length<=renderer.entries.length+1,'hidden-building filters update once per group, not per restored model');
+    dense[0].options.opacity=0;renderer.update(dense[0]);
+    assert.equal(singleMeshUpdates,1,'individual clicks still update the mesh immediately');
+    assert.ok(renderer.hidden.has(dense[0].id));
+    // Native tile features have the same quadratic filter risk in 2D.
+    const native={id:'native-building-test',source:'base','source-layer':'building',type:'fill-extrusion',paint:{},layout:{}};
+    box.Conf.style ||= {};
+    gl.addLayer(native);renderer.vector.layers=[native];
+    for(const model of dense){const target={source:'base',sourceLayer:'building',id:model.id};
+        const key=renderer.vector.targetKey(target);renderer.vector.targets.set(model.id,new Map([[key,target]]));renderer.vector.byTarget.set(key,model);}
+    filterCalls.length=0;renderer.refreshCategory('building');
+    assert.equal(filterCalls.filter(id=>id===native.id).length,1,'native tile filters are refreshed once for a category');
+    assert.equal(renderer.vector.hidden.size,0);
+    console.log('PASS 1,000-building category edits batch mesh uploads, supplemental/native filters and preserve individual updates');
+    dense[0].options.opacity=0;renderer.update(dense[0]);
+    const propertiesBefore=renderer.properties;
+    renderer.properties=()=>{throw Error('Width changes must not recalculate geometry or colors');};
+    let widthBatches=0;
+    renderer.outlines.updateWidths=models=>{widthBatches++;assert.equal(models.length,dense.length);};
+    const beforeBatches=batchMeshUpdates;
+    filterCalls.length=0;
+    renderer.refreshCategoryWidth('building');
+    assert.equal(widthBatches,1);assert.equal(batchMeshUpdates,beforeBatches);
+    assert.equal(filterCalls.length,0,'width changes do not rebuild visibility filters');
+    assert.equal(dense[0].options.opacity,0);assert.ok(renderer.hidden.has(dense[0].id));
+    assert.ok(dense.every(model=>model.options.weight===1.2));
+    renderer.properties=propertiesBefore;
+    console.log('PASS width-only category edits skip geometry, color and filter work and preserve hidden models');
     renderer.clear();
+    assert.ok(layers.has(native.id),'cleanup restores the original native layer');
+    gl.removeLayer(native.id);
     assert.equal(sources.size, 0); assert.equal(layers.size, 0);
     console.log('PASS persistent renderer shares heights, uses feature-state updates, supports 2D/3D, hit testing and cleanup');
 })().catch(error => { console.error(error); process.exitCode = 1; });

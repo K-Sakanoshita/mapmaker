@@ -2,7 +2,7 @@ const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/st
 const read=require('./helpers/lib-source.cjs').read;
 (async()=>{
  const config=JSON.parse(fs.readFileSync('data/leyers.jsonc','utf8'));
- const box=vm.createContext({console:{log(){}},Conf:{...config,default:{Palette:'color',birdseye:{}}},LayerCont:{palette:'color',styles:['building','highway_alley','highway_step']},
+ const box=vm.createContext({performance,console:{log(){}},Conf:{...config,default:{Palette:'color',birdseye:{}}},LayerCont:{palette:'color',styles:['building','highway_alley','highway_step']},
  Layers:{building:{opacity:1},highway_alley:{opacity:1},highway_step:{opacity:1}},SVGCont:{svg_style:key=>({color:key==='building'?'#bcac90':'#ac7770',weight:1,opacity:1,dashArray:key==='highway_alley'?'4 2':null,fillColor:'#cfc0a0',fillOpacity:1})},
  setTimeout,chroma:value=>({rgba:()=>{const hex=value.slice(1);return [0,2,4].map(i=>parseInt(hex.slice(i,i+2),16)).concat(hex.length===8?parseInt(hex.slice(6),16)/255:1);}}),maplibregl:{MercatorCoordinate:{fromLngLat(ll,height=0){return {x:ll[0]/360,y:ll[1]/360,z:height/40000000};}}}});
  vm.runInContext(read('@feature-core'),box);vm.runInContext(fs.readFileSync('lib/renderers/maplibre/mesh-renderer.js','utf8'),box);

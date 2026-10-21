@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 (async()=>{
  const settings=JSON.parse(fs.readFileSync('data/config-system.jsonc')).system.MapData;
- const original=JSON.stringify(settings),box=vm.createContext({});
+ const original=JSON.stringify(settings),box=vm.createContext({URLSearchParams});
  vm.runInContext(fs.readFileSync('lib/osm/query.js','utf8'),box);
  const detect=vm.runInContext('isMapDataMobileDevice',box),resolve=vm.runInContext('mapDataConfigForDevice',box);
  const cases=[
@@ -27,6 +27,17 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
  assert.equal(JSON.stringify(settings),original,'selection must not mutate shared configuration');
  assert.equal(resolve({limits:{responseBytes:10}},true).limits.responseBytes,10,'legacy config without mobile overrides');
  assert.equal(resolve({limits:{responseBytes:10,elements:20},mobileLimits:{responseBytes:5}},true).limits.elements,20,'partial mobile overrides retain other caps');
+ for(const mobile of [false,true]){
+  const unlimited=structuredClone(resolve(settings,mobile,'?editor=maplibre&dataLimits=off'));
+  for(const value of Object.values(unlimited.limits))assert.equal(value,Infinity,'all data caps survive Worker structured cloning as Infinity');
+  assert.equal(unlimited.timeoutMs,settings.timeoutMs);
+  assert.equal(unlimited.lowZoomBelow,settings.lowZoomBelow);
+  assert.equal(unlimited.simplify.topologyChecks,settings.simplify.topologyChecks);
+  for(const search of ['', '?dataLimits=on', '?dataLimits=false', '?dataLimits=0', '?dataLimits=OFF', '?other=dataLimits%3Doff']){
+   assert.equal(resolve(settings,mobile,search).limits.responseBytes,(mobile?50:100)*1048576,search);
+  }
+ }
+ assert.equal(JSON.stringify(settings),original,'URL override must not mutate shared defaults');
  // Verify that the actual acquisition path passes the selected caps to the Worker.
  let width=390,height=844,payload;
  box.Conf={osm:{building:{overpass:['nwr["building"]'],tags:['building=*']}},system:{MapData:settings,OverPassServer:['http://localhost/api']}};
@@ -42,5 +53,10 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
   }
  }
  assert.equal(JSON.stringify(settings),original);
+ box.navigator=cases[0][1];box.location={search:'?dataLimits=off'};
+ await control.get(['building'],null,15,15);
+ assert.equal(payload.config.limits.responseBytes,Infinity,'the real acquisition path honors the page query');
+ box.location.search='';await control.get(['building'],null,15,15);
+ assert.equal(payload.config.limits.responseBytes,50*1048576,'removing the query restores normal limits');
  console.log('PASS device-specific 50/100MiB caps, mobile/tablet/touch-PC detection, viewport-independent selection, legacy/partial config and actual Worker payload');
 })().catch(error=>{console.error(error);process.exitCode=1;});
