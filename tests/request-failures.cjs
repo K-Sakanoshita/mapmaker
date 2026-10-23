@@ -16,12 +16,12 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
  await assert.rejects(api.retry(()=>{calls++;throw new Error('retry');},3));assert.deepEqual(delays,[1000,2000,4000]);
  vm.runInContext(fs.readFileSync('mapmaker.js','utf8'),box);const maker=vm.runInContext('mapMaker',box);
  for(const source of ['overpass','csv'])for(const failure of ['timeout','http','parse','ok','cancel']){
- let spinning=false,processing=false,selected=0;
+ let spinning=false,processing=false,selected=0;maker.poiCache=null;
  box.Conf.osm.test=source==='csv'?{file:'test.csv'}:{};
  box.winCont={modal_open:async p=>{processing=p.mode==='';},closeModal:async()=>{processing=false;},spinner:on=>{spinning=on;},modal_select:async()=>{selected++;if(failure==='cancel')throw undefined;return {};}};
  control.get=async()=>{if(['timeout','http'].includes(failure))throw {statusText:failure,retryable:false};return {geojson:[{geometry:{type:'Point',coordinates:[1,2]}}],targets:[['test']]};};
  box.$={ajax:()=>({done(fn){if(['ok','cancel','parse'].includes(failure))queueMicrotask(()=>fn('csv'));return this;},fail(fn){if(['timeout','http'].includes(failure))queueMicrotask(()=>fn({},failure,'failure'));return this;}})};
- box.GeoCont={csv2geojson:()=>{if(failure==='parse')throw new Error('bad csv');return [{geometry:{type:'Point',coordinates:[1,2]}}];},multi2flat:x=>x,flat2single:x=>x,bboxclip:x=>x};
+ box.GeoCont={get_L:()=>({NW:{lat:3,lng:1},SE:{lat:0,lng:4}}),csv2geojson:()=>{if(failure==='parse')throw new Error('bad csv');return [{geometry:{type:'Point',coordinates:[1,2]}}];},multi2flat:x=>x,flat2single:x=>x,bboxclip:x=>x};
  box.poiCont={addGeoJSON(){}};box.Marker={set(){}};maker.addCopyright=()=>{};
  await maker.addPoi('test');assert.equal(processing,false);assert.equal(spinning,false);assert.equal(selected,['ok','cancel'].includes(failure)||source==='overpass'&&failure==='parse'?1:0);
  }

@@ -722,6 +722,11 @@ img.icon_normal {
 #basemenu #makeMap .position-view-toggle { width: 112px; }
 #basemenu #makeMap .position-view-toggle > button { font-size: 16px; min-width: 56px; padding: 4px; box-shadow: none; }
 #makeMap #birdseyeGesture { grid-column: 1 / -1; }
+#makeMap .make-map-zoom-hint { display: none; grid-column: 1 / -1; color: #855200; font-size: 14px; font-weight: 600; }
+@media (min-width: 992px) {
+    #makeMap.needs-zoom .make-map-zoom-hint { display: block; }
+    #makeMap.needs-zoom #birdseyeGesture { display: none !important; }
+}
 
 @media (min-width: 992px), (min-width: 768px) and (orientation: landscape) {
     #makeMap > .col { grid-template-columns: minmax(0, 1fr); gap: 6px; }
@@ -1117,6 +1122,11 @@ img.icon_normal {
 
 /* Save settings stay together on desktop dropdowns and mobile dropups. */
 #saveMap .export-save-menu { width: 290px; min-width: 0; max-width: calc(100vw - 16px); max-height: calc(100dvh - 100px); overflow-y: auto; }
+.export-save-prompt { padding: 2px 14px 6px; text-align: left; font-size: 14px; font-weight: 600; }
+.export-save-action { padding: 4px 14px; }
+#saveMap .export-save-action > button { display: flex; align-items: center; justify-content: flex-start; gap: 8px; width: 100%; min-height: 44px; padding: 10px 12px; font-size: 16px; text-align: left; white-space: normal; }
+.export-save-action > button > i { flex: 0 0 20px; text-align: center; }
+.export-save-action > button > span { min-width: 0; }
 .export-save-settings { padding: 6px 14px; text-align: left; font-size: 14px; }
 .export-save-settings label { display: block; margin: 6px 0 4px; }
 .export-save-settings select { width: 100%; min-height: 38px; }

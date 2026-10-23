@@ -632,9 +632,11 @@ class MapMaker {
     make(query_date) {
         const waitPaint = () => new Promise(resolve => { requestAnimationFrame(() => { setTimeout(resolve, 0); }); });
         let latlng = map.getCenter();
+        const originalLongitude = latlng.lng;
         while (latlng.lng >= 180) latlng.lng -= 360;
         while (latlng.lng <= -180) latlng.lng += 360;
-        map.setView(latlng);    // 経度を-180～180に変換してからセット（OverpassAPIの仕様に合わせるため）
+        // Overpass API用に経度を補正した場合だけ、地図の中心を更新する。
+        if (latlng.lng !== originalLongitude) map.setView(latlng);
         let nowzoom = this.zoomLevel(), def_msg;
         const acquisitionZoom = this.acquisitionZoom();
         if (acquisitionZoom < Conf.default.MinZoomLevel) return false;
@@ -658,9 +660,18 @@ class MapMaker {
             winCont.modal_text(def_msg, false);
         };
         for (let key of LayerCont.styles) if (Conf.style[LayerCont.palette][key].zoom <= acquisitionZoom) targets.push(key);
-        const dataRequest = Basic.retry(() => overPassCont.get(targets, progress, nowzoom, acquisitionZoom), overPassCont.getRetryCount());
+        const dataRequest = this.retryRequest(() => {
+            lastProgressTenths = null;
+            return overPassCont.get(targets, progress, nowzoom, acquisitionZoom);
+        }, 'request_stage_map', overPassCont.getRetryCount());
         const ready = typeof MapMakerResources === 'undefined' ? dataRequest
-            : Promise.all([dataRequest, MapMakerResources.script('turf')]).then(([data]) => data);
+            : Promise.allSettled([dataRequest, this.retryRequest(() => MapMakerResources.script('turf'), 'request_stage_library')])
+                .then(results => {
+                    // Wait for both operations before closing their shared progress dialog.
+                    const failed = results.find(result => result.status === 'rejected');
+                    if (failed) throw failed.reason;
+                    return results[0].value;
+                });
         ready.then(async (ovanswer) => {
             winCont.modal_text(glot.get("loading_prepare"), false);
             await waitPaint();
@@ -771,7 +782,7 @@ class MapMaker {
             await winCont.closeModal();
             const modal = {
                 "title": glot.get("sverror_title"),
-                "message": glot.get(error?.code === "MAP_DATA_LIMIT" ? "map_data_limit" : "sverror_message"),
+                "message": this.requestErrorMessage(error, 'request_stage_map'),
                 "mode": "close",
                 "callback_close": () => winCont.closeModal()
             };
@@ -826,14 +837,52 @@ class MapMaker {
         } catch (error) { errorMsg(error); }
     }
 
+    requestFailureReason(error) {
+        const reasons = {
+            OVERPASS_RATE_LIMIT:'request_overpass_rate', OVERPASS_BUSY:'request_overpass_busy',
+            OVERPASS_MEMORY_LIMIT:'request_overpass_memory', OVERPASS_TIMEOUT:'request_overpass_timeout',
+            OVERPASS_ACCESS:'request_overpass_access', REQUEST_RATE_LIMIT:'request_rate',
+            REQUEST_NOT_FOUND:'request_not_found', MAP_DATA_LIMIT:'map_data_limit'
+        };
+        return glot.get(reasons[error?.code] || 'request_failed');
+    }
+
+    requestErrorMessage(error, stage) {
+        const seconds = Math.ceil((Basic.retryAfterMs?.(error) || 0) / 1000);
+        const later = seconds > 0 ? glot.get('request_try_after').replace('{seconds}', seconds) : glot.get('request_try_later');
+        const status = Number.isInteger(error?.status) && error.status > 0 ? ` (HTTP ${error.status})` : '';
+        // Only local translations and numbers enter modal HTML; never show server response HTML.
+        return `${glot.get(error?.requestStage || stage)}：${this.requestFailureReason(error)}${status}<br><br>${later}`;
+    }
+
+    retryRequest(task, stage, retryCount = 2) {
+        winCont.modal_text?.(`${glot.get(stage)}：${glot.get('request_loading')}`, false);
+        return Basic.retry(task, retryCount, {onRetry: notice => {
+            const key = notice.waiting ? 'request_retry_wait' : 'request_retrying';
+            const message = glot.get(key).replace('{seconds}', Math.ceil(notice.delayMs / 1000))
+                .replace('{attempt}', notice.attempt).replace('{total}', notice.total);
+            winCont.modal_text(`${glot.get(stage)}：${notice.waiting ? this.requestFailureReason(notice.error) + ' ' : ''}${message}`, false);
+        }}).catch(error => {
+            if (!error || typeof error !== 'object') error = new Error(String(error));
+            error.requestStage ||= stage;
+            throw error;
+        });
+    }
+
     // 情報（アイコンなど）を地図に追加
     async addPoi(key) {
-        let answer;
+        let answer, cacheKey, cached;
         try {
-            await winCont.modal_open({ title: glot.get("loading_title"), message: glot.get("loading_message"), mode: "" });
+            await winCont.modal_open({ title: glot.get('request_stage_poi'), message: glot.get('request_loading'), mode: '' });
             winCont.spinner(true);
-            if (typeof MapMakerResources !== 'undefined') await MapMakerResources.script('turf');
-            if (Conf.osm[key].file !== undefined) {
+            if (typeof MapMakerResources !== 'undefined') await this.retryRequest(() => MapMakerResources.script('turf'), 'request_stage_library');
+            cacheKey = JSON.stringify([key, GeoCont.get_L(), map.getZoom(), Conf.osm[key], Conf.dataSource?.url, Conf.system?.MapData]);
+            const age = Date.now() - this.poiCache?.savedAt;
+            cached = this.poiCache?.key === cacheKey && age >= 0 && age < 600000;
+            if (cached) {
+                winCont.modal_text(glot.get('loading_cache'), false);
+                answer = {geojson:[], targets:[]}; // Candidates already live in poiCont.
+            } else if (Conf.osm[key].file !== undefined) {
                 const csv = await new Promise((resolve, reject) => {
                     $.ajax({ url: Conf.osm[key].file, dataType: 'text', timeout: 30000 })
                         .done(resolve).fail((jqXHR, statusText, errorThrown) => reject({ jqXHR, statusText, errorThrown }));
@@ -842,18 +891,18 @@ class MapMaker {
                 answer = { geojson: geojsons, targets: geojsons.map(() => [key]) };
                 mapMaker.addCopyright(Conf.osm[key].copyright);
             } else {
-                answer = await Basic.retry(() => overPassCont.get([key]), overPassCont.getRetryCount());
+                answer = await this.retryRequest(() => overPassCont.get([key]), 'request_stage_poi', overPassCont.getRetryCount());
             }
-            if (!Array.isArray(answer?.geojson) || answer.geojson.length === 0) {
+            if (!cached && (!Array.isArray(answer?.geojson) || answer.geojson.length === 0)) {
                 throw Object.assign(new Error('No POI data'), { noData: true });
             }
-            if (typeof MapMakerResources !== 'undefined') await MapMakerResources.script('datatables');
+            if (typeof MapMakerResources !== 'undefined') await this.retryRequest(() => MapMakerResources.script('datatables'), 'request_stage_list');
         } catch (error) {
             console.error("mapMaker: addPoi failed", error);
             await winCont.closeModal();
             await winCont.modal_open({
                 title: glot.get(error.noData ? "nodata_title" : "sverror_title"),
-                message: glot.get(error.noData ? "nodata_message" : "sverror_message"),
+                message: error.noData ? glot.get('nodata_message') : this.requestErrorMessage(error, 'request_stage_poi'),
                 mode: "close", callback_close: () => winCont.closeModal()
             });
             return;
@@ -865,7 +914,7 @@ class MapMaker {
         catch (error) {
             console.error("mapMaker: POI processing failed", error);
             if (winCont.modalMode) await winCont.closeModal();
-            await winCont.modal_open({ title: glot.get("sverror_title"), message: glot.get("sverror_message"),
+            await winCont.modal_open({ title: glot.get("sverror_title"), message: this.requestErrorMessage(error, 'request_stage_list'),
                 mode: "close", callback_close: () => winCont.closeModal() });
         }
 
@@ -873,7 +922,7 @@ class MapMaker {
             let geojsons = { geojson: [], targets: [] };
             answer.geojson.forEach((geojson, idx) => {
                 // POI用のPoint化で描画・保存元のジオメトリを変えない。
-                geojson = { ...geojson, geometry: { ...geojson.geometry } };
+                geojson = { ...geojson, mapmakerPoiGeometryType:geojson.geometry.type, geometry: { ...geojson.geometry } };
                 let geo = geojson.geometry;
                 let cords; // = geo.coordinates;
                 cords = GeoCont.multi2flat(geo.coordinates, geo.type);	// ネスト構造のデータをフラット化
@@ -887,6 +936,7 @@ class MapMaker {
                 };
             });
             poiCont.addGeoJSON(geojsons);
+            if (!cached && geojsons.geojson.length) mapMaker.poiCache = {key:cacheKey, savedAt:Date.now()};
             let selected;
             try { selected = await winCont.modal_select(key); }
             catch (error) {
@@ -938,7 +988,8 @@ class MapMaker {
         };
     }
 
-    qr_add(target, osmid) {
+    async qr_add(target, osmid) {
+        if (this.wikipediaRequestPending) return;
         let marker = Marker.get(target, osmid);
         if (marker !== undefined) {
             let wiki = marker.mapmaker_lang.split(':');
@@ -947,11 +998,22 @@ class MapMaker {
             let url = `https://${wiki[0]}.wikipedia.org/wiki/${encodeURIComponent(wiki[1])}`;
             let pix = map.latLngToLayerPoint(marker.getLatLng());
             let ll2 = map.layerPointToLatLng(pix);
-            const ready = typeof MapMakerResources === 'undefined' ? Promise.resolve() : MapMakerResources.script('qrcode');
-            return ready.then(() => Basic.getWikipedia(wiki[0], wiki[1])).then(data => Marker.qr_add(target, osmid, url, ll2, data)).catch(error => {
+            this.wikipediaRequestPending = true;
+            try {
+                await winCont.modal_open({title:glot.get('request_stage_article'), message:glot.get('request_article_loading'), mode:''});
+                winCont.spinner(true);
+                if (typeof MapMakerResources !== 'undefined') await this.retryRequest(() => MapMakerResources.script('qrcode'), 'request_stage_library');
+                const data = await this.retryRequest(() => Basic.getWikipedia(wiki[0], wiki[1]), 'request_stage_article');
+                await winCont.closeModal();
+                Marker.qr_add(target, osmid, url, ll2, data);
+            } catch (error) {
                 console.error('Wikipedia article failed', error);
-                winCont.modal_open({ title: glot.get('sverror_title'), message: glot.get('sverror_message'), mode: 'close', callback_close: () => winCont.closeModal() });
-            });
+                await winCont.closeModal();
+                await winCont.modal_open({ title:glot.get('sverror_title'), message:this.requestErrorMessage(error, 'request_stage_article'), mode:'close', callback_close:() => winCont.closeModal() });
+            } finally {
+                winCont.spinner(false);
+                this.wikipediaRequestPending = false;
+            }
         };
     }
 
@@ -1098,6 +1160,7 @@ class MapMaker {
         const needsZoom = acquisitionZoom < Conf.default.MinZoomLevel;
         makeMap.classList.toggle("d-none", mapMaker.custom());
         makeMap.querySelector("button").disabled = needsZoom;
+        makeMap.classList.toggle("needs-zoom", needsZoom);
         const zoomGuidance = document.getElementById("morezoom");
         zoomGuidance.classList.toggle("d-none", acquisitionZoom >= Conf.default.LimitZoomLevel);
         const featureList = document.getElementById("morezoomFeatures");
@@ -1151,6 +1214,7 @@ class MapMaker {
             await Marker.clearAll();
             ManualPins.clear();
             poiCont.clearAll();
+            this.poiCache = null;
         } finally {
             this.resetting = false;
             this.previewBusy(false);

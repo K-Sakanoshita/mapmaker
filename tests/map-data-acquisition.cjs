@@ -20,6 +20,9 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
   return {message:await result,messages};
  }
  const ok=await run(new Response(JSON.stringify(fixture)));assert.ok(ok.message.result.geojson.length);assert.ok(ok.messages.some(m=>m.stage==='converting'));assert.ok(ok.messages.some(m=>m.progress>0));
+ const unicodeBody=new TextEncoder().encode(JSON.stringify(fixture)),split=unicodeBody.findIndex(value=>value>=0xe0)+1;
+ const fragmented=await run(new Response(new ReadableStream({start(controller){controller.enqueue(unicodeBody.slice(0,split));controller.enqueue(unicodeBody.slice(split));controller.close();}})));
+ assert.ok(fragmented.message.result);assert.equal(JSON.stringify(fragmented.message.result),JSON.stringify(ok.message.result),'binary chunks split inside a UTF-8 character preserve the response');
  assert.deepEqual(ok.messages.filter(m=>m.stage).map(m=>m.stage),['parsing','converting','classifying','simplifying'],'worker reports actual conversion phases in order');
  const noCaps=vm.runInContext('mapDataConfigForDevice({...Conf.system.MapData, limits:{responseBytes:1,elements:1,coordinates:1,outputCoordinates:1}}, false, "?dataLimits=off")',box);
  const unlimited=await run(new Response(JSON.stringify(fixture)),structuredClone(noCaps));
@@ -53,6 +56,17 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
  }})),{limits:{responseBytes:2}});
  assert.equal(abortedLimit.message.code,'MAP_DATA_LIMIT');assert.equal(abortedLimit.message.retryable,false);
  for(const status of [404,429,503]){const r=await run(new Response('',{status,headers:{'Retry-After':'120'}}));assert.equal(r.message.retryable,status!==404);assert.equal(r.message.retryAfter,'120');}
+ for(const [status,code,retryable] of [[403,'OVERPASS_ACCESS',false],[406,'OVERPASS_ACCESS',false],[408,'OVERPASS_TIMEOUT',true],[429,'OVERPASS_RATE_LIMIT',true],[504,'OVERPASS_BUSY',true]]){
+  const r=await run(new Response('',{status}));assert.equal(r.message.code,code);assert.equal(r.message.status,status);assert.equal(r.message.retryable,retryable);
+ }
+ for(const [remark,code,retryable] of [
+  ['runtime error: Query timed out in query after 120 seconds.','OVERPASS_TIMEOUT',true],
+  ['runtime error: Query ran out of memory using about 512 MB of RAM.','OVERPASS_MEMORY_LIMIT',false],
+  ['runtime error: rate_limited','OVERPASS_RATE_LIMIT',true]
+ ]){
+  const r=await run(new Response(JSON.stringify({elements:fixture.elements,remark})));
+  assert.equal(r.message.code,code);assert.equal(r.message.retryable,retryable);assert.ok(!r.message.result,'partial results must never become successful POI data');
+ }
  const timeout=await run(({signal})=>new Promise((resolve,reject)=>signal.addEventListener('abort',()=>reject(Object.assign(new Error('timeout'),{name:'AbortError'})))),{timeoutMs:1});assert.equal(timeout.message.retryable,true);
  const malformed=await run(new Response('not json'));assert.ok(malformed.message.error);assert.equal(malformed.message.retryable,false);
  console.log('PASS low-zoom selectors/tags and exact 14 boundary, streamed worker fetch/progress, byte/element/coordinate caps, no retry on limits and HTTP retry metadata');

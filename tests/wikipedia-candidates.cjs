@@ -1,0 +1,33 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const read=require('./helpers/lib-source.cjs').read;
+const box=vm.createContext({console,glot:{get:x=>x},map:{getBounds:()=>({getNorthWest:()=>({lat:35,lng:135}),getSouthEast:()=>({lat:34,lng:136})})}});
+vm.runInContext(read('@feature-core','utf8'),box);
+box.GeoCont=vm.runInContext('new GeoControl()',box);
+vm.runInContext(fs.readFileSync('lib/application/poi-controller.js','utf8'),box);
+const pois=box.poiCont=vm.runInContext('new poiControl()',box);pois.getCatnames=()=>['','',''];
+const add=(id,article,type='LineString',enabled=false,lng=135.5,lat=34.5)=>pois.addGeoJSON({geojson:[{id,type:'Feature',mapmakerPoiGeometryType:type,properties:{name:id,wikipedia:article},geometry:{type:'Point',coordinates:[lng,lat]}}],targets:[['wikipedia','shop']],enable:[enabled]});
+for(let i=0;i<50;i++)add('way/'+i,'ja:御堂筋');
+add('way/100','ja:別の記事','Polygon');add('node/100','ja:別の記事','Point');add('node/101','ja:別の_記事');add('node/102','ja:別の 記事');
+add('outside','ja:御堂筋','Point',false,139,36);
+let rows=pois.list('wikipedia');assert.equal(rows.length,3);assert.equal(rows.filter(r=>r.name.startsWith('way/')).length,1,'50 road segments form one article candidate');
+assert.ok(rows.some(r=>r.osmid==='node/100'),'prefer the explicit point over a converted polygon/line representative');
+assert.ok(!rows.some(r=>r.osmid==='outside'),'deduplicate only after checking the current bounds');
+assert.equal(pois.list(['shop']).length,54,'other POI lists retain separate objects');
+// Previously placed markers remain selectable, including multiple placed icons for one article.
+add('way/2','ja:御堂筋','LineString',true);add('way/3','ja:御堂筋','LineString',true);
+rows=pois.list(['wikipedia']);assert.deepEqual(Array.from(rows.filter(r=>r.enable),r=>r.osmid).sort(),['way/2','way/3']);
+pois.cat_cache.stale=['old'];pois.clearAll();
+assert.deepEqual(Object.keys(pois.latlngs),[]);assert.deepEqual(Object.keys(pois.geoidx),[]);assert.deepEqual(Object.keys(pois.cat_cache),[]);
+// The same IDs arriving in a different order after reset must point to new data.
+add('way/3','ja:御堂筋','LineString',true,135.6,34.6);
+let selected=pois.get_osmid('way/3');assert.equal(selected.geojson.id,'way/3');assert.equal(selected.enable,true);assert.deepEqual(Array.from(selected.latlng),[34.6,135.6]);
+add('way/2','ja:御堂筋','LineString',false,135.7,34.7);
+assert.equal(pois.get_osmid('way/2').geojson.id,'way/2');
+add('way/3','ja:御堂筋','LineString',true,135.55,34.55);
+assert.deepEqual(Array.from(pois.get_osmid('way/3').latlng),[34.55,135.55],'updated geometry refreshes the cached marker location');
+console.log('PASS article grouping, representative preference, in-area filtering, existing selections, non-Wikipedia lists, reset/reorder and updated locations');
+const candidate=()=>pois.list('wikipedia')[0].osmid;
+pois.clearAll();add('edge','ja:御堂筋','LineString',false,135.99,34.99);add('center','ja:御堂筋','LineString');
+assert.equal(candidate(),'center');pois.clearAll();add('center','ja:御堂筋','LineString');add('edge','ja:御堂筋','LineString',false,135.99,34.99);
+assert.equal(candidate(),'center','the article marker stays central regardless of acquisition order');
+console.log('PASS stable central representative after reordered acquisition');

@@ -15,7 +15,7 @@
     <div class="row g-0" id="makeMap">
         <div class="col p-1 m-0">
             <div class="make-map-action">
-            <button class="btn btn-primary w-100" aria-describedby="morezoom" disabled onclick="mapMaker.make(Basic.getdate())">
+            <button class="btn btn-primary w-100" aria-describedby="morezoom makeMapZoomHint" disabled onclick="mapMaker.make(Basic.getdate())">
                 <i class="fas fa-map me-2"></i><span glot-model="makemap" class="ms-2"></span>
             </button>
             </div>
@@ -23,6 +23,7 @@
                 <button type="button" id="position2D" class="btn btn-outline-primary" onclick="mapMaker.positionView(false)">2D</button>
                 <button type="button" id="position3D" class="btn btn-outline-primary" onclick="mapMaker.positionView(true)">3D</button>
             </div>
+            <small id="makeMapZoomHint" class="make-map-zoom-hint mt-2" role="status" glot-model="make_map_zoom_hint">拡大するとマップを作れます。</small>
             <small id="birdseyeGesture" class="d-none d-lg-block text-muted mt-2" glot-model="birdseye_note">右ボタンまたはCtrl＋ドラッグで回転・傾斜。</small>
         </div>
     </div>
@@ -57,8 +58,9 @@
                     <small id="exportQualityNote" class="d-none text-muted" glot-model="export_quality_note">保存に時間がかかる場合があります。</small>
                 </li>
                 <li><hr class="dropdown-divider"></li>
-                <li><button type="button" class="dropdown-item" onclick="mapMaker.save('png');" glot-model="save_png">PNG画像を保存</button></li>
-                <li><button type="button" class="dropdown-item" onclick="mapMaker.save('svg');" glot-model="save_svg">SVG画像を保存（編集可能）</button></li>
+                <li class="export-save-prompt" glot-model="save_format_prompt">形式を選んで保存</li>
+                <li class="export-save-action"><button type="button" class="btn btn-success" onclick="mapMaker.save('png');"><i class="fas fa-image" aria-hidden="true"></i><span glot-model="save_png">PNG画像を保存</span></button></li>
+                <li class="export-save-action"><button type="button" class="btn btn-outline-success" onclick="mapMaker.save('svg');"><i class="fas fa-file-code" aria-hidden="true"></i><span glot-model="save_svg">SVG画像を保存（編集可能）</span></button></li>
             </ul>
         </div>
     </div>

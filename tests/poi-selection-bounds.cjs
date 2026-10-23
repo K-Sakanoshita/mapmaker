@@ -40,4 +40,33 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
  assert.equal(pois.get_osmid('inside-b').enable,true,'visible items can still be selected');
  assert.deepEqual(Array.from(answer.geojson,f=>f.id).sort(),ids.slice().sort());
  console.log('PASS current-BBOX candidate filtering, four inclusive edges, invalid coordinate rejection, map movement, nonmutation, off-screen selection retention and total icon limit.');
+ // POI reuse keeps only request metadata; the existing candidates are reused.
+ box.console.error=console.error;
+ vm.runInContext(fs.readFileSync('lib/application/browser-services.js','utf8'),box);
+ vm.runInContext(fs.readFileSync('mapmaker.js','utf8'),box);
+ const maker=vm.runInContext('mapMaker',box);pois.clearAll();
+ box.map.getZoom=()=>15;box.map.getSize=()=>({x:1000,y:800});
+ box.Conf.osm={wikipedia:{tags:['wikipedia'],overpass:['nwr["wikipedia"]']},shop:{tags:['shop'],overpass:['nwr["shop"]']},building:{tags:['building'],overpass:['nwr["building"]']}};
+ box.Conf.system={MapData:{},OverPassServer:['https://example.test/api']};
+ box.MapMakerResources={script:async()=>{}};
+ let requests=0,selections=0,fail=false;const messages=[];
+ Object.assign(vm.runInContext('winCont',box),{modal_open:async()=>{},closeModal:async()=>{},spinner(){},modal_text:text=>messages.push(text),modal_select:async()=>{selections++;throw undefined;}});
+ box.overPassCont={getRetryCount:()=>0,get:async targets=>{requests++;if(fail)throw {retryable:false};return {geojson:[{...point('node/cached',135.002,34.002),properties:{name:'cached',wikipedia:'ja:記事',shop:'yes'}}],targets:[targets]};}};
+ await maker.addPoi('wikipedia');const candidates=JSON.stringify(pois.pois());
+ await maker.addPoi('wikipedia');assert.equal(requests,1);assert.equal(selections,2,'a cancelled list can reopen without another download');
+ assert.equal(JSON.stringify(pois.pois()),candidates,'reusing a list does not copy or modify its candidates');
+ assert.deepEqual(Object.keys(maker.poiCache).sort(),['key','savedAt']);assert.ok(messages.includes('loading_cache'));
+ maker.poiCache.savedAt=Date.now()-600001;await maker.addPoi('wikipedia');assert.equal(requests,2,'expired lists are downloaded again');
+ bounds={...bounds,east:bounds.east+.001};await maker.addPoi('wikipedia');assert.equal(requests,3,'bounds changes invalidate reuse');
+ box.Conf.osm.wikipedia.tags.push('name');await maker.addPoi('wikipedia');assert.equal(requests,4,'query settings changes invalidate reuse');
+ await maker.addPoi('shop');await maker.addPoi('wikipedia');assert.equal(requests,6,'only the last POI category is remembered');
+ box.console.error=()=>{};fail=true;bounds={...bounds,east:bounds.east+.001};await maker.addPoi('wikipedia');await maker.addPoi('wikipedia');assert.equal(requests,8,'failed downloads are not remembered');
+ // Map creation still uses the uncached common acquisition path.
+ vm.runInContext(readSource('@overpass-client','utf8'),box);
+ const acquisition=vm.runInContext('new OverPassControl()',box);let downloads=0;
+ acquisition.runDataWorker=async()=>{downloads++;return {geojson:[],targets:[]};};
+ await acquisition.get(['building'],null,15);await acquisition.get(['building'],null,15);
+ assert.equal(downloads,2,'building requests must not be cached');
+ console.log('PASS metadata-only POI reuse, cancellation, expiry, bounds/settings/category changes, failure exclusion and uncached building acquisition');
+
 })().catch(e=>{console.error(e);process.exitCode=1;});
