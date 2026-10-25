@@ -1108,6 +1108,16 @@ class MapMaker {
         // 保存中の全面オーバーレイが地図を覆う前に、地図・用紙の範囲を確定する。
         const mode = this.selectMode, dpi = Conf.default.Paper.dpi;
         const exportRect = this.captureExportRect(mode);
+        if (type === 'json') {
+            try {
+                const metadata = SVGCont.exportMetadata({ mode, exportRect });
+                SVGCont._saveBlob(new Blob([JSON.stringify(metadata, null, 2) + '\n'], { type: 'application/json;charset=utf-8' }), 'json');
+            } catch (error) {
+                console.error("save: metadata export failed", error);
+                window.alert(glot.get("export_error"));
+            }
+            return;
+        }
         const saveButtons = document.querySelectorAll('#saveMap button, #saveMap select, #birdseyeEnabled, #birdseyeModal button, #birdseyeModal input');
         const disabledBeforeSave = new Map([...saveButtons].map(button => [button, button.disabled]));
         this.exportInProgress = true;

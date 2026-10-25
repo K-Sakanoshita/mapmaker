@@ -77,6 +77,7 @@
     "save_menu": {"ja": "保存", "en": "Save"},
     "save_png": {"ja": "PNG画像を保存", "en": "Save PNG image"},
     "save_svg": {"ja": "SVG画像を保存（編集可能）", "en": "Save editable SVG image"},
+    "save_metadata": {"ja": "メタ情報をダウンロード（JSON）", "en": "Download metadata (JSON)"},
     "save_reset_label": {"ja": "再選択", "en": "Reselect area"},
     "sheet_styles": {"ja": "地図の調整", "en": "Adjust map"},
     "sheet_facilities": {"ja": "施設選択", "en": "Select places"},

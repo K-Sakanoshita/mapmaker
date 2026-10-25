@@ -61,6 +61,7 @@
                 <li class="export-save-prompt" glot-model="save_format_prompt">形式を選んで保存</li>
                 <li class="export-save-action"><button type="button" class="btn btn-success" onclick="mapMaker.save('png');"><i class="fas fa-image" aria-hidden="true"></i><span glot-model="save_png">PNG画像を保存</span></button></li>
                 <li class="export-save-action"><button type="button" class="btn btn-outline-success" onclick="mapMaker.save('svg');"><i class="fas fa-file-code" aria-hidden="true"></i><span glot-model="save_svg">SVG画像を保存（編集可能）</span></button></li>
+                <li class="px-3 py-1"><button type="button" class="btn btn-link btn-sm text-secondary p-0 text-start export-metadata" onclick="mapMaker.save('json');" glot-model="save_metadata">メタ情報をダウンロード（JSON）</button></li>
             </ul>
         </div>
     </div>

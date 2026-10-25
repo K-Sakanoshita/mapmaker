@@ -1123,6 +1123,7 @@ img.icon_normal {
 /* Save settings stay together on desktop dropdowns and mobile dropups. */
 #saveMap .export-save-menu { width: 290px; min-width: 0; max-width: calc(100vw - 16px); max-height: calc(100dvh - 100px); overflow-y: auto; }
 .export-save-prompt { padding: 2px 14px 6px; text-align: left; font-size: 14px; font-weight: 600; }
+#saveMap .export-metadata { font-size: 13px; font-weight: normal; text-decoration: none; border: 0; box-shadow: none; background: transparent; }
 .export-save-action { padding: 4px 14px; }
 #saveMap .export-save-action > button { display: flex; align-items: center; justify-content: flex-start; gap: 8px; width: 100%; min-height: 44px; padding: 10px 12px; font-size: 16px; text-align: left; white-space: normal; }
 .export-save-action > button > i { flex: 0 0 20px; text-align: center; }
