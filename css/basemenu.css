@@ -1144,3 +1144,14 @@ img.icon_normal {
 @media (min-width: 768px) and (max-width: 991.98px) and (orientation: landscape) {
     #controlMenu .dropdown-toggle::after { display: none; }
 }
+
+/* Mobile marker editing stays inside the viewport, independent of its map position. */
+.mapmaker-popup-dialog { width: 360px; max-width: calc(100vw - 24px); max-height: calc(100dvh - 24px); padding: 0; border: 0; border-radius: 10px; color: #212529; box-shadow: 0 8px 32px #0004; overflow: hidden; }
+.mapmaker-popup-dialog[open] { display: flex; flex-direction: column; }
+.mapmaker-popup-dialog::backdrop { background: #0005; }
+.mapmaker-popup-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 12px; border-bottom: 1px solid #dee2e6; flex-shrink: 0; }
+.mapmaker-popup-header h2 { margin: 0; font-size: 16px; }
+.mapmaker-popup-header .btn-close { flex-shrink: 0; width: 44px; height: 44px; padding: 0; box-shadow: none; }
+.mapmaker-popup-body { padding: 12px; overflow-y: auto; overscroll-behavior: contain; min-height: 0; overflow-wrap: anywhere; font-size: 14px; }
+.mapmaker-popup-body .btn { font-size: 14px; min-height: 44px; }
+.mapmaker-popup-body .form-select, .mapmaker-popup-body .form-control { font-size: 16px; min-height: 44px; }

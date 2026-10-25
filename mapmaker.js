@@ -978,7 +978,7 @@ class MapMaker {
                 addImages(Conf.marker_append.files, Conf.marker_append.path);
                 const images = Array.from(imageSet);
                 images.sort();
-                Object.keys(images).forEach(fidx => { html += `<a href="#" onclick="mapMaker.poi_marker_change('${target}','${osmid}','${images[fidx]}')"><img class="iconx2" src="${images[fidx]}"></a>` });
+                Object.keys(images).forEach(fidx => { html += `<a href="#" onclick="mapMaker.poi_marker_change('${target}','${osmid}','${images[fidx]}');return false"><img class="iconx2" src="${images[fidx]}"></a>` });
                 winCont.modal_open({ "title": "", "message": html, "mode": "close", callback_close: winCont.closeModal });
                 break;
             default:

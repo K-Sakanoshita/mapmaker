@@ -646,6 +646,7 @@
         "ja": "QRコード生成",
         "en": "QR-code generatie"
     },
+    "marker_edit": {"ja": "目印の編集", "en": "Edit marker"},
     "marker_delete": {
         "ja": "アイコンを削除",
         "en": "Remove Icon"
