@@ -13,29 +13,41 @@ function run({path='/', language='ja', languages=['en-US'], saved=null, blocked=
     vm.runInContext(source,context);
     return {redirected, values, location, nodes, addLinks:()=>vm.runInContext('SiteLanguage',context).addMenuLinks({appendChild:node=>nodes.push(node)})};
 }
-assert.equal(run().redirected, 'https://example.test/en/');
-assert.equal(run({languages:['ja-JP','en-US']}).redirected, undefined);
-assert.equal(run({languages:['fr-FR','en-GB']}).redirected, 'https://example.test/en/');
-assert.equal(run({languages:['fr-FR']}).redirected, 'https://example.test/en/');
-assert.equal(run({languages:['en-US'],saved:'ja'}).redirected, undefined);
-assert.equal(run({languages:['ja-JP'],saved:'en'}).redirected, 'https://example.test/en/');
-assert.equal(run({path:'/en/',language:'en',languages:['ja-JP']}).redirected, undefined);
-assert.equal(run({path:'/en/',language:'en',saved:'ja'}).redirected, 'https://example.test/');
-assert.equal(run({saved:'invalid'}).redirected, 'https://example.test/en/');
-const explicit=run({path:'/?lang=ja&demo=1#18/35/139',saved:'en'});
-assert.equal(explicit.redirected, undefined);assert.equal(explicit.values.get('mapmaker-language'),'ja');
-assert.equal(run({path:'/index.html?demo=1#18/35/139'}).redirected,'https://example.test/en/?demo=1#18/35/139');
-assert.equal(run({root:'/maps/',path:'/maps/?demo=1#18/35/139'}).redirected,'https://example.test/maps/en/?demo=1#18/35/139');
-assert.equal(run({path:'/?lang=ja',blocked:true}).redirected,undefined);
-assert.equal(run({blocked:true}).redirected,'https://example.test/en/');
-const menu=run({languages:['ja-JP']});menu.addLinks();
-menu.location.hash='#19/35/139/45/30';menu.location.search='?demo=1';
-const link=menu.nodes.find(node=>node.dataset.siteLanguage==='en');link.click();
-assert.equal(link.href,'https://example.test/en/?demo=1&lang=en#19/35/139/45/30');
-assert.equal(menu.values.get('mapmaker-language'),'en');
-assert.equal(menu.nodes.find(node=>node.dataset.siteLanguage==='ja').textContent,'日本語');
-for (const file of ['index.html','en/index.html']) {
-    const html=fs.readFileSync(file,'utf8');
-    assert.ok(html.indexOf('language-router.js') < html.indexOf('cdn.jsdelivr.net'));
+for (const languages of [['en-US'], ['ja-JP','en-US'], ['fr-FR','en-GB'], ['fr-FR']]) {
+    assert.equal(run({languages}).redirected, undefined, 'Japanese root must not redirect');
+    assert.equal(run({path:'/en/',language:'en',languages}).redirected, undefined, 'English URL must not redirect');
 }
-console.log('PASS browser language selection, saved/explicit choices, English direct entry, unsupported languages, blocked storage, base paths and live map URL preservation');
+for (const saved of ['ja','en','invalid']) {
+    assert.equal(run({saved}).redirected, undefined, 'Saved preference cannot override Japanese URL');
+    assert.equal(run({path:'/en/',language:'en',saved}).redirected, undefined, 'Saved preference cannot override English URL');
+}
+assert.equal(run({path:'/?lang=en&demo=1#18/35/139',saved:'en'}).redirected, undefined);
+assert.equal(run({path:'/index.html?demo=1#18/35/139'}).redirected, undefined);
+assert.equal(run({root:'/maps/',path:'/maps/?demo=1#18/35/139'}).redirected, undefined);
+assert.equal(run({blocked:true}).redirected, undefined);
+const menu=run({languages:['en-US'],saved:'en'}); menu.addLinks();
+menu.location.hash='#19/35/139/45/30';
+menu.location.search='?demo=1&lang=en';
+const english=menu.nodes.find(node=>node.dataset.siteLanguage==='en');
+english.click();
+assert.equal(english.href,'https://example.test/en/?demo=1#19/35/139/45/30');
+assert.equal(menu.values.get('mapmaker-language'),'en', 'No preference written by menu');
+assert.equal(menu.nodes.find(node=>node.dataset.siteLanguage==='ja').textContent,'日本語');
+const japanese=menu.nodes.find(node=>node.dataset.siteLanguage==='ja'); japanese.click();
+assert.equal(japanese.href,'https://example.test/?demo=1#19/35/139/45/30');
+const subpath=run({root:'/maps/',path:'/maps/en/?demo=2#14/35/139',language:'en'});
+subpath.addLinks();
+assert.equal(subpath.nodes.find(node=>node.dataset.siteLanguage==='ja').href,'https://example.test/maps/?demo=2#14/35/139');
+for (const [file,lang,title] of [
+    ['index.html','ja','まち歩きマップメーカー'],
+    ['en/index.html','en','Walking Map Maker']
+]) {
+    const html=fs.readFileSync(file,'utf8');
+    assert.ok(html.includes('<html lang="'+lang+'">'));
+    assert.ok(html.includes('<title>'+title));
+    assert.ok(html.includes('language-router.js?v=language-2'));
+    assert.ok(html.indexOf('language-router.js') < html.indexOf('cdn.jsdelivr.net'));
+    assert.ok(html.includes('rel="canonical"'));
+    assert.ok(html.includes('hreflang="ja"') && html.includes('hreflang="en"'));
+}
+console.log('PASS fixed URL languages, no auto redirects, explicit manual switch, map camera and query preservation, SEO metadata');

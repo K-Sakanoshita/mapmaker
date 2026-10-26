@@ -1,11 +1,13 @@
 const assert = require('node:assert/strict');
 module.exports = async (browser, base) => {
     for (const {locale,width,path,expected,manual} of [
-        {locale:'en-US',width:390,path:'/',expected:'en',manual:true},
+        {locale:'en-US',width:390,path:'/',expected:'ja',manual:true},
         {locale:'ja-JP',width:1280,path:'/',expected:'ja',manual:true},
         {locale:'ja-JP',width:1280,path:'/en/',expected:'en',manual:false}
     ]) {
         const context = await browser.newContext({locale,viewport:{width,height:900},ignoreHTTPSErrors:true});
+        // Existing saved English preference must not override the URL.
+        await context.addInitScript(() => localStorage.setItem('mapmaker-language','en'));
         const page = await context.newPage(), errors = [];
         page.on('pageerror', error => errors.push(error.message));
         await page.route('**/*', route => {
@@ -21,7 +23,8 @@ module.exports = async (browser, base) => {
         await page.goto(base+path+'?source=sns#18/35/139',{waitUntil:'domcontentloaded'});
         await ready(expected);
         assert.equal(new URL(page.url()).searchParams.get('source'),'sns');
-        assert.equal(await page.evaluate(()=>localStorage.getItem('mapmaker-language')),null,'automatic detection must not become a manual preference');
+        assert.equal(await page.evaluate(()=>localStorage.getItem('mapmaker-language')),'en','stored locale is ignored, not overwritten');
+        assert.equal(new URL(page.url()).pathname,path,'URL path determines language');
         if(manual) {
             for(const target of [expected==='en'?'ja':'en',expected]) {
                 await page.evaluate(()=>map.gl.jumpTo({center:[139.1,35.1],zoom:17,bearing:20,pitch:30}));
@@ -32,16 +35,17 @@ module.exports = async (browser, base) => {
                 await ready(target);
                 assert.equal(new URL(page.url()).hash,hash,'manual switch retains the latest map camera');
                 assert.equal(new URL(page.url()).searchParams.get('source'),'sns');
-                assert.equal(await page.evaluate(()=>localStorage.getItem('mapmaker-language')),target);
+                assert.equal(await page.evaluate(()=>localStorage.getItem('mapmaker-language')),'en','manual switch does not override URL-specific language');
+                assert.equal(new URL(page.url()).searchParams.has('lang'),false);
                 await page.goto(base+'/?source=sns#18/35/139');
-                await ready(target);
-                assert.equal(new URL(page.url()).pathname,target==='en'?'/en/':'/');
+                await ready('ja');
+                assert.equal(new URL(page.url()).pathname,'/');
             }
             await page.locator('#languageMenuButton').click();
             await page.screenshot({path:`/tmp/mapmaker-language-${locale}-${width}.png`});
         }
         assert.deepEqual(errors,[]);
         await context.close();
-        console.log(`PASS language ${locale} ${width}: initial ${expected}, manual=${manual}`);
+        console.log(`PASS URL-fixed language ${locale} ${width}: initial ${expected}, manual=${manual}`);
     }
 };
