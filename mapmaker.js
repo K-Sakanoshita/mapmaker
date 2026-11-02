@@ -608,7 +608,7 @@ class MapMaker {
     // About Street Map Maker's license
     licence(once) {
         if ((once == 'once' && this.viewLicense == false) || once == undefined) {
-            let msg = { msg: glot.get("licence_message") + glot.get("more_message"), ttl: glot.get("licence_title") };
+            let msg = { msg: glot.get("licence_guide") + glot.get("licence_message") + glot.get("more_message"), ttl: glot.get("licence_title") };
             winCont.modal_open({ "title": msg.ttl, "message": msg.msg, "mode": "close", callback_close: winCont.closeModal });
             this.viewLicense = true;
         };

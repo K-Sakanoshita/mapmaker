@@ -170,6 +170,12 @@
     },
     "menu": [
         {
+            "glot-model": "guide",
+            "linkto": "./guide.html",
+            "linkto_en": "./en/guide.html",
+            "divider": false
+        },
+        {
             "glot-model": "licence_title",
             "linkto": "javascript:mapMaker.licence()",
             "divider": false

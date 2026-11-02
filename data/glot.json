@@ -107,6 +107,8 @@
     "birdseye_tilt": {"ja": "地図の傾き", "en": "Map tilt"},
     "birdseye_note": {"ja": "右ボタンまたはCtrl＋ドラッグで回転・傾斜。", "en": "Right-drag or Ctrl-drag to rotate and tilt."},
 
+    "guide": {"ja": "操作ガイド", "en": "User guide"},
+
     "about": {
         "ja": "このサイトについて",
         "en": "About this site"
@@ -144,13 +146,14 @@
         "en": "Close introduction"
     },
     "licence": {
-        "ja": "(利用規約)",
-        "en": "(Terms of Use)"
+        "ja": "(使い方・利用規約)",
+        "en": "(Guide & Terms)"
     },
     "licence_title": {
-        "ja": "地図の利用規約",
-        "en": "Terms of Use for Maps"
+        "ja": "使い方・地図の利用規約",
+        "en": "User Guide & Map Terms"
     },
+    "licence_guide": {"ja": "<p class='mb-3'><a class='btn btn-success' href='./guide.html' target='_blank' rel='noopener'><i class='fas fa-question-circle me-2' aria-hidden='true'></i>操作ガイドを開く</a></p>", "en": "<p class='mb-3'><a class='btn btn-success' href='./en/guide.html' target='_blank' rel='noopener'><i class='fas fa-question-circle me-2' aria-hidden='true'></i>Open user guide</a></p>"},
     "licence_message": {
         "ja": "地図は <a href=\"https://creativecommons.org/licenses/by/4.0/deed.ja\" target='_blank'>CC BY 4.0</a> ライセンスで提供します。<br>簡単に書くと、以下の条件を守る限り商用も含めて自由に使えます。<br><ul class='mt-3'><li>表示:「© OpenStreetMap」を地図の何処かに表示すること</li></li></ul>上記の条件を守れば、商用利用も含めて自由に使えます。<br>なお、マップ作成時のURLのみをログに記録しています。",
         "en": "Maps are provided under a <a href=\"https://creativecommons.org/licenses/by/4.0/\" target='_blank'>CC BY 4.0</a> license.<br>In brief, you can use it freely, including for commercial purposes, as long as you keep the following conditions.<br><ul class='mt-3'><li>View: place \"© OpenStreetMap\" somewhere on the map crisis</li></ul>You can use it freely, including commercial use, as long as you comply with the above conditions.<br>Only the URL at the time of map creation is logged."

@@ -5,6 +5,7 @@
     <meta name="viewport"
         content="width=device-width, user-scalable=yes, initial-scale=1, maximum-scale=1, minimum-scale=1" />
     <meta charset="utf-8" />
+    <script>document.documentElement.classList.add("intro-pending");</script>
     <base href="/">
     <script src="./lib/application/language-router.js?v=language-2"></script>
     <link rel="canonical" href="https://mapmaker.openacrossbase.net/en/">
@@ -38,7 +39,7 @@
     <meta name="twitter:description" content="Create free 2D and 3D maps with Walking Map Maker. Customize colors and map features using OpenStreetMap data, then save SVG or PNG images for printing, editing, distribution, or commercial use." />
     <meta name="twitter:image" content="https://mapmaker.openacrossbase.net/image/ogimage_en.png" />
     <link rel="shortcut icon" href="favicon.ico" />
-    <link rel="stylesheet" href="./css/basemenu.css?v=maplibre-113" />
+    <link rel="stylesheet" href="./css/basemenu.css?v=maplibre-116" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@5.20.0/dist/maplibre-gl.css" />
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/v/bs5/dt-3.0.3/sl-4.0.1/datatables.min.css">
@@ -73,7 +74,7 @@
     <script src="./lib/osm/csv.js?v=layout-1" defer></script>
     <script src="./lib/renderers/maplibre/adapter.js?v=layout-6" defer></script>
     <script src="./lib/application/browser-services.js?v=layout-3" defer></script>
-    <script src="./lib/ui/window-controller.js?v=layout-9" defer></script>
+    <script src="./lib/ui/window-controller.js?v=layout-11" defer></script>
     <script src="./lib/application/svg-worker-client.js?v=layout-16" defer></script>
     <script src="./lib/export/svg-text.js?v=layout-1" defer></script>
     <script src="./lib/export/png.js?v=layout-2" defer></script>
@@ -96,9 +97,9 @@
     <script src="./lib/ui/line-width-panel.js?v=layout-1" defer></script>
     <script src="./lib/ui/rough-style-panel.js?v=layout-6" defer></script>
     <script src="./lib/ui/mobile-editor-sheet.js?v=layout-8" defer></script>
-    <script src="./mapmaker.js?v=layout-27" defer></script>
+    <script src="./mapmaker.js?v=layout-28" defer></script>
     <script src="./lib/ui/birdseye.js?v=layout-2" defer></script>
-    <script src="./initialize.js?v=layout-5" defer></script>
+    <script src="./initialize.js?v=layout-6" defer></script>
     <script type="module">
         import JSON5 from 'https://unpkg.com/json5@2/dist/index.min.mjs'
         window.JSON5 = JSON5;
@@ -136,7 +137,7 @@
                             <img src="image/mapmaker.svg" alt="Walking Map Maker" class="ms-1" style="height:32px" />
                             <span class="title" glot-model="title">Walking Map Maker</span>
                             <span class="subtitle" glot-model="subtitle">Free to edit & use the map for anything</span>
-                            <span class="subtitle" glot-model="licence">(Terms of Use)</span>
+                            <span class="subtitle" glot-model="licence">(Guide &amp; Terms)</span>
                         </a>
                     </div>
                     <div>
@@ -152,6 +153,10 @@
                     <button type="button" id="addressSearchButton" class="btn btn-light address-search-button" data-bs-toggle="modal" data-bs-target="#addressSearchDialog">
                         <i class="fas fa-search" aria-hidden="true"></i>
                     </button>
+                    <a id="guideButton" class="btn btn-light guide-button" href="./en/guide.html" target="_blank" rel="noopener"
+                        aria-label="User guide" title="User guide">
+                        <i class="fas fa-question" aria-hidden="true"></i>
+                    </a>
                 </div>
             </div>
         </header>
@@ -165,6 +170,7 @@
                         <div class="mapmaker-intro__body">
                             <h1 id="mapMakerIntroTitle" glot-model="intro_title">Create a map with Walking Map Maker</h1>
                             <p glot-model="intro_message">Create 2D and 3D map images for free. Search for a place, zoom in, and select “Create Map”. Edit the colors and map features, then save as SVG or PNG. If the buttons at the bottom are hidden, open this page in Chrome or Safari.</p>
+                            <p class="mt-2"><a href="./en/guide.html" target="_blank" rel="noopener" glot-model="guide">User guide</a></p>
                         </div>
                         <button id="mapMakerIntroClose" class="mapmaker-intro__close" type="button"
                             aria-label="Close introduction">&times;</button>

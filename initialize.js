@@ -21,6 +21,8 @@ class initialize {
         const intro = document.getElementById("mapMakerIntro");
         const closeButton = document.getElementById("mapMakerIntroClose");
         if (!intro || !closeButton) return;
+        intro.hidden = true;
+        document.documentElement.classList.remove("intro-pending");
 
         const introConfig = Conf?.intro ?? {};
         if (introConfig.use === false) {
