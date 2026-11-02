@@ -56,7 +56,10 @@ class initialize {
                 intro.style.setProperty("--mapmaker-intro-top", "12px");
                 intro.style.setProperty("--mapmaker-intro-left", `${Math.max(12, Math.ceil(menuRect.right - articleRect.left + 12))}px`);
             } else {
-                intro.style.setProperty("--mapmaker-intro-top", `${Math.max(12, Math.ceil(menuRect.bottom - articleRect.top + 12))}px`);
+                // A bottom toolbar leaves the top of the map free for the introduction.
+                const menuAtBottom = menuRect.top >= articleRect.top + articleRect.height / 2;
+                const top = menuAtBottom ? 12 : Math.max(12, Math.ceil(menuRect.bottom - articleRect.top + 12));
+                intro.style.setProperty("--mapmaker-intro-top", `${top}px`);
                 intro.style.setProperty("--mapmaker-intro-left", "12px");
             }
         };

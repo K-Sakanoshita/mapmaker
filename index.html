@@ -10,9 +10,9 @@
     <link rel="alternate" hreflang="ja" href="https://mapmaker.openacrossbase.net/">
     <link rel="alternate" hreflang="en" href="https://mapmaker.openacrossbase.net/en/">
     <link rel="alternate" hreflang="x-default" href="https://mapmaker.openacrossbase.net/">
-    <title>まち歩きマップメーカー | 自由に加工・印刷できる地図画像を作成</title>
+    <title>まち歩きマップメーカー | 無料で2D・3Dの地図を作成</title>
     <meta name="description"
-        content="まち歩きマップメーカーは、任意の場所の地図をデザインしてSVGやPNGで保存できるサイトです。OpenStreetMapのデータを使用した地図を作成でき、印刷・加工・配布・販売にも利用できます。">
+        content="まち歩きマップメーカーは、2D・3Dの地図や案内図を無料で作成できるサイトです。OpenStreetMapの地図の色や表示内容を編集し、SVG・PNGで保存。印刷・加工・配布・販売にも利用できます。">
     <script type="application/ld+json">
         {
             "@context": "https://schema.org",
@@ -22,22 +22,22 @@
             "operatingSystem": "Web",
             "inLanguage": "ja",
             "url": "https://mapmaker.openacrossbase.net/",
-            "description": "まち歩きマップメーカーは、任意の場所の地図をデザインしてSVGやPNGで保存できるサイトです。OpenStreetMapのデータを使用した地図を作成でき、印刷・加工・配布・販売にも利用できます。",
+            "description": "まち歩きマップメーカーは、2D・3Dの地図や案内図を無料で作成できるサイトです。OpenStreetMapの地図の色や表示内容を編集し、SVG・PNGで保存。印刷・加工・配布・販売にも利用できます。",
             "offers": {"@type": "Offer","price": "0","priceCurrency": "JPY"}
         }
     </script>
     <meta property="og:url" content="https://mapmaker.openacrossbase.net/" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="まち歩きマップメーカー" />
-    <meta property="og:description" content="自由に加工＆使える地図画像を作るサイト" />
+    <meta property="og:description" content="まち歩きマップメーカーは、2D・3Dの地図や案内図を無料で作成できるサイトです。OpenStreetMapの地図の色や表示内容を編集し、SVG・PNGで保存。印刷・加工・配布・販売にも利用できます。" />
     <meta property="og:image" content="https://mapmaker.openacrossbase.net/image/ogimage.png" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@K_Sakanoshita" />
     <meta name="twitter:title" content="まち歩きマップメーカー" />
-    <meta name="twitter:description" content="自由に加工＆使える地図画像を作るサイト" />
+    <meta name="twitter:description" content="まち歩きマップメーカーは、2D・3Dの地図や案内図を無料で作成できるサイトです。OpenStreetMapの地図の色や表示内容を編集し、SVG・PNGで保存。印刷・加工・配布・販売にも利用できます。" />
     <meta name="twitter:image" content="https://mapmaker.openacrossbase.net/image/ogimage.png" />
     <link rel="shortcut icon" href="favicon.ico" />
-    <link rel="stylesheet" href="./css/basemenu.css?v=maplibre-112" />
+    <link rel="stylesheet" href="./css/basemenu.css?v=maplibre-113" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@5.20.0/dist/maplibre-gl.css" />
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/v/bs5/dt-3.0.3/sl-4.0.1/datatables.min.css">
@@ -97,7 +97,7 @@
     <script src="./lib/ui/mobile-editor-sheet.js?v=layout-8" defer></script>
     <script src="./mapmaker.js?v=layout-27" defer></script>
     <script src="./lib/ui/birdseye.js?v=layout-2" defer></script>
-    <script src="./initialize.js?v=layout-4" defer></script>
+    <script src="./initialize.js?v=layout-5" defer></script>
     <script type="module">
         import JSON5 from 'https://unpkg.com/json5@2/dist/index.min.mjs'
         window.JSON5 = JSON5;
@@ -132,10 +132,10 @@
                         </div>
                         <a class="title title d-flex align-items-center text-decoration-none"
                             href="javascript:mapMaker.licence()">
-                            <img src="image/mapmaker.svg" class="ms-1" style="height:32px" />
-                            <span class="title" glot-model="title"></span>
-                            <span class="subtitle" glot-model="subtitle"></span>
-                            <span class="subtitle" glot-model="licence"></span>
+                            <img src="image/mapmaker.svg" alt="まち歩きマップメーカー" class="ms-1" style="height:32px" />
+                            <span class="title" glot-model="title">まち歩きマップメーカー</span>
+                            <span class="subtitle" glot-model="subtitle">自由に加工＆使える地図画像を作るサイト</span>
+                            <span class="subtitle" glot-model="licence">(利用規約)</span>
                         </a>
                     </div>
                     <div>
@@ -160,10 +160,10 @@
             <section class="flex-fill">
                 <article id="article">
                     <div id="mapid"></div>
-                    <section id="mapMakerIntro" class="mapmaker-intro" aria-labelledby="mapMakerIntroTitle" hidden>
+                    <section id="mapMakerIntro" class="mapmaker-intro" aria-labelledby="mapMakerIntroTitle">
                         <div class="mapmaker-intro__body">
-                            <h2 id="mapMakerIntroTitle" glot-model="intro_title"></h2>
-                            <p glot-model="intro_message"></p>
+                            <h1 id="mapMakerIntroTitle" glot-model="intro_title">まち歩きマップメーカーで地図を作ってみましょう</h1>
+                            <p glot-model="intro_message">2D・3Dの地図画像を無料で作成できます。場所を検索してズームし、「マップを作る」を押すと、色や表示内容を編集してSVG・PNGで保存できます。画面下部のボタンが見えない場合は、ChromeやSafariなどで開いてください。</p>
                         </div>
                         <button id="mapMakerIntroClose" class="mapmaker-intro__close" type="button"
                             aria-label="案内を閉じる">&times;</button>

@@ -96,7 +96,7 @@ body {
     position: absolute;
     top: var(--mapmaker-intro-top, 12px);
     right: 12px;
-    left: var(--mapmaker-intro-left, 252px);
+    left: var(--mapmaker-intro-left, 12px);
     z-index: 1100;
     display: flex;
     align-items: flex-start;
@@ -118,7 +118,7 @@ body {
     min-width: 0;
 }
 
-.mapmaker-intro h2 {
+.mapmaker-intro h1 {
     margin: 0 0 0.3rem;
     color: #075b31;
     font-size: 1.2rem;
@@ -166,7 +166,7 @@ body {
         padding: 0.65rem 0.65rem 0.65rem 0.75rem;
     }
 
-    .mapmaker-intro h2 {
+    .mapmaker-intro h1 {
         font-size: 1.1rem;
     }
 

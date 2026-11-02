@@ -11,9 +11,9 @@
     <link rel="alternate" hreflang="ja" href="https://mapmaker.openacrossbase.net/">
     <link rel="alternate" hreflang="en" href="https://mapmaker.openacrossbase.net/en/">
     <link rel="alternate" hreflang="x-default" href="https://mapmaker.openacrossbase.net/">
-    <title>Walking Map Maker | Create Custom Printable Map Images</title>
+    <title>Walking Map Maker | Create Free 2D and 3D Maps</title>
     <meta name="description"
-        content="Walking Map Maker lets you design a map of any location using OpenStreetMap data and save it as SVG or PNG for printing, editing, distribution, or commercial use.">
+        content="Create free 2D and 3D maps with Walking Map Maker. Customize colors and map features using OpenStreetMap data, then save SVG or PNG images for printing, editing, distribution, or commercial use.">
     <script type="application/ld+json">
         {
             "@context": "https://schema.org",
@@ -23,22 +23,22 @@
             "operatingSystem": "Web",
             "inLanguage": "en",
             "url": "https://mapmaker.openacrossbase.net/en/",
-            "description": "Walking Map Maker lets you design a map of any location using OpenStreetMap data and save it as SVG or PNG for printing, editing, distribution, or commercial use.",
+            "description": "Create free 2D and 3D maps with Walking Map Maker. Customize colors and map features using OpenStreetMap data, then save SVG or PNG images for printing, editing, distribution, or commercial use.",
             "offers": {"@type": "Offer","price": "0","priceCurrency": "JPY"}
         }
     </script>
     <meta property="og:url" content="https://mapmaker.openacrossbase.net/en/" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Walking Map Maker" />
-    <meta property="og:description" content="Create freely editable and reusable map images." />
+    <meta property="og:description" content="Create free 2D and 3D maps with Walking Map Maker. Customize colors and map features using OpenStreetMap data, then save SVG or PNG images for printing, editing, distribution, or commercial use." />
     <meta property="og:image" content="https://mapmaker.openacrossbase.net/image/ogimage_en.png" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@K_Sakanoshita" />
     <meta name="twitter:title" content="Walking Map Maker" />
-    <meta name="twitter:description" content="Create freely editable and reusable map images." />
+    <meta name="twitter:description" content="Create free 2D and 3D maps with Walking Map Maker. Customize colors and map features using OpenStreetMap data, then save SVG or PNG images for printing, editing, distribution, or commercial use." />
     <meta name="twitter:image" content="https://mapmaker.openacrossbase.net/image/ogimage_en.png" />
     <link rel="shortcut icon" href="favicon.ico" />
-    <link rel="stylesheet" href="./css/basemenu.css?v=maplibre-112" />
+    <link rel="stylesheet" href="./css/basemenu.css?v=maplibre-113" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@5.20.0/dist/maplibre-gl.css" />
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/v/bs5/dt-3.0.3/sl-4.0.1/datatables.min.css">
@@ -98,7 +98,7 @@
     <script src="./lib/ui/mobile-editor-sheet.js?v=layout-8" defer></script>
     <script src="./mapmaker.js?v=layout-27" defer></script>
     <script src="./lib/ui/birdseye.js?v=layout-2" defer></script>
-    <script src="./initialize.js?v=layout-4" defer></script>
+    <script src="./initialize.js?v=layout-5" defer></script>
     <script type="module">
         import JSON5 from 'https://unpkg.com/json5@2/dist/index.min.mjs'
         window.JSON5 = JSON5;
@@ -133,10 +133,10 @@
                         </div>
                         <a class="title title d-flex align-items-center text-decoration-none"
                             href="javascript:mapMaker.licence()">
-                            <img src="image/mapmaker.svg" class="ms-1" style="height:32px" />
-                            <span class="title" glot-model="title"></span>
-                            <span class="subtitle" glot-model="subtitle"></span>
-                            <span class="subtitle" glot-model="licence"></span>
+                            <img src="image/mapmaker.svg" alt="Walking Map Maker" class="ms-1" style="height:32px" />
+                            <span class="title" glot-model="title">Walking Map Maker</span>
+                            <span class="subtitle" glot-model="subtitle">Free to edit & use the map for anything</span>
+                            <span class="subtitle" glot-model="licence">(Terms of Use)</span>
                         </a>
                     </div>
                     <div>
@@ -161,10 +161,10 @@
             <section class="flex-fill">
                 <article id="article">
                     <div id="mapid"></div>
-                    <section id="mapMakerIntro" class="mapmaker-intro" aria-labelledby="mapMakerIntroTitle" hidden>
+                    <section id="mapMakerIntro" class="mapmaker-intro" aria-labelledby="mapMakerIntroTitle">
                         <div class="mapmaker-intro__body">
-                            <h2 id="mapMakerIntroTitle" glot-model="intro_title"></h2>
-                            <p glot-model="intro_message"></p>
+                            <h1 id="mapMakerIntroTitle" glot-model="intro_title">Create a map with Walking Map Maker</h1>
+                            <p glot-model="intro_message">Create 2D and 3D map images for free. Search for a place, zoom in, and select “Create Map”. Edit the colors and map features, then save as SVG or PNG. If the buttons at the bottom are hidden, open this page in Chrome or Safari.</p>
                         </div>
                         <button id="mapMakerIntroClose" class="mapmaker-intro__close" type="button"
                             aria-label="Close introduction">&times;</button>
