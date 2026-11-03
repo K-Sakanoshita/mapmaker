@@ -1,4 +1,9 @@
 {
+    "basemap_switch": {"ja": "地図切り替え", "en": "Map layers"},
+    "basemap_default": {"ja": "通常の地図", "en": "Default map"},
+    "basemap_osm": {"ja": "OSM標準", "en": "OSM Standard"},
+    "basemap_gsi": {"ja": "地理院地図（標準）", "en": "GSI Standard"},
+    "basemap_photo": {"ja": "航空写真（オルソ）", "en": "Aerial imagery (orthophoto)"},
     "loading_cache": {"ja": "取得済みのPOI候補を再利用しています。", "en": "Reusing the downloaded POI list."},
     "request_stage_map": {"ja": "地図データの取得", "en": "Map data download"},
     "request_stage_poi": {"ja": "地物の取得", "en": "Place download"},

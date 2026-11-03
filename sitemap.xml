@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+    <url>
+        <loc>https://mapmaker.openacrossbase.net/</loc>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://mapmaker.openacrossbase.net/" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://mapmaker.openacrossbase.net/en/" />
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://mapmaker.openacrossbase.net/" />
+    </url>
+    <url>
+        <loc>https://mapmaker.openacrossbase.net/en/</loc>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://mapmaker.openacrossbase.net/" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://mapmaker.openacrossbase.net/en/" />
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://mapmaker.openacrossbase.net/" />
+    </url>
+    <url>
+        <loc>https://mapmaker.openacrossbase.net/guide.html</loc>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://mapmaker.openacrossbase.net/guide.html" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://mapmaker.openacrossbase.net/en/guide.html" />
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://mapmaker.openacrossbase.net/guide.html" />
+    </url>
+    <url>
+        <loc>https://mapmaker.openacrossbase.net/en/guide.html</loc>
+        <xhtml:link rel="alternate" hreflang="ja" href="https://mapmaker.openacrossbase.net/guide.html" />
+        <xhtml:link rel="alternate" hreflang="en" href="https://mapmaker.openacrossbase.net/en/guide.html" />
+        <xhtml:link rel="alternate" hreflang="x-default" href="https://mapmaker.openacrossbase.net/guide.html" />
+    </url>
+</urlset>

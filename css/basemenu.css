@@ -1160,3 +1160,14 @@ img.icon_normal {
 .mapmaker-popup-body { padding: 12px; overflow-y: auto; overscroll-behavior: contain; min-height: 0; overflow-wrap: anywhere; font-size: 14px; }
 .mapmaker-popup-body .btn { font-size: 14px; min-height: 44px; }
 .mapmaker-popup-body .form-select, .mapmaker-popup-body .form-control { font-size: 16px; min-height: 44px; }
+
+/* Background selection is available while choosing the map area. */
+#basemapControl { position: relative; clear: both; color: #212529; font-size: 14px; }
+#basemapControl[hidden] { display: none; }
+#basemapControl summary { list-style: none; cursor: pointer; background: white; border-radius: 4px; padding: 10px 12px; box-shadow: 0 0 0 2px #0002; }
+#basemapControl summary::-webkit-details-marker { display: none; }
+#basemapControl .basemap-options { position: absolute; right: 0; bottom: calc(100% + 8px); width: max-content; max-width: calc(100vw - 24px); padding: 6px; background: white; border-radius: 4px; box-shadow: 0 2px 10px #0004; }
+#basemapControl label { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 6px 10px; cursor: pointer; }
+#basemapControl label:hover { background: #edf5ee; }
+#basemapControl input { accent-color: #198754; }
+#basemapControl summary:focus-visible { outline: 3px solid #198754; outline-offset: 2px; }

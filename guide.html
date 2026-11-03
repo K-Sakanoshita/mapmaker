@@ -33,24 +33,26 @@
                 <li><a href="#create">マップを作る</a></li>
                 <li><a href="#edit">色や表示を調整する</a></li>
                 <li><a href="#save">PNG・SVGで保存する</a></li>
+                <li><a href="#rights">地図を利用する</a></li>
             </ol>
+            <a href="#expo2025">EXPO2025の地図を作る</a>
             <a href="#mobile">スマートフォンで使う</a>
+            <a href="#examples">活用事例</a>
             <a href="#help">困ったときは</a>
         </nav>
         <div class="guide-body">
             <div class="intro">
-                <p class="eyebrow">WALKING MAP MAKER / 操作ガイド</p>
-                <h1>自分で使う地図を、<br>作ってみましょう。</h1>
+                <p class="eyebrow">まち歩きマップメーカー / 操作ガイド</p>
+                <h1>好きなデザインで、<br>地図を作ってみましょう。</h1>
                 <p class="lead">無料で2D・3Dの地図画像を作成。場所と構図を選び、色や表示を整えて、PNG・SVGで保存します。</p>
-                <div class="intro-actions"><a class="button" href="./">地図を作り始める <span aria-hidden="true">→</span></a><a href="#place">使い方を見る ↓</a></div>
                 <p class="caption">画面例はパソコン版です。スマートフォンでは操作ボタンが画面下に表示されます。</p>
             </div>
 
             <section id="place" class="step">
                 <p class="step-number">STEP 01</p>
                 <h2>場所を探す</h2>
-                <p>右上の虫眼鏡を押し、住所を入力して「検索」を押します。住所検索は日本国内に対応しています。見つからない場合や海外の場所を選ぶ場合は、地図を直接移動してください。</p>
                 <p>地図をドラッグして移動し、マウスホイールや「＋」「−」で拡大・縮小します。スマートフォンでは指で移動し、2本指の開閉で拡大・縮小できます。</p>
+                <p>右上の虫眼鏡を押し、住所を入力して検索することも出来ます。住所検索は日本国内に対応しています。見つからない場合や海外の場所を選ぶ場合は、地図を直接移動してください。</p>
                 <figure><a href="image/guide/location.png"><img src="image/guide/location.png" width="1200" height="800" alt="大阪・中之島周辺を表示した作成前の地図。右上に住所検索、左上にマップを作るボタンと2D・3D切り替えがあります。" fetchpriority="high"></a><figcaption>表示したい場所へ移動し、道路や建物が見える大きさまで拡大します。画像はタップすると拡大できます。</figcaption></figure>
             </section>
 
@@ -92,13 +94,31 @@
                 <div class="table-scroll"><table><caption>保存形式の選び方</caption><thead><tr><th scope="col">形式</th><th scope="col">こんなときに</th><th scope="col">押すボタン</th></tr></thead><tbody><tr><th scope="row">PNG</th><td>画像として文書やスライドに貼りたい</td><td>PNG画像を保存</td></tr><tr><th scope="row">SVG</th><td>対応するソフトで線や図形をさらに編集したい</td><td>SVG画像を保存（編集可能）</td></tr></tbody></table></div>
                 <p>PNGは「PNGの精細さ」も選べます。保存に時間がかかる場合は、精細さを下げるか、狭い範囲で作り直してみてください。</p>
                 <figure><a href="image/guide/save.png"><img src="image/guide/save.png" width="1200" height="800" alt="保存メニューでA4横を選択した画面。PNGの精細さ、出力サイズ、PNG・SVGの保存ボタンが表示されています。" loading="lazy"></a><figcaption>用紙サイズと形式を選んで保存。画像は端末のダウンロード先に保存されます。</figcaption></figure>
-                <p class="note">配布や掲載の際は、地図の出典表記を残してください。詳しくは作成画面のメニューにある「使い方・地図の利用規約」を確認してください。</p>
+                <p class="note">配布や掲載の際は、地図の出典表記を残してください。詳しくは次の<a href="#rights">「地図を利用する」</a>をご覧ください。</p>
+            </section>
+
+            <section id="rights" class="step">
+                <p class="step-number">STEP 06</p>
+                <h2>地図を利用する</h2>
+                <p>このサイトで作った地図画像は、<a href="https://creativecommons.org/licenses/by/4.0/deed.ja" target="_blank" rel="noopener">CC BY 4.0</a>で提供しています。出典は「© OpenStreetMap」と表記してください。ライセンスの条件に従い、印刷・加工・配布・販売など、商用も含めて利用できます。</p>
+            </section>
+
+            <section id="expo2025" class="extra-section">
+                <h2>EXPO2025の地図を作る</h2>
+                <p>左上のメニューから「EXPO2025 万博の地図」を選ぶと、2025年10月13日時点の大阪・関西万博会場の地図に切り替わります。場所と2D・3Dの構図を選び、「マップを作る」を押すと、通常の地図と同じように色や表示を調整し、PNG・SVGで保存できます。</p>
+                <p><a href="./?preset=expo2025">EXPO2025の地図を開く</a>。通常の地図に戻るときは、左上のメニューで「通常の地図」を選んでください。</p>
+                <figure><a href="image/guide/expo2025.webp"><img src="image/guide/expo2025.webp" width="2048" height="1090" alt="大屋根リングとパビリオンを立体的に描いた、大阪・関西万博会場の3D・塗り絵風の地図。" loading="lazy"></a><figcaption>EXPO2025の作成例：3Dの構図と塗り絵の配色を組み合わせた地図。<a href="https://x.com/K_Sakanoshita/status/2112175657891598538/photo/1" target="_blank" rel="noopener">Xの投稿を見る</a>。</figcaption></figure>
             </section>
 
             <section id="mobile" class="extra-section">
                 <h2>スマートフォンで使う</h2>
                 <p>作成前の「マップを作る」と2D・3Dボタン、作成後の「再選択」「保存」は画面下部にあります。編集するときは「調整」を押して設定を開きます。</p>
                 <p>設定パネルが地図に重なる場合は、パネル上部のハンドルで大きさを変えるか、最小化して地図を確認できます。ボタンが見えない場合は、ChromeやSafariなどのブラウザーで開いてください。</p>
+            </section>
+
+            <section id="examples" class="extra-section">
+                <h2>活用事例</h2>
+                <p>防災マップやリーフレット、案内図、地図ぬりえなど、実際の活用例を<a href="https://note.com/barsaka/n/nbcf8203d850b" target="_blank" rel="noopener">まち歩きマップメーカー事例集（note）</a>で紹介しています。</p>
             </section>
 
             <section id="help" class="extra-section">
@@ -110,8 +130,17 @@
                 <details><summary>編集内容を保存して、後日このサイトで再開できますか？</summary><p>PNG・SVGは地図画像の書き出しです。このサイトで編集を再開するためのプロジェクトファイルではありません。作業を終える前に、必要な画像を保存してください。</p></details>
             </section>
 
+            <section id="featured" class="extra-section">
+                <h2>紹介サイトへの掲載</h2>
+                <h3>つくるログ</h3>
+                <p><a href="https://tsukurulog.com/picks/machiaruki-mapmaker/?ref=badge" target="_blank" rel="noopener"><img src="https://tsukurulog.com/badge/tsukurulog-badge.svg" alt="つくるログ 掲載ツール" height="48" loading="lazy"></a></p>
+                <p>このバッジは、無料ツールを紹介する「つくるログ」に掲載されていることを示しています。まち歩きマップメーカーの特徴や活用例は、<a href="https://tsukurulog.com/picks/machiaruki-mapmaker/" target="_blank" rel="noopener">つくるログの紹介ページ</a>でもご覧いただけます。</p>
+                <h3>ヒロメバ</h3>
+                <p>アプリ・Webサイトを紹介する「ヒロメバ」にも掲載されています。<a href="https://hiromeba.com/apps/601e5a81-cd03-42ac-bec0-f493111c77de" target="_blank" rel="noopener">ヒロメバの紹介ページ</a>では、主な機能や利用例をご覧いただけます。</p>
+            </section>
+
             <div class="closing"><h2>さっそく地図を作ってみましょう</h2><p>まずは身近な場所を狭い範囲で選び、2Dから試すと操作をつかみやすくなります。</p><a class="button" href="./">まち歩きマップメーカーを開く <span aria-hidden="true">→</span></a></div>
-            <footer><p>画面・操作の確認日：2026年11月2日。掲載画像は実際の操作画面です。</p><p><a href="./">まち歩きマップメーカー</a> · <a href="https://github.com/K-Sakanoshita/mapmaker">GitHub</a> · 地図データ：<a href="https://www.openstreetmap.org/copyright">© OpenStreetMap contributors</a></p></footer>
+            <footer><p><a href="./">まち歩きマップメーカー</a> · <a href="https://github.com/K-Sakanoshita/mapmaker">GitHub</a> · 地図データ：<a href="https://www.openstreetmap.org/copyright">© OpenStreetMap contributors</a></p></footer>
         </div>
     </main>
 </body>
