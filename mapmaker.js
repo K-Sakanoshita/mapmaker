@@ -783,6 +783,7 @@ class MapMaker {
             const modal = {
                 "title": glot.get("sverror_title"),
                 "message": this.requestErrorMessage(error, 'request_stage_map'),
+                "copyText": this.requestErrorReport(error),
                 "mode": "close",
                 "callback_close": () => winCont.closeModal()
             };
@@ -855,6 +856,13 @@ class MapMaker {
             glot.get(previous ? 'request_previous_server_error' : 'request_server_error') + ' ' + text + '</span>';
     }
 
+    requestErrorReport(error) {
+        if (!error?.requestAttempts?.length) return undefined;
+        return 'Mapmaker Overpass errors\n' + error.requestAttempts.map((entry, index) =>
+            `\nAttempt ${index + 1} — ${entry.time}\nServer: ${entry.server}\nHTTP: ${entry.status || 'unavailable'}\nCode: ${entry.code || 'unavailable'}\nMessage: ${entry.message}`
+        ).join('\n');
+    }
+
     requestErrorMessage(error, stage) {
         const seconds = Math.ceil((Basic.retryAfterMs?.(error) || 0) / 1000);
         const later = seconds > 0 ? glot.get('request_try_after').replace('{seconds}', seconds) : glot.get('request_try_later');
@@ -865,14 +873,28 @@ class MapMaker {
 
     retryRequest(task, stage, retryCount = 2) {
         winCont.modal_text?.(`${glot.get(stage)}：${glot.get('request_loading')}`, false);
-        return Basic.retry(task, retryCount, {onRetry: notice => {
+        const attempts = [];
+        return Basic.retry(async () => {
+            try { return await task(); }
+            catch (failure) {
+                const error = failure && typeof failure === 'object' ? failure : new Error(String(failure));
+                if (error.requestServer) {
+                    attempts.push({time:new Date().toISOString(), server:error.requestServer,
+                        status:error.status, code:error.code,
+                        message:String(error.serverMessage || error.message || this.requestFailureReason(error)).slice(0, 601)});
+                    error.requestAttempts = attempts.slice();
+                }
+                throw error;
+            }
+        }, retryCount, {onRetry: notice => {
             const key = notice.waiting ? 'request_retry_wait' : 'request_retrying';
             const server = notice.error?.retryServer;
-            const serverText = server ? '<br>' + glot.get('request_retry_server').replace('{server}',
-                String(server).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]))) : '';
+            const serverText = server ? '\n' + glot.get('request_retry_server').replace('{server}', String(server)) : '';
+            const previousText = notice.error?.serverMessage ? '\n' + glot.get('request_previous_server_error') + ' ' +
+                String(notice.error.serverMessage).slice(0, 601) : '';
             const message = glot.get(key).replace('{seconds}', Math.ceil(notice.delayMs / 1000))
                 .replace('{attempt}', notice.attempt).replace('{total}', notice.total);
-            winCont.modal_text(`${glot.get(stage)}：${notice.waiting ? this.requestFailureReason(notice.error) + ' ' : ''}${message}${serverText}${this.requestServerMessage(notice.error, true)}`, false);
+            winCont.modal_text(`${glot.get(stage)}：${notice.waiting ? this.requestFailureReason(notice.error) + ' ' : ''}${message}${serverText}${previousText}`, false);
         }}).catch(error => {
             if (!error || typeof error !== 'object') error = new Error(String(error));
             error.requestStage ||= stage;
@@ -914,6 +936,7 @@ class MapMaker {
             await winCont.modal_open({
                 title: glot.get(error.noData ? "nodata_title" : "sverror_title"),
                 message: error.noData ? glot.get('nodata_message') : this.requestErrorMessage(error, 'request_stage_poi'),
+                copyText: this.requestErrorReport(error),
                 mode: "close", callback_close: () => winCont.closeModal()
             });
             return;

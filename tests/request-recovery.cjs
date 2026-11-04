@@ -44,7 +44,7 @@ function setup(language){
    assert.equal(controller.getRetryCount(),7);
    assert.deepEqual(requested,['armd-01.sakura.ne.jp','overpass-api.de','overpass.private.coffee','maps.mail.ru',
     'armd-01.sakura.ne.jp','overpass-api.de','overpass.private.coffee','maps.mail.ru']);
-   const notices=messages.filter(text=>text.includes('<br>'));
+   const notices=messages.filter(text=>text.includes('\n'));
    assert.equal(notices.length,14);
    requested.slice(1).forEach((host,i)=>{
     const label=translations.request_retry_server[language].replace('{server}',host);
@@ -52,11 +52,31 @@ function setup(language){
     assert.ok(notices[i*2+1].endsWith(label),'connecting notice names actual server');
    });
   }
+  // All failures, including the final attempt, belong to this request only.
+  controller.UseServer=0;requested.length=0;
+  controller.runDataWorker=async request=>{
+   requested.push(new URL(request.url).hostname);
+   throw Object.assign(new Error('network failure'),{status:requested.length===1?500:undefined,
+    serverMessage:requested.length===1?'Internal server error':undefined,retryable:true});
+  };
+  let failed;
+  try { await maker.retryRequest(()=>controller.get([]),'request_stage_map',controller.getRetryCount()); } catch(error) { failed=error; }
+  assert.equal(failed.requestAttempts.length,8);
+  assert.deepEqual(Array.from(failed.requestAttempts,entry=>entry.server),requested);
+  const report=maker.requestErrorReport(failed);
+  assert.ok(report.includes('HTTP: 500'));assert.ok(report.includes('HTTP: unavailable'));
+  assert.ok(report.includes('Internal server error'));assert.ok(report.includes('network failure'));
+  assert.equal((report.match(/Server: maps.mail.ru/g)||[]).length,2);
+  controller.UseServer=0;
+  let fresh;
+  try { await maker.retryRequest(()=>controller.get([]),'request_stage_poi',0); } catch(error) { fresh=error; }
+  assert.equal(fresh.requestAttempts.length,1,'a new request does not retain previous failures');
+  assert.equal(maker.requestErrorReport(new Error('unrelated')),undefined);
   messages.length=0;
   let unsafeAttempts=0;
   await maker.retryRequest(()=>{if(!unsafeAttempts++)throw {retryServer:'<img src=x>',retryable:true};return true;},'request_stage_map');
-  assert.ok(messages.some(text=>text.includes('&lt;img src=x&gt;')));
-  assert.ok(messages.every(text=>!text.includes('<img')));
+  assert.ok(messages.some(text=>text.includes('<img src=x>')),'progress is plain text for modal_text/textContent');
+  assert.ok(messages.every(text=>!text.includes('<br>')&&!text.includes('<span')));
   delays.length=0;messages.length=0;attempts=0;
   const limited={code:'OVERPASS_RATE_LIMIT',status:429,retryable:true};
   await assert.rejects(maker.retryRequest(()=>{attempts++;throw limited;},'request_stage_poi',5));
@@ -82,7 +102,7 @@ function setup(language){
   messages.length=0;let detailedCalls=0;
   await maker.retryRequest(()=>{if(!detailedCalls++)throw {...detailed,retryServer:'maps.mail.ru',retryable:true};return true;},'request_stage_map');
   const detailNotices=messages.filter(text=>text.includes(translations.request_previous_server_error[language]));
-  assert.equal(detailNotices.length,2);assert.ok(detailNotices.every(text=>text.includes('maps.mail.ru')&&text.includes('&lt;img')&&!text.includes('<img')));
+  assert.equal(detailNotices.length,2);assert.ok(detailNotices.every(text=>text.includes('maps.mail.ru')&&text.includes('<img')&&!text.includes('<span')));
   // A failed list library retries without fetching already received POIs again.
   let downloads=0,listLoads=0,selections=0;
   box.overPassCont={getRetryCount:()=>2,get:async()=>{downloads++;return {geojson:[{geometry:{type:'Point',coordinates:[135,35]}}],targets:[['wikipedia']]};}};
@@ -114,6 +134,13 @@ function setup(language){
    if(mode!=='recover')assert.ok(modals.at(-1).message.includes(translations[mode==='rate'?'request_try_after':'request_try_later'][language].replace('{seconds}',120)));
    if(mode==='notfound')assert.ok(modals.at(-1).message.includes(translations.request_not_found[language]));
   }
+  // The POI final error dialog receives all attempted endpoints for its copy button.
+  box.overPassCont=controller;controller.UseServer=0;maker.poiCache=null;requested.length=0;modals.length=0;
+  box.MapMakerResources.script=async()=>{};
+  await maker.addPoi('wikipedia');
+  assert.ok(modals.at(-1).copyText.startsWith('Mapmaker Overpass errors'));
+  assert.equal((modals.at(-1).copyText.match(/Attempt /g)||[]).length,8);
+  assert.equal((modals.at(-1).copyText.match(/Server: maps.mail.ru/g)||[]).length,2);
   console.log('PASS',language,'retry notices/counts, Retry-After, rate-limit stop, preserved POI data, stage errors, article recovery and busy cleanup');
  }
  // HTTP status and Retry-After must survive the Worker boundary for the above policy.
