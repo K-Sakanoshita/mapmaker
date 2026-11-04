@@ -5,7 +5,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
  const box=vm.createContext({Conf:{osm,system},URLSearchParams});vm.runInContext(readSource('@overpass-client','utf8'),box);
  const control=vm.runInContext('new OverPassControl()',box),keys=['sea','waterArea','waterLine','wetland','forest','railway','highway_primary','highway_motorway'];
  const low=control.acquisition(keys,13.99),normal=control.acquisition(keys,14);
- for(const broad of ['nwr["highway"]','nwr["natural"]','nwr["landuse"]']){assert.ok(!low.selectors.includes(broad));assert.ok(normal.selectors.includes(broad));}
+ for(const broad of ['nwr["highway"]','nwr["natural"]','nwr["landuse"]']){assert.ok(!low.selectors.includes(broad));assert.ok(!normal.selectors.includes(broad));}
  assert.deepEqual(Array.from(low.osm.waterLine.tags),['waterway=river','waterway=canal']);assert.deepEqual(Array.from(low.osm.wetland.tags),[]);
  assert.ok(osm.waterLine.tags.includes('waterway=stream'),'normal tags stay intact');
  const fixture=require('./helpers/osm-fixture.cjs')([135,35]);
@@ -83,6 +83,24 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
   assert.equal(r.message.serverMessage,remark);assert.equal(r.message.code,code);assert.equal(r.message.retryable,retryable);assert.ok(!r.message.result,'partial results must never become successful POI data');
  }
  const timeout=await run(({signal})=>new Promise((resolve,reject)=>signal.addEventListener('abort',()=>reject(Object.assign(new Error('timeout'),{name:'AbortError'})))),{timeoutMs:1});assert.equal(timeout.message.retryable,true);
+ // Silence before headers or before the first body byte uses the shorter deadline.
+ const noHeaders=await run(({signal})=>new Promise((resolve,reject)=>signal.addEventListener('abort',()=>reject(Object.assign(new Error('aborted'),{name:'AbortError'})))),{timeoutMs:500,responseStartTimeoutMs:5});
+ assert.equal(noHeaders.message.code,'OVERPASS_RESPONSE_TIMEOUT');assert.equal(noHeaders.message.retryable,true);
+ const noBody=await run(({signal})=>new Response(new ReadableStream({start(controller){signal.addEventListener('abort',()=>controller.error(Object.assign(new Error('aborted'),{name:'AbortError'})));}})),{timeoutMs:500,responseStartTimeoutMs:5});
+ assert.equal(noBody.message.code,'OVERPASS_RESPONSE_TIMEOUT','HTTP headers alone do not count as receiving map data');
+ const streaming=await run(({signal})=>new Response(new ReadableStream({start(controller){
+  controller.enqueue(unicodeBody.slice(0,10));
+  const timer=setTimeout(()=>{controller.enqueue(unicodeBody.slice(10));controller.close();},30);
+  signal.addEventListener('abort',()=>{clearTimeout(timer);controller.error(Object.assign(new Error('aborted'),{name:'AbortError'}));});
+ }})),{timeoutMs:500,responseStartTimeoutMs:10});
+ assert.ok(streaming.message.result,'receiving the first bytes clears the response-start deadline');
+ const stalled=await run(({signal})=>new Response(new ReadableStream({start(controller){
+  controller.enqueue(unicodeBody.slice(0,10));
+  signal.addEventListener('abort',()=>controller.error(Object.assign(new Error('aborted'),{name:'AbortError'})));
+ }})),{timeoutMs:20,responseStartTimeoutMs:5});
+ assert.equal(stalled.message.code,'OVERPASS_CLIENT_TIMEOUT','the total download deadline stays active after reception starts');
+ const errorBody=await run(({signal})=>new Response(new ReadableStream({start(controller){signal.addEventListener('abort',()=>controller.error(Object.assign(new Error('aborted'),{name:'AbortError'})));}}),{status:503}),{timeoutMs:500,responseStartTimeoutMs:5});
+ assert.equal(errorBody.message.status,503,'the shorter error-body wait preserves the received HTTP error');
  const malformed=await run(new Response('not json'));assert.ok(malformed.message.error);assert.equal(malformed.message.retryable,false);
  console.log('PASS low-zoom selectors/tags and exact 14 boundary, streamed worker fetch/progress, byte/element/coordinate caps, no retry on limits and HTTP retry metadata');
 })().catch(e=>{console.error(e);process.exitCode=1;});

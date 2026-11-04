@@ -8,7 +8,7 @@
                 "wr[\"natural\"=\"coastline\"]"
             ],
             "overpass": [
-                "nwr[\"natural\"]"
+                "nwr[\"natural\"=\"coastline\"]"
             ],
             "tags": [
                 "natural=coastline"
@@ -16,11 +16,11 @@
         },
         "site": {
             "overpass": [
-                "nwr[\"amenity\"]",
-                "nwr[\"landuse\"]",
-                "nwr[\"leisure\"]",
-                "nwr[\"power\"]",
-                "nwr[\"historic\"]"
+                "nwr[\"amenity\"~\"^(place_of_worship|townhall|kindergarten|school)$\"]",
+                "nwr[\"landuse\"~\"^(brownfield|commercial|construction|cemetery|industrial|retail|railway)$\"]",
+                "nwr[\"leisure\"=\"golf_course\"]",
+                "nwr[\"power\"~\"^(substation|generator)$\"]",
+                "nwr[\"historic\"=\"archaeological_site\"]"
             ],
             "tags": [
                 "amenity=place_of_worship",
@@ -42,9 +42,11 @@
         },
         "park": {
             "overpass": [
-                "nwr[\"amenity\"]",
-                "nwr[\"leisure\"]",
-                "nwr[\"man_made\"]"
+                "nwr[\"leisure\"~\"^(park|playground|pitch|track)$\"]",
+                "nwr[\"amenity\"~\"^(shelter|clock|bench|fountain|drinking_water)$\"]",
+                "nwr[\"man_made\"~\"^(tower|flagpole)$\"]",
+                "nwr[\"tower:type\"=\"bell_tower\"]",
+                "nwr[\"landuse\"=\"recreation_ground\"]"
             ],
             "tags": [
                 "leisure=park",
@@ -64,8 +66,8 @@
         },
         "garden": {
             "overpass": [
-                "nwr[\"leisure\"]",
-                "nwr[\"landuse\"]"
+                "nwr[\"leisure\"=\"garden\"]",
+                "nwr[\"landuse\"~\"^(allotments|orchard|grass|aquaculture)$\"]"
             ],
             "tags": [
                 "leisure=garden",
@@ -79,7 +81,7 @@
             "tagsLowZoom": [],
             "overpassLowZoom": [],
             "overpass": [
-                "nwr[\"natural\"]"
+                "nwr[\"natural\"=\"wetland\"]"
             ],
             "tags": [
                 "natural=wetland"
@@ -91,9 +93,9 @@
                 "wr[\"landuse\"=\"reservoir\"]"
             ],
             "overpass": [
-                "nwr[\"leisure\"]",
-                "nwr[\"landuse\"]",
-                "nwr[\"natural\"]"
+                "nwr[\"landuse\"~\"^(basin|reservoir)$\"]",
+                "nwr[\"natural\"=\"water\"]",
+                "nwr[\"leisure\"=\"swimming_pool\"]"
             ],
             "tags": [
                 "landuse=basin",
@@ -111,7 +113,7 @@
                 "way[\"waterway\"~\"^(river|canal)$\"]"
             ],
             "overpass": [
-                "nwr[\"waterway\"]"
+                "nwr[\"waterway\"~\"^(river|stream|ditch|canal)$\"]"
             ],
             "tags": [
                 "waterway=river",
@@ -122,7 +124,7 @@
         },
         "parking": {
             "overpass": [
-                "nwr[\"amenity\"]"
+                "nwr[\"amenity\"~\"^(parking|bicycle_parking)$\"]"
             ],
             "tags": [
                 "amenity=parking",
@@ -139,8 +141,8 @@
                 "wr[\"landuse\"=\"forest\"]"
             ],
             "overpass": [
-                "nwr[\"natural\"]",
-                "nwr[\"landuse\"]"
+                "nwr[\"landuse\"~\"^(forest|meadow)$\"]",
+                "nwr[\"natural\"~\"^(tree|wood|grassland|shrubbery|scrub)$\"]"
             ],
             "tags": [
                 "landuse=forest",
@@ -154,7 +156,7 @@
         },
         "farmland": {
             "overpass": [
-                "nwr[\"landuse\"]"
+                "nwr[\"landuse\"~\"^(farmland|vineyard|greenhouse_horticulture|plant_nursery)$\"]"
             ],
             "tags": [
                 "landuse=farmland",
@@ -165,8 +167,8 @@
         },
         "greenLine": {
             "overpass": [
-                "nwr[\"barrier\"]",
-                "nwr[\"natural\"]"
+                "nwr[\"barrier\"=\"hedge\"]",
+                "nwr[\"natural\"=\"tree_row\"]"
             ],
             "tags": [
                 "barrier=hedge",
@@ -175,10 +177,9 @@
         },
         "pedestrian": {
             "overpass": [
-                "nwr[\"highway\"]",
-                "nwr[\"man_made\"]",
-                "nwr[\"landuse\"]",
-                "nwr[\"natural\"]"
+                "nwr[\"highway\"=\"pedestrian\"]",
+                "nwr[\"man_made\"=\"bridge\"]",
+                "nwr[\"natural\"=\"sand\"]"
             ],
             "tags": [
                 "highway=pedestrian&&area",
@@ -196,7 +197,7 @@
                 "way[\"railway\"~\"^(rail|light_rail|narrow_gauge)$\"][\"service\"!~\"^(yard|siding|spur|crossover)$\"][\"tunnel\"!~\"^(yes|culvert)$\"]"
             ],
             "overpass": [
-                "nwr[\"railway\"][\"tunnel\"!~\".*\"]",
+                "nwr[\"railway\"~\"^(construction|funicular|light_rail|miniature|monorail|narrow_gauge|rail|subway|tram)$\"][\"tunnel\"!~\".*\"]",
                 "nwr[\"service\"=\"yard\"]"
             ],
             "tags": [
@@ -232,7 +233,7 @@
         },
         "highway_alley": {
             "overpass": [
-                "nwr[\"highway\"]"
+                "nwr[\"highway\"~\"^(footway|path|track|cycleway|corridor)$\"]"
             ],
             "tags": [
                 "highway=footway",
@@ -244,7 +245,7 @@
         },
         "highway_step": {
             "overpass": [
-                "nwr[\"highway\"]"
+                "nwr[\"highway\"=\"steps\"]"
             ],
             "tags": [
                 "highway=steps"
@@ -252,7 +253,7 @@
         },
         "highway_substandard": {
             "overpass": [
-                "nwr[\"highway\"]"
+                "nwr[\"highway\"~\"^(unclassified|residential|living_street|pedestrian|service)$\"]"
             ],
             "tags": [
                 "highway=unclassified",
@@ -264,7 +265,7 @@
         },
         "highway_standard": {
             "overpass": [
-                "nwr[\"highway\"]"
+                "nwr[\"highway\"~\"^(tertiary|tertiary_link|secondary|secondary_link)$\"]"
             ],
             "tags": [
                 "highway=tertiary",
@@ -278,7 +279,7 @@
                 "way[\"highway\"~\"^(trunk|trunk_link|primary|primary_link)$\"]"
             ],
             "overpass": [
-                "nwr[\"highway\"]"
+                "nwr[\"highway\"~\"^(trunk|trunk_link|primary|primary_link)$\"]"
             ],
             "tags": [
                 "highway=trunk",
@@ -292,7 +293,7 @@
                 "way[\"highway\"~\"^(motorway|motorway_link)$\"]"
             ],
             "overpass": [
-                "nwr[\"highway\"]"
+                "nwr[\"highway\"~\"^(motorway|motorway_link)$\"]"
             ],
             "tags": [
                 "highway=motorway",
@@ -304,8 +305,8 @@
                 "nwr[\"building\"]",
                 "nwr[\"building:part\"]",
                 "rel[\"type\"=\"building\"]",
-                "nwr[\"man_made\"]",
-                "nwr[\"waterway\"]",
+                "nwr[\"man_made\"=\"breakwater\"]",
+                "nwr[\"waterway\"=\"dam\"]",
                 "node[\"entrance\"]"
             ],
             "tags": [
@@ -318,7 +319,7 @@
         },
         "barrier": {
             "overpass": [
-                "nwr[\"barrier\"]",
+                "nwr[\"barrier\"~\"^(wall|fence|rope|kerb|retaining_wall)$\"]",
                 "nwr[\"man_made\"=\"embankment\"]"
             ],
             "tags": [
@@ -332,8 +333,8 @@
         },
         "station": {
             "overpass": [
-                "nwr[\"railway\"][\"tunnel\"!~\".*\"]",
-                "nwr[\"building\"]"
+                "nwr[\"railway\"=\"platform\"][\"tunnel\"!~\".*\"]",
+                "nwr[\"building\"=\"train_station\"]"
             ],
             "tags": [
                 "building=train_station",

@@ -35,23 +35,42 @@ function setup(language){
   const controller=vm.runInContext('new OverPassControl()',box),requested=[];
   controller.runDataWorker=async request=>{
    requested.push(new URL(request.url).hostname);
-   if(requested.length<8)throw Object.assign(new Error('offline'),{retryable:true});
+   if(requested.length<4)throw Object.assign(new Error('offline'),{retryable:true});
    return 'downloaded';
   };
   for(const stage of ['request_stage_map','request_stage_poi']){
    requested.length=0;messages.length=0;controller.UseServer=0;
    assert.equal(await maker.retryRequest(()=>controller.get([]),stage,controller.getRetryCount()),'downloaded');
-   assert.equal(controller.getRetryCount(),7);
-   assert.deepEqual(requested,['armd-01.sakura.ne.jp','overpass-api.de','overpass.private.coffee','maps.mail.ru',
-    'armd-01.sakura.ne.jp','overpass-api.de','overpass.private.coffee','maps.mail.ru']);
+   assert.equal(controller.getRetryCount(),3);
+   assert.deepEqual(requested,['armd-01.sakura.ne.jp','overpass-api.de','overpass.private.coffee','maps.mail.ru']);
    const notices=messages.filter(text=>text.includes('\n'));
-   assert.equal(notices.length,14);
+   assert.equal(notices.length,6);
    requested.slice(1).forEach((host,i)=>{
     const label=translations.request_retry_server[language].replace('{server}',host);
     assert.ok(notices[i*2].endsWith(label),'waiting notice names next server');
     assert.ok(notices[i*2+1].endsWith(label),'connecting notice names actual server');
    });
   }
+  // Server-specific refusal must not stop the other hosts; never retry the refused host.
+  const existingWorker=controller.runDataWorker;
+  for(const status of [403,406,429]){
+   requested.length=0;controller.UseServer=0;delays.length=0;
+   controller.runDataWorker=async request=>{
+    const host=new URL(request.url).hostname;requested.push(host);
+    if(requested.length===1)throw {status,code:status===429?'OVERPASS_RATE_LIMIT':'OVERPASS_ACCESS',retryable:false,jqXHR:{getResponseHeader:()=> '120'}};
+    return 'recovered';
+   };
+   assert.equal(await maker.retryRequest(()=>controller.get([]),'request_stage_map',controller.getRetryCount()),'recovered');
+   assert.deepEqual(requested,['armd-01.sakura.ne.jp','overpass-api.de']);
+   assert.deepEqual(delays,[1000],'Retry-After for the refused server does not delay another host');
+  }
+  // A long Retry-After is still honored if the next URL uses the same host.
+  const servers=box.Conf.system.OverPassServer;
+  box.Conf.system.OverPassServer=['https://same.test/a','https://same.test/b'];controller.UseServer=0;requested.length=0;
+  controller.runDataWorker=async request=>{requested.push(request.url);throw {status:429,retryable:true,jqXHR:{getResponseHeader:()=> '120'}};};
+  await assert.rejects(maker.retryRequest(()=>controller.get([]),'request_stage_map',controller.getRetryCount()));
+  assert.equal(requested.length,1);
+  box.Conf.system.OverPassServer=servers;controller.runDataWorker=existingWorker;
   // All failures, including the final attempt, belong to this request only.
   controller.UseServer=0;requested.length=0;
   controller.runDataWorker=async request=>{
@@ -61,12 +80,12 @@ function setup(language){
   };
   let failed;
   try { await maker.retryRequest(()=>controller.get([]),'request_stage_map',controller.getRetryCount()); } catch(error) { failed=error; }
-  assert.equal(failed.requestAttempts.length,8);
+  assert.equal(failed.requestAttempts.length,4);
   assert.deepEqual(Array.from(failed.requestAttempts,entry=>entry.server),requested);
   const report=maker.requestErrorReport(failed);
   assert.ok(report.includes('HTTP: 500'));assert.ok(report.includes('HTTP: unavailable'));
   assert.ok(report.includes('Internal server error'));assert.ok(report.includes('network failure'));
-  assert.equal((report.match(/Server: maps.mail.ru/g)||[]).length,2);
+  assert.equal((report.match(/Server: maps.mail.ru/g)||[]).length,1);
   controller.UseServer=0;
   let fresh;
   try { await maker.retryRequest(()=>controller.get([]),'request_stage_poi',0); } catch(error) { fresh=error; }
@@ -139,8 +158,8 @@ function setup(language){
   box.MapMakerResources.script=async()=>{};
   await maker.addPoi('wikipedia');
   assert.ok(modals.at(-1).copyText.startsWith('Mapmaker Overpass errors'));
-  assert.equal((modals.at(-1).copyText.match(/Attempt /g)||[]).length,8);
-  assert.equal((modals.at(-1).copyText.match(/Server: maps.mail.ru/g)||[]).length,2);
+  assert.equal((modals.at(-1).copyText.match(/Attempt /g)||[]).length,4);
+  assert.equal((modals.at(-1).copyText.match(/Server: maps.mail.ru/g)||[]).length,1);
   console.log('PASS',language,'retry notices/counts, Retry-After, rate-limit stop, preserved POI data, stage errors, article recovery and busy cleanup');
  }
  // HTTP status and Retry-After must survive the Worker boundary for the above policy.

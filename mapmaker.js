@@ -842,7 +842,8 @@ class MapMaker {
         const reasons = {
             OVERPASS_RATE_LIMIT:'request_overpass_rate', OVERPASS_BUSY:'request_overpass_busy',
             OVERPASS_MEMORY_LIMIT:'request_overpass_memory', OVERPASS_TIMEOUT:'request_overpass_timeout',
-            OVERPASS_ACCESS:'request_overpass_access', REQUEST_RATE_LIMIT:'request_rate',
+            OVERPASS_ACCESS:'request_overpass_access', OVERPASS_RESPONSE_TIMEOUT:'request_overpass_response_timeout',
+            OVERPASS_CLIENT_TIMEOUT:'request_overpass_client_timeout', REQUEST_RATE_LIMIT:'request_rate',
             REQUEST_NOT_FOUND:'request_not_found', MAP_DATA_LIMIT:'map_data_limit'
         };
         return glot.get(reasons[error?.code] || 'request_failed');

@@ -7,7 +7,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
  const control=box.overPassCont=vm.runInContext('new OverPassControl()',box);let attempts=0;
  for(const status of [0,429,503,404]){
  control.runDataWorker=async request=>{attempts++;assert.ok(request.url.includes('data='));throw {retryable:status!==404};};
- attempts=0;await assert.rejects(vm.runInContext('Basic.retry(()=>overPassCont.get(["test"]),overPassCont.getRetryCount())',box));assert.equal(attempts,status===404?1:4);
+ attempts=0;await assert.rejects(vm.runInContext('Basic.retry(()=>overPassCont.get(["test"]),overPassCont.getRetryCount())',box));assert.equal(attempts,status===404?1:2);
  }
  let calls=0;const api=vm.runInContext('Basic',box);await assert.rejects(api.retry(()=>{calls++;throw new Error('sync');},2));assert.equal(calls,3);
  delays.length=0;calls=0;

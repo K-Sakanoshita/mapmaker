@@ -29,6 +29,8 @@
     "request_overpass_busy": {"ja": "Overpass APIが混雑、または処理時間・資源の制限などで応答できませんでした。", "en": "Overpass API could not respond, possibly due to server load, time or resource limits."},
     "request_overpass_memory": {"ja": "Overpass APIのメモリ上限に達しました。地図を拡大して取得範囲を狭めてください。", "en": "The query reached the Overpass API memory limit. Zoom in to request a smaller area."},
     "request_overpass_timeout": {"ja": "Overpass APIで処理時間の上限に達しました。地図を拡大して取得範囲を狭めると改善する場合があります。", "en": "The query reached an Overpass API time limit. Zooming in to request a smaller area may help."},
+    "request_overpass_response_timeout": {"ja": "サーバーからのデータ受信開始を待つ時間を超えました。", "en": "Timed out waiting for the server to start sending data."},
+    "request_overpass_client_timeout": {"ja": "地図データの取得が制限時間を超えました。", "en": "The map data download exceeded its time limit."},
     "request_overpass_access": {"ja": "Overpass APIが要求を拒否しました。アクセス制限などの可能性があります。", "en": "Overpass API rejected the request, possibly due to access restrictions."},
     "make_map_zoom_hint": {"ja": "拡大するとマップを作れます。", "en": "Zoom in to create your map."},
     "save_format_prompt": {"ja": "形式を選んで保存", "en": "Choose a format to save"},

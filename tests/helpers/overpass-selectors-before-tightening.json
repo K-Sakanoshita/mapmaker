@@ -1,0 +1,96 @@
+{
+  "sea": [
+    "nwr[\"natural\"]"
+  ],
+  "park": [
+    "nwr[\"amenity\"]",
+    "nwr[\"leisure\"]",
+    "nwr[\"man_made\"]"
+  ],
+  "waterArea": [
+    "nwr[\"leisure\"]",
+    "nwr[\"landuse\"]",
+    "nwr[\"natural\"]"
+  ],
+  "waterLine": [
+    "nwr[\"waterway\"]"
+  ],
+  "wetland": [
+    "nwr[\"natural\"]"
+  ],
+  "site": [
+    "nwr[\"amenity\"]",
+    "nwr[\"landuse\"]",
+    "nwr[\"leisure\"]",
+    "nwr[\"power\"]",
+    "nwr[\"historic\"]"
+  ],
+  "pedestrian": [
+    "nwr[\"highway\"]",
+    "nwr[\"man_made\"]",
+    "nwr[\"landuse\"]",
+    "nwr[\"natural\"]"
+  ],
+  "garden": [
+    "nwr[\"leisure\"]",
+    "nwr[\"landuse\"]"
+  ],
+  "farmland": [
+    "nwr[\"landuse\"]"
+  ],
+  "forest": [
+    "nwr[\"natural\"]",
+    "nwr[\"landuse\"]"
+  ],
+  "greenLine": [
+    "nwr[\"barrier\"]",
+    "nwr[\"natural\"]"
+  ],
+  "parking": [
+    "nwr[\"amenity\"]"
+  ],
+  "railway": [
+    "nwr[\"railway\"][\"tunnel\"!~\".*\"]",
+    "nwr[\"service\"=\"yard\"]"
+  ],
+  "recreation_track": [
+    "nwr[\"roller_coaster\"=\"track\"]",
+    "nwr[\"highway\"=\"raceway\"]",
+    "nwr[\"sport\"=\"karting\"]",
+    "nwr[\"attraction\"~\"^(alpine_coaster|summer_toboggan|water_slide|log_flume|dark_ride)$\"]"
+  ],
+  "highway_alley": [
+    "nwr[\"highway\"]"
+  ],
+  "highway_step": [
+    "nwr[\"highway\"]"
+  ],
+  "highway_substandard": [
+    "nwr[\"highway\"]"
+  ],
+  "highway_standard": [
+    "nwr[\"highway\"]"
+  ],
+  "highway_primary": [
+    "nwr[\"highway\"]"
+  ],
+  "highway_motorway": [
+    "nwr[\"highway\"]"
+  ],
+  "building": [
+    "nwr[\"building\"]",
+    "nwr[\"building:part\"]",
+    "rel[\"type\"=\"building\"]",
+    "nwr[\"man_made\"]",
+    "nwr[\"waterway\"]",
+    "node[\"entrance\"]"
+  ],
+  "barrier": [
+    "nwr[\"barrier\"]",
+    "nwr[\"man_made\"=\"embankment\"]"
+  ],
+  "station": [
+    "nwr[\"railway\"][\"tunnel\"!~\".*\"]",
+    "nwr[\"building\"]"
+  ]
+}

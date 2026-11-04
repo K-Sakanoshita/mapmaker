@@ -31,6 +31,9 @@ const read=require('./helpers/lib-source.cjs').read;
  box.LayerCont.palette='color';box.Layers.park.opacity=0;assert.doesNotMatch(exporter.toSVGFromLayers(bbox,options),/data-flagpole-id/);box.Layers.park.opacity=1;
  assert.equal(JSON.stringify(flag),snapshot,'original position and tags unchanged');
  const osm=JSON.parse(fs.readFileSync('data/overpass-system.jsonc','utf8')).osm;
- assert.ok(osm.park.tags.includes('man_made=flagpole'));assert.ok(osm.park.overpass.includes('nwr["man_made"]'));
+ assert.ok(osm.park.tags.includes('man_made=flagpole'));assert.ok(osm.park.overpass.some(selector=>{
+  const match=selector.match(/^nwr\["man_made"(=|~)("[^"\n]*")\]$/);
+  return match && (match[1]==='=' ? JSON.parse(match[2])==='flagpole' : new RegExp(JSON.parse(match[2])).test('flagpole'));
+ }),'park query still acquires flagpoles');
  console.log('PASS automatic flagpole selection, units/default, shared geometry, flat/3D export, worker parity, palettes, visibility and immutable source');
 })().catch(e=>{console.error(e);process.exitCode=1;});
