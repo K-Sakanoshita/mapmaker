@@ -38,7 +38,8 @@
         "OverPassServer": [
             "https://armd-01.sakura.ne.jp/api/interpreter",
             "https://overpass-api.de/api/interpreter",
-            "https://overpass.private.coffee/api/interpreter"
+            "https://overpass.private.coffee/api/interpreter",
+            "https://maps.mail.ru/osm/tools/overpass/api/interpreter"
         ]
     },
     "tile_select": {

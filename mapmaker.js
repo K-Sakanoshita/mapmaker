@@ -847,21 +847,32 @@ class MapMaker {
         return glot.get(reasons[error?.code] || 'request_failed');
     }
 
+    requestServerMessage(error, previous = false) {
+        if (!error?.serverMessage) return '';
+        const text = String(error.serverMessage).slice(0, 601).replace(/[&<>"']/g,
+            char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+        return '<br><span style="overflow-wrap:anywhere">' +
+            glot.get(previous ? 'request_previous_server_error' : 'request_server_error') + ' ' + text + '</span>';
+    }
+
     requestErrorMessage(error, stage) {
         const seconds = Math.ceil((Basic.retryAfterMs?.(error) || 0) / 1000);
         const later = seconds > 0 ? glot.get('request_try_after').replace('{seconds}', seconds) : glot.get('request_try_later');
         const status = Number.isInteger(error?.status) && error.status > 0 ? ` (HTTP ${error.status})` : '';
-        // Only local translations and numbers enter modal HTML; never show server response HTML.
-        return `${glot.get(error?.requestStage || stage)}：${this.requestFailureReason(error)}${status}<br><br>${later}`;
+        // Server excerpts are escaped before entering modal HTML.
+        return `${glot.get(error?.requestStage || stage)}：${this.requestFailureReason(error)}${status}${this.requestServerMessage(error)}<br><br>${later}`;
     }
 
     retryRequest(task, stage, retryCount = 2) {
         winCont.modal_text?.(`${glot.get(stage)}：${glot.get('request_loading')}`, false);
         return Basic.retry(task, retryCount, {onRetry: notice => {
             const key = notice.waiting ? 'request_retry_wait' : 'request_retrying';
+            const server = notice.error?.retryServer;
+            const serverText = server ? '<br>' + glot.get('request_retry_server').replace('{server}',
+                String(server).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]))) : '';
             const message = glot.get(key).replace('{seconds}', Math.ceil(notice.delayMs / 1000))
                 .replace('{attempt}', notice.attempt).replace('{total}', notice.total);
-            winCont.modal_text(`${glot.get(stage)}：${notice.waiting ? this.requestFailureReason(notice.error) + ' ' : ''}${message}`, false);
+            winCont.modal_text(`${glot.get(stage)}：${notice.waiting ? this.requestFailureReason(notice.error) + ' ' : ''}${message}${serverText}${this.requestServerMessage(notice.error, true)}`, false);
         }}).catch(error => {
             if (!error || typeof error !== 'object') error = new Error(String(error));
             error.requestStage ||= stage;

@@ -2,7 +2,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
 const translations=JSON.parse(fs.readFileSync('data/glot.json','utf8'));
 function setup(language){
  const messages=[],modals=[],delays=[];let spinning=false;
- const box=vm.createContext({console:{log(){},error(){}},setTimeout:(fn,ms)=>{delays.push(ms);queueMicrotask(fn);},
+ const box=vm.createContext({URL,console:{log(){},error(){}},setTimeout:(fn,ms)=>{delays.push(ms);queueMicrotask(fn);},
   glot:{get:key=>translations[key]?.[language]||key},
   winCont:{modal_text:text=>messages.push(text),modal_open:async options=>{modals.push(options);},closeModal:async()=>{},spinner:on=>{spinning=on;}},
   Conf:{osm:{wikipedia:{api:'wikipedia.org/api/rest_v1/page/summary/'}}},
@@ -23,6 +23,40 @@ function setup(language){
   assert.equal(attempts,3);assert.deepEqual(delays,[1000,2000]);
   assert.ok(messages.some(text=>text.includes(translations.request_retry_wait[language].replace('{seconds}',1).replace('{attempt}',1).replace('{total}',2))));
   assert.ok(messages.some(text=>text.includes(translations.request_retrying[language].replace('{attempt}',2).replace('{total}',2))));
+  // Exercise real server rotation: both retry notices name the upcoming endpoint.
+  vm.runInContext(fs.readFileSync('lib/application/overpass-controller.js','utf8'),box);
+  box.Conf.system=JSON.parse(fs.readFileSync('data/config-system.jsonc','utf8')).system;
+  assert.equal(box.Conf.system.OverPassServer.length,4);
+  assert.equal(box.Conf.system.OverPassServer.at(-1),'https://maps.mail.ru/osm/tools/overpass/api/interpreter');
+  box.map.getSize=()=>({x:400,y:800});
+  box.overpassQueryURL=server=>server;
+  box.mapDataConfigForDevice=()=>({});box.isMapDataMobileDevice=()=>true;
+  box.planOsmAcquisition=()=>({selectors:['node'],osm:{},config:{}});
+  const controller=vm.runInContext('new OverPassControl()',box),requested=[];
+  controller.runDataWorker=async request=>{
+   requested.push(new URL(request.url).hostname);
+   if(requested.length<8)throw Object.assign(new Error('offline'),{retryable:true});
+   return 'downloaded';
+  };
+  for(const stage of ['request_stage_map','request_stage_poi']){
+   requested.length=0;messages.length=0;controller.UseServer=0;
+   assert.equal(await maker.retryRequest(()=>controller.get([]),stage,controller.getRetryCount()),'downloaded');
+   assert.equal(controller.getRetryCount(),7);
+   assert.deepEqual(requested,['armd-01.sakura.ne.jp','overpass-api.de','overpass.private.coffee','maps.mail.ru',
+    'armd-01.sakura.ne.jp','overpass-api.de','overpass.private.coffee','maps.mail.ru']);
+   const notices=messages.filter(text=>text.includes('<br>'));
+   assert.equal(notices.length,14);
+   requested.slice(1).forEach((host,i)=>{
+    const label=translations.request_retry_server[language].replace('{server}',host);
+    assert.ok(notices[i*2].endsWith(label),'waiting notice names next server');
+    assert.ok(notices[i*2+1].endsWith(label),'connecting notice names actual server');
+   });
+  }
+  messages.length=0;
+  let unsafeAttempts=0;
+  await maker.retryRequest(()=>{if(!unsafeAttempts++)throw {retryServer:'<img src=x>',retryable:true};return true;},'request_stage_map');
+  assert.ok(messages.some(text=>text.includes('&lt;img src=x&gt;')));
+  assert.ok(messages.every(text=>!text.includes('<img')));
   delays.length=0;messages.length=0;attempts=0;
   const limited={code:'OVERPASS_RATE_LIMIT',status:429,retryable:true};
   await assert.rejects(maker.retryRequest(()=>{attempts++;throw limited;},'request_stage_poi',5));
@@ -40,6 +74,15 @@ function setup(language){
   const serverError={code:'OVERPASS_MEMORY_LIMIT',message:'<img src=x onerror=alert(1)>',status:200};
   assert.ok(!maker.requestErrorMessage(serverError,'request_stage_poi').includes('<img'));
   assert.ok(maker.requestErrorMessage(serverError,'request_stage_poi').includes(translations.request_try_later[language]));
+  const detailed={status:503,serverMessage:'backend <img src=x onerror=alert(1)> & unavailable'};
+  const finalMessage=maker.requestErrorMessage(detailed,'request_stage_map');
+  assert.ok(finalMessage.includes('HTTP 503'));assert.ok(finalMessage.includes(translations.request_server_error[language]));
+  assert.ok(finalMessage.includes('&lt;img'));assert.ok(finalMessage.includes('&amp;'));assert.ok(!finalMessage.includes('<img'));
+  assert.ok(!maker.requestErrorMessage(new Error('offline'),'request_stage_map').includes(translations.request_server_error[language]));
+  messages.length=0;let detailedCalls=0;
+  await maker.retryRequest(()=>{if(!detailedCalls++)throw {...detailed,retryServer:'maps.mail.ru',retryable:true};return true;},'request_stage_map');
+  const detailNotices=messages.filter(text=>text.includes(translations.request_previous_server_error[language]));
+  assert.equal(detailNotices.length,2);assert.ok(detailNotices.every(text=>text.includes('maps.mail.ru')&&text.includes('&lt;img')&&!text.includes('<img')));
   // A failed list library retries without fetching already received POIs again.
   let downloads=0,listLoads=0,selections=0;
   box.overPassCont={getRetryCount:()=>2,get:async()=>{downloads++;return {geojson:[{geometry:{type:'Point',coordinates:[135,35]}}],targets:[['wikipedia']]};}};
@@ -76,10 +119,10 @@ function setup(language){
  // HTTP status and Retry-After must survive the Worker boundary for the above policy.
  let terminated=false;
  const box=vm.createContext({URL,setTimeout,clearTimeout,document:{baseURI:'https://example.test/'},Worker:class{
-  postMessage(){queueMicrotask(()=>this.onmessage({data:{error:'Overpass HTTP 429',code:'OVERPASS_RATE_LIMIT',status:429,retryable:true,retryAfter:'120'}}));}
+  postMessage(){queueMicrotask(()=>this.onmessage({data:{error:'Overpass HTTP 429',code:'OVERPASS_RATE_LIMIT',status:429,retryable:true,retryAfter:'120',serverMessage:'Too many requests'}}));}
   terminate(){terminated=true;}
  }});
  vm.runInContext(fs.readFileSync('lib/application/map-data-worker-client.js','utf8'),box);
- await assert.rejects(vm.runInContext('MapDataWorkerClient.run({})',box),error=>error.status===429&&error.code==='OVERPASS_RATE_LIMIT'&&error.jqXHR.getResponseHeader('Retry-After')==='120');
+ await assert.rejects(vm.runInContext('MapDataWorkerClient.run({})',box),error=>error.serverMessage==='Too many requests'&&error.status===429&&error.code==='OVERPASS_RATE_LIMIT'&&error.jqXHR.getResponseHeader('Retry-After')==='120');
  assert.ok(terminated);console.log('PASS Worker status and Retry-After transport');
 })().catch(error=>{console.error(error);process.exitCode=1;});

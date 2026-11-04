@@ -59,13 +59,28 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
  for(const [status,code,retryable] of [[403,'OVERPASS_ACCESS',false],[406,'OVERPASS_ACCESS',false],[408,'OVERPASS_TIMEOUT',true],[429,'OVERPASS_RATE_LIMIT',true],[504,'OVERPASS_BUSY',true]]){
   const r=await run(new Response('',{status}));assert.equal(r.message.code,code);assert.equal(r.message.status,status);assert.equal(r.message.retryable,retryable);
  }
+ // Error excerpts survive the actual Worker boundary, for JSON, HTML and text.
+ for(const [body,expected] of [
+  ['{"error":"Internal server error"}','Internal server error'],
+  ['{"error":{"message":"backend unavailable"}}','backend unavailable'],
+  ['<html><style>hidden</style><script>alert(1)</script><body><h1>504 Gateway Time-out</h1></body></html>','504 Gateway Time-out'],
+  ['backend unavailable','backend unavailable']
+ ]){
+  const r=await run(new Response(body,{status:503}));
+  assert.equal(r.message.serverMessage,expected);assert.equal(r.message.status,503);assert.equal(r.message.retryable,true);
+ }
+ let cancelled=false;
+ const bounded=await run(new Response(new ReadableStream({start(controller){controller.enqueue(new TextEncoder().encode('x'.repeat(20000)));},cancel(){cancelled=true;}}),{status:500}));
+ assert.equal(bounded.message.serverMessage,'x'.repeat(600)+'…');assert.ok(cancelled,'error body reading stops and cancels at its byte cap');
+ const broken=await run(new Response(new ReadableStream({start(controller){controller.error(new Error('body disconnected'));}}),{status:503}));
+ assert.equal(broken.message.status,503);assert.equal(broken.message.retryable,true);
  for(const [remark,code,retryable] of [
   ['runtime error: Query timed out in query after 120 seconds.','OVERPASS_TIMEOUT',true],
   ['runtime error: Query ran out of memory using about 512 MB of RAM.','OVERPASS_MEMORY_LIMIT',false],
   ['runtime error: rate_limited','OVERPASS_RATE_LIMIT',true]
  ]){
   const r=await run(new Response(JSON.stringify({elements:fixture.elements,remark})));
-  assert.equal(r.message.code,code);assert.equal(r.message.retryable,retryable);assert.ok(!r.message.result,'partial results must never become successful POI data');
+  assert.equal(r.message.serverMessage,remark);assert.equal(r.message.code,code);assert.equal(r.message.retryable,retryable);assert.ok(!r.message.result,'partial results must never become successful POI data');
  }
  const timeout=await run(({signal})=>new Promise((resolve,reject)=>signal.addEventListener('abort',()=>reject(Object.assign(new Error('timeout'),{name:'AbortError'})))),{timeoutMs:1});assert.equal(timeout.message.retryable,true);
  const malformed=await run(new Response('not json'));assert.ok(malformed.message.error);assert.equal(malformed.message.retryable,false);
